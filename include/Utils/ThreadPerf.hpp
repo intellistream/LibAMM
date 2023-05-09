@@ -384,7 +384,7 @@ class ThreadPerf {
     }
     return 0;
   }
-  size_t timeLastUs(struct timeval ts,struct timeval te) {
+  size_t timeLastUs(struct timeval ts, struct timeval te) {
     int64_t s0, e0, s1, e1;
     s0 = ts.tv_sec;
     s1 = ts.tv_usec;
@@ -403,7 +403,7 @@ class ThreadPerf {
       ru->edit(pairs[i].name, (uint64_t) pairs[i].record);
     }
     //additional test the elapsed time
-    ru->edit("perfElapsedTime", (uint64_t)timeLastUs(tstart,tend));
+    ru->edit("perfElapsedTime", (uint64_t) timeLastUs(tstart, tend));
     return ru;
   }
 };
