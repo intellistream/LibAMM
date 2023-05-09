@@ -384,6 +384,14 @@ class ThreadPerf {
     }
     return 0;
   }
+  size_t timeLastUs(struct timeval ts,struct timeval te) {
+    int64_t s0, e0, s1, e1;
+    s0 = ts.tv_sec;
+    s1 = ts.tv_usec;
+    e0 = te.tv_sec;
+    e1 = te.tv_usec;
+    return 1000000 * (e0 - s0) + (e1 - s1);
+  }
   /**
    * @brief convert the perf result into a @ref ConfigMap
    * @return The key-value store of configMap, in shared pointer
@@ -394,6 +402,8 @@ class ThreadPerf {
     for (size_t i = 0; i < pairs.size(); i++) {
       ru->edit(pairs[i].name, (uint64_t) pairs[i].record);
     }
+    //additional test the elapsed time
+    ru->edit("perfElapsedTime", (uint64_t)timeLastUs(tstart,tend));
     return ru;
   }
 };

@@ -1,7 +1,5 @@
-# pytorchCppTemplate (No self-defined cuda function)
-
-A basic toy template project of using pytorch in c++.
-For self-defined cuda function, please use the cuda branch.
+# AMM_AMP 
+Parallel approximate matrix multiplication on AMP. This project is compatable with libtorch
 ## Requires G++11
 The default version of gcc/g++ on ubuntu 22.04 (jammy) is good enough.
 
@@ -144,7 +142,15 @@ doxygen Doxyfile
 ```
 
 to get the documents in doc/html folder, and start at index.html
-
+## Benchmark parameters
+Please specify a configfile in running benchmark program, assuming we are using AMM(A,B)
+The following are config parameters:
+- aRow (U64) the rows of tensor A, default 100
+- aCol (U64) the columns of tensor A, default 1000
+- bCol (U64) the columns of tensor B, default 500
+- sketchDimension (U64) the dimension of sketch matrix, default 50
+- coreBind (U64) the specific core tor run this benchmark, default 0
+See also the template config.csv
 ## Known issues
 
 1. If you use Torch with cuda, the nvcc will refuse to work as it doesn't support c++20 yet. Therefore, we disabled the
