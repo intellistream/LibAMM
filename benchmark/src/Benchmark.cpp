@@ -15,9 +15,11 @@
 #include <Utils/UtilityFunctions.h>
 using namespace std;
 using namespace INTELLI;
+using namespace torch;
 void runSingleThreadTest(std::string configName) {
   ConfigMapPtr cfg = newConfigMap();
   cfg->fromFile(configName);
+  //555
   uint64_t aRow, aCol, bCol, sketchDimension;
   aRow = cfg->tryU64("aRow", 100, true);
   aCol = cfg->tryU64("aCol", 1000, true);
@@ -34,9 +36,10 @@ void runSingleThreadTest(std::string configName) {
   torch::jit::script::Module module;
   INTELLI_INFO("Try pt file " + ptFile);
   module = torch::jit::load(ptFile);
+  torch::manual_seed(114514);
   //555
   auto A = torch::rand({(long) aRow, (long) aCol});
-  auto B = torch::rand({(long) bCol, (long) aCol});
+  auto B = torch::rand({(long) aCol, (long) bCol});
   INTELLI_INFO("Generation done, conducting...");
   ThreadPerf pef((int) coreBind);
   pef.setPerfList();

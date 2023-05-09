@@ -135,7 +135,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, 
 
     # you may control the limits on your own.
 
-    plt.ylim(y_min, y_max)
+    #plt.ylim(y_min, y_max)
 
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LogLocator(base=10))
@@ -150,12 +150,12 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, 
     size = fig.get_size_inches()
     dpi = fig.get_dpi()
 
-    plt.show()
+    #plt.show()
     plt.savefig(filename + ".pdf", bbox_inches='tight')
 
 
 # draw a line chart
-def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
+def DrawFigureXYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
     fig = plt.figure(figsize=(10, 3))
     figure = fig.add_subplot(111)
@@ -208,6 +208,59 @@ def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, 
     # plt.show()
     plt.savefig(filename + ".pdf", bbox_inches='tight')
 
+# draw a line chart
+def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
+    # you may change the figure size on your own.
+    fig = plt.figure(figsize=(10, 3))
+    figure = fig.add_subplot(111)
+
+    FIGURE_LABEL = legend_labels
+
+    x_values = xvalues
+    y_values = yvalues
+
+    lines = [None] * (len(FIGURE_LABEL))
+    for i in range(len(y_values)):
+        lines[i], = figure.plot(x_values[i], y_values[i], color=LINE_COLORS[i], \
+                                linewidth=LINE_WIDTH, marker=MARKERS[i], \
+                                markersize=MARKER_SIZE, label=FIGURE_LABEL[i], markeredgecolor='k')
+
+    # sometimes you may not want to draw legends.
+    if allow_legend == True:
+        plt.legend(lines,
+                   FIGURE_LABEL,
+                   prop=LEGEND_FP,
+                   loc='upper center',
+                   ncol=3,
+                   bbox_to_anchor=(0.55, 1.5), shadow=False,
+                   columnspacing=0.1,
+                   frameon=True, borderaxespad=0, handlelength=1.2,
+                   handletextpad=0.1,
+                   labelspacing=0.1)
+    plt.xscale('log')
+    # plt.yscale('log')
+    # plt.yscale('log')
+
+    # you may control the limits on your own.
+
+    # plt.ylim(y_min, y_max)
+
+    plt.grid(axis='y', color='gray')
+    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+    # figure.yaxis.set_major_locator(LogLocator(base=10))
+    # figure.xaxis.set_major_locator(LogLocator(base=10))
+    plt.xticks(rotation=0, fontsize=TICK_FONT_SIZE)
+    figure.get_xaxis().set_tick_params(direction='in', pad=10)
+    figure.get_yaxis().set_tick_params(direction='in', pad=10)
+
+    plt.xlabel(x_label, fontproperties=LABEL_FP)
+    plt.ylabel(y_label, fontproperties=LABEL_FP)
+
+    size = fig.get_size_inches()
+    dpi = fig.get_dpi()
+
+    # plt.show()
+    plt.savefig(filename + ".pdf", bbox_inches='tight')
 
 # example for reading csv file
 def ReadFile():

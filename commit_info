@@ -1,1 +1,2 @@
 1. add scripts
+2. fix the random seed bug, the seed is currently fixed into 114514
