@@ -91,15 +91,17 @@ def readResultVector(singleValueVec, resultPath):
         elapseTimeVec.append(float(elapsedTime) / 1000.0)
         cacheMissVec.append(float(cacheMiss))
         cacheRefVec.append(float(cacheRefs))
-    return elapseTimeVec, cacheMissVec, cacheRefVec
+    return np.array(elapseTimeVec), np.array(cacheMissVec), np.array(cacheRefVec)
 
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     resultPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag
+    resultPathFDAMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/FDAMM"
+    resultPathRAWMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/RAWMM"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
     configTemplate = exeSpace + "config.csv"
-    valueVec = [100, 200, 500, 1000, 2000, 5000, 10000, 100000]
+    valueVec = [100, 200, 500, 1000, 2000, 5000, 10000, 20000,50000]
     valueVecDisp = np.array(valueVec)
     print(configTemplate)
     # run
@@ -109,21 +111,32 @@ def main():
         os.system("mkdir " + figPath)
         os.system("sudo rm -rf " + resultPath)
         os.system("sudo mkdir " + resultPath)
-        runScanVector(exeSpace, valueVec, resultPath, "config.csv")
-    elapseTimeVec, cacheMissVec, cacheRefVec = readResultVector(valueVec, resultPath)
+        #
+        os.system("sudo rm -rf " + resultPathFDAMM)
+        os.system("sudo mkdir " + resultPathFDAMM)
+        #
+        os.system("sudo rm -rf " + resultPathRAWMM)
+        os.system("sudo mkdir " + resultPathRAWMM)
+        runScanVector(exeSpace, valueVec, resultPathFDAMM, "config_FDAMM.csv")
+        runScanVector(exeSpace, valueVec, resultPathRAWMM, "config_RAWMM.csv")
+    elapseTimeVecFD, cacheMissVecFD, cacheRefVecFD = readResultVector(valueVec, resultPathFDAMM)
+    elapseTimeVecRAW, cacheMissVecRAW, cacheRefVecRAW = readResultVector(valueVec, resultPathRAWMM)
     # os.system("mkdir " + figPath)
-    groupLine.DrawFigureYnormal([valueVec], [elapseTimeVec],
-                                ['RawFDAMM'],
+    groupLine.DrawFigure([valueVec,valueVec], [elapseTimeVecFD,elapseTimeVecRAW],
+                                ['FDAMM','MM'],
                                 "#elements in A's row", "elapsed time (ms)", 0, 1, figPath + scanTag + "_elapsedTime",
                                 True)
-
+    groupLine.DrawFigureYnormal([valueVec,valueVec], [cacheMissVecFD/cacheRefVecFD*100.0,cacheMissVecRAW/cacheRefVecRAW*100.0],
+                                ['FDAMM','MM'],
+                                "#elements in A's row", "cacheMiss (%)", 0, 1, figPath + scanTag + "_cacheMiss",
+                                True)
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,compVec,"95% Latency (ms)","Completeness","ms","",figPath+"wm_omp")
     # groupLine.DrawFigureYnormal([singleValueVec,singleValueVec],[errVec,aqpErrVec],['w/o aqp',"w/ MeanAqp"],"watermark time (ms)","Error",0,1,figPath+"wm_MeanAqp",True)
     # print(errVec)
     # print(aqpErrVec)
-    print(elapseTimeVec)
+    #print(elapseTimeVecFD)
     # readResultsingleValue(50,resultPath)
 
 
