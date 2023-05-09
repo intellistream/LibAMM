@@ -150,6 +150,7 @@ The following are config parameters:
 - bCol (U64) the columns of tensor B, default 500
 - sketchDimension (U64) the dimension of sketch matrix, default 50
 - coreBind (U64) the specific core tor run this benchmark, default 0
+- ptFile (String) the path for the *.pt to be loaded, default torchscripts/FDAMM.pt
 See also the template config.csv
 ## Known issues
 
