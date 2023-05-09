@@ -28,10 +28,13 @@ void runSingleThreadTest(std::string configName)
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   uint64_t coreBind= cfg->tryU64("coreBind", 0, true);
   UtilityFunctions::bind2Core((int)coreBind);
+  std::string ptFile= cfg->tryString("ptFile", "torchscripts/FDAMM.pt", true);
+  uint64_t customResultName= cfg->tryU64("customResultName", 0, true);
   INTELLI_INFO("Place me at core"+ to_string(coreBind));
   INTELLI_INFO("Generating ["+to_string(aRow)+"x"+to_string(aCol)+"]*["+to_string(aCol)+"x"+to_string(bCol)+"], with sketch"+ to_string(sketchDimension));
   torch::jit::script::Module module;
-  module = torch::jit::load("torchscripts/FDAMM.pt");
+  INTELLI_INFO("Try pt file "+ ptFile);
+  module = torch::jit::load(ptFile);
   //555
   auto A = torch::rand({(long)aRow, (long)aCol});
   auto B = torch::rand({(long)bCol, (long)aCol});
@@ -41,9 +44,15 @@ void runSingleThreadTest(std::string configName)
   pef.start();
   auto C =module.forward({A, B, (long)sketchDimension}).toTensor();
   pef.end();
-  std::string ruName="ru_core_"+to_string(coreBind)+"_matrix_"+to_string(aRow)+"x"+to_string(aCol)+"amm"+to_string(aCol)+"x"+to_string(bCol)+"_sketch_"+to_string(sketchDimension);
+  std::string ruName="default";
+  if(customResultName)
+  {
+   ruName= "ru_core_"+to_string(coreBind)+"_matrix_"+to_string(aRow)+"x"+to_string(aCol)+"amm"+to_string(aCol)+"x"+to_string(bCol)+"_sketch_"+to_string(sketchDimension);
+  }
+
+
   auto resultCsv=pef.resultToConfigMap();
-  resultCsv->toFile(ruName);
+  resultCsv->toFile(ruName+".csv");
   INTELLI_INFO("Done. here is result");
   std::cout<<resultCsv->toString()<<endl;
 }
