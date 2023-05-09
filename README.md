@@ -1,5 +1,5 @@
-# AMM_AMP 
-Parallel approximate matrix multiplication on AMP. This project is compatable with libtorch
+# AMMBench
+An universal parallel approximate matrix multiplication (AMM) on multiple devices. This project is compatable with libtorch
 ## Requires G++11
 The default version of gcc/g++ on ubuntu 22.04 (jammy) is good enough.
 
