@@ -17,9 +17,9 @@ def attenuate(beta: float, k: torch.Tensor, l: int) -> torch.Tensor:
 	
 
 @torch.jit.script
-def FDAMM(A: torch.Tensor, B: torch.Tensor, l: int, beta: float):
+def FDAMM(A: torch.Tensor, B: torch.Tensor, l: int):
 	B = B.t()
-
+	beta=28.0
 	assert A.shape[1] == B.shape[1]
 	mx, n = A.shape
 	my, n = B.shape
@@ -91,7 +91,7 @@ def main():
 	
 	t = time.time()
 	
-	aResult = FDAMM(A, B, 500, 28.0)
+	aResult = FDAMM(A, B, 500)
 	print("approximate: " + str(time.time() - t) + "s")
 	
 	print(aResult)
@@ -105,7 +105,7 @@ def main():
 	
 	print("\nerror: " + str(torch.norm(aResult - eResult, p='fro').item()))
 	
-	FDAMM_script = FDAMM.save("beta-Co-Occurring FD.pt")
+	FDAMM_script = FDAMM.save("BetaCoOccurringFD.pt")
 
 if __name__ == '__main__':
 	main()

@@ -108,7 +108,7 @@ def main():
 	
 	print("\nerror: " + str(torch.norm(aResult - eResult, p='fro').item()))
 	
-	FDAMM_script = FDAMM.save("Co-Occurring FD.pt")
+	FDAMM_script = FDAMM.save("CoOccurringFD.pt")
 
 if __name__ == '__main__':
 	main()
