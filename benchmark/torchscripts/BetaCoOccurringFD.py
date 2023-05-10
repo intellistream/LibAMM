@@ -19,7 +19,7 @@ def attenuate(beta: float, k: torch.Tensor, l: int) -> torch.Tensor:
 @torch.jit.script
 def FDAMM(A: torch.Tensor, B: torch.Tensor, l: int):
 	B = B.t()
-	beta=28.0
+	beta=1.0
 	assert A.shape[1] == B.shape[1]
 	mx, n = A.shape
 	my, n = B.shape
