@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <assert.h>
 #include <Utils/IntelliLog.h>
 /**
  *  @defgroup INTELLI_UTIL

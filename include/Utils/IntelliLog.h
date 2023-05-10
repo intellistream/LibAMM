@@ -110,19 +110,19 @@ class IntelliLog_FileProtector {
  * @def INTELLI_INFO
  * @brief (Macro) To log something as information
  */
-#define INTELLI_INFO(n) IntelliLog::log("INFO",n)
+#define INTELLI_INFO(n) INTELLI::IntelliLog::log("INFO",n)
 /**
  * @ingroup INTELLI_UTIL_INTELLILOG
  * @def INTELLI_ERROR
  * @brief (Macro) To log something as error
  */
-#define INTELLI_ERROR(n) IntelliLog::log("ERROR",n)
+#define INTELLI_ERROR(n) INTELLI::IntelliLog::log("ERROR",n)
 /**
  * @ingroup INTELLI_UTIL_INTELLILOG
  * @def INTELLI_Warning
  * @brief (Macro) To log something as warnning
  */
-#define INTELLI_WARNING(n) IntelliLog::log("WARNING",n)
+#define INTELLI_WARNING(n) INTELLI::IntelliLog::log("WARNING",n)
 /**
  * @ingroup INTELLI_UTIL_INTELLILOG
  * @def INTELLI_DEBUG
