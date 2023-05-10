@@ -11,13 +11,13 @@ torch::Tensor AMMBench::SparseMatrixLoader::genSparseMatrix(uint64_t m,
                                                             double density,
                                                             uint64_t reduceRows) {
   /**
-   * @brief gen random mat
+   * @brief 1. gen random mat
    */
   auto mat = torch::rand({(long) m, (long) n});
 
   // Iterate over each element of A and zero out the element with probability p
   /**
-   * @brief make it sparse according to density
+   * @brief 2. make it sparse according to density
    */
   if (density < 1.0) {
     for (uint64_t i = 0; i < m; i++) {
@@ -29,8 +29,8 @@ torch::Tensor AMMBench::SparseMatrixLoader::genSparseMatrix(uint64_t m,
     }
   }
 
-  /***
-   * @brief reduce rows
+  /**
+   * @brief 3. reduce rows
    */
   if (reduceRows == 0) {
     return mat;

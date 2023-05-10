@@ -13,11 +13,11 @@
 namespace AMMBench {
 /**
  * @ingroup AMMBENCH_MatrixLOADER
- * {
+ * @{
  */
 /**
  * @ingroup AMMBENCH_MatrixLOADER_abstract The abstract template
- * {
+ * @{
  */
 /**
  * @class AbstractMatrixLoader MatrixLoader/AbstractMatrixLoader.h
@@ -25,7 +25,7 @@ namespace AMMBench {
  * @ingroup AMMBENCH_MatrixLOADER_abstract
  * @note:
  * - Must have a global config by @ref setConfig
- *@note  Default behavior
+ * @note  Default behavior
 * - create
 * - call @ref setConfig, this function will also generate the tensor A and B correspondingly
 * - call @ref getA and @ref getB (assuming we are benchmarking torch.mm(A,B))
