@@ -9,11 +9,11 @@
 namespace AMMBench {
 /**
  * @ingroup AMMBENCH_MatrixLOADER
- * {
+ * @{
  */
 /**
  * @ingroup AMMBENCH_MatrixLOADER_Random The Random generator
- * {
+ * @{
  */
 /**
  * @class RandomMatrixLoader MatrixLoader/RandomMatrixLoader.h
@@ -21,7 +21,7 @@ namespace AMMBench {
  * @ingroup AMMBENCH_MatrixLOADER_Random
  * @note:
  * - Must have a global config by @ref setConfig
- *@note  Default behavior
+ * @note  Default behavior
 * - create
 * - call @ref setConfig, this function will also generate the tensor A and B correspondingly
 * - call @ref getA and @ref getB (assuming we are benchmarking torch.mm(A,B))
@@ -39,7 +39,7 @@ class RandomMatrixLoader : public AbstractMatrixLoader {
   uint64_t aRow, aCol, bCol, seed;
   /**
    * @brief Inline logic of reading a config file
-   * @param cfg, the config
+   * @param cfg the config
    */
   void paraseConfig(INTELLI::ConfigMapPtr cfg);
   /**

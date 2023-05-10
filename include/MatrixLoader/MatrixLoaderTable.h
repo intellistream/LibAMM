@@ -9,17 +9,17 @@
 namespace AMMBench {
 /**
  * @ingroup AMMBENCH_MatrixLOADER
- * {
+ * @{
  */
 /**
  * @ingroup AMMBENCH_MatrixLOADER_Table The Table to index all matrix loaders
- * {
+ * @{
  */
 /**
  * @class MatrixLoaderTable MatrixLoader/MatrixLoaderTable.h
  * @brief The table class to index all matrix loaders
  * @ingroup AMMBENCH_MatrixLOADER_Table
- *@note  Default behavior
+ * @note  Default behavior
 * - create
 * - (optional) call @ref registerNewDataLoader for new loader
 * - find a loader by @ref findMatrixLoader using its tag

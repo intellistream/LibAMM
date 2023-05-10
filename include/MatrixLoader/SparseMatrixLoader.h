@@ -9,11 +9,11 @@
 namespace AMMBench {
 /**
  * @ingroup AMMBENCH_MatrixLOADER
- * {
+ * @{
  */
 /**
  * @ingroup AMMBENCH_MatrixLOADER_Sparse The Sparse generator
- * {
+ * @{
  */
 /**
  * @class SparseMatrixLoader MatrixLoader/SparseMatrixLoader.h
@@ -21,7 +21,7 @@ namespace AMMBench {
  * @ingroup AMMBENCH_MatrixLOADER_Sparse
  * @note:
  * - Must have a global config by @ref setConfig
- *@note  Default behavior
+ * @note  Default behavior
 * - create
 * - call @ref setConfig, this function will also generate the tensor A and B correspondingly
 * - call @ref getA and @ref getB (assuming we are benchmarking torch.mm(A,B))
@@ -35,7 +35,7 @@ namespace AMMBench {
  * - "aReduce" Reduce some rows of A to be linearly dependent, U64, 0
  * - "bReduce" Reduce some rows of A to be linearly dependent, U64, 0
  * @note: default name tags
- * "Sparse": @ref SparseMatrixLoader
+ * "sparse": @ref SparseMatrixLoader
  */
 class SparseMatrixLoader : public AbstractMatrixLoader {
  protected:
@@ -45,15 +45,15 @@ class SparseMatrixLoader : public AbstractMatrixLoader {
 
   /**
    * @brief Inline logic of generate the sparse matrix
-   * @param m, the rows
-   * @param n, the cols
-   * @param density, the density in 0~1
-   * @param reduceRows, the number of rows to be reduced
+   * @param m the rows
+   * @param n the cols
+   * @param density the density in 0~1
+   * @param reduceRows the number of rows to be reduced
    */
   torch::Tensor genSparseMatrix(uint64_t m, uint64_t n, double density, uint64_t reduceRows);
   /**
    * @brief Inline logic of reading a config file
-   * @param cfg, the config
+   * @param cfg the config
    */
   void paraseConfig(INTELLI::ConfigMapPtr cfg);
   /**
