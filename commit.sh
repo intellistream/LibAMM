@@ -1,4 +1,4 @@
-BRANCH=FDAMM
+BRANCH=main
 git init
 git checkout -b $BRANCH
 git add .
