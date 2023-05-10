@@ -23,6 +23,9 @@ namespace AMMBench {
 * - create
 * - (optional) call @ref registerNewDataLoader for new loader
 * - find a loader by @ref findMatrixLoader using its tag
+ * @note default tags
+ * - random @ref RandomMatrixLoader
+ * - sparse @ref SparseMatrixLoader
  */
 class MatrixLoaderTable {
  protected:

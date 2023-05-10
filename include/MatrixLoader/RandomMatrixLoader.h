@@ -1,3 +1,4 @@
+/*! \file RandomMatrixLoader.h*/
 //
 // Created by tony on 10/05/23.
 //
@@ -32,10 +33,10 @@ namespace AMMBench {
  * @note: default name tags
  * "random": @ref RandomMatrixLoader
  */
-class RandomMatrixLoader:public AbstractMatrixLoader {
+class RandomMatrixLoader : public AbstractMatrixLoader {
  protected:
-  torch::Tensor A,B;
-  uint64_t aRow, aCol, bCol,seed;
+  torch::Tensor A, B;
+  uint64_t aRow, aCol, bCol, seed;
   /**
    * @brief Inline logic of reading a config file
    * @param cfg, the config

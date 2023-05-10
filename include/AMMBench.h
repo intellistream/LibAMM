@@ -17,9 +17,13 @@
  * @section BENCH_MARK Benchmark Tips
  * usage: ./benchmark [configfile]
  * @note Require configs in configfile:
-    * - aRow (U64) the rows of tensor A, required by @ref RandomMatrixLoader
-    * - aCol (U64) the columns of tensor A, required by @ref RandomMatrixLoader
-    * -  bCol (U64) the columns of tensor B, required by @ref RandomMatrixLoader
+    * - aRow (U64) the rows of tensor A, required by @ref RandomMatrixLoader, @ref SparseMatrixLoader
+    * - aCol (U64) the columns of tensor A, required by @ref RandomMatrixLoader, @ref SparseMatrixLoader
+    * -  bCol (U64) the columns of tensor B, required by @ref RandomMatrixLoader, @ref SparseMatrixLoader
+    * - "aDensity" The density factor of matrix A, Double, 1.0, required by @ref SparseMatrixLoader
+    * - "bDensity" The density factor of matrix B, Double, 1.0, required by @ref SparseMatrixLoader
+    * - "aReduce" Reduce some rows of A to be linearly dependent, U64, 0, required by @ref SparseMatrixLoader
+    * - "bReduce" Reduce some rows of A to be linearly dependent, U64, 0, required by @ref SparseMatrixLoader
     * - sketchDimension (U64) the dimension of sketch matrix, default 50
     * - coreBind (U64) the specific core tor run this benchmark, default 0
     * - ptFile (String) the path for the *.pt to be loaded, default torchscripts/FDAMM.pt
@@ -48,6 +52,7 @@
  **/
 #include <MatrixLoader/AbstractMatrixLoader.h>
 #include <MatrixLoader/RandomMatrixLoader.h>
+#include <MatrixLoader/SparseMatrixLoader.h>
 #include <MatrixLoader/MatrixLoaderTable.h>
 /**
  * @}

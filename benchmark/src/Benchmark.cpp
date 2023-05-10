@@ -13,7 +13,7 @@ void runSingleThreadTest(std::string configName) {
   ConfigMapPtr cfg = newConfigMap();
   cfg->fromFile(configName);
   AMMBench::MatrixLoaderTable mLoaderTable;
-  uint64_t  sketchDimension;
+  uint64_t sketchDimension;
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
   UtilityFunctions::bind2Core((int) coreBind);
@@ -25,16 +25,16 @@ void runSingleThreadTest(std::string configName) {
   torch::jit::script::Module module;
   INTELLI_INFO("Try pt file " + ptFile);
   module = torch::jit::load(ptFile);
-  std::string matrixLoaderTag=cfg->tryString("matrixLoaderTag", "random", true);
-  auto matLoaderPtr=mLoaderTable.findMatrixLoader(matrixLoaderTag);
+  std::string matrixLoaderTag = cfg->tryString("matrixLoaderTag", "random", true);
+  auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);
   assert(matLoaderPtr);
   matLoaderPtr->setConfig(cfg);
   auto A = matLoaderPtr->getA();
   auto B = matLoaderPtr->getB();
-      /*torch::manual_seed(114514);
-  //555
-  auto A = torch::rand({(long) aRow, (long) aCol});
-  auto B = torch::rand({(long) aCol, (long) bCol});*/
+  /*torch::manual_seed(114514);
+//555
+auto A = torch::rand({(long) aRow, (long) aCol});
+auto B = torch::rand({(long) aCol, (long) bCol});*/
   INTELLI_INFO("Generation done, conducting...");
   ThreadPerf pef((int) coreBind);
   pef.setPerfList();
@@ -42,7 +42,6 @@ void runSingleThreadTest(std::string configName) {
   auto C =module.forward({A, B, (long) sketchDimension}).toTensor();
   pef.end();
   std::string ruName = "default";
-
 
   auto resultCsv = pef.resultToConfigMap();
   resultCsv->toFile(ruName + ".csv");

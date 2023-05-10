@@ -1,3 +1,2 @@
-1. add a MatrixLoader component for loading matrixes
-2. introduce the doxygen system
+1. add the sparse matrix loader and corresponding scripts
 
