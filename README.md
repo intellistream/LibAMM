@@ -81,13 +81,13 @@ sudo apt-get install python3 python3-pip
 (Please make all cuda dependencies installed before pytorck!!!)
 
 ```shell
-pip3 install torch torchvision torchaudio
+pip3 install torch==1.13.0 torchvision torchaudio
 ```
 
 (w/o CUDA)
 
 ```shell
-pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+pip3 install torch==1.13.0 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
 ```
 
 #### (Optional) Pytorch with Cuda backend on jetson
