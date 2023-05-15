@@ -1,4 +1,4 @@
-BRANCH=matrixLoader
+BRANCH=E2E
 git init
 git checkout -b $BRANCH
 git add .
