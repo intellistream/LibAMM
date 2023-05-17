@@ -1,3 +1,3 @@
-1. fix readme typo of troch install
-2. add an experimental E2E machine learning example at benchmark/torchscripts/E2E_Minsit.py
+1. add examples of system test
+2. fix multi threading bugs on some machines (e.g.., the aarach64), force a single tread now by  torch::set_num_threads(1);
 
