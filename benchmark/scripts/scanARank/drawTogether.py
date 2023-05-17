@@ -81,9 +81,12 @@ def readResultSingle(singleValue, resultPath):
     cacheRefs = readConfig(resultFname, "cacheRefs")
     return elapsedTime, cacheMiss, cacheRefs
 
+
 def cleanPath(path):
     os.system("sudo rm -rf " + path)
     os.system("sudo mkdir " + path)
+
+
 def readResultVector(singleValueVec, resultPath):
     elapseTimeVec = []
     cacheMissVec = []
@@ -99,14 +102,14 @@ def readResultVector(singleValueVec, resultPath):
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     resultPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag
-    resultPathFDAMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/FDAMM"
-    resultPathCoFD = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/CoFD"
-    resultPathBetaCoFD = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/BCoFD"
-    resultPathRAWMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/RAWMM"
+    resultPathFDAMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/FDAMM"
+    resultPathCoFD = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/CoFD"
+    resultPathBetaCoFD = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/BCoFD"
+    resultPathRAWMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/RAWMM"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
     configTemplate = exeSpace + "config.csv"
-    valueVec = [2,5,10,20,50,100,200,500,900]
-    valueVecRun = 1000-np.array(valueVec)
+    valueVec = [2, 5, 10, 20, 50, 100, 200, 500, 900]
+    valueVecRun = 1000 - np.array(valueVec)
     print(configTemplate)
     # run
     if (len(sys.argv) < 2):
@@ -125,18 +128,20 @@ def main():
         runScanVector(exeSpace, valueVecRun, resultPathCoFD, "config_CoAMM.csv")
         runScanVector(exeSpace, valueVecRun, resultPathBetaCoFD, "config_BCoAMM.csv")
         runScanVector(exeSpace, valueVecRun, resultPathRAWMM, "config_RAWMM.csv")
-    evaTypes=['FDAMM','MM','Co-FD','BCO-FD']
+    evaTypes = ['FDAMM', 'MM', 'Co-FD', 'BCO-FD']
     elapseTimeVecFD, cacheMissVecFD, cacheRefVecFD = readResultVector(valueVecRun, resultPathFDAMM)
     elapseTimeVecCoFD, cacheMissVecCoFD, cacheRefVecCoFD = readResultVector(valueVecRun, resultPathCoFD)
     elapseTimeVeCB, cacheMissVecB, cacheRefVecB = readResultVector(valueVecRun, resultPathBetaCoFD)
     elapseTimeVecRAW, cacheMissVecRAW, cacheRefVecRAW = readResultVector(valueVecRun, resultPathRAWMM)
     # os.system("mkdir " + figPath)
-    groupLine.DrawFigureYnormal([valueVec,valueVec,valueVec,valueVec], [elapseTimeVecFD,elapseTimeVecRAW,elapseTimeVecCoFD,elapseTimeVeCB],
+    groupLine.DrawFigureYnormal([valueVec, valueVec, valueVec, valueVec],
+                                [elapseTimeVecFD, elapseTimeVecRAW, elapseTimeVecCoFD, elapseTimeVeCB],
                                 evaTypes,
                                 "Rank of matrix A", "elapsed time (ms)", 0, 1, figPath + "Rank" + "_elapsedTime",
                                 True)
-    groupLine.DrawFigureYnormal([valueVec,valueVec,valueVec,valueVec], [cacheMissVecFD/cacheRefVecFD*100.0,cacheMissVecRAW/cacheRefVecRAW*100.0,
-                                                                        cacheMissVecCoFD/cacheRefVecCoFD*100.0,cacheMissVecB/cacheRefVecB*100.0],
+    groupLine.DrawFigureYnormal([valueVec, valueVec, valueVec, valueVec],
+                                [cacheMissVecFD / cacheRefVecFD * 100.0, cacheMissVecRAW / cacheRefVecRAW * 100.0,
+                                 cacheMissVecCoFD / cacheRefVecCoFD * 100.0, cacheMissVecB / cacheRefVecB * 100.0],
                                 evaTypes,
                                 "Rank of matrix A", "cacheMiss (%)", 0, 1, figPath + "Rank" + "_cacheMiss",
                                 True)
@@ -146,7 +151,7 @@ def main():
     # groupLine.DrawFigureYnormal([singleValueVec,singleValueVec],[errVec,aqpErrVec],['w/o aqp',"w/ MeanAqp"],"watermark time (ms)","Error",0,1,figPath+"wm_MeanAqp",True)
     # print(errVec)
     # print(aqpErrVec)
-    #print(elapseTimeVecFD)
+    # print(elapseTimeVecFD)
     # readResultsingleValue(50,resultPath)
 
 

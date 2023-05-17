@@ -34,6 +34,11 @@
  * - find any .python as an example
  * - copy and modify it and generate the *pt, please make it under hump style of naming
  * - the system will then support it by using the name of your pt.
+ * @section subsec_edit_test How to add a single point test
+ * - copy your config file to test/scripts, and your pt file to test/torchscripts
+ * - follow and copy the SketchTest.cpp to create your own, say A.cpp
+ * - register A.cpp to test/CMakeLists.txt, please follow how we deal with the SketchTest.cpp
+ * - assuming you have made A.cpp into a_test, append  ./a_test "--success" to the last row of .github/workflows/cmake.yml
  */
 /**
 *
@@ -75,6 +80,7 @@
 #include <Utils/C20Buffers.hpp>
 #include <Utils/ThreadPerf.hpp>
 #include <Utils/IntelliLog.h>
+#include <Utils/UtilityFunctions.h>
 /**
  * @}
  */

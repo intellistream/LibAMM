@@ -81,9 +81,12 @@ def readResultSingle(singleValue, resultPath):
     cacheRefs = readConfig(resultFname, "cacheRefs")
     return elapsedTime, cacheMiss, cacheRefs
 
+
 def cleanPath(path):
     os.system("sudo rm -rf " + path)
     os.system("sudo mkdir " + path)
+
+
 def readResultVector(singleValueVec, resultPath):
     elapseTimeVec = []
     cacheMissVec = []
@@ -99,13 +102,13 @@ def readResultVector(singleValueVec, resultPath):
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     resultPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag
-    resultPathFDAMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/FDAMM"
-    resultPathCoFD = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/CoFD"
-    resultPathBetaCoFD = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/BCoFD"
-    resultPathRAWMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/RAWMM"
+    resultPathFDAMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/FDAMM"
+    resultPathCoFD = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/CoFD"
+    resultPathBetaCoFD = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/BCoFD"
+    resultPathRAWMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/RAWMM"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
     configTemplate = exeSpace + "config.csv"
-    valueVec = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+    valueVec = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     valueVecDisp = np.array(valueVec)
     print(configTemplate)
     # run
@@ -125,28 +128,30 @@ def main():
         runScanVector(exeSpace, valueVec, resultPathCoFD, "config_CoAMM.csv")
         runScanVector(exeSpace, valueVec, resultPathBetaCoFD, "config_BCoAMM.csv")
         runScanVector(exeSpace, valueVec, resultPathRAWMM, "config_RAWMM.csv")
-    evaTypes=['FDAMM','MM','Co-FD','BCO-FD']
+    evaTypes = ['FDAMM', 'MM', 'Co-FD', 'BCO-FD']
     elapseTimeVecFD, cacheMissVecFD, cacheRefVecFD = readResultVector(valueVec, resultPathFDAMM)
     elapseTimeVecCoFD, cacheMissVecCoFD, cacheRefVecCoFD = readResultVector(valueVec, resultPathCoFD)
     elapseTimeVeCB, cacheMissVecB, cacheRefVecB = readResultVector(valueVec, resultPathBetaCoFD)
     elapseTimeVecRAW, cacheMissVecRAW, cacheRefVecRAW = readResultVector(valueVec, resultPathRAWMM)
     # os.system("mkdir " + figPath)
-    groupLine.DrawFigureXYnormal([valueVec,valueVec,valueVec,valueVec], [elapseTimeVecFD,elapseTimeVecRAW,elapseTimeVecCoFD,elapseTimeVeCB],
-                                evaTypes,
-                                "Density of matrix A", "elapsed time (ms)", 0, 1, figPath + scanTag + "_elapsedTime",
-                                True)
-    groupLine.DrawFigureXYnormal([valueVec,valueVec,valueVec,valueVec], [cacheMissVecFD/cacheRefVecFD*100.0,cacheMissVecRAW/cacheRefVecRAW*100.0,
-                                                                        cacheMissVecCoFD/cacheRefVecCoFD*100.0,cacheMissVecB/cacheRefVecB*100.0],
-                                evaTypes,
-                                "Density of matrix A", "cacheMiss (%)", 0, 1, figPath + scanTag + "_cacheMiss",
-                                True)
+    groupLine.DrawFigureXYnormal([valueVec, valueVec, valueVec, valueVec],
+                                 [elapseTimeVecFD, elapseTimeVecRAW, elapseTimeVecCoFD, elapseTimeVeCB],
+                                 evaTypes,
+                                 "Density of matrix A", "elapsed time (ms)", 0, 1, figPath + scanTag + "_elapsedTime",
+                                 True)
+    groupLine.DrawFigureXYnormal([valueVec, valueVec, valueVec, valueVec],
+                                 [cacheMissVecFD / cacheRefVecFD * 100.0, cacheMissVecRAW / cacheRefVecRAW * 100.0,
+                                  cacheMissVecCoFD / cacheRefVecCoFD * 100.0, cacheMissVecB / cacheRefVecB * 100.0],
+                                 evaTypes,
+                                 "Density of matrix A", "cacheMiss (%)", 0, 1, figPath + scanTag + "_cacheMiss",
+                                 True)
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,compVec,"95% Latency (ms)","Completeness","ms","",figPath+"wm_omp")
     # groupLine.DrawFigureYnormal([singleValueVec,singleValueVec],[errVec,aqpErrVec],['w/o aqp',"w/ MeanAqp"],"watermark time (ms)","Error",0,1,figPath+"wm_MeanAqp",True)
     # print(errVec)
     # print(aqpErrVec)
-    #print(elapseTimeVecFD)
+    # print(elapseTimeVecFD)
     # readResultsingleValue(50,resultPath)
 
 
