@@ -1,4 +1,4 @@
-BRANCH=E2E
+BRANCH=SYSTEST
 git init
 git checkout -b $BRANCH
 git add .

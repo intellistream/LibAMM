@@ -1,11 +1,8 @@
-/*! \file Benchmark.h*/
+#include <vector>
 
-/**
- * @brief This is the main entry point of the entire program.
- * We use this as the entry point for benchmarking.
- */
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
 #include <AMMBench.h>
-#include <Utils/UtilityFunctions.h>
 using namespace std;
 using namespace INTELLI;
 using namespace torch;
@@ -50,15 +47,10 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   INTELLI_INFO("Done. here is result");
   std::cout << resultCsv->toString() << endl;
 }
-
-int main(int argc, char **argv) {
-  string configName, outPrefix = "";
-  if (argc >= 2) {
-    configName += argv[1];
-  } else {
-    configName = "config.csv";
-  }
-  runSingleThreadTest(configName);
-  return 0;
+TEST_CASE("Test the counter sketch", "[short]")
+{
+  int a = 0;
+  runSingleThreadTest("scripts/config_counterSketch.csv");
+  // place your test here
+  REQUIRE(a == 0);
 }
-

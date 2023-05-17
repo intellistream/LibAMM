@@ -198,6 +198,6 @@ You will find the figures then.
 1. If you use Torch with cuda, the nvcc will refuse to work as it doesn't support c++20 yet. Therefore, we disabled the
    global requirement check of C++ 20, and only leave an "-std=c++20" option for g++. This will be fixed after nvidia
    can support c++20 in cuda.
-2. Some pytorch version can not work well with liblog4cxx and googletest, so we diabled it. 
+2. Some pytorch version can not work well with liblog4cxx and googletest, so we diabled it.
 3. Clion may fail to render and highlight the torch apis. In this case, kindly type a random line of "555"
-to validate the highlight when you need it, and comment it during a compile. :)
+   to validate the highlight when you need it, and comment it during a compile. :)
