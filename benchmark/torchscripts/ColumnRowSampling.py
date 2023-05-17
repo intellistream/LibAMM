@@ -1,6 +1,7 @@
 import torch
 import time
 import os
+import math
 
 def get_first_element(tensor):
 	if tensor.numel() == 1:
@@ -18,21 +19,7 @@ def CRS(A: torch.Tensor, B: torch.Tensor, k: int):
 	n, m = A.shape
 	
 	assert n == B.shape[0]
-	assert k < m
-	
-	Ai = torch.linalg.norm(A, dim=0)
-	Aj = torch.linalg.norm(A, dim=1)
-	Bi = torch.linalg.norm(B, dim=0)
-	Bj = torch.linalg.norm(B, dim=1)
-	
-	print(Ai.shape)
-	print(Aj.shape)
-	print(Bi.shape)
-	print(Bj.shape)
-	
-	dot_product1 = torch.dot(Aj, Bj)
-	print(dot_product1)
-	
+	assert k < n
 	
 	# probability distribution
 	probs = torch.ones(n) / n # default: uniform
@@ -42,7 +29,8 @@ def CRS(A: torch.Tensor, B: torch.Tensor, k: int):
 
 	# Sample k columns from A
 	A_sampled = A[indices, :]
-	A_sampled = torch.div((A_sampled / k).t(), probs[::2])
+	ratio = math.ceil(n / k)
+	A_sampled = torch.div((A_sampled / k).t(), probs[::ratio])
 
 	# Sample k rows from B
 	B_sampled = B[indices, :]
@@ -54,7 +42,7 @@ def CRS(A: torch.Tensor, B: torch.Tensor, k: int):
 
 def main():
 	
-	width = 1000
+	width = 2000
 	A = torch.rand(5000, width)
 	B = torch.rand(width, 5000)
 
@@ -75,7 +63,7 @@ def main():
 	
 	print("\nerror: " + str(torch.norm(aResult - eResult, p='fro').item()))
 	
-	# FDAMM_script = CRS.save("CRS.pt")
+	FDAMM_script = CRS.save("CRS.pt")
 
 if __name__ == '__main__':
 	main()

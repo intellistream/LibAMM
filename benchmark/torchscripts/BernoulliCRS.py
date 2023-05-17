@@ -14,10 +14,11 @@ def is_empty_tensor(tensor):
 @torch.jit.script
 def BernoulliCRS(A: torch.Tensor, B: torch.Tensor, k: int):
 	# Get the dimension of A
+	A = A.t()
 	n, m = A.shape
 	
-	assert m == B.shape[1]
-	assert k < m
+	assert n == B.shape[0]
+	assert k < n
 	
 	# probability distribution
 	sample = torch.rand(n)							# default: uniform
@@ -38,9 +39,8 @@ def BernoulliCRS(A: torch.Tensor, B: torch.Tensor, k: int):
 
 def main():
 	
-	
 	width = 1000
-	A = torch.rand(width, 2000)
+	A = torch.rand(2000, width)
 	B = torch.rand(width, 2000)
 	
 	t = time.time()
@@ -52,7 +52,7 @@ def main():
 	
 	# exact result
 	t = time.time()
-	eResult = torch.matmul(A.t(), B)
+	eResult = torch.matmul(A, B)
 	print("\nExact: " + str(time.time() - t) + "s")
 	
 	print(eResult)

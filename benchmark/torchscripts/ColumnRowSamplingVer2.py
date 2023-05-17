@@ -14,22 +14,21 @@ def is_empty_tensor(tensor):
 @torch.jit.script
 def CRS(A: torch.Tensor, B: torch.Tensor, k: int):
 	# Get the dimension of A
+	A = A.t()
 	n, m = A.shape
 	
-	assert m == B.shape[1]
-	assert k < m
+	assert n == B.shape[0]
+	assert k < n
 	
 	# probability distribution
-	# dist = torch.distributions.Uniform(0, 1) # default: uniform
+	# dist = torch.distributions.Uniform(0, 1) 
+	sample = torch.rand(n)			# default: uniform
 
-	
-	# sample k indices from range 0 to m for given probability distribution
-	# sample = dist.sample((n,))
-	sample = torch.rand(n)
+	# diagonal scaling matrix D (nxn)
 	sample = torch.div(sample, sample.sum())
 	D = torch.diag(1.0 / torch.sqrt(k * sample))
 	
-	
+	# sampling matrix S (kxn)
 	column_indices = torch.multinomial(sample, k, replacement=False)
 	S = torch.zeros(k, n)
 	for row, col in enumerate(column_indices):
@@ -45,9 +44,9 @@ def CRS(A: torch.Tensor, B: torch.Tensor, k: int):
 def main():
 	
 	
-	width = 5000
-	A = torch.rand(width, 5000)
-	B = torch.rand(width, 5000)
+	width = 2000
+	A = torch.rand(1000, width)
+	B = torch.rand(width, 1000)
 	
 	t = time.time()
 	
@@ -58,7 +57,7 @@ def main():
 	
 	# exact result
 	t = time.time()
-	eResult = torch.matmul(A.t(), B)
+	eResult = torch.matmul(A, B)
 	print("\nExact: " + str(time.time() - t) + "s")
 	
 	print(eResult)
