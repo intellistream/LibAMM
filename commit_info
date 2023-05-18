@@ -1,3 +1,2 @@
-1. add examples of system test
-2. fix multi threading bugs on some machines (e.g.., the aarach64), force a single tread now by  torch::set_num_threads(1);
+1. simplify the cmake of test
 
