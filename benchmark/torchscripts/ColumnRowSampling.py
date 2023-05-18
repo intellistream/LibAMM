@@ -25,7 +25,7 @@ def CRS(A: torch.Tensor, B: torch.Tensor, k: int):
 	probs = torch.ones(n) / n # default: uniform
 		
 	# sample k indices from range 0 to n for given probability distribution
-	indices = torch.multinomial(probs, k, replacement=False)
+	indices = torch.multinomial(probs, k, replacement=True)
 
 	# Sample k columns from A
 	A_sampled = A[indices, :]

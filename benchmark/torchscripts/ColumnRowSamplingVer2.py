@@ -29,7 +29,7 @@ def CRS(A: torch.Tensor, B: torch.Tensor, k: int):
 	D = torch.diag(1.0 / torch.sqrt(k * sample))
 	
 	# sampling matrix S (kxn)
-	column_indices = torch.multinomial(sample, k, replacement=False)
+	column_indices = torch.multinomial(sample, k, replacement=True)
 	S = torch.zeros(k, n)
 	for row, col in enumerate(column_indices):
 		S[row, col] = 1
