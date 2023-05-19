@@ -1,3 +1,2 @@
-1. fix readme typo of troch install
-2. add an experimental E2E machine learning example at benchmark/torchscripts/E2E_Minsit.py
-
+1. add the energy meter subsystem
+2. include haolan's crs update

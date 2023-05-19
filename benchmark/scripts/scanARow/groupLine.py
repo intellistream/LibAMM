@@ -135,7 +135,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, 
 
     # you may control the limits on your own.
 
-    #plt.ylim(y_min, y_max)
+    # plt.ylim(y_min, y_max)
 
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LogLocator(base=10))
@@ -150,7 +150,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, 
     size = fig.get_size_inches()
     dpi = fig.get_dpi()
 
-    #plt.show()
+    # plt.show()
     plt.savefig(filename + ".pdf", bbox_inches='tight')
 
 
@@ -208,6 +208,7 @@ def DrawFigureXYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min,
     # plt.show()
     plt.savefig(filename + ".pdf", bbox_inches='tight')
 
+
 # draw a line chart
 def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
@@ -261,6 +262,7 @@ def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, 
 
     # plt.show()
     plt.savefig(filename + ".pdf", bbox_inches='tight')
+
 
 # example for reading csv file
 def ReadFile():
