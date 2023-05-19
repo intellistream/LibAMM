@@ -46,3 +46,4 @@ jobs:
         run: |
           ./cpp_test "--success"
           ./sketch_test "--success"
+          ./crs_test "--success"

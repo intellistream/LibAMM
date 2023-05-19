@@ -20,6 +20,7 @@ macro(add_catch_test appName SOURCE_FILES SOURCE_LIBS)
 endmacro()
 add_catch_test(cpp_test SystemTest/SimpleTest.cpp IntelliStream)
 add_catch_test(sketch_test SystemTest/SketchTest.cpp IntelliStream)
+add_catch_test(crs_test SystemTest/CRSTest.cpp IntelliStream)
 
 
 
