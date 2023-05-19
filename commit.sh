@@ -1,4 +1,4 @@
-BRANCH=SYSTEST
+BRANCH=METER_CRS
 git init
 git checkout -b $BRANCH
 git add .
