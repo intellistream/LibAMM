@@ -47,3 +47,4 @@ jobs:
           ./cpp_test "--success"
           ./sketch_test "--success"
           ./crs_test "--success"
+          ./weighted_cr_test "--success"
