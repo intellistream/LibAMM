@@ -87,8 +87,10 @@ pip3 install torch==1.13.0 torchvision torchaudio
 (w/o CUDA)
 
 ```shell
-pip3 install torch==1.13.0 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+pip3 install --ignore-installed torch==1.13.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 ```
+
+*Note: Conflict between torch1.13.0+cpu and torchaudio+cpu may occur under python version > 3.10*
 
 #### (Optional) Pytorch with Cuda backend on jetson
 
@@ -118,7 +120,17 @@ pip install torchviz
 ```shell
 export CUDACXX=/usr/local/cuda/bin/nvcc
 mkdir build && cd build
+```
+
+Build for release by default:
+```shell
 cmake -DCMAKE_PREFIX_PATH=`python3 -c 'import torch;print(torch.utils.cmake_prefix_path)'` ..
+make 
+```
+
+Or you can build with debug mode to debug cpp dynamic lib:
+```shell
+cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=`python3 -c 'import torch;print(torch.utils.cmake_prefix_path)'` ..
 make 
 ```
 
@@ -201,3 +213,4 @@ You will find the figures then.
 2. Some pytorch version can not work well with liblog4cxx and googletest, so we diabled it.
 3. Clion may fail to render and highlight the torch apis. In this case, kindly type a random line of "555"
    to validate the highlight when you need it, and comment it during a compile. :)
+4. When setting up torch for cpu under python version > 3.10, torch == 1.13.0 would conflict with torchaudio according to https://pytorch.org/audio/stable/installation.html. Use Python version <= 3.10 for smooth installation.
