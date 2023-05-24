@@ -37,7 +37,7 @@ class UtilityFunctions {
 
   //static void timerEnd(Result &result);
 
-  static size_t timeLast(size_t past, size_t unitTime);
+  static size_t timeLast(struct timeval past, struct timeval now);
 
   static size_t timeLastUs(struct timeval past);
 

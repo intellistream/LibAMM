@@ -69,7 +69,7 @@ typedef std::shared_ptr<AbstractC20Thread> AbstractC20ThreadPtr;
  * @def newAbstractC20Thread
  * @brief (Macro) To creat a new @ref newAbstractC20Thread under shared pointer.
  */
-#define  newAbstractC20Thread make_shared<INTELLI::AbstractC20Thread>
+#define  newAbstractC20Thread std::make_shared<INTELLI::AbstractC20Thread>
 typedef std::shared_ptr<std::barrier<>> BarrierPtr;
 }
 
