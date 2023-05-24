@@ -38,9 +38,8 @@ void runSingleThreadTest(std::string configName) {
     }
 
   }
-
   UtilityFunctions::bind2Core((int) coreBind);
-  torch::set_num_threads(1);
+  //torch::set_num_threads(1);
   std::string ptFile = cfg->tryString("ptFile", "torchscripts/FDAMM.pt", true);
 
   //uint64_t customResultName = cfg->tryU64("customResultName", 0, true);
@@ -62,17 +61,39 @@ void runSingleThreadTest(std::string configName) {
 auto A = torch::rand({(long) aRow, (long) aCol});
 auto B = torch::rand({(long) aCol, (long) bCol});*/
   INTELLI_INFO("Generation done, conducting...");
-  if (eMeter != nullptr) {
-    eMeter->startMeter();
-  }
-  ThreadPerf pef((int) coreBind);
+  uint64_t threads=cfg->tryU64("threads", 0, true);
+  ThreadPerf pef(-1);
   pef.setPerfList();
-  pef.start();
-  auto C =module.forward({A, B, (long) sketchDimension}).toTensor();
-  pef.end();
-  if (eMeter != nullptr) {
-    eMeter->stopMeter();
+  AMMBench::BlockPartitionRunner br;
+  if(threads>1)
+  {
+    INTELLI_WARNING("use multithread");
+    br.setConfig(cfg);
+    br.createABC(A,B);
+    if (eMeter != nullptr) {
+      eMeter->startMeter();
+    }
+    pef.start();
+    auto c= br.parallelForward();
+    pef.end();
+    if (eMeter != nullptr) {
+      eMeter->stopMeter();
+    }
   }
+  else{
+    INTELLI_WARNING("single thread");
+    if (eMeter != nullptr) {
+      eMeter->startMeter();
+    }
+    pef.start();
+    auto C =module.forward({A, B, (long) sketchDimension}).toTensor();
+    pef.end();
+    if (eMeter != nullptr) {
+      eMeter->stopMeter();
+    }
+
+  }
+
   std::string ruName = "default";
 
   auto resultCsv = pef.resultToConfigMap();
@@ -83,6 +104,10 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     double pureEnergy = energyConsumption - staticEnergyConsumption;
     resultCsv->edit("energyAll", (double) energyConsumption);
     resultCsv->edit("energyOnlyMe", (double) pureEnergy);
+  }
+  if(threads>1)
+  { INTELLI_WARNING("consider multithread elapsed time");
+    resultCsv->edit("perfElapsedTime", (uint64_t)br.getElapsedTime());
   }
   resultCsv->toFile(ruName + ".csv");
   INTELLI_INFO("Done. here is result");

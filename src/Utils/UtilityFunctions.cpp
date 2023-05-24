@@ -66,9 +66,13 @@ vector<size_t> INTELLI::UtilityFunctions::weightedPartitionSizeFinal(size_t inS,
   return partitionSizeFinals;
 }
 
-size_t INTELLI::UtilityFunctions::timeLast(size_t past, size_t unitTime) {
-  size_t te = clock();
-  return (te - past) * unitTime / CLOCKS_PER_SEC;
+size_t INTELLI::UtilityFunctions::timeLast(struct timeval ts,struct timeval te) {
+  int64_t s0, e0, s1, e1;
+  s0 = ts.tv_sec;
+  s1 = ts.tv_usec;
+  e0 = te.tv_sec;
+  e1 = te.tv_usec;
+  return 1000000 * (e0 - s0) + (e1 - s1);
 }
 
 size_t INTELLI::UtilityFunctions::timeLastUs(struct timeval ts) {
