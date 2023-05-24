@@ -98,52 +98,65 @@ def readResultVector(singleValueVec, resultPath):
         cacheRefVec.append(float(cacheRefs))
     return np.array(elapseTimeVec), np.array(cacheMissVec), np.array(cacheRefVec)
 
-
+def compareMethod(exeSpace,commonPathBase,resultPaths,csvTemplates,periodVec,reRun=1):
+    elapsedTimeAll=[]
+    cacheMissAll=[]
+    cacheRefAll=[]
+    periodAll=[]
+    for i in range(len(csvTemplates)):
+        resultPath=commonPathBase+resultPaths[i]
+        if(reRun==1):
+            os.system("sudo rm -rf " + resultPath)
+            os.system("sudo mkdir " + resultPath)
+            runScanVector(exeSpace, periodVec, resultPath,csvTemplates[i])
+        elapsedTime,cacheMiss,cacheRef = readResultVector(periodVec, resultPath)
+        elapsedTimeAll.append(elapsedTime)
+        cacheMissAll.append(cacheMiss)
+        cacheRefAll.append(cacheRef)
+        periodAll.append(periodVec)
+        cacheMissRateAll=np.array(cacheMissAll)/np.array(cacheRefAll)*100.0
+        #periodAll.append(periodVec)
+    return np.array(elapsedTimeAll),cacheMissRateAll,periodAll
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
-    resultPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag
-    resultPathFDAMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/FDAMM"
-    resultPathCoFD = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/CoFD"
-    resultPathBetaCoFD = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/BCoFD"
-    resultPathRAWMM = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/RAWMM"
+    commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag+"/"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
-    configTemplate = exeSpace + "config.csv"
+    methodTags=["FD-AMM","Co-AMM","BCo-AMM","Couter-sketch","MM"]
+    resultPaths=["fd","co","co","cs","mm"]
+    csvTemplates=["config_FDAMM.csv","config_CoAMM.csv","config_BCoAMM.csv","config_CounterSketch.csv","config_RAWMM.csv"]
     valueVec = [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
     valueVecDisp = np.array(valueVec)
-    print(configTemplate)
     # run
+    reRun=0
     if (len(sys.argv) < 2):
         os.system("mkdir ../../results")
         os.system("mkdir ../../figures")
         os.system("mkdir " + figPath)
-        os.system("sudo rm -rf " + resultPath)
-        os.system("sudo mkdir " + resultPath)
-        #
-        cleanPath(resultPathFDAMM)
-        cleanPath(resultPathCoFD)
-        cleanPath(resultPathBetaCoFD)
-        cleanPath(resultPathRAWMM)
-        #
-        runScanVector(exeSpace, valueVec, resultPathFDAMM, "config_FDAMM.csv")
-        runScanVector(exeSpace, valueVec, resultPathCoFD, "config_CoAMM.csv")
-        runScanVector(exeSpace, valueVec, resultPathBetaCoFD, "config_BCoAMM.csv")
-        runScanVector(exeSpace, valueVec, resultPathRAWMM, "config_RAWMM.csv")
-    evaTypes = ['FDAMM', 'MM', 'Co-FD', 'BCO-FD']
-    elapseTimeVecFD, cacheMissVecFD, cacheRefVecFD = readResultVector(valueVec, resultPathFDAMM)
-    elapseTimeVecCoFD, cacheMissVecCoFD, cacheRefVecCoFD = readResultVector(valueVec, resultPathCoFD)
-    elapseTimeVeCB, cacheMissVecB, cacheRefVecB = readResultVector(valueVec, resultPathBetaCoFD)
-    elapseTimeVecRAW, cacheMissVecRAW, cacheRefVecRAW = readResultVector(valueVec, resultPathRAWMM)
-    # os.system("mkdir " + figPath)
-    groupLine.DrawFigure([valueVec, valueVec, valueVec, valueVec],
-                         [elapseTimeVecFD, elapseTimeVecRAW, elapseTimeVecCoFD, elapseTimeVeCB],
-                         evaTypes,
-                         "#elements in A's row", "elapsed time (ms)", 0, 1, figPath + scanTag + "_elapsedTime",
+        os.system("sudo rm -rf " + commonBase)
+        os.system("sudo mkdir " + commonBase)
+        reRun=1
+    #skech
+    elapsedTimeAll,cacheMissAll,periodAll=compareMethod(exeSpace,commonBase,resultPaths,csvTemplates,valueVec,reRun)
+    groupLine.DrawFigure(periodAll,elapsedTimeAll,
+                         methodTags,
+                         "#elements in A's row", "elapsed time (ms)", 0, 1, figPath +"/"+ scanTag + "sketch_elapsedTime",
                          True)
-    groupLine.DrawFigureYnormal([valueVec, valueVec, valueVec, valueVec],
-                                [cacheMissVecFD / cacheRefVecFD * 100.0, cacheMissVecRAW / cacheRefVecRAW * 100.0,
-                                 cacheMissVecCoFD / cacheRefVecCoFD * 100.0, cacheMissVecB / cacheRefVecB * 100.0],
-                                evaTypes,
-                                "#elements in A's row", "cacheMiss (%)", 0, 1, figPath + scanTag + "_cacheMiss",
+    groupLine.DrawFigureYnormal(periodAll,cacheMissAll,
+                                methodTags,
+                                "#elements in A's row", "cacheMiss (%)", 0, 1, figPath + "/"+scanTag + "sketch_cacheMiss",
+                                True)
+    #sampling
+    resultPaths=["crs","bcrs","ews","mm"]
+    csvTemplates=["config_CRS.csv","config_BerCRS.csv","config_EWS.csv","config_RAWMM.csv"]
+    methodTags=["CRS","Ber-CRS","EWS","MM"]
+    elapsedTimeAll,cacheMissAll,periodAll=compareMethod(exeSpace,commonBase,resultPaths,csvTemplates,valueVec,reRun)
+    groupLine.DrawFigure(periodAll,elapsedTimeAll,
+                         methodTags,
+                         "#elements in A's row", "elapsed time (ms)", 0, 1, figPath +"/"+ scanTag + "sampling_elapsedTime",
+                         True)
+    groupLine.DrawFigureYnormal(periodAll,cacheMissAll,
+                                methodTags,
+                                "#elements in A's row", "cacheMiss (%)", 0, 1, figPath + "/"+scanTag + "sampling_cacheMiss",
                                 True)
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")

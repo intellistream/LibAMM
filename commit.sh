@@ -1,4 +1,4 @@
-BRANCH=METER_CRS
+BRANCH=REFINE_SCAN
 git init
 git checkout -b $BRANCH
 git add .
