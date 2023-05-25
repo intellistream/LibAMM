@@ -48,3 +48,4 @@ jobs:
           ./sketch_test "--success"
           ./crs_test "--success"
           ./weighted_cr_test "--success"
+          ./block_partition_test "--success"
