@@ -68,6 +68,17 @@
 /**
  * @}
  */
+/**
+* @subsection code_stru_parallelization Parallelization
+* This folder contains the parallelizationapproaches
+* @defgroup  AMMBENCH_PARALLELIZATION The parallelization classes
+* @{
+* We define the parallelization classes of AMM. here
+**/
+#include <Parallelization/BlockPartitionRunner.h>
+/**
+ * @}
+ */
 /***
  *  @subsection code_stru_utils Utils
 * This folder contains the public utils shared by INTELISTREAM team and some third party dependencies.

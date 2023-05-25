@@ -1,4 +1,4 @@
-BRANCH=REFINE_SCAN
+BRANCH=NIGHTY_TEST
 git init
 git checkout -b $BRANCH
 git add .
