@@ -48,7 +48,7 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
-scanTag = "aRow"
+scanTag = "threads"
 
 
 def singleRun(exePath, singleValue, resultPath, configTemplate):
@@ -122,52 +122,47 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
-    commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
+    resultPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
-    methodTags = ["FD-AMM", "Co-AMM", "BCo-AMM", "Couter-sketch", "MM"]
-    resultPaths = ["fd", "co", "co", "cs", "mm"]
-    csvTemplates = ["config_FDAMM.csv", "config_CoAMM.csv", "config_BCoAMM.csv", "config_CounterSketch.csv",
-                    "config_RAWMM.csv"]
-    valueVec = [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
-    valueVecDisp = np.array(valueVec)
-    # run
+    configTemplate = exeSpace + "config.csv"
+    commonBase = resultPath + "/"
+    resultPaths = ["MM"]
+    csvTemplates = ["config_RAWMM.csv"]
+    evaTypes = ['mm']
+    valueVec = [2, 4, 6, 8, 10, 12, 14, 16]
+    valueVecRun = valueVec
+    print(configTemplate)
     reRun = 0
+    # run
     if (len(sys.argv) < 2):
         os.system("mkdir ../../results")
         os.system("mkdir ../../figures")
         os.system("mkdir " + figPath)
-        os.system("sudo rm -rf " + commonBase)
-        os.system("sudo mkdir " + commonBase)
+        os.system("sudo rm -rf " + resultPath)
+        os.system("sudo mkdir " + resultPath)
+        #
         reRun = 1
-    # skech
-    elapsedTimeAll, cacheMissAll, periodAll = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
-                                                            reRun)
-    groupLine.DrawFigure(periodAll, elapsedTimeAll,
-                         methodTags,
-                         "#elements in A's row", "elapsed time (ms)", 0, 1,
-                         figPath + "/" + scanTag + "sketch_elapsedTime",
-                         True)
-    groupLine.DrawFigureYnormal(periodAll, cacheMissAll,
-                                methodTags,
-                                "#elements in A's row", "cacheMiss (%)", 0, 1,
-                                figPath + "/" + scanTag + "sketch_cacheMiss",
-                                True)
-    # sampling
-    resultPaths = ["crs", "bcrs", "ews", "mm"]
-    csvTemplates = ["config_CRS.csv", "config_BerCRS.csv", "config_EWS.csv", "config_RAWMM.csv"]
-    methodTags = ["CRS", "Ber-CRS", "EWS", "MM"]
-    elapsedTimeAll, cacheMissAll, periodAll = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
-                                                            reRun)
-    groupLine.DrawFigure(periodAll, elapsedTimeAll,
-                         methodTags,
-                         "#elements in A's row", "elapsed time (ms)", 0, 1,
-                         figPath + "/" + scanTag + "sampling_elapsedTime",
-                         True)
-    groupLine.DrawFigureYnormal(periodAll, cacheMissAll,
-                                methodTags,
-                                "#elements in A's row", "cacheMiss (%)", 0, 1,
-                                figPath + "/" + scanTag + "sampling_cacheMiss",
-                                True)
+        tRows = len(resultPaths)
+        tCols = len(valueVec)
+        elapseTimeAllSum = np.zeros((tRows, tCols))
+    rounds = 1
+    for i in range(rounds):
+        elapseTimeAll, ch, periodAll = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec, reRun)
+        elapseTimeAllSum = elapseTimeAllSum + elapseTimeAll
+        elapseTimeAllSum = elapseTimeAllSum / float(rounds)
+    # evaTypes = ['FDAMM', 'MM', 'Co-FD', 'BCO-FD']
+
+    # elapseTimeVecFD, cacheMissVecFD, cacheRefVecFD = readResultVector(valueVecRun, resultPathFDAMM)
+    # elapseTimeVecCoFD, cacheMissVecCoFD, cacheRefVecCoFD = readResultVector(valueVecRun, resultPathCoFD)
+    # elapseTimeVeCB, cacheMissVecB, cacheRefVecB = readResultVector(valueVecRun, resultPathBetaCoFD)
+
+    # os.system("mkdir " + figPath)
+    groupLine.DrawFigureXYnormal(periodAll,
+                                 elapseTimeAllSum,
+                                 evaTypes,
+                                 "#threads", "elapsed time (ms)", 0, 1, figPath + "threads" + "_elapsedTime",
+                                 True)
+
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,compVec,"95% Latency (ms)","Completeness","ms","",figPath+"wm_omp")

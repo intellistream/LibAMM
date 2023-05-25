@@ -1,1 +1,2 @@
-1. TRY PARALLELIZATION (NOT COMPLETE)
+1. experimental support of parallelization
+2. example scripts at benchmark/scripts/scanThreads
