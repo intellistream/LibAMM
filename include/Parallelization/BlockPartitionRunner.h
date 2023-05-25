@@ -20,52 +20,57 @@ typedef std::shared_ptr<torch::Tensor> TensorPtr;
  * @{
  * @defgroup PARTITION_RUNNER The partition-based parallelization
  */
- /**
-  * @class BlockPartitionWorker Parallelization/BlockPartitionRunner.h
-  * @ingroup PARTITION_RUNNER
-  * @brief The basic partition worker
-  */
- class BlockPartitionWorker:public  INTELLI::AbstractC20Thread{
+/**
+ * @class BlockPartitionWorker Parallelization/BlockPartitionRunner.h
+ * @ingroup PARTITION_RUNNER
+ * @brief The basic partition worker
+ */
+class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
  protected:
-   virtual void inlineMain();
-   struct timeval tstart, tend;
+  virtual void inlineMain();
+  struct timeval tstart, tend;
   /**
    * @brief Input matrix A
    */
-  TensorPtr matA= nullptr;  // Input matrix A
+  TensorPtr matA = nullptr;  // Input matrix A
   /**
     * @brief Input matrix B
     */
-  TensorPtr matB=nullptr;  // Input matrix B
+  TensorPtr matB = nullptr;  // Input matrix B
   /**
   * @brief OUTput matrix C
   */
-  TensorPtr matC=nullptr;  // Output matrix C
+  TensorPtr matC = nullptr;  // Output matrix C
 
   INTELLI::ConfigMapPtr cfg;
   torch::jit::script::Module module;
-  uint64_t sketchDimension=0;
+  uint64_t sketchDimension = 0;
   int coreBind;
  public:
-   torch::Tensor irC,subA;
-   uint64_t startRow=0;  // Start row index for the assigned range
-   uint64_t endRow=0;  // End row index (exclusive) for the assigned range
+  torch::Tensor irC, subA;
+  uint64_t startRow = 0;  // Start row index for the assigned range
+  uint64_t endRow = 0;  // End row index (exclusive) for the assigned range
 
-  BlockPartitionWorker(){
+  BlockPartitionWorker() {
 
   }
-   /**
-   * @brief set the config map
-   * @param _cfg
-   */
+  /**
+  * @brief set the config map
+  * @param _cfg
+  */
   void setConfig(INTELLI::ConfigMapPtr _cfg);
   /**
-   * @brief set the pointer to A,B matrix
+   * @brief set the pointer to A,B,C matrix
    */
-  void setAB(TensorPtr A,TensorPtr B);
-  void setWorkParameters(uint64_t aStart,uint64_t aEnd,int mycore);
-  ~BlockPartitionWorker()
-  {
+  void setABC(TensorPtr A, TensorPtr B, TensorPtr C);
+  /**
+   * @brief set work parmeters
+   * @param aStart The start row in A
+   * @param aEnd The end row in A
+   * @param mycore the core to be binded
+   */
+  void setWorkParameters(uint64_t aStart, uint64_t aEnd, int mycore);
+  ~BlockPartitionWorker() {
 
   }
   uint64_t getElapsedTime();
@@ -81,57 +86,69 @@ typedef std::shared_ptr<AMMBench::BlockPartitionWorker> BlockPartitionWorkerPtr;
 /**
  * @class BlockPartitionRunner Parallelization/BlockPartitionRunner.h
  * @ingroup PARTITION_RUNNER
- * @brief The top entity to control all workers, see also @ref BlockPartitionWorker
+ * @brief The top entity to control all workers, see also @ref BlockPartitionWorker. This one works under a
+ * simple row partition parallelization
  * @note parameters
  * - threads, U64, the number of worker threads, default 2
- *
+ * @note default behaviors
+ * - create
+ * - call @ref setConfig
+ * - call @ref runAMM and return result
+ * - call @ref getElapsedTime
  */
 class BlockPartitionRunner {
 
  protected:
   INTELLI::ConfigMapPtr cfg;
-  uint64_t threads=0;
+  uint64_t threads = 0;
   /**
    * @brief Input matrix A
    */
-  TensorPtr matA=nullptr;  // Input matrix A
+  TensorPtr matA = nullptr;  // Input matrix A
   /**
     * @brief Input matrix B
     */
-  TensorPtr matB=nullptr;  // Input matrix B
+  TensorPtr matB = nullptr;  // Input matrix B
   /**
   * @brief OUTput matrix C
   */
-  TensorPtr matC=nullptr;  // Output matrix C
+  TensorPtr matC = nullptr;  // Output matrix C
   std::vector<BlockPartitionWorkerPtr> workers;
- public:BlockPartitionRunner(){}
- ~BlockPartitionRunner(){}
- /**
-  * @brief set the config map
-  * @param _cfg
-  */
- void setConfig(INTELLI::ConfigMapPtr _cfg);
- /**
-  * @brief create the A,B,C matrix and pass it to all workers
-  *  @param A The A matrix
-   * @param B The B matrix
-   * @warnning call after @ref setConfig
-  */
- void createABC(torch::Tensor A,torch::Tensor B);
+ public:
+  BlockPartitionRunner() {}
+  ~BlockPartitionRunner() {}
   /**
-   * @brief conducte the multithread AMM and return
-   * @param A The A matrix
-   * @param B The B matrix
-   * @return The AMM(A,B)
-   * @warnning call after @ref setConfig
+   * @brief set the config map
+   * @param _cfg
    */
-   /**
-    * @brief run a parallel forward of A,B, and return C
-    * @return C=matA*matB
-    *  @warnning call after @ref createABC
-    */
-   torch::Tensor parallelForward();
-  torch::Tensor runAMM(torch::Tensor A,torch::Tensor B);
+  void setConfig(INTELLI::ConfigMapPtr _cfg);
+  /**
+   * @brief create the A,B,C matrix and pass it to all workers
+   *  @param A The A matrix
+    * @param B The B matrix
+    * @warnning call after @ref setConfig
+   */
+  void createABC(torch::Tensor A, torch::Tensor B);
+
+  /**
+* @brief run a parallel forward of A,B, and return C
+* @return C=matA*matB
+*  @warnning call after @ref createABC
+*/
+  torch::Tensor parallelForward();
+  /**
+  * @brief conducte the multithread AMM and return
+  * @param A The A matrix
+  * @param B The B matrix
+  * @return The AMM(A,B)
+  * @warnning call after @ref setConfig
+  */
+  torch::Tensor runAMM(torch::Tensor A, torch::Tensor B);
+  /**
+   * @brief get the elapsed time of multithread running
+   * @return the elapsed time
+   * @note Exclude the overhead of cleaning thread states such as loaded module
+   */
   uint64_t getElapsedTime();
 };
 

@@ -54,19 +54,19 @@ TEST_CASE("Test the parallelization, thread=2", "[short]")
 {
   int a = 0;
   ConfigMapPtr cfg = newConfigMap();
-  cfg->edit("ptFile","torchscripts/RAWMM.pt");
-  cfg->edit("threads",(uint64_t)2);
+  cfg->edit("ptFile", "torchscripts/RAWMM.pt");
+  cfg->edit("threads", (uint64_t) 2);
   torch::manual_seed(114514);
   auto A = torch::rand({(long) 4, (long) 4});
   auto B = torch::rand({(long) 4, (long) 4});
   AMMBench::BlockPartitionRunner br;
   br.setConfig(cfg);
-  auto C1=br.runAMM(A,B);
-  auto C2=torch::matmul(A,B);
-  std::cout<<"parallel MM"<<endl;
-  std::cout<<C1<<std::endl;
-  std::cout<<"raw MM"<<endl;
-  std::cout<<C2<<std::endl;
+  auto C1 = br.runAMM(A, B);
+  auto C2 = torch::matmul(A, B);
+  std::cout << "parallel MM" << endl;
+  std::cout << C1 << std::endl;
+  std::cout << "raw MM" << endl;
+  std::cout << C2 << std::endl;
   //runSingleThreadTest("scripts/config_CRS.csv");
   // place your test here
   REQUIRE(a == 0);

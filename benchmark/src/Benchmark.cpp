@@ -61,26 +61,24 @@ void runSingleThreadTest(std::string configName) {
 auto A = torch::rand({(long) aRow, (long) aCol});
 auto B = torch::rand({(long) aCol, (long) bCol});*/
   INTELLI_INFO("Generation done, conducting...");
-  uint64_t threads=cfg->tryU64("threads", 0, true);
+  uint64_t threads = cfg->tryU64("threads", 0, true);
   ThreadPerf pef(-1);
   pef.setPerfList();
   AMMBench::BlockPartitionRunner br;
-  if(threads>1)
-  {
+  if (threads > 1) {
     INTELLI_WARNING("use multithread");
     br.setConfig(cfg);
-    br.createABC(A,B);
+    br.createABC(A, B);
     if (eMeter != nullptr) {
       eMeter->startMeter();
     }
     pef.start();
-    auto c= br.parallelForward();
+    auto c = br.parallelForward();
     pef.end();
     if (eMeter != nullptr) {
       eMeter->stopMeter();
     }
-  }
-  else{
+  } else {
     INTELLI_WARNING("single thread");
     if (eMeter != nullptr) {
       eMeter->startMeter();
@@ -105,9 +103,9 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     resultCsv->edit("energyAll", (double) energyConsumption);
     resultCsv->edit("energyOnlyMe", (double) pureEnergy);
   }
-  if(threads>1)
-  { INTELLI_WARNING("consider multithread elapsed time");
-    resultCsv->edit("perfElapsedTime", (uint64_t)br.getElapsedTime());
+  if (threads > 1) {
+    INTELLI_WARNING("consider multithread elapsed time");
+    resultCsv->edit("perfElapsedTime", (uint64_t) br.getElapsedTime());
   }
   resultCsv->toFile(ruName + ".csv");
   INTELLI_INFO("Done. here is result");
