@@ -123,7 +123,7 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
         cacheMissAll.append(cacheMiss)
         cacheRefAll.append(cacheRef)
         periodAll.append(periodVec)
-        cacheMissRateAll = np.array(cacheMissAll)/np.array(cacheRefAll)*100.0
+        cacheMissRateAll = np.array(cacheMissAll) / np.array(cacheRefAll) * 100.0
         froAll.append(fro)
         errorBoundRatioAll.append(eb)
         # periodAll.append(periodVec)
@@ -136,10 +136,10 @@ def main():
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
     configTemplate = exeSpace + "config.csv"
     commonBase = resultPath + "/"
-    resultPaths = ["CRS","MM"]
-    csvTemplates = ["config_CPPCRS.csv","config_CPPMM.csv"]
-    evaTypes = ['crs-cpp','mm-cpp']
-    valueVec = [1,2, 4, 6, 8, 10, 12]
+    resultPaths = ["CRS","CRSRAW","MM","MMRAW"]
+    csvTemplates = ["config_CPPCRS.csv","config_CRS.csv","config_RAWMM.csv","config_CPPMM.csv"]
+    evaTypes = ['crs-cpp','crs-pt','mm-pt','mm-cpp']
+    valueVec = [2, 4, 6, 8, 10, 12]
     valueVecRun = valueVec
     print(configTemplate)
     reRun = 0
@@ -157,18 +157,15 @@ def main():
         elapseTimeAllSum = np.zeros((tRows, tCols))
         froErroAllSum =  np.zeros((tRows, tCols))
         errorBoundRatioSum= np.zeros((tRows, tCols))
-        cacheMissAll=np.zeros((tRows, tCols))
-    rounds = 10
+    rounds = 1
     for i in range(rounds):
         elapseTimeAll, ch, periodAll,fro,eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec, reRun)
         elapseTimeAllSum = elapseTimeAllSum + elapseTimeAll
         froErroAllSum = froErroAllSum + fro
         errorBoundRatioSum = errorBoundRatioSum+eb
-        cacheMissAll=cacheMissAll+ch
     elapseTimeAllSum = elapseTimeAllSum / float(rounds)
     froErroAllSum = froErroAllSum  / float(rounds)
     errorBoundRatioSum = errorBoundRatioSum/float(rounds)
-    cacheMissAll=cacheMissAll/float(rounds)
     # evaTypes = ['FDAMM', 'MM', 'Co-FD', 'BCO-FD']
 
     # elapseTimeVecFD, cacheMissVecFD, cacheRefVecFD = readResultVector(valueVecRun, resultPathFDAMM)
@@ -190,11 +187,6 @@ def main():
                                 errorBoundRatioSum*100.0,
                                  evaTypes,
                                  "#threads", "error bound ratio %", 0, 1, figPath + "/"+"threads" + "_ebRatio",
-                                 True)
-    groupLine.DrawFigureXYnormal(periodAll,
-                                cacheMissAll,
-                                 evaTypes,
-                                 "#threads", "cache miss %", 0, 1, figPath + "/"+"threads" + "_cachemiss",
                                  True)
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
