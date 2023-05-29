@@ -99,6 +99,7 @@
 #include <CPPAlgos/AbstractCPPAlgo.h>
 #include <CPPAlgos/CPPAlgoTable.h>
 #include <CPPAlgos/CRSCPPAlgo.h>
+#include <CPPAlgos/CRSV2CPPAlgo.h>
 /**
  * @}
  *
