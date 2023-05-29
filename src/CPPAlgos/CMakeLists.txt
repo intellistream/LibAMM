@@ -3,4 +3,5 @@ add_sources(
         CRSCPPAlgo.cpp
         CPPAlgoTable.cpp
         CRSV2CPPAlgo.cpp
+        CountSketchCPPAlgo.cpp
 )
