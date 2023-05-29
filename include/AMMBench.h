@@ -101,6 +101,7 @@
 #include <CPPAlgos/CRSCPPAlgo.h>
 #include <CPPAlgos/CRSV2CPPAlgo.h>
 #include <CPPAlgos/BCRSCPPAlgo.h>
+#include <CPPAlgos/EWSCPPAlgo.h>
 /**
  * @}
  *
