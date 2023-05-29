@@ -50,7 +50,18 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
 TEST_CASE("Test the counter sketch", "[short]")
 {
   int a = 0;
-  runSingleThreadTest("scripts/config_counterSketch.csv");
+  runSingleThreadTest("scripts/config_countSketch.csv");
   // place your test here
   REQUIRE(a == 0);
+}
+TEST_CASE("Test Count Sketch in cpp", "[short]")
+{
+  torch::manual_seed(114514);
+  AMMBench::CountSketchCPPAlgo cs;
+  auto A = torch::rand({400, 400});
+  auto B = torch::rand({400, 400});
+  auto realC = torch::matmul(A, B);
+  auto ammC = cs.amm(A, B, 20);
+  double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+  REQUIRE(froError < 0.5);
 }
