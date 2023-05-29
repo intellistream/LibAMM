@@ -4,4 +4,5 @@ add_sources(
         CPPAlgoTable.cpp
         CRSV2CPPAlgo.cpp
         BCRSCPPAlgo.cpp
+        EWSCPPAlgo.cpp
 )
