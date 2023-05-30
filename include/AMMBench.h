@@ -103,6 +103,7 @@
 #include <CPPAlgos/BCRSCPPAlgo.h>
 #include <CPPAlgos/EWSCPPAlgo.h>
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
+#include <CPPAlgos/BetaCoOFDCPPAlgo.h>
 /**
  * @}
  *

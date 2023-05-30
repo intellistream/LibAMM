@@ -8,6 +8,7 @@
 #include <CPPAlgos/BCRSCPPAlgo.h>
 #include <CPPAlgos/EWSCPPAlgo.h>
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
+#include <CPPAlgos/BetaCoOFDCPPAlgo.h>
 namespace AMMBench {
 AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["mm"] = newAbstractCPPAlgo();
@@ -16,6 +17,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["bcrs"] = newBCRSCPPAlgo();
   algoMap["ews"] = newEWSCPPAlgo();
   algoMap["CoOFD"] = newCoOccurringFDCPPAlgo();
+  algoMap["bcoofd"] = newBetaCoOFDCPPAlgo();
 }
 
 } // AMMBench

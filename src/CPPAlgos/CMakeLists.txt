@@ -6,4 +6,5 @@ add_sources(
         BCRSCPPAlgo.cpp
         EWSCPPAlgo.cpp
         CoOccurringFDCPPAlgo.cpp
+        BetaCoOFDCPPAlgo.cpp
 )
