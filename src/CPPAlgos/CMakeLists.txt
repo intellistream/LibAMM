@@ -5,4 +5,5 @@ add_sources(
         CRSV2CPPAlgo.cpp
         BCRSCPPAlgo.cpp
         EWSCPPAlgo.cpp
+        CoOccurringFDCPPAlgo.cpp
 )
