@@ -1,10 +1,9 @@
 //
-// Created by haolan on 5/26/23.
+// Created by haolan on 5/29/23.
 //
 
-#ifndef INTELLISTREAM_CRSV2CPPALGO_H
-#define INTELLISTREAM_CRSV2CPPALGO_H
-
+#ifndef INTELLISTREAM_EWSCPPALGO_H
+#define INTELLISTREAM_EWSCPPALGO_H
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
 namespace AMMBench {
@@ -13,17 +12,17 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class CRSCPPlgo CPPAlgos/CRSV2CPPAlgo.h
- * @brief The column row sampling (CRS) class of c++ algos, a second implementation
+ * @class CPPAlgos/EWSCPPAlgo.h
+ * @brief The Element Wise Sampling (EWS) class of c++ algos
  *
  */
-    class CRSV2CPPAlgo : public AMMBench::AbstractCPPAlgo {
+    class EWSCPPAlgo : public AMMBench::AbstractCPPAlgo {
     public:
-        CRSV2CPPAlgo() {
+        EWSCPPAlgo() {
 
         }
 
-        ~CRSV2CPPAlgo() {
+        ~EWSCPPAlgo() {
 
         }
 
@@ -41,18 +40,18 @@ namespace AMMBench {
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
- * @brief The class to describe a shared pointer to @ref CRSV2CppAlgo
+ * @brief The class to describe a shared pointer to @ref EWSCppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::CRSV2CPPAlgo> CRSV2CPPAlgoPtr;
+    typedef std::shared_ptr<class AMMBench::EWSCPPAlgo> EWSCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
- * @def newCRSV2CppAlgo
- * @brief (Macro) To creat a new @ref  CRSV2CppAlgounder shared pointer.
+ * @def newEWSCppAlgo
+ * @brief (Macro) To creat a new @ref  EWSCppAlgounder shared pointer.
  */
-#define newCRSV2CPPAlgo std::make_shared<AMMBench::CRSV2CPPAlgo>
+#define newEWSCPPAlgo std::make_shared<AMMBench::EWSCPPAlgo>
 }
 /**
  * @}
  */
-#endif //INTELLISTREAM_CRSV2CPPALGO_H
+#endif //INTELLISTREAM_EWSCPPALGO_H

@@ -3,4 +3,8 @@ add_sources(
         CRSCPPAlgo.cpp
         CPPAlgoTable.cpp
         CRSV2CPPAlgo.cpp
+        BCRSCPPAlgo.cpp
+        EWSCPPAlgo.cpp
+        CoOccurringFDCPPAlgo.cpp
+        BetaCoOFDCPPAlgo.cpp
 )
