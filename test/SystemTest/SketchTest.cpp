@@ -66,7 +66,6 @@ TEST_CASE("Test Count Sketch in cpp", "[short]")
   double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
   REQUIRE(froError < 0.5);
 }
-=======
 TEST_CASE("Test Co-Occurring FD in cpp", "[short]")
 {
     torch::manual_seed(114514);
