@@ -54,3 +54,14 @@ TEST_CASE("Test the COLUMN ROW SAMPLINGS", "[short]")
   // place your test here
   REQUIRE(a == 0);
 }
+TEST_CASE("Test EWS in cpp", "[short]")
+{
+    torch::manual_seed(114514);
+    AMMBench::EWSCPPAlgo ews;
+    auto A = torch::rand({400, 400});
+    auto B = torch::rand({400, 400});
+    auto realC = torch::matmul(A, B);
+    auto ammC = ews.amm(A, B, 20);
+    double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+    REQUIRE(froError < 0.5);
+}
