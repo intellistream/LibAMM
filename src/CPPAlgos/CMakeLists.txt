@@ -7,4 +7,6 @@ add_sources(
         EWSCPPAlgo.cpp
         CoOccurringFDCPPAlgo.cpp
         BetaCoOFDCPPAlgo.cpp
+        CountSketchCPPAlgo.cpp
 )
+
