@@ -1,10 +1,9 @@
 //
-// Created by haolan on 5/26/23.
+// Created by haolan on 5/29/23.
 //
 
-#ifndef INTELLISTREAM_CRSV2CPPALGO_H
-#define INTELLISTREAM_CRSV2CPPALGO_H
-
+#ifndef INTELLISTREAM_BCRSCPPALGO_H
+#define INTELLISTREAM_BCRSCPPALGO_H
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
 namespace AMMBench {
@@ -13,17 +12,17 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class CRSCPPlgo CPPAlgos/CRSV2CPPAlgo.h
- * @brief The column row sampling (CRS) class of c++ algos, a second implementation
+ * @class CRSCPPlgo CPPAlgos/BCRSCPPAlgo.h
+ * @brief The Bernoulli column row sampling (CRS) class of c++ algos
  *
  */
-    class CRSV2CPPAlgo : public AMMBench::AbstractCPPAlgo {
+    class BCRSCPPAlgo : public AMMBench::AbstractCPPAlgo {
     public:
-        CRSV2CPPAlgo() {
+        BCRSCPPAlgo() {
 
         }
 
-        ~CRSV2CPPAlgo() {
+        ~BCRSCPPAlgo() {
 
         }
 
@@ -41,18 +40,18 @@ namespace AMMBench {
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
- * @brief The class to describe a shared pointer to @ref CRSV2CppAlgo
+ * @brief The class to describe a shared pointer to @ref BCRSCppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::CRSV2CPPAlgo> CRSV2CPPAlgoPtr;
+    typedef std::shared_ptr<class AMMBench::BCRSCPPAlgo> BCRSCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
- * @def newCRSV2CppAlgo
- * @brief (Macro) To creat a new @ref  CRSV2CppAlgounder shared pointer.
+ * @def newBCRSCppAlgo
+ * @brief (Macro) To creat a new @ref  BCRSCppAlgounder shared pointer.
  */
-#define newCRSV2CPPAlgo std::make_shared<AMMBench::CRSV2CPPAlgo>
+#define newBCRSCPPAlgo std::make_shared<AMMBench::BCRSCPPAlgo>
 }
 /**
  * @}
  */
-#endif //INTELLISTREAM_CRSV2CPPALGO_H
+#endif //INTELLISTREAM_BCRSCPPALGO_H

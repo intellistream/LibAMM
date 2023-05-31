@@ -99,8 +99,11 @@
 #include <CPPAlgos/AbstractCPPAlgo.h>
 #include <CPPAlgos/CPPAlgoTable.h>
 #include <CPPAlgos/CRSCPPAlgo.h>
-#include <CPPAlgos/CRSV2CPPAlgo.h>
 #include <CPPAlgos/CountSketchCPPAlgo.h>
+#include <CPPAlgos/BCRSCPPAlgo.h>
+#include <CPPAlgos/EWSCPPAlgo.h>
+#include <CPPAlgos/CoOccurringFDCPPAlgo.h>
+#include <CPPAlgos/BetaCoOFDCPPAlgo.h>
 /**
  * @}
  *
