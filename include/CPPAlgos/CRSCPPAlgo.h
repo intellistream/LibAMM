@@ -8,12 +8,12 @@
 #include <CPPAlgos/AbstractCPPAlgo.h>
 namespace AMMBench {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms writtrn in c++
+ * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
  * @{
  */
 /**
  * @class CRSCPPlgo CPPAlgos/CRSCPPAlgo.h
- * @brief The cloumn row sampling (CRS) class of c++ algos
+ * @brief The column row sampling (CRS) class of c++ algos
  *
  */
 class CRSCPPAlgo : public AMMBench::AbstractCPPAlgo {

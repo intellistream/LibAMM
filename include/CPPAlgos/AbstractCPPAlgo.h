@@ -13,7 +13,7 @@
 #include <vector>
 namespace AMMBench {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms writtrn in c++
+ * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
  * @{
  */
 /**
