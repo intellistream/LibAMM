@@ -1,4 +1,4 @@
-BRANCH=NIGHTLY_TEST
+BRANCH=count-sketch-cpp
 git init
 git checkout -b $BRANCH
 git add .
