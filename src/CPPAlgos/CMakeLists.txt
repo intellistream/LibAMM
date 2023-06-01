@@ -8,5 +8,6 @@ add_sources(
         CoOccurringFDCPPAlgo.cpp
         BetaCoOFDCPPAlgo.cpp
         CountSketchCPPAlgo.cpp
+        TugOfWarCPPAlgo.cpp
 )
 

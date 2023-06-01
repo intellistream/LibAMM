@@ -23,6 +23,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["ews"] = newEWSCPPAlgo();
   algoMap["CoOFD"] = newCoOccurringFDCPPAlgo();
   algoMap["bcoofd"] = newBetaCoOFDCPPAlgo();
+  algoMap["tug-of-war"] = newTugOfWarCPPAlgo();
 }
 
 } // AMMBench
