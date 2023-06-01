@@ -105,6 +105,7 @@
 #include <CPPAlgos/EWSCPPAlgo.h>
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
 #include <CPPAlgos/BetaCoOFDCPPAlgo.h>
+#include <CPPAlgos/TugOfWarCPPAlgo.h>
 /**
  * @}
  *
