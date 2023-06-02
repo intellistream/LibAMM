@@ -15,8 +15,6 @@ namespace AMMBench {
         int n = A.size(1);
         int p = B.size(1);
 
-        double delta = 0.2;
-
         int i_iters = static_cast<int>(-std::log(delta));
         int j_iters = static_cast<int>(2 * (-std::log(delta) + std::log(-std::log(delta))));
 

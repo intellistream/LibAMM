@@ -18,8 +18,14 @@ namespace AMMBench {
  *
  */
     class TugOfWarCPPAlgo : public AMMBench::AbstractCPPAlgo {
+      double delta = 0.2;
+
     public:
         TugOfWarCPPAlgo() {
+
+        }
+
+        TugOfWarCPPAlgo(double delta): delta(delta) {
 
         }
 
