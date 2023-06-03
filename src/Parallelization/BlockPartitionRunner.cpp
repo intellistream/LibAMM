@@ -71,10 +71,12 @@ void AMMBench::BlockPartitionRunner::setConfig(INTELLI::ConfigMapPtr _cfg) {
   cfg = _cfg;
   threads = cfg->tryU64("threads", 2, true);
   workers = std::vector<BlockPartitionWorkerPtr>(threads);
+  firstCoreBind=cfg->tryU64("firstCoreBind",0, false);
   for (uint64_t i = 0; i < threads; i++) {
     workers[i] = newBlockPartitionWorker();
     workers[i]->setConfig(cfg);
   }
+
   INTELLI_INFO("set up " + to_string(threads) + "workers.");
 }
 void AMMBench::BlockPartitionRunner::createABC(torch::Tensor A, torch::Tensor B) {
@@ -88,6 +90,11 @@ void AMMBench::BlockPartitionRunner::createABC(torch::Tensor A, torch::Tensor B)
     uint64_t end_row = (i == threads - 1) ? A.size(0) : start_row + rows_per_worker;
     workers[i]->setABC(matA, matB, matC);
     workers[i]->setWorkParameters(start_row, end_row, i);
+  }
+  if(firstCoreBind!=0)
+  {
+    workers[0]->setCoreBInd((int)firstCoreBind);
+    INTELLI_INFO("first thread is bound to core" + to_string(firstCoreBind) );
   }
 }
 torch::Tensor AMMBench::BlockPartitionRunner::parallelForward() {
@@ -114,4 +121,10 @@ uint64_t AMMBench::BlockPartitionRunner::getElapsedTime() {
     ti += workers[i]->getElapsedTime();
   }
   return ti / threads;
+}
+void AMMBench::BlockPartitionRunner::appendThreadInfo(INTELLI::ConfigMapPtr ru) {
+  for (uint64_t i = 0; i < threads; i++) {
+    std::string keyElapesedTime="thread"+ to_string(i)+"RunTime";
+    ru->edit(keyElapesedTime,(uint64_t) workers[i]->getElapsedTime());
+  }
 }
