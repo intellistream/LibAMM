@@ -54,3 +54,14 @@ TEST_CASE("Test the Tug of War", "[short]")
   // place your test here
   REQUIRE(a == 0);
 }
+TEST_CASE("Test Tug of War in cpp", "[short]")
+{
+  torch::manual_seed(114514);
+  AMMBench::TugOfWarCPPAlgo tw;
+  auto A = torch::rand({400, 400});
+  auto B = torch::rand({400, 400});
+  auto realC = torch::matmul(A, B);
+  auto ammC = tw.amm(A, B, 20);
+  double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+  REQUIRE(froError < 0.5);
+}
