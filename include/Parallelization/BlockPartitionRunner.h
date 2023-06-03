@@ -32,6 +32,7 @@ class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
   AMMBench::CPPAlgoTable cppAlgoTable;
   struct timeval tstart, tend;
   uint64_t useCPP = 0;
+  uint64_t osScheduling=0;
   AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
   /**
    * @brief Input matrix A
@@ -98,6 +99,8 @@ typedef std::shared_ptr<AMMBench::BlockPartitionWorker> BlockPartitionWorkerPtr;
  * simple row partition parallelization
  * @note parameters
  * - threads, U64, the number of worker threads, default 2
+ * - osScheduling, U64, whether use default os scheduling instead of my own core bind, default 0
+ * - firstCoreBind, U64, which core will the first thread be bound to, default 0
  * @note default behaviors
  * - create
  * - call @ref setConfig
