@@ -31,6 +31,9 @@
     * - useCPP (U64) force the benchmark to use static and pure cpp implementation instead of pt, default 0
     * - cppAlgoTag (String) The algorithm tag to index a cpp algorithm, works only under useCPP=1, default "mm",
     * see also @ref CPPAlgoTable
+    * - threads, U64, the number of worker threads, default 2
+    * - osScheduling, U64, whether use default os scheduling instead of my own core bind, default 0
+    * - firstCoreBind, U64, which core will the first thread be bound to, default 0, see also @ref BlockPartitionRunner
    * @note Additional tags for energy measurement (please validate usingMeter first) see also @ref INTELLI_UTIL_METER
    * - usingMeter (U64) set to 1 if you want to use some energy meter, default diabled
    * - meterTag (String) the tag of meter, see also @ref MeterTable, default is intelMsr
