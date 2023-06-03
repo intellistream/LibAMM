@@ -74,6 +74,10 @@ class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
    * @param mycore the core to be binded
    */
   void setWorkParameters(uint64_t aStart, uint64_t aEnd, int mycore);
+  void setCoreBInd(int cno)
+  {
+    coreBind=cno;
+  }
   ~BlockPartitionWorker() {
 
   }
@@ -118,6 +122,10 @@ class BlockPartitionRunner {
   */
   TensorPtr matC = nullptr;  // Output matrix C
   std::vector<BlockPartitionWorkerPtr> workers;
+  /**
+   * @brief special bind of first core, if need
+   */
+  uint64_t firstCoreBind=0;
  public:
   BlockPartitionRunner() {}
   ~BlockPartitionRunner() {}
@@ -154,6 +162,11 @@ class BlockPartitionRunner {
    * @note Exclude the overhead of cleaning thread states such as loaded module
    */
   uint64_t getElapsedTime();
+  /**
+   * @brief append the running information of each thread to the result csv
+   * @param ru The result csv to be appended
+   */
+   void appendThreadInfo(INTELLI::ConfigMapPtr ru);
 };
 
 } // AMMBench

@@ -22,6 +22,7 @@ void runSingleThreadTest(std::string configName) {
   uint64_t usingMeter = cfg->tryU64("usingMeter", 0, true);
   std::string meterTag = cfg->tryString("meterTag", "intelMsr", true);
   uint64_t useCPP = cfg->tryU64("useCPP", 0, true);
+  uint64_t  forceMP=cfg->tryU64("forceMP", 0, true);
   if (usingMeter) {
     eMeter = meterTable.findMeter(meterTag);
     if (eMeter != nullptr) {
@@ -67,7 +68,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   ThreadPerf pef(-1);
   pef.setPerfList();
   AMMBench::BlockPartitionRunner br;
-  if (threads > 1) {
+  if (threads > 1||forceMP) {
     INTELLI_WARNING("use multithread");
     br.setConfig(cfg);
     br.createABC(A, B);
@@ -113,9 +114,10 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     resultCsv->edit("energyAll", (double) energyConsumption);
     resultCsv->edit("energyOnlyMe", (double) pureEnergy);
   }
-  if (threads > 1) {
+  if (threads > 1||forceMP) {
     INTELLI_WARNING("consider multithread elapsed time");
     resultCsv->edit("perfElapsedTime", (uint64_t) br.getElapsedTime());
+    br.appendThreadInfo(resultCsv);
   }
   // error
   INTELLI_WARNING("evaluating the error, may takes some time");
