@@ -7,6 +7,7 @@
 void AMMBench::BlockPartitionWorker::setConfig(INTELLI::ConfigMapPtr _cfg) {
   cfg = _cfg;
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
+  osScheduling =cfg->tryU64("osScheduling",0,false);
   std::string ptFile = cfg->tryString("ptFile", "torchscripts/FDAMM.pt", true);
   useCPP = cfg->tryU64("useCPP", 0, true);
   if (useCPP) {
@@ -41,8 +42,10 @@ void AMMBench::BlockPartitionWorker::inlineMain() {
   /**
    * @brief 1. bind core and torch setting
    */
-  // Perform matrix multiplication for the assigned rows
-  INTELLI::UtilityFunctions::bind2Core((int) coreBind);
+  if(!osScheduling)
+  {
+    INTELLI::UtilityFunctions::bind2Core((int) coreBind);
+  }
   torch::set_num_threads(1);
   /**
    * @brief 2. multiply sub-matrix of A
@@ -117,10 +120,15 @@ torch::Tensor AMMBench::BlockPartitionRunner::runAMM(torch::Tensor A, torch::Ten
 }
 uint64_t AMMBench::BlockPartitionRunner::getElapsedTime() {
   uint64_t ti = 0;
+  uint64_t tMax=0;
   for (uint64_t i = 0; i < threads; i++) {
-    ti += workers[i]->getElapsedTime();
+    ti = workers[i]->getElapsedTime();
+    if(ti>tMax)
+    {
+      tMax=ti;
+    }
   }
-  return ti / threads;
+  return tMax;
 }
 void AMMBench::BlockPartitionRunner::appendThreadInfo(INTELLI::ConfigMapPtr ru) {
   for (uint64_t i = 0; i < threads; i++) {
