@@ -4,6 +4,11 @@
 #include <iostream>
 #include <numeric>
 
+#include <time.h>
+#include <sched.h>
+#include <pthread.h>
+#include<cstdlib>
+#include<time.h>
 using namespace std;
 
 /*
@@ -27,6 +32,13 @@ int INTELLI::UtilityFunctions::bind2Core(int id) {
   cpu_set_t mask;
   CPU_ZERO(&mask);
   CPU_SET(cpuId, &mask);
+  /**
+   * @brief fixed some core bind bugs
+   */
+  if (sched_setaffinity(0, sizeof(cpu_set_t), &mask) < 0) {
+    AT_ERROR("Error: setaffinity()\n");
+    exit(0);
+  }
   return cpuId;
 }
 
