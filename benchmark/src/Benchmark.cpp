@@ -85,7 +85,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     AMMBench::CPPAlgoTable cppAlgoTable;
     std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
     AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
-    INTELLI_WARNING("single thread");
+    INTELLI_WARNING("single thread, algo "+cppAlgoTag);
     if (eMeter != nullptr) {
       eMeter->startMeter();
     }
