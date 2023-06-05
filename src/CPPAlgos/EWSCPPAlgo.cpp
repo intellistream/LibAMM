@@ -5,11 +5,11 @@
 #include <CPPAlgos/EWSCPPAlgo.h>
 
 namespace AMMBench {
-torch::Tensor AMMBench::EWSCPPAlgo::amm(torch::Tensor A, torch::Tensor B, int k) {
+torch::Tensor AMMBench::EWSCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
     auto A_size = A.sizes();
     int64_t m = A_size[0];
     int64_t n = A_size[1];
-
+    int64_t k=(int64_t) k2;
     TORCH_CHECK(n == B.size(0));
     TORCH_CHECK(k < n);
 
