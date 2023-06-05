@@ -5,11 +5,12 @@
 #include <CPPAlgos/CountSketchCPPAlgo.h>
 
 namespace AMMBench {
-    torch::Tensor AMMBench::CountSketchCPPAlgo::amm(torch::Tensor A, torch::Tensor B, int k) {
+    torch::Tensor AMMBench::CountSketchCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2)  {
+      INTELLI_INFO("I am counter sketch");
         int64_t m1 = A.size(0);
         int64_t n = A.size(1);
         int64_t m2 = B.size(1);
-
+        int64_t k=(int64_t) k2;
         // Initialize sketch matrices
         torch::Tensor Ca = torch::zeros({m1, k});
         torch::Tensor Cb = torch::zeros({k, m2});

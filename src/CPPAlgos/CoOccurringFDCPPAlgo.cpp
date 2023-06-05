@@ -21,14 +21,14 @@ torch::Tensor medianReduceRank(const torch::Tensor& SV, float delta) {
     return torch::clamp(SV - delta, 0);
 }
 
-torch::Tensor CoOccurringFDCPPAlgo::amm(const torch::Tensor A, const torch::Tensor B, int l) {
+torch::Tensor CoOccurringFDCPPAlgo::amm(const torch::Tensor A, const torch::Tensor B, uint64_t l2) {
     torch::Tensor B_t = B.t();
 
     TORCH_CHECK(A.size(1) == B_t.size(1), "Shapes of A and B are incompatible");
-    int mx = A.size(0);
-    int my = B_t.size(0);
-    int n = A.size(1);
-
+    int64_t mx = A.size(0);
+    int64_t my = B_t.size(0);
+    int64_t n = A.size(1);
+    int64_t l= (int64_t) l2;
     // Initialize sketch matrices
     torch::Tensor BX = torch::zeros({ mx, l });
     torch::Tensor BY = torch::zeros({ my, l });
