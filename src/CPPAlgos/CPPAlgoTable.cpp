@@ -13,6 +13,7 @@
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
 #include <CPPAlgos/BetaCoOFDCPPAlgo.h>
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
+#include <CPPAlgos/WeightedCRCPPAlgo.h>
 
 namespace AMMBench {
 AMMBench::CPPAlgoTable::CPPAlgoTable() {
@@ -25,6 +26,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["CoOFD"] = newCoOccurringFDCPPAlgo();
   algoMap["bcoofd"] = newBetaCoOFDCPPAlgo();
   algoMap["tug-of-war"] = newTugOfWarCPPAlgo();
+  algoMap["weighted-cr"] = newWeightedCRCPPAlgo();
 }
 
 } // AMMBench
