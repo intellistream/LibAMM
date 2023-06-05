@@ -5,12 +5,12 @@
 #include <CPPAlgos/INT8CPPAlgo.h>
 torch::Tensor AMMBench::INT8CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   std::cout << sketchSize;
-  float scalingA,scalingB;
- // int16_t mulab;
+  float scalingA, scalingB;
+  // int16_t mulab;
 
   /*auto AINT8=(A*scalingA).to(torch::kInt8);
   auto BTINT8=(Bt*scalingB).to(torch::kInt8);*/
- // return C;
+  // return C;
   /*
   for(int64_t i=0;i<rows;i++)
   {
@@ -34,12 +34,12 @@ torch::Tensor AMMBench::INT8CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint6
       C[i][j]=ruf;
     }
   }*/
-  scalingA=torch::abs(A).max().item<float>()/127.0;
-  scalingB=torch::abs(B).max().item<float>()/127.0;
-  auto ta=(A/scalingA).to(torch::kInt8);
-  auto tb= (B/scalingB).to(torch::kInt8);
- // torch::matmul(ta, tb);
+  scalingA = torch::abs(A).max().item<float>() / 127.0;
+  scalingB = torch::abs(B).max().item<float>() / 127.0;
+  auto ta = (A / scalingA).to(torch::kInt8);
+  auto tb = (B / scalingB).to(torch::kInt8);
+  // torch::matmul(ta, tb);
   return torch::zeros({A.size(0), B.size(1)});
-  return torch::matmul(ta, tb).to(torch::kFloat)*scalingA*scalingB;
- //return C*scalingA*scalingB/127.0/127.0;
+  return torch::matmul(ta, tb).to(torch::kFloat) * scalingA * scalingB;
+  //return C*scalingA*scalingB/127.0/127.0;
 }

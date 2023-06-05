@@ -16,26 +16,26 @@ namespace AMMBench {
  * @brief The Beta Co-Occurring FD AMM class of c++ algos
  *
  */
-    class BetaCoOFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
-    public:
-        BetaCoOFDCPPAlgo() {
+class BetaCoOFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
+ public:
+  BetaCoOFDCPPAlgo() {
 
-        }
+  }
 
-        ~BetaCoOFDCPPAlgo() {
+  ~BetaCoOFDCPPAlgo() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -43,7 +43,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref BetaCoOFDCppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::BetaCoOFDCPPAlgo> BetaCoOFDCPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::BetaCoOFDCPPAlgo> BetaCoOFDCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newBetaCoOFDCppAlgo
