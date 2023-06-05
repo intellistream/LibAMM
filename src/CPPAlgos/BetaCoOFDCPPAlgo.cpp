@@ -28,21 +28,21 @@ torch::Tensor paramerizedReduceRank(const torch::Tensor& SV, float delta, int l,
     return SV_shrunk;
 }
 
-torch::Tensor BetaCoOFDCPPAlgo::amm(const torch::Tensor A, const torch::Tensor B, int l) {
+torch::Tensor BetaCoOFDCPPAlgo::amm(const torch::Tensor A, const torch::Tensor B, uint64_t l2) {
     torch::Tensor B_t = B.t();
     float beta = 1.0;
 
     TORCH_CHECK(A.size(1) == B_t.size(1), "Shapes of A and B are incompatible");
-    int mx = A.size(0);
-    int my = B_t.size(0);
-    int n = A.size(1);
-
+    int64_t mx = A.size(0);
+    int64_t my = B_t.size(0);
+    int64_t n = A.size(1);
+   int64_t l=(int64_t)l2;
     // Initialize sketch matrices
     torch::Tensor BX = torch::zeros({ mx, l });
     torch::Tensor BY = torch::zeros({ my, l });
 
     // The first l iterations
-    for (int i = 0; i < l; ++i) {
+    for (int64_t i = 0; i < l; ++i) {
         BX.slice(1, i, i + 1) = A.slice(1, i, i + 1);
         BY.slice(1, i, i + 1) = B_t.slice(1, i, i + 1);
     }
@@ -51,7 +51,7 @@ torch::Tensor BetaCoOFDCPPAlgo::amm(const torch::Tensor A, const torch::Tensor B
     zero_columns = zero_columns.slice(0, 1);
 
     // Iteration l to n: insert if available, else shrink sketch matrices
-    for (int i = l; i < n; ++i) {
+    for (int64_t i = l; i < n; ++i) {
         // Acquire the index of a zero-valued column
         if (!is_empty_tensor(zero_columns)) {
             int idx = get_first_element(zero_columns).toInt();

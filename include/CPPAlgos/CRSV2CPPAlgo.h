@@ -34,7 +34,7 @@ namespace AMMBench {
          * @param sketchSize the size of sketc or sampling
          * @return the output c matrix
          */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, int sketchSize);
+        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
     };
 
