@@ -76,6 +76,9 @@
 #include <MatrixLoader/AbstractMatrixLoader.h>
 #include <MatrixLoader/RandomMatrixLoader.h>
 #include <MatrixLoader/SparseMatrixLoader.h>
+#include <MatrixLoader/GaussianMatrixLoader.h>
+#include <MatrixLoader/ExponentialMatrixLoader.h>
+#include <MatrixLoader/BinomialMatrixLoader.h>
 #include <MatrixLoader/MatrixLoaderTable.h>
 /**
  * @}
