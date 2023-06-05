@@ -5,6 +5,7 @@
 #include <MatrixLoader/MatrixLoaderTable.h>
 #include <MatrixLoader/RandomMatrixLoader.h>
 #include <MatrixLoader/SparseMatrixLoader.h>
+#include <MatrixLoader/GaussianMatrixLoader.h>
 namespace AMMBench {
 /**
  * @note revise me if you need new loader
@@ -12,6 +13,7 @@ namespace AMMBench {
 AMMBench::MatrixLoaderTable::MatrixLoaderTable() {
   loaderMap["random"] = newRandomMatrixLoader();
   loaderMap["sparse"] = newSparseMatrixLoader();
+  loaderMap["gaussian"] = newGaussianMatrixLoader();
 }
 
 } // AMMBench
