@@ -7,7 +7,7 @@
 void AMMBench::BlockPartitionWorker::setConfig(INTELLI::ConfigMapPtr _cfg) {
   cfg = _cfg;
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
-  osScheduling =cfg->tryU64("osScheduling",0,false);
+  osScheduling = cfg->tryU64("osScheduling", 0, false);
   std::string ptFile = cfg->tryString("ptFile", "torchscripts/FDAMM.pt", true);
   useCPP = cfg->tryU64("useCPP", 0, true);
   if (useCPP) {
@@ -42,8 +42,7 @@ void AMMBench::BlockPartitionWorker::inlineMain() {
   /**
    * @brief 1. bind core and torch setting
    */
-  if(!osScheduling)
-  {
+  if (!osScheduling) {
     INTELLI::UtilityFunctions::bind2Core((int) coreBind);
   }
   torch::set_num_threads(1);
@@ -74,7 +73,7 @@ void AMMBench::BlockPartitionRunner::setConfig(INTELLI::ConfigMapPtr _cfg) {
   cfg = _cfg;
   threads = cfg->tryU64("threads", 2, true);
   workers = std::vector<BlockPartitionWorkerPtr>(threads);
-  firstCoreBind=cfg->tryU64("firstCoreBind",0, false);
+  firstCoreBind = cfg->tryU64("firstCoreBind", 0, false);
   for (uint64_t i = 0; i < threads; i++) {
     workers[i] = newBlockPartitionWorker();
     workers[i]->setConfig(cfg);
@@ -94,10 +93,9 @@ void AMMBench::BlockPartitionRunner::createABC(torch::Tensor A, torch::Tensor B)
     workers[i]->setABC(matA, matB, matC);
     workers[i]->setWorkParameters(start_row, end_row, i);
   }
-  if(firstCoreBind!=0)
-  {
-    workers[0]->setCoreBInd((int)firstCoreBind);
-    INTELLI_INFO("first thread is bound to core" + to_string(firstCoreBind) );
+  if (firstCoreBind != 0) {
+    workers[0]->setCoreBInd((int) firstCoreBind);
+    INTELLI_INFO("first thread is bound to core" + to_string(firstCoreBind));
   }
 }
 torch::Tensor AMMBench::BlockPartitionRunner::parallelForward() {
@@ -120,19 +118,18 @@ torch::Tensor AMMBench::BlockPartitionRunner::runAMM(torch::Tensor A, torch::Ten
 }
 uint64_t AMMBench::BlockPartitionRunner::getElapsedTime() {
   uint64_t ti = 0;
-  uint64_t tMax=0;
+  uint64_t tMax = 0;
   for (uint64_t i = 0; i < threads; i++) {
     ti = workers[i]->getElapsedTime();
-    if(ti>tMax)
-    {
-      tMax=ti;
+    if (ti > tMax) {
+      tMax = ti;
     }
   }
   return tMax;
 }
 void AMMBench::BlockPartitionRunner::appendThreadInfo(INTELLI::ConfigMapPtr ru) {
   for (uint64_t i = 0; i < threads; i++) {
-    std::string keyElapesedTime="thread"+ to_string(i)+"RunTime";
-    ru->edit(keyElapesedTime,(uint64_t) workers[i]->getElapsedTime());
+    std::string keyElapesedTime = "thread" + to_string(i) + "RunTime";
+    ru->edit(keyElapesedTime, (uint64_t) workers[i]->getElapsedTime());
   }
 }

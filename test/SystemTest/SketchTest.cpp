@@ -68,24 +68,24 @@ TEST_CASE("Test Count Sketch in cpp", "[short]")
 }
 TEST_CASE("Test Co-Occurring FD in cpp", "[short]")
 {
-    torch::manual_seed(114514);
-    AMMBench::CoOccurringFDCPPAlgo coofd;
-    auto A = torch::rand({400, 400});
-    auto B = torch::rand({400, 400});
-    auto realC = torch::matmul(A, B);
-    auto ammC = coofd.amm(A, B, 20);
-    double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
-    REQUIRE(froError < 0.5);
+  torch::manual_seed(114514);
+  AMMBench::CoOccurringFDCPPAlgo coofd;
+  auto A = torch::rand({400, 400});
+  auto B = torch::rand({400, 400});
+  auto realC = torch::matmul(A, B);
+  auto ammC = coofd.amm(A, B, 20);
+  double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+  REQUIRE(froError < 0.5);
 }
 TEST_CASE("Test Beta-Co-Occurring FD in cpp", "[short]")
 {
-    torch::manual_seed(114514);
-    AMMBench::BetaCoOFDCPPAlgo bcoofd;
-    auto A = torch::rand({400, 400});
-    auto B = torch::rand({400, 400});
-    auto realC = torch::matmul(A, B);
-    auto ammC = bcoofd.amm(A, B, 20);
-    double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
-    REQUIRE(froError < 0.2);
+  torch::manual_seed(114514);
+  AMMBench::BetaCoOFDCPPAlgo bcoofd;
+  auto A = torch::rand({400, 400});
+  auto B = torch::rand({400, 400});
+  auto realC = torch::matmul(A, B);
+  auto ammC = bcoofd.amm(A, B, 20);
+  double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+  REQUIRE(froError < 0.2);
 }
 
