@@ -3,5 +3,6 @@ add_sources(
         RandomMatrixLoader.cpp
         SparseMatrixLoader.cpp
         GaussianMatrixLoader.cpp
+        ExponentialMatrixLoader.cpp
         MatrixLoaderTable.cpp
 )
