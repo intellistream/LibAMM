@@ -9,5 +9,6 @@ add_sources(
         BetaCoOFDCPPAlgo.cpp
         CountSketchCPPAlgo.cpp
         INT8CPPAlgo.cpp
+        TugOfWarCPPAlgo.cpp
 )
 
