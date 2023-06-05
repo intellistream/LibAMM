@@ -123,12 +123,12 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag+"CPP"
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag + "CPP"
     methodTags = ["FD-AMM", "Co-AMM", "BCo-AMM", "Couter-sketch", "MM"]
     resultPaths = ["fd", "co", "co", "cs", "mm"]
     csvTemplates = ["config_FDAMM.csv", "config_CoAMM.csv", "config_BCoAMM.csv", "config_CounterSketch.csv",
                     "config_RAWMM.csv"]
-    valueVec = [100,200,500,1000,5000, 10000, 20000, 50000,100000]
+    valueVec = [100, 200, 500, 1000, 5000, 10000, 20000, 50000, 100000]
     valueVecDisp = np.array(valueVec)
     # run
     reRun = 0
@@ -142,12 +142,12 @@ def main():
     # skech
 
     # sampling
-    #resultPaths = ["crs", "bcrs", "ews", "mm","mm-cpp","crs-cpp"]
-    resultPaths = ["mm-cpp","crs-cpp"]
-    csvTemplates = ["config_CPPMM.csv","config_CPPCRS.csv"]
-    methodTags = ["MM_CPP","CRS_CPP"]
-    #csvTemplates = ["config_CRS.csv", "config_BerCRS.csv", "config_EWS.csv", "config_RAWMM.csv","config_CPPMM.csv","config_CPPCRS.csv"]
-    #methodTags = ["CRS", "Ber-CRS", "EWS", "MM","MM_CPP","CRS_CPP"]
+    # resultPaths = ["crs", "bcrs", "ews", "mm","mm-cpp","crs-cpp"]
+    resultPaths = ["mm-cpp", "crs-cpp"]
+    csvTemplates = ["config_CPPMM.csv", "config_CPPCRS.csv"]
+    methodTags = ["MM_CPP", "CRS_CPP"]
+    # csvTemplates = ["config_CRS.csv", "config_BerCRS.csv", "config_EWS.csv", "config_RAWMM.csv","config_CPPMM.csv","config_CPPCRS.csv"]
+    # methodTags = ["CRS", "Ber-CRS", "EWS", "MM","MM_CPP","CRS_CPP"]
     elapsedTimeAll, cacheMissAll, periodAll = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
                                                             reRun)
     groupLine.DrawFigure(periodAll, elapsedTimeAll,

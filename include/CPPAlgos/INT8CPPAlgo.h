@@ -21,7 +21,7 @@ namespace AMMBench {
  * @class INT8CPPAlgo CPPAlgos/INT8CPPAlgo.h
  * @brief The INT8 MM class of c++ algos
  */
-class INT8CPPAlgo: public AMMBench::AbstractCPPAlgo {
+class INT8CPPAlgo : public AMMBench::AbstractCPPAlgo {
  public:
   INT8CPPAlgo() {
 
