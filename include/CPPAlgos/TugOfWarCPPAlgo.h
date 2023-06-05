@@ -17,35 +17,35 @@ namespace AMMBench {
  * @brief The cloumn row sampling (CRS) class of c++ algos
  *
  */
-    class TugOfWarCPPAlgo : public AMMBench::AbstractCPPAlgo {
-      double delta = 0.2;
+class TugOfWarCPPAlgo : public AMMBench::AbstractCPPAlgo {
+  double delta = 0.2;
 
-    public:
-        TugOfWarCPPAlgo() {
+ public:
+  TugOfWarCPPAlgo() {
 
-        }
+  }
 
-        TugOfWarCPPAlgo(double delta): delta(delta) {
+  TugOfWarCPPAlgo(double delta) : delta(delta) {
 
-        }
+  }
 
-        ~TugOfWarCPPAlgo() {
+  ~TugOfWarCPPAlgo() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, int sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-      private:
-        torch::Tensor generateTugOfWarMatrix(int64_t m, int64_t n);
+ private:
+  torch::Tensor generateTugOfWarMatrix(int64_t m, int64_t n);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -53,7 +53,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref TugOfWarCppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::TugOfWarCPPAlgo> TugOfWarCPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::TugOfWarCPPAlgo> TugOfWarCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newTugOfWarCppAlgo

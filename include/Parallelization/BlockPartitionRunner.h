@@ -32,7 +32,7 @@ class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
   AMMBench::CPPAlgoTable cppAlgoTable;
   struct timeval tstart, tend;
   uint64_t useCPP = 0;
-  uint64_t osScheduling=0;
+  uint64_t osScheduling = 0;
   AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
   /**
    * @brief Input matrix A
@@ -75,9 +75,8 @@ class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
    * @param mycore the core to be binded
    */
   void setWorkParameters(uint64_t aStart, uint64_t aEnd, int mycore);
-  void setCoreBInd(int cno)
-  {
-    coreBind=cno;
+  void setCoreBInd(int cno) {
+    coreBind = cno;
   }
   ~BlockPartitionWorker() {
 
@@ -128,7 +127,7 @@ class BlockPartitionRunner {
   /**
    * @brief special bind of first core, if need
    */
-  uint64_t firstCoreBind=0;
+  uint64_t firstCoreBind = 0;
  public:
   BlockPartitionRunner() {}
   ~BlockPartitionRunner() {}
@@ -169,7 +168,7 @@ class BlockPartitionRunner {
    * @brief append the running information of each thread to the result csv
    * @param ru The result csv to be appended
    */
-   void appendThreadInfo(INTELLI::ConfigMapPtr ru);
+  void appendThreadInfo(INTELLI::ConfigMapPtr ru);
 };
 
 } // AMMBench

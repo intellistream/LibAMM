@@ -123,7 +123,7 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag+"CPP"
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag + "CPP"
     methodTags = ["FD-AMM", "Co-AMM", "BCo-AMM", "Couter-sketch", "MM"]
     resultPaths = ["fd", "co", "co", "cs", "mm"]
     csvTemplates = ["config_FDAMM.csv", "config_CoAMM.csv", "config_BCoAMM.csv", "config_CounterSketch.csv",
@@ -139,11 +139,11 @@ def main():
         os.system("sudo rm -rf " + commonBase)
         os.system("sudo mkdir " + commonBase)
         reRun = 1
-   
+
     # sampling
     resultPaths = ["crs-cpp", "mm-cpp"]
     csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv"]
-    methodTags = ["crs-cpp","mm-cpp"]
+    methodTags = ["crs-cpp", "mm-cpp"]
     elapsedTimeAll, cacheMissAll, periodAll = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
                                                             reRun)
     groupLine.DrawFigure(periodAll, elapsedTimeAll,
