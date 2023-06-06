@@ -9,6 +9,7 @@
 #include <MatrixLoader/GaussianMatrixLoader.h>
 #include <MatrixLoader/PoissonMatrixLoader.h>
 #include <MatrixLoader/BinomialMatrixLoader.h>
+#include <MatrixLoader/BetaMatrixLoader.h>
 namespace AMMBench {
 /**
  * @note revise me if you need new loader
@@ -20,6 +21,7 @@ AMMBench::MatrixLoaderTable::MatrixLoaderTable() {
   loaderMap["exponential"] = newExponentialMatrixLoader();
   loaderMap["binomial"] = newBinomialMatrixLoader();
   loaderMap["poisson"] = newPoissonMatrixLoader();
+  loaderMap["beta"] = newBetaMatrixLoader();
 }
 
 } // AMMBench
