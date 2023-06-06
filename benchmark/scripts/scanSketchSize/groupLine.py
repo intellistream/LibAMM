@@ -55,7 +55,7 @@ for font_path in font_paths:
         pass
 
 # 配置 matplotlib 使用系统中可用的字体
-plt.rcParams['font.family'] = font_list[0]
+# plt.rcParams['font.family'] = font_list[0]
 
 FIGURE_FOLDER = '/data1/xtra/results/figure'
 

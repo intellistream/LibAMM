@@ -14,7 +14,7 @@ include(cmake/default.cmake)
 #set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #gcc 10 g++10
 
-set(CMAKE_PREFIX_PATH "/home/haolan/libtorch")
+
 find_package(Torch REQUIRED)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 set(LIBRARIES ${LIBRARIES} ${TORCH_LIBRARIES})
