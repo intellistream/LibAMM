@@ -11,5 +11,6 @@ add_sources(
         CountSketchCPPAlgo.cpp
         INT8CPPAlgo.cpp
         TugOfWarCPPAlgo.cpp
+        SMPPCACPPAlgo.cpp
 )
 

@@ -137,9 +137,9 @@ def main():
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
     configTemplate = exeSpace + "config.csv"
     commonBase = resultPath + "/"
-    resultPaths = ["mm", "crs","ews","counterSketch","cofd","tow"]
-    csvTemplates = ["config_CPPMM.csv", "config_CPPCRS.csv","config_CPPEWS.csv","config_CPPCOUNTERSKETCH.csv","config_CPPCOFD.csv","config_CPPTOW.csv"]
-    methodTags = ["mm", "crs","ews","counterSketch","cofd","tow"]
+    resultPaths = ["mm", "crs","ews","counterSketch","cofd","tow","weighted-cr","smp-pca"]
+    csvTemplates = ["config_CPPMM.csv", "config_CPPCRS.csv","config_CPPEWS.csv","config_CPPCOUNTERSKETCH.csv","config_CPPCOFD.csv","config_CPPTOW.csv","config_CPPWeightedCR.csv","config_CPPSMPPCA.csv"]
+    methodTags = ["mm", "crs","ews","counterSketch","cofd","tow","weighted-cr","smp-pca"]
     valueVec = [ 2, 4, 6, 8, 10, 12]
     valueVecRun = valueVec
     print(configTemplate)
