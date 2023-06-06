@@ -24,10 +24,10 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["countSketch"] = newCountSketchCPPAlgo();
   algoMap["bcrs"] = newBCRSCPPAlgo();
   algoMap["ews"] = newEWSCPPAlgo();
-  algoMap["CoOFD"] = newCoOccurringFDCPPAlgo();
+  algoMap["cooFD"] = newCoOccurringFDCPPAlgo();
   algoMap["bcoofd"] = newBetaCoOFDCPPAlgo();
   algoMap["int8"] = newINT8CPPAlgo();
-  algoMap["tug-of-war"] = newTugOfWarCPPAlgo();
+  algoMap["tugOfWar"] = newTugOfWarCPPAlgo();
 }
 
 } // AMMBench

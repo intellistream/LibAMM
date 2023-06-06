@@ -14,7 +14,7 @@ namespace AMMBench {
  */
 /**
  * @class CRSCPPlgo CPPAlgos/TugOfWarCPPAlgo.h
- * @brief The cloumn row sampling (CRS) class of c++ algos
+ * @brief The tug of war class of c++ algos
  *
  */
 class TugOfWarCPPAlgo : public AMMBench::AbstractCPPAlgo {
