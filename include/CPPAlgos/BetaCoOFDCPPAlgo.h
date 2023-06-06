@@ -1,4 +1,4 @@
-//
+/*! \file BetaCoOFDCPPAlgo.h*/
 // Created by haolan on 5/30/23.
 //
 
@@ -12,11 +12,14 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class CPPAlgos/BetaCoOFDCPPAlgo.h
+ * @class BetaCoOFDCPPAlgo CPPAlgos/BetaCoOFDCPPAlgo.h
  * @brief The Beta Co-Occurring FD AMM class of c++ algos
- *
+ * @note parameters
+ * - algoBeta Double, the beta parameters in this algo, default 1.0
  */
 class BetaCoOFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
+ protected:
+  float algoBeta=1.0;
  public:
   BetaCoOFDCPPAlgo() {
 
@@ -25,7 +28,10 @@ class BetaCoOFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
   ~BetaCoOFDCPPAlgo() {
 
   }
-
+  /**
+   * @brief set the alo-specfic config related to one algorithm
+   */
+  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
   /**
    * @brief the virtual function provided for outside callers, rewrite in children classes
    * @param A the A matrix

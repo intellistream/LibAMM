@@ -12,7 +12,7 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class CRSCPPlgo CPPAlgos/CRSCPPAlgo.h
+ * @class CRSCPPAlgo CPPAlgos/CRSCPPAlgo.h
  * @brief The column row sampling (CRS) class of c++ algos
  *
  */

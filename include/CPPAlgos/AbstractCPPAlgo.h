@@ -29,6 +29,10 @@ class AbstractCPPAlgo {
 
   }
   /**
+   * @brief set the alo-specfic config related to one algorithm
+   */
+  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
+  /**
    * @brief the virtual function provided for outside callers, rewrite in children classes
    * @param A the A matrix
    * @param B the B matrix

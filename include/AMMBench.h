@@ -49,9 +49,20 @@
  * @section subsec_extend_cpp_operator How to extend a new algorithm (pure static c++ based)
  * - go to the src/CPPAlgos and include/CPPAlgos
  * - copy the example class, such as CRSCPPAlgo, rename it, and implement your own @ref amm function
+ *  - copy the cpp and h
+ *  - rename the cpp and h
+ *  - automatically conduct the IDE-full-replace over the CRSCPPAlgo by your own name in cpp and h
+ *  - define your own function
+ *  - @note Please use this copy-and-replace policy rather than creat your own, unless you know the doxygen comment style
+ *  very well and can always keep it!!!
+ *  - @warning  This copy-and-replace policy will also prevent from wrong parameter types of interface functions, please
+ *  DO KEEP THE INTERFACE PARAMETER UNDER THE SAME TYPE!!!!!!!!!!!
  * - register tour function with a tag to src/CPPAlgos/CPPAlgoTable.cpp
  * - edit the CMakelist.txt at src/CPPAlgos to include your new algo and recompile
  * - remember to add a test bench, you can refer to CRSTest.cpp at test/SystemTest for example
+ * - if your algorithms have specific parameters like beta, please additionally do the following in the XXXCPPAlgo class:
+ *      - copy the  virtual void setConfig(INTELLI::ConfigMapPtr cfg) claim to your *.h
+ *      - implement that function in your cpp
  * @section subsec_edit_test How to add a single point test
  * - copy your config file to test/scripts, and your pt file to test/torchscripts
  * - follow and copy the SketchTest.cpp to create your own, say A.cpp
