@@ -26,11 +26,13 @@ torch::Tensor paramerizedReduceRank(const torch::Tensor &SV, float delta, int l,
   torch::Tensor SV_shrunk = torch::clamp(SV - parameterizedReduceRank, 0);
   return SV_shrunk;
 }
-
+void AMMBench::BetaCoOFDCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
+  algoBeta=cfg->tryDouble("algoBeta",1.0,true);
+}
 torch::Tensor BetaCoOFDCPPAlgo::amm(const torch::Tensor A, const torch::Tensor B, uint64_t l2) {
   torch::Tensor B_t = B.t();
-  float beta = 1.0;
-
+  float beta =algoBeta;
+  INTELLI_INFO("BETA-COOCURRING, use beta "+ to_string(beta));
   TORCH_CHECK(A.size(1) == B_t.size(1), "Shapes of A and B are incompatible");
   int64_t mx = A.size(0);
   int64_t my = B_t.size(0);

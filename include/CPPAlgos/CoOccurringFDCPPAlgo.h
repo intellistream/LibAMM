@@ -1,4 +1,4 @@
-//
+/*! \file CoOFDCPPAlgo.h*/
 // Created by haolan on 5/29/23.
 //
 
@@ -12,7 +12,7 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class CPPAlgos/CoOccurringFDCPPAlgo.h
+ * @class CoOccurringFDCPPAlgo CPPAlgos/CoOccurringFDCPPAlgo.h
  * @brief The Co-Occurring FD AMM class of c++ algos
  *
  */

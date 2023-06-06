@@ -13,6 +13,7 @@ void AMMBench::BlockPartitionWorker::setConfig(INTELLI::ConfigMapPtr _cfg) {
   if (useCPP) {
     std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
     cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
+    cppAlgoPtr->setConfig(_cfg);
   }
   if (!useCPP || (cppAlgoPtr == nullptr)) {
     module = torch::jit::load(ptFile);

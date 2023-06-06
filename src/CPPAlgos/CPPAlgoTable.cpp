@@ -25,7 +25,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["bcrs"] = newBCRSCPPAlgo();
   algoMap["ews"] = newEWSCPPAlgo();
   algoMap["cooFD"] = newCoOccurringFDCPPAlgo();
-  algoMap["bcoofd"] = newBetaCoOFDCPPAlgo();
+  algoMap["bcooFD"] = newBetaCoOFDCPPAlgo();
   algoMap["int8"] = newINT8CPPAlgo();
   algoMap["tugOfWar"] = newTugOfWarCPPAlgo();
 }
