@@ -15,17 +15,21 @@
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
 #include <CPPAlgos/WeightedCRCPPAlgo.h>
 
+#include <CPPAlgos/INT8CPPAlgo.h>
+
+#include <CPPAlgos/TugOfWarCPPAlgo.h>
 namespace AMMBench {
 AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["mm"] = newAbstractCPPAlgo();
   algoMap["crs"] = newCRSCPPAlgo();
   algoMap["crsV2"] = newCRSV2CPPAlgo();
-  algoMap["count-sketch"] = newCountSketchCPPAlgo();
+  algoMap["countSketch"] = newCountSketchCPPAlgo();
   algoMap["bcrs"] = newBCRSCPPAlgo();
   algoMap["ews"] = newEWSCPPAlgo();
-  algoMap["CoOFD"] = newCoOccurringFDCPPAlgo();
-  algoMap["bcoofd"] = newBetaCoOFDCPPAlgo();
-  algoMap["tug-of-war"] = newTugOfWarCPPAlgo();
+  algoMap["cooFD"] = newCoOccurringFDCPPAlgo();
+  algoMap["bcooFD"] = newBetaCoOFDCPPAlgo();
+  algoMap["int8"] = newINT8CPPAlgo();
+  algoMap["tugOfWar"] = newTugOfWarCPPAlgo();
   algoMap["weighted-cr"] = newWeightedCRCPPAlgo();
 }
 

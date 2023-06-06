@@ -25,4 +25,5 @@ add_catch_test(ews_test SystemTest/EWSTest.cpp IntelliStream)
 add_catch_test(weighted_cr_test SystemTest/WeightedCRTest.cpp IntelliStream)
 add_catch_test(block_partition_test SystemTest/BlockPartitionTest.cpp IntelliStream)
 add_catch_test(tug_of_war_test SystemTest/TugOfWarTest.cpp IntelliStream)
+add_catch_test(int8_test SystemTest/INT8Test.cpp IntelliStream)
 

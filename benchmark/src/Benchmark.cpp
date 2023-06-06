@@ -22,7 +22,7 @@ void runSingleThreadTest(std::string configName) {
   uint64_t usingMeter = cfg->tryU64("usingMeter", 0, true);
   std::string meterTag = cfg->tryString("meterTag", "intelMsr", true);
   uint64_t useCPP = cfg->tryU64("useCPP", 0, true);
-  uint64_t  forceMP=cfg->tryU64("forceMP", 0, true);
+  uint64_t forceMP = cfg->tryU64("forceMP", 0, true);
   if (usingMeter) {
     eMeter = meterTable.findMeter(meterTag);
     if (eMeter != nullptr) {
@@ -68,7 +68,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   ThreadPerf pef(-1);
   pef.setPerfList();
   AMMBench::BlockPartitionRunner br;
-  if (threads > 1||forceMP) {
+  if (threads > 1 || forceMP) {
     INTELLI_WARNING("use multithread");
     br.setConfig(cfg);
     br.createABC(A, B);
@@ -85,7 +85,8 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     AMMBench::CPPAlgoTable cppAlgoTable;
     std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
     AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
-    INTELLI_WARNING("single thread");
+    cppAlgoPtr->setConfig(cfg);
+    INTELLI_WARNING("single thread, algo " + cppAlgoTag);
     if (eMeter != nullptr) {
       eMeter->startMeter();
     }
@@ -114,7 +115,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     resultCsv->edit("energyAll", (double) energyConsumption);
     resultCsv->edit("energyOnlyMe", (double) pureEnergy);
   }
-  if (threads > 1||forceMP) {
+  if (threads > 1 || forceMP) {
     INTELLI_WARNING("consider multithread elapsed time");
     resultCsv->edit("perfElapsedTime", (uint64_t) br.getElapsedTime());
     br.appendThreadInfo(resultCsv);
