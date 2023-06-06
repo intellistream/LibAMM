@@ -1,3 +1,4 @@
+/*! \file CountSketchCPPAlgo.h*/
 //
 // Created by luv on 5/28/23.
 //
@@ -14,7 +15,7 @@ namespace AMMBench {
  */
 /**
  * @class CountSketchCPPAlgo CPPAlgos/CountSketchCPPAlgo.h
- * @brief The cloumn row sampling (CRS) class of c++ algos
+ * @brief The counter sketch class of c++ algos
  *
  */
 class CountSketchCPPAlgo : public AMMBench::AbstractCPPAlgo {

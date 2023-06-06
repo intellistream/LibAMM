@@ -1,3 +1,4 @@
+/*! \file TugOfWarCPPAlgo.h*/
 //
 // Created by luv on 5/30/23.
 //
@@ -13,9 +14,8 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class CRSCPPlgo CPPAlgos/TugOfWarCPPAlgo.h
- * @brief The tug of war class of c++ algos
- *
+ * @class TugOfWarCPPAlgo CPPAlgos/TugOfWarCPPAlgo.h
+ * @brief The tug of war class of c++ algoS
  */
 class TugOfWarCPPAlgo : public AMMBench::AbstractCPPAlgo {
   double delta = 0.2;
