@@ -137,10 +137,10 @@ def main():
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
     configTemplate = exeSpace + "config.csv"
     commonBase = resultPath + "/"
-    resultPaths = ["CRS", "MM", "counter-sketch", "BCO"]
-    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv", "config_CPPCounterSketch.csv", "config_CPPBCO.csv"]
-    evaTypes = ['crs-cpp', 'mm-cpp', 'counter-sketch-cpp', 'bco']
-    valueVec = [1, 2, 3, 4, 5, 6, 7, 8]
+    resultPaths = ["mm", "crs","ews","counterSketch","cofd","tow"]
+    csvTemplates = ["config_CPPMM.csv", "config_CPPCRS.csv","config_CPPEWS.csv","config_CPPCOUNTERSKETCH.csv","config_CPPCOFD.csv","config_CPPTOW.csv"]
+    methodTags = ["mm", "crs","ews","counterSketch","cofd","tow"]
+    valueVec = [1,2,3,4,5,6,7,8]
     valueVecRun = valueVec
     print(configTemplate)
     reRun = 0
@@ -180,22 +180,22 @@ def main():
     # os.system("mkdir " + figPath)
     groupLine.DrawFigureXYnormal(periodAll,
                                  1 / elapseTimeAllSum,
-                                 evaTypes,
+                                 methodTags,
                                  "#threads", "1/elapsed time (1/ms)", 0, 1, figPath + "/" + "threads" + "_elapsedTime",
                                  True)
     groupLine.DrawFigureXYnormal(periodAll,
                                  froErroAllSum * 100.0,
-                                 evaTypes,
+                                 methodTags,
                                  "#threads", "normalized error %", 0, 1, figPath + "/" + "threads" + "_froError",
                                  True)
     groupLine.DrawFigureXYnormal(periodAll,
                                  errorBoundRatioSum * 100.0,
-                                 evaTypes,
+                                 methodTags,
                                  "#threads", "error bound ratio %", 0, 1, figPath + "/" + "threads" + "_ebRatio",
                                  True)
     groupLine.DrawFigureXYnormal(periodAll,
                                  cacheMissAll,
-                                 evaTypes,
+                                 methodTags,
                                  "#threads", "cache miss %", 0, 1, figPath + "/" + "threads" + "_cachemiss",
                                  True)
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")

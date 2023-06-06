@@ -1,3 +1,4 @@
+/*! \file CRSV2CPPAlgo.h*/
 //
 // Created by haolan on 5/26/23.
 //
@@ -13,7 +14,7 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class CRSCPPlgo CPPAlgos/CRSV2CPPAlgo.h
+ * @class CRSV2CPPAlgo CPPAlgos/CRSV2CPPAlgo.h
  * @brief The column row sampling (CRS) class of c++ algos, a second implementation
  *
  */

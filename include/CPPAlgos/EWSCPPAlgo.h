@@ -1,3 +1,4 @@
+/*! \file EWSCPPAlgo.h*/
 //
 // Created by haolan on 5/29/23.
 //
@@ -12,7 +13,7 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class CPPAlgos/EWSCPPAlgo.h
+ * @class EWSCPPAlgo  CPPAlgos/EWSCPPAlgo.h
  * @brief The Element Wise Sampling (EWS) class of c++ algos
  *
  */

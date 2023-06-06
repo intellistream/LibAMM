@@ -1,3 +1,4 @@
+/*! \file BCRSCPPAlgo.h*/
 //
 // Created by haolan on 5/29/23.
 //
@@ -12,9 +13,8 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class CRSCPPlgo CPPAlgos/BCRSCPPAlgo.h
- * @brief The Bernoulli column row sampling (CRS) class of c++ algos
- *
+ * @class BCRSCPPAlgo CPPAlgos/BCRSCPPAlgo.h
+ * @brief The Bernoulli column row sampling (BCRS) class of c++ algos
  */
 class BCRSCPPAlgo : public AMMBench::AbstractCPPAlgo {
  public:
