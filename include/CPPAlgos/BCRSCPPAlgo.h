@@ -1,3 +1,4 @@
+/*! \file BCRSCPPAlgo.h*/
 //
 // Created by haolan on 5/29/23.
 //
@@ -12,30 +13,29 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class CRSCPPlgo CPPAlgos/BCRSCPPAlgo.h
- * @brief The Bernoulli column row sampling (CRS) class of c++ algos
- *
+ * @class BCRSCPPAlgo CPPAlgos/BCRSCPPAlgo.h
+ * @brief The Bernoulli column row sampling (BCRS) class of c++ algos
  */
-    class BCRSCPPAlgo : public AMMBench::AbstractCPPAlgo {
-    public:
-        BCRSCPPAlgo() {
+class BCRSCPPAlgo : public AMMBench::AbstractCPPAlgo {
+ public:
+  BCRSCPPAlgo() {
 
-        }
+  }
 
-        ~BCRSCPPAlgo() {
+  ~BCRSCPPAlgo() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, int sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -43,7 +43,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref BCRSCppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::BCRSCPPAlgo> BCRSCPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::BCRSCPPAlgo> BCRSCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newBCRSCppAlgo

@@ -1,3 +1,4 @@
+/*! \file CountSketchCPPAlgo.h*/
 //
 // Created by luv on 5/28/23.
 //
@@ -14,29 +15,29 @@ namespace AMMBench {
  */
 /**
  * @class CountSketchCPPAlgo CPPAlgos/CountSketchCPPAlgo.h
- * @brief The cloumn row sampling (CRS) class of c++ algos
+ * @brief The counter sketch class of c++ algos
  *
  */
-    class CountSketchCPPAlgo : public AMMBench::AbstractCPPAlgo {
-    public:
-        CountSketchCPPAlgo() {
+class CountSketchCPPAlgo : public AMMBench::AbstractCPPAlgo {
+ public:
+  CountSketchCPPAlgo() {
 
-        }
+  }
 
-        ~CountSketchCPPAlgo() {
+  ~CountSketchCPPAlgo() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, int sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -44,7 +45,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref CountSketchCPPAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::CountSketchCPPAlgo> CountSketchCPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::CountSketchCPPAlgo> CountSketchCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newCRSV2CppAlgo

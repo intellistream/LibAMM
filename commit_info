@@ -1,1 +1,2 @@
-1. update docs
+1. Update the example scripts in scripts/scanThreads
+2. Add the parameter passing logic to CPPAlgos

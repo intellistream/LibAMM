@@ -74,23 +74,23 @@ TEST_CASE("Test CRS in cpp", "[short]")
 }
 TEST_CASE("Test CRS v2 in cpp", "[short]")
 {
-    torch::manual_seed(114514);
-    AMMBench::CRSV2CPPAlgo crs;
-    auto A = torch::rand({400, 400});
-    auto B = torch::rand({400, 400});
-    auto realC = torch::matmul(A, B);
-    auto ammC = crs.amm(A, B, 20);
-    double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
-    REQUIRE(froError < 0.5);
+  torch::manual_seed(114514);
+  AMMBench::CRSV2CPPAlgo crs;
+  auto A = torch::rand({400, 400});
+  auto B = torch::rand({400, 400});
+  auto realC = torch::matmul(A, B);
+  auto ammC = crs.amm(A, B, 20);
+  double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+  REQUIRE(froError < 0.5);
 }
 TEST_CASE("Test Bernoulli CRS in cpp", "[short]")
 {
-    torch::manual_seed(114514);
-    AMMBench::BCRSCPPAlgo bcrs;
-    auto A = torch::rand({400, 400});
-    auto B = torch::rand({400, 400});
-    auto realC = torch::matmul(A, B);
-    auto ammC = bcrs.amm(A, B, 20);
-    double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
-    REQUIRE(froError < 0.5);
+  torch::manual_seed(114514);
+  AMMBench::BCRSCPPAlgo bcrs;
+  auto A = torch::rand({400, 400});
+  auto B = torch::rand({400, 400});
+  auto realC = torch::matmul(A, B);
+  auto ammC = bcrs.amm(A, B, 20);
+  double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+  REQUIRE(froError < 0.5);
 }

@@ -10,7 +10,7 @@ from matplotlib.ticker import MaxNLocator
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import LinearLocator, LogLocator, MaxNLocator, ScalarFormatter
 from numpy import double
-
+import matplotlib.ticker as mtick
 # 获取系统中可用的字体路径
 # font_paths = fm.findSystemFonts()
 # OPT_FONT_NAME = 'Helvetica'
@@ -243,12 +243,14 @@ def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, 
     # plt.yscale('log')
 
     # you may control the limits on your own.
-
-    # plt.ylim(y_min, y_max)
+    yMax=np.max(y_values)
+    plt.ylim(y_min, yMax*1.2)
 
     plt.grid(axis='y', color='gray')
     plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
-    # figure.yaxis.set_major_locator(LogLocator(base=10))
+    figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
+
+    figure.yaxis.set_major_locator(LinearLocator(numticks=5))
     # figure.xaxis.set_major_locator(LogLocator(base=10))
     plt.xticks(rotation=0, fontsize=TICK_FONT_SIZE)
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
