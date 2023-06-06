@@ -13,6 +13,7 @@
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
 #include <CPPAlgos/BetaCoOFDCPPAlgo.h>
 #include <CPPAlgos/WeightedCRCPPAlgo.h>
+#include <CPPAlgos/SMPPCACPPAlgo.h>
 #include <CPPAlgos/INT8CPPAlgo.h>
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
 namespace AMMBench {
@@ -28,6 +29,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["int8"] = newINT8CPPAlgo();
   algoMap["tugOfWar"] = newTugOfWarCPPAlgo();
   algoMap["weighted-cr"] = newWeightedCRCPPAlgo();
+  algoMap["smp-pca"] = newSMPPCACPPAlgo();
 }
 
 } // AMMBench
