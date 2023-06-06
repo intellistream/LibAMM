@@ -1,2 +1,1 @@
-1. fix the uint64_t bugs
-2. Note; please note the int8 is just a toy
+1. Update the example scripts in scripts/scanARowCPP and  scripts/scanAColCPP

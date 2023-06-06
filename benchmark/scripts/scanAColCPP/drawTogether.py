@@ -79,7 +79,9 @@ def readResultSingle(singleValue, resultPath):
     elapsedTime = readConfig(resultFname, "perfElapsedTime")
     cacheMiss = readConfig(resultFname, "cacheMiss")
     cacheRefs = readConfig(resultFname, "cacheRefs")
-    return elapsedTime, cacheMiss, cacheRefs
+    froError = readConfig(resultFname, "froError")
+    errorBoundRatio = readConfig(resultFname, "errorBoundRatio")
+    return elapsedTime, cacheMiss, cacheRefs, froError, errorBoundRatio
 
 
 def cleanPath(path):
@@ -91,12 +93,17 @@ def readResultVector(singleValueVec, resultPath):
     elapseTimeVec = []
     cacheMissVec = []
     cacheRefVec = []
+    froErrorVec = []
+    errorBoundRatioVec = []
     for i in singleValueVec:
-        elapsedTime, cacheMiss, cacheRefs = readResultSingle(i, resultPath)
+        elapsedTime, cacheMiss, cacheRefs, froError, errorBoundRatio = readResultSingle(i, resultPath)
         elapseTimeVec.append(float(elapsedTime) / 1000.0)
         cacheMissVec.append(float(cacheMiss))
         cacheRefVec.append(float(cacheRefs))
-    return np.array(elapseTimeVec), np.array(cacheMissVec), np.array(cacheRefVec)
+        froErrorVec.append(float(froError))
+        errorBoundRatioVec.append(float(errorBoundRatio))
+    return np.array(elapseTimeVec), np.array(cacheMissVec), np.array(cacheRefVec), np.array(froErrorVec), np.array(
+        errorBoundRatioVec)
 
 
 def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec, reRun=1):
@@ -104,20 +111,24 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
     cacheMissAll = []
     cacheRefAll = []
     periodAll = []
+    froAll = []
+    errorBoundRatioAll = []
     for i in range(len(csvTemplates)):
         resultPath = commonPathBase + resultPaths[i]
         if (reRun == 1):
             os.system("sudo rm -rf " + resultPath)
             os.system("sudo mkdir " + resultPath)
             runScanVector(exeSpace, periodVec, resultPath, csvTemplates[i])
-        elapsedTime, cacheMiss, cacheRef = readResultVector(periodVec, resultPath)
+        elapsedTime, cacheMiss, cacheRef, fro, eb = readResultVector(periodVec, resultPath)
         elapsedTimeAll.append(elapsedTime)
         cacheMissAll.append(cacheMiss)
         cacheRefAll.append(cacheRef)
         periodAll.append(periodVec)
         cacheMissRateAll = np.array(cacheMissAll) / np.array(cacheRefAll) * 100.0
+        froAll.append(fro)
+        errorBoundRatioAll.append(eb)
         # periodAll.append(periodVec)
-    return np.array(elapsedTimeAll), cacheMissRateAll, periodAll
+    return np.array(elapsedTimeAll), cacheMissRateAll, periodAll, np.array(froAll), np.array(errorBoundRatioAll)
 
 
 def main():
@@ -141,21 +152,36 @@ def main():
         reRun = 1
 
     # sampling
-    resultPaths = ["crs-cpp", "mm-cpp"]
-    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv"]
-    methodTags = ["crs-cpp", "mm-cpp"]
-    elapsedTimeAll, cacheMissAll, periodAll = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
+   # sampling
+    # resultPaths = ["crs", "bcrs", "ews", "mm","mm-cpp","crs-cpp"]
+    resultPaths = ["mm", "crs","ews","counterSketch","cofd","tow"]
+    csvTemplates = ["config_CPPMM.csv", "config_CPPCRS.csv","config_CPPEWS.csv","config_CPPCOUNTERSKETCH.csv","config_CPPCOFD.csv","config_CPPTOW.csv"]
+    methodTags = ["mm", "crs","ews","counterSketch","cofd","tow"]
+    # csvTemplates = ["config_CRS.csv", "config_BerCRS.csv", "config_EWS.csv", "config_RAWMM.csv","config_CPPMM.csv","config_CPPCRS.csv"]
+    # methodTags = ["CRS", "Ber-CRS", "EWS",, "MM","MM_CPP","CRS_CPP"]
+    elapsedTimeAll, cacheMissAll, periodAll,fro,eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
                                                             reRun)
     groupLine.DrawFigure(periodAll, elapsedTimeAll,
                          methodTags,
-                         "# A's col", "elapsed time (ms)", 0, 1,
-                         figPath + "/" + scanTag + "sampling_elapsedTime",
+                         "#A's col", "elapsed time (ms)", 0, 1,
+                         figPath + "/" + scanTag + "cpp_elapsedTime",
                          True)
     groupLine.DrawFigureYnormal(periodAll, cacheMissAll,
                                 methodTags,
-                                "# A's col", "cacheMiss (%)", 0, 1,
-                                figPath + "/" + scanTag + "sampling_cacheMiss",
+                                "#A's col", "cacheMiss (%)", 0, 1,
+                                figPath + "/" + scanTag + "cpp_cacheMiss",
                                 True)
+    groupLine.DrawFigureYnormal(periodAll,
+                                 fro * 100.0,
+                                 methodTags,
+                                 "#A's col", "normalized error %", 0, 1, figPath + "/" +scanTag + "_froError",
+                                 True)
+    groupLine.DrawFigureYnormal(periodAll,
+                                 eb * 100.0,
+                                 methodTags,
+                                 "#A's col", "error bound ratio %", 0, 1, figPath + "/" + scanTag + "_ebRatio",
+                                 True)
+    # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPa
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,compVec,"95% Latency (ms)","Completeness","ms","",figPath+"wm_omp")
