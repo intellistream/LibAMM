@@ -1,4 +1,4 @@
-BRANCH=sbug
+BRANCH=NIGHTLY_TEST
 git init
 git checkout -b $BRANCH
 git add .
