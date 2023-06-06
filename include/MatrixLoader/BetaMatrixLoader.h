@@ -29,6 +29,8 @@ namespace AMMBench {
  * - "aCol" The cols in matrix B, U64, 1000
  * - "bCol" The rows in matrix B, U64, 500
  * - "seed" The seed of inline random generator,U64,114514
+ * - "a" parameters of beta distribution, Double, 2.0
+ * - "b" parameters of beta distribution, Double, 2.0
  * @note: default name tags
  * "random": @ref BetaMatrixLoader
  */

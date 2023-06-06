@@ -29,13 +29,16 @@ namespace AMMBench {
  * - "aCol" The cols in matrix B, U64, 1000
  * - "bCol" The rows in matrix B, U64, 500
  * - "seed" The seed of inline random generator,U64,114514
+ * - "trials" parameters of binomial distribution, U64, 10
+ * - "probability" parameters of binomial distribution, Double, 0.5
  * @note: default name tags
  * "random": @ref BinomialMatrixLoader
  */
     class BinomialMatrixLoader : public AbstractMatrixLoader {
     protected:
         torch::Tensor A, B;
-        uint64_t aRow, aCol, bCol, seed;
+        uint64_t aRow, aCol, bCol, seed, trials;
+        double probability;
         /**
          * @brief Inline logic of reading a config file
          * @param cfg the config
