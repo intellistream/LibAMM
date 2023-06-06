@@ -136,9 +136,9 @@ def main():
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
     configTemplate = exeSpace + "config.csv"
     commonBase = resultPath + "/"
-    resultPaths = ["BCO", "CO", "CS", "TOW", "MM"]
-    csvTemplates = ["config_BCoAMM.csv", "config_CoAMM.csv", "config_CounterSketch.csv", "config_tugOfWar.csv", "config_RAWMM.csv"]
-    evaTypes = ['Beta-CO','Co-FD', 'CounterS', 'TOW', 'MM']
+    resultPaths = ["CO-FD", "CS", "ToW", "MM"]
+    csvTemplates = ["config_CoAMM.csv", "config_CounterSketch.csv", "config_tugOfWar.csv", "config_CPPMM.csv"]
+    evaTypes = ['Co-FD', 'CounterS', 'ToW', 'MM']
     valueVec = [10, 25, 50, 100, 200, 300, 400, 500]
     valueVecRun = valueVec
     print(configTemplate)
@@ -179,22 +179,22 @@ def main():
     groupLine.DrawFigureXYnormal(periodAll,
                                  1/elapseTimeAllSum,
                                  evaTypes,
-                                 "sketch dimension", "1/elapsed time (1/ms)", 0, 1, figPath + "/"+"threads" + "_elapsedTime",
+                                 "sketch dimension", "1/elapsed time (1/ms)", 0, 1, figPath + "/" + "_elapsedTime",
                                  True)
     groupLine.DrawFigureXYnormal(periodAll,
                                  froErroAllSum*100.0,
                                  evaTypes,
-                                 "sketch dimension", "normalized error %", 0, 1, figPath + "/"+"threads" + "_froError",
+                                 "sketch dimension", "normalized error %", 0, 1, figPath + "/" + "_froError",
                                  True)
     groupLine.DrawFigureXYnormal(periodAll,
                                 errorBoundRatioSum*100.0,
                                  evaTypes,
-                                 "sketch dimension", "error bound ratio %", 0, 1, figPath + "/"+"threads" + "_ebRatio",
+                                 "sketch dimension", "error bound ratio %", 0, 1, figPath + "/" + "_ebRatio",
                                  True)
     groupLine.DrawFigureXYnormal(periodAll,
                                 cacheMissAll,
                                  evaTypes,
-                                 "sketch dimension", "cache miss %", 0, 1, figPath + "/"+"threads" + "_cachemiss",
+                                 "sketch dimension", "cache miss %", 0, 1, figPath + "/" + "_cachemiss",
                                  True)
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
