@@ -126,6 +126,8 @@
 #include <CPPAlgos/INT8CPPAlgo.h>
 
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
+#include <CPPAlgos/WeightedCRCPPAlgo.h>
+#include <CPPAlgos/SMPPCACPPAlgo.h>
 /**
  * @}
  *
