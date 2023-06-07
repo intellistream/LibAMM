@@ -8,17 +8,16 @@ void AMMBench::BinomialMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
     aCol = cfg->tryU64("aCol", 1000, true);
     bCol = cfg->tryU64("bCol", 500, true);
     seed = cfg->tryU64("seed", 114514, true);
+    trials = cfg->tryU64("trials", 10, true);
+    probability = cfg->tryDouble("probability", 0.5, true);
     INTELLI_INFO(
             "Generating [" + to_string(aRow) + "x" + to_string(aCol) + "]*[" + to_string(aCol) + "x" + to_string(bCol)
-            + "]");
+            + "]" + " Parameter: " + to_string(trials) + ", " + to_string(probability));
 }
 void AMMBench::BinomialMatrixLoader::generateAB() {
     torch::manual_seed(seed);
     A = torch::zeros({(long) aRow, (long) aCol});
     B = torch::zeros({(long) aCol, (long) bCol});
-    // parameter
-    const int trials = 10;
-    const double probability = 0.5;
 
     for(int i = 0; i < trials; i++) {
         // Create a tensor filled with random numbers between 0 and 1
