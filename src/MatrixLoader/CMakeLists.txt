@@ -5,5 +5,7 @@ add_sources(
         GaussianMatrixLoader.cpp
         ExponentialMatrixLoader.cpp
         BinomialMatrixLoader.cpp
+        PoissonMatrixLoader.cpp
+        BetaMatrixLoader.cpp
         MatrixLoaderTable.cpp
 )

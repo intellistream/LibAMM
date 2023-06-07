@@ -1,9 +1,9 @@
 //
-// Created by haolan on 6/5/23.
+// Created by haolan on 6/6/23.
 //
 
-#ifndef INTELLISTREAM_BINOMIALMATRIXLOADER_H
-#define INTELLISTREAM_BINOMIALMATRIXLOADER_H
+#ifndef INTELLISTREAM_POISSONMATRIXLOADER_H
+#define INTELLISTREAM_POISSONMATRIXLOADER_H
 #include <MatrixLoader/AbstractMatrixLoader.h>
 namespace AMMBench {
 /**
@@ -11,13 +11,13 @@ namespace AMMBench {
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Binomial The Binomial generator
+ * @ingroup AMMBENCH_MatrixLOADER_Poisson The Poisson generator
  * @{
  */
 /**
- * @class BinomialMatrixLoader MatrixLoader/BinomialMatrixLoader.h
- * @brief The Binomial class of matrix loader
- * @ingroup AMMBENCH_MatrixLOADER_Binomial
+ * @class PoissonMatrixLoader MatrixLoader/PoissonMatrixLoader.h
+ * @brief The Poisson class of matrix loader
+ * @ingroup AMMBENCH_MatrixLOADER_Poisson
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -29,16 +29,13 @@ namespace AMMBench {
  * - "aCol" The cols in matrix B, U64, 1000
  * - "bCol" The rows in matrix B, U64, 500
  * - "seed" The seed of inline random generator,U64,114514
- * - "trials" parameters of binomial distribution, U64, 10
- * - "probability" parameters of binomial distribution, Double, 0.5
  * @note: default name tags
- * "random": @ref BinomialMatrixLoader
+ * "random": @ref PoissonMatrixLoader
  */
-    class BinomialMatrixLoader : public AbstractMatrixLoader {
+    class PoissonMatrixLoader : public AbstractMatrixLoader {
     protected:
         torch::Tensor A, B;
-        uint64_t aRow, aCol, bCol, seed, trials;
-        double probability;
+        uint64_t aRow, aCol, bCol, seed;
         /**
          * @brief Inline logic of reading a config file
          * @param cfg the config
@@ -49,9 +46,9 @@ namespace AMMBench {
          */
         void generateAB();
     public:
-        BinomialMatrixLoader() = default;
+        PoissonMatrixLoader() = default;
 
-        ~BinomialMatrixLoader() = default;
+        ~PoissonMatrixLoader() = default;
         /**
            * @brief Set the GLOBAL config map related to this loader
            * @param cfg The config map
@@ -71,18 +68,18 @@ namespace AMMBench {
         virtual torch::Tensor getB();
     };
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Binomial
- * @typedef BinomialMatrixLoaderPtr
- * @brief The class to describe a shared pointer to @ref BinomialMatrixLoader
+ * @ingroup AMMBENCH_MatrixLOADER_Poisson
+ * @typedef PoissonMatrixLoaderPtr
+ * @brief The class to describe a shared pointer to @ref PoissonMatrixLoader
 
  */
-    typedef std::shared_ptr<class AMMBench::BinomialMatrixLoader> BinomialMatrixLoaderPtr;
+    typedef std::shared_ptr<class AMMBench::PoissonMatrixLoader> PoissonMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Binomial
- * @def newBinomialMatrixLoader
- * @brief (Macro) To creat a new @ref BinomialMatrixLoader under shared pointer.
+ * @ingroup AMMBENCH_MatrixLOADER_Poisson
+ * @def newPoissonMatrixLoader
+ * @brief (Macro) To creat a new @ref PoissonMatrixLoader under shared pointer.
  */
-#define newBinomialMatrixLoader std::make_shared<AMMBench::BinomialMatrixLoader>
+#define newPoissonMatrixLoader std::make_shared<AMMBench::PoissonMatrixLoader>
 /**
  * @}
  */
@@ -90,4 +87,4 @@ namespace AMMBench {
  * @}
  */
 }
-#endif //INTELLISTREAM_BINOMIALMATRIXLOADER_H
+#endif //INTELLISTREAM_POISSONMATRIXLOADER_H
