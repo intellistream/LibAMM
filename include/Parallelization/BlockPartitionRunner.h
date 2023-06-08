@@ -82,7 +82,12 @@ class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
 
   }
   uint64_t getElapsedTime();
-
+  /**
+  * @brief to export the algorithm breakdown
+   * @note only valid for c++ algo
+  * @return the key-value table breakdown in ConfigMapPtr;
+  */
+  virtual  INTELLI::ConfigMapPtr getBreakDown();
 };
 /**
 * @ingroup PARTITION_RUNNER
@@ -169,6 +174,12 @@ class BlockPartitionRunner {
    * @param ru The result csv to be appended
    */
   void appendThreadInfo(INTELLI::ConfigMapPtr ru);
+  /**
+  * @brief to export the algorithm breakdown
+   * @note only valid for c++ algo
+  * @return the key-value table breakdown in ConfigMapPtr;
+  */
+  virtual  INTELLI::ConfigMapPtr getBreakDown();
 };
 
 } // AMMBench
