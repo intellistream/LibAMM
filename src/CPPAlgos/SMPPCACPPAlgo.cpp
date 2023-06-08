@@ -5,13 +5,13 @@
 #include <CPPAlgos/SMPPCACPPAlgo.h>
 
 namespace AMMBench {
-torch::Tensor AMMBench::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k) {
+torch::Tensor AMMBench::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
    // Step 1: Input A:n1*d B:d*n2
     A = A.t(); // d*n1
     int64_t d = A.size(0);
     int64_t n1 = A.size(1);
     int64_t n2 = B.size(1);
-    
+    int64_t k=(int64_t)k2;
     // Step 2: Get sketched matrix
     torch::Tensor pi = 1/std::sqrt(k) * torch::randn({k, d}); // Gaussian sketching matrix
     torch::Tensor A_tilde = torch::matmul(pi, A); // k*n1
