@@ -58,10 +58,11 @@ TEST_CASE("Test Weighted CR in cpp", "[short]")
 {
     torch::manual_seed(114514);
     AMMBench::WeightedCRCPPAlgo wcr;
-    auto A = torch::rand({400, 400});
-    auto B = torch::rand({400, 400});
+    auto A = torch::rand({500, 400});
+    auto B = torch::rand({400, 600});
     auto realC = torch::matmul(A, B);
     auto ammC = wcr.amm(A, B, 20);
     double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+    std::cout << "froError: " << froError << std::endl;
     REQUIRE(froError < 0.5);
 }

@@ -6,7 +6,7 @@
 
 namespace AMMBench {
 torch::Tensor AMMBench::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k) {
-   // Step 1: Input
+   // Step 1: Input A:n1*d B:d*n2
     A = A.t(); // d*n1
     int64_t d = A.size(0);
     int64_t n1 = A.size(1);
