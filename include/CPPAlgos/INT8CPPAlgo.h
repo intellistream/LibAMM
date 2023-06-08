@@ -20,8 +20,42 @@ namespace AMMBench {
 /**
  * @class INT8CPPAlgo CPPAlgos/INT8CPPAlgo.h
  * @brief The INT8 MM class of c++ algos
+ * @warning This function disables all additional optimization by libtorch, as it has different, and not fair SIMD/cache optimization
+ * over FP32/INT16/INT8 on cpu, which is hard to compare
+ * @note additionally parameters
+ * - fpMode, String, default FP32, can also use INT8 or INT16
  */
 class INT8CPPAlgo : public AMMBench::AbstractCPPAlgo {
+ protected:
+  /**
+  * @brief the inline amm under nested loop fp32
+  * @param A the A matrix
+  * @param B the B matrix
+  * @return the output c matrix
+  */
+  torch::Tensor fp32amm(torch::Tensor A, torch::Tensor B);
+  /**
+  * @brief the inline amm under nested loop int8
+  * @param A the A matrix
+  * @param B the B matrix
+  * @return the output c matrix
+  */
+  torch::Tensor int8amm(torch::Tensor A, torch::Tensor B);
+  /**
+  * @brief the inline amm under nested loop int4
+  * @param A the A matrix
+  * @param B the B matrix
+  * @return the output c matrix
+  */
+  torch::Tensor int4amm(torch::Tensor A, torch::Tensor B);
+  /**
+ * @brief the inline amm under nested loop int16
+ * @param A the A matrix
+ * @param B the B matrix
+ * @return the output c matrix
+ */
+  torch::Tensor int16amm(torch::Tensor A, torch::Tensor B);
+  std::string fpMode="FP32";
  public:
   INT8CPPAlgo() {
 
@@ -37,7 +71,10 @@ class INT8CPPAlgo : public AMMBench::AbstractCPPAlgo {
    * @return the output c matrix
    */
   virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
-
+  /**
+ * @brief set the alo-specfic config related to one algorithm
+ */
+  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
 };
 /**
  * @ingroup AMMBENCH_CppAlgos
