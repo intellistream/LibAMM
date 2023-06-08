@@ -17,6 +17,7 @@ void runSingleThreadTest(std::string configName) {
   cfg->fromFile(configName);
   AMMBench::MatrixLoaderTable mLoaderTable;
   uint64_t sketchDimension;
+  ConfigMapPtr breakDownResult= nullptr;
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
   uint64_t usingMeter = cfg->tryU64("usingMeter", 0, true);
@@ -81,6 +82,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     if (eMeter != nullptr) {
       eMeter->stopMeter();
     }
+    breakDownResult=br.getBreakDown();
   } else {
     AMMBench::CPPAlgoTable cppAlgoTable;
     std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
@@ -101,7 +103,10 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     if (eMeter != nullptr) {
       eMeter->stopMeter();
     }
-
+    if(useCPP && cppAlgoPtr)
+    {
+      breakDownResult=cppAlgoPtr->getBreakDown();
+    }
   }
 
   std::string ruName = "default";
@@ -130,8 +135,15 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   resultCsv->edit("froError", (double) froError);
   resultCsv->edit("errorBoundRatio", (double) errorBoundRatio);
   resultCsv->toFile(ruName + ".csv");
-  INTELLI_INFO("Done. here is result");
+  INTELLI_INFO("Done. here is overall result");
   std::cout << resultCsv->toString() << endl;
+   if(breakDownResult)
+   {
+     INTELLI_INFO("I also have some break down result");
+     std::cout << breakDownResult->toString() << endl;
+     breakDownResult->toFile(ruName+"_breakdown.csv");
+   }
+
 }
 
 int main(int argc, char **argv) {

@@ -67,6 +67,13 @@ void AMMBench::BlockPartitionWorker::inlineMain() {
   gettimeofday(&tend, NULL);
   //std::cout<<subC;
 }
+INTELLI::ConfigMapPtr AMMBench::BlockPartitionWorker::getBreakDown() {
+  if(useCPP&&cppAlgoPtr)
+  {
+    return  cppAlgoPtr->getBreakDown();
+  }
+  return nullptr;
+}
 uint64_t AMMBench::BlockPartitionWorker::getElapsedTime() {
   return INTELLI::UtilityFunctions::timeLast(tstart, tend);
 }
@@ -133,4 +140,8 @@ void AMMBench::BlockPartitionRunner::appendThreadInfo(INTELLI::ConfigMapPtr ru) 
     std::string keyElapesedTime = "thread" + to_string(i) + "RunTime";
     ru->edit(keyElapesedTime, (uint64_t) workers[i]->getElapsedTime());
   }
+}
+
+INTELLI::ConfigMapPtr AMMBench::BlockPartitionRunner::getBreakDown() {
+  return workers[0]->getBreakDown();
 }

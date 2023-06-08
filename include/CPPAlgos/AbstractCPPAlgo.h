@@ -21,6 +21,17 @@ namespace AMMBench {
  * @brief The abstract class of c++ algos
  */
 class AbstractCPPAlgo {
+ protected:
+  /**
+   * @brief the default time break dowm variables
+   * @note By default, we decompose each AMM as
+   * - buildA, to translate A matrix
+   * - buildB, to translate B matrix
+   * - fABTime, to conduct mm or table look-up over the reduced A,B
+   * - postProcessTime, if f(A,B) is not the finall result, measure the time spend for post process
+   */
+  uint64_t buildATime=0,buildBTime=0,fABTime=0,postProcessTime=0;
+
  public:
   AbstractCPPAlgo() {
 
@@ -40,7 +51,11 @@ class AbstractCPPAlgo {
    * @return the output c matrix
    */
   virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
-
+  /**
+   * @brief to get the breakdown of this algorithm, returned as a config map
+   * @return the key-value table breakdown in ConfigMapPtr;
+   */
+   virtual  INTELLI::ConfigMapPtr getBreakDown();
 };
 /**
  * @ingroup AMMBENCH_CppAlgos

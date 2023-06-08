@@ -38,7 +38,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint6
   scalingB = torch::abs(B).max().item<float>() / 127.0;
   auto ta = (A / scalingA).to(torch::kInt8);
   auto tb = (B / scalingB).to(torch::kInt8);
-  // torch::matmul(ta, tb);
+  torch::matmul(ta, tb);
   return torch::zeros({A.size(0), B.size(1)});
   return torch::matmul(ta, tb).to(torch::kFloat) * scalingA * scalingB;
   //return C*scalingA*scalingB/127.0/127.0;
