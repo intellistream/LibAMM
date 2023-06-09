@@ -4,4 +4,5 @@ add_subdirectory(Parallelization)
 add_subdirectory(CPPAlgos)
 add_sources(
         myVecAdd.cpp
+        CLContainer.cpp
 )

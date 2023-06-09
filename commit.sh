@@ -1,4 +1,4 @@
-BRANCH=INT8
+BRANCH=BACKUO_OPENCL
 git init
 git checkout -b $BRANCH
 git add .

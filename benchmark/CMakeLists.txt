@@ -27,6 +27,8 @@ if (BUILD_BENCHMARKS)
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.csv
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    file(COPY ${PROJECT_SOURCE_DIR}/src/CL
+            DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
     message("---Done building benchmarks")
 else (BUILD_BENCHMARKS)
     message("---Not building benchmarks!")
