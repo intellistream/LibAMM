@@ -38,6 +38,16 @@ torch::Tensor AMMBench::INT8CPPAlgo::fp32amm(torch::Tensor tensor1, torch::Tenso
 
   return resultTensor.clone();
 }
+static float getScaleingFactor( float scalingBase,std::vector<float> matrix1Float)
+{
+  float maxa=*std::max_element(matrix1Float.begin(), matrix1Float.end());
+  float minaAbs= abs(*std::min_element(matrix1Float.begin(), matrix1Float.end()));
+  if (minaAbs>maxa)
+  {
+    maxa=minaAbs;
+  }
+  return scalingBase/maxa;
+}
 torch::Tensor AMMBench::INT8CPPAlgo::int4amm(torch::Tensor tensor1, torch::Tensor tensor2)
 {
   auto A_size = tensor1.sizes();
@@ -54,7 +64,8 @@ torch::Tensor AMMBench::INT8CPPAlgo::int4amm(torch::Tensor tensor1, torch::Tenso
   std::vector<float> matrix1Float(tensor1.data_ptr<float>(), tensor1.data_ptr<float>() + rows1 * cols1);
   // Convert the input matrices to int8
   std::vector<int8_t> matrix1(rows1 * cols1);
-  float scale1 = 7.0 / *std::max_element(matrix1Float.begin(), matrix1Float.end());
+
+  float scale1 = getScaleingFactor(7.0,matrix1Float);
   for (int i = 0; i < rows1 * cols1; ++i) {
     matrix1[i] = static_cast<int8_t>(matrix1Float[i] * scale1);
   }
@@ -65,7 +76,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::int4amm(torch::Tensor tensor1, torch::Tenso
    */
   std::vector<float> matrix2Float(tensor2.data_ptr<float>(), tensor2.data_ptr<float>() + cols1 * cols2);
   std::vector<int8_t> matrix2(cols1 * cols2);
-  float scale2 = 7.0 / *std::max_element(matrix2Float.begin(), matrix2Float.end());
+  float scale2 = getScaleingFactor(7.0,matrix2Float);
   for (int i = 0; i < cols1 * cols2; ++i) {
     matrix2[i] = static_cast<int8_t>(matrix2Float[i] * scale2);
   }
@@ -138,7 +149,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::int8amm(torch::Tensor tensor1, torch::Tenso
   std::vector<float> matrix1Float(tensor1.data_ptr<float>(), tensor1.data_ptr<float>() + rows1 * cols1);
   // Convert the input matrices to int8
   std::vector<int8_t> matrix1(rows1 * cols1);
-  float scale1 = 127.0 / *std::max_element(matrix1Float.begin(), matrix1Float.end());
+  float scale1 = getScaleingFactor(127.0,matrix1Float);
   for (int i = 0; i < rows1 * cols1; ++i) {
     matrix1[i] = static_cast<int8_t>(matrix1Float[i] * scale1);
   }
@@ -149,7 +160,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::int8amm(torch::Tensor tensor1, torch::Tenso
    */
   std::vector<float> matrix2Float(tensor2.data_ptr<float>(), tensor2.data_ptr<float>() + cols1 * cols2);
   std::vector<int8_t> matrix2(cols1 * cols2);
-  float scale2 = 127.0 / *std::max_element(matrix2Float.begin(), matrix2Float.end());
+  float scale2 = getScaleingFactor(127.0,matrix2Float);
   for (int i = 0; i < cols1 * cols2; ++i) {
     matrix2[i] = static_cast<int8_t>(matrix2Float[i] * scale2);
   }
@@ -216,7 +227,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::int16amm(torch::Tensor tensor1, torch::Tens
   std::vector<float> matrix1Float(tensor1.data_ptr<float>(), tensor1.data_ptr<float>() + rows1 * cols1);
   // Convert the input matrices to int8
   std::vector<int16_t> matrix1(rows1 * cols1);
-  float scale1 = 32767.0 / *std::max_element(matrix1Float.begin(), matrix1Float.end());
+  float scale1 = getScaleingFactor(32767.0,matrix1Float);
   for (int i = 0; i < rows1 * cols1; ++i) {
     matrix1[i] = static_cast<int16_t>(matrix1Float[i] * scale1);
   }
@@ -227,7 +238,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::int16amm(torch::Tensor tensor1, torch::Tens
    */
   std::vector<float> matrix2Float(tensor2.data_ptr<float>(), tensor2.data_ptr<float>() + cols1 * cols2);
   std::vector<int16_t> matrix2(cols1 * cols2);
-  float scale2 = 32767.0/ *std::max_element(matrix2Float.begin(), matrix2Float.end());
+  float scale2 =getScaleingFactor(32767.0,matrix2Float);
   for (int i = 0; i < cols1 * cols2; ++i) {
     matrix2[i] = static_cast<int16_t>(matrix2Float[i] * scale2);
   }
