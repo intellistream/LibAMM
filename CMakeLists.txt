@@ -67,12 +67,12 @@ add_subdirectory(src)
 # Add Library
 get_sources(IntelliStream_SOURCE_FILES)
 get_headers(IntelliStream_HEADER_FILES)
-add_library(IntelliStream SHARED ${IntelliStream_SOURCE_FILES} ${IntelliStream_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR})
+add_library(IntelliStream SHARED ${IntelliStream_SOURCE_FILES} ${IntelliStream_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR} )
 set_property(TARGET IntelliStream PROPERTY CXX_STANDARD 20)
 
 target_include_directories(IntelliStream PUBLIC "include")
 target_include_directories(IntelliStream PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-target_link_libraries(IntelliStream PUBLIC ${LIBRARIES})
+target_link_libraries(IntelliStream PUBLIC ${LIBRARIES} OpenCL)
 #add_subdirectory(test)
 #Add benchmarks with command
 add_subdirectory(benchmark)
