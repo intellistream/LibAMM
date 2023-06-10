@@ -16,22 +16,24 @@ namespace AMMBench {
 /**
  * @class TugOfWarCPPAlgo CPPAlgos/TugOfWarCPPAlgo.h
  * @brief The tug of war class of c++ algoS
+ * @note parameters
+ * - algoDelta Double, the delta parameter in this algo, default 0.02
  */
 class TugOfWarCPPAlgo : public AMMBench::AbstractCPPAlgo {
-  double delta = 0.2;
+  double algoDelta = 0.02;
 
  public:
   TugOfWarCPPAlgo() {
 
   }
 
-  TugOfWarCPPAlgo(double delta) : delta(delta) {
-
-  }
-
   ~TugOfWarCPPAlgo() {
 
   }
+    /**
+   * @brief set the algo-specfic config related to one algorithm
+   */
+  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
 
   /**
    * @brief the virtual function provided for outside callers, rewrite in children classes
