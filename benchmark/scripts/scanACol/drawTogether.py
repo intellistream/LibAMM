@@ -124,10 +124,10 @@ def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
-    methodTags = ["FD-AMM", "Co-AMM", "BCo-AMM", "Couter-sketch", "MM"]
-    resultPaths = ["fd", "co", "co", "cs", "mm"]
-    csvTemplates = ["config_FDAMM.csv", "config_CoAMM.csv", "config_BCoAMM.csv", "config_CounterSketch.csv",
-                    "config_RAWMM.csv"]
+    methodTags = ["Co-AMM", "BCo-AMM", "Count-sketch", "Tug-of-War", "MM"]
+    resultPaths = ["co", "co", "cs", "tow", "mm"]
+    csvTemplates = ["config_CoAMM.csv", "config_BCoAMM.csv", "config_CounterSketch.csv",
+                    "config_TugOfWar.csv", "config_RAWMM.csv"]
     valueVec = [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
     valueVecDisp = np.array(valueVec)
     # run
@@ -153,9 +153,10 @@ def main():
                                 figPath + "/" + scanTag + "sketch_cacheMiss",
                                 True)
     # sampling
-    resultPaths = ["crs", "bcrs", "ews", "mm"]
-    csvTemplates = ["config_CRS.csv", "config_BerCRS.csv", "config_EWS.csv", "config_RAWMM.csv"]
-    methodTags = ["CRS", "Ber-CRS", "EWS", "MM"]
+    resultPaths = ["crs", "crsv2", "bcrs", "wcr", "ews", "mm"]
+    csvTemplates = ["config_CRS.csv", "config_CRSV2.csv", "config_BerCRS.csv", "config_WCR.csv",
+                    "config_EWS.csv", "config_RAWMM.csv"]
+    methodTags = ["CRS", "CRSV2", "Ber-CRS", "Weighted-CR", "EWS", "MM"]
     elapsedTimeAll, cacheMissAll, periodAll = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
                                                             reRun)
     groupLine.DrawFigure(periodAll, elapsedTimeAll,
