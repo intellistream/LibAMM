@@ -150,7 +150,7 @@ torch::Tensor AMMBench::CLMMCPPAlgo::clint8(torch::Tensor tensor1, torch::Tensor
 
   clint8Test(clc,matrix1.data(),matrix2.data(),result.data(),params,localSize0,localSize1);
   fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart)-buildATime-buildBTime;
-  postProcessTime=INTELLI::UtilityFunctions::timeLastUs(tstart)-buildATime-buildBTime-fABTime;
+
   // exit(-1);
   std::vector<float> resultFP32(rows1 * cols2);
   float scaleResult = 1.0 / (scale1 * scale2);
@@ -158,6 +158,7 @@ torch::Tensor AMMBench::CLMMCPPAlgo::clint8(torch::Tensor tensor1, torch::Tensor
     resultFP32[i] = static_cast<float>(result[i] * scaleResult);
   }
   torch::Tensor resultTensor = torch::from_blob(resultFP32.data(), {rows1,cols2});
+  postProcessTime=INTELLI::UtilityFunctions::timeLastUs(tstart)-buildATime-buildBTime-fABTime;
   //torch::Tensor resultTensor = torch::zeros({rows1,cols2});
 
   /**
