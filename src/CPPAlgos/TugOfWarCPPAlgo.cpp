@@ -5,6 +5,10 @@
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
 
 namespace AMMBench {
+void TugOfWarCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
+  algoDelta = cfg->tryDouble("algoDelta",algoDelta,true);
+}
+
 torch::Tensor TugOfWarCPPAlgo::generateTugOfWarMatrix(int64_t m, int64_t n) {
   double e = 1.0 / std::sqrt(m);
   torch::Tensor M = torch::randint(2, {m, n});
@@ -15,6 +19,9 @@ torch::Tensor TugOfWarCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t l2
   int64_t n = A.size(1);
   int64_t p = B.size(1);
   int64_t l = (int64_t) l2;
+
+  double delta = algoDelta;
+
   int64_t i_iters = static_cast<int64_t>(-std::log(delta));
   int64_t j_iters = static_cast<int64_t>(2 * (-std::log(delta) + std::log(-std::log(delta))));
 
