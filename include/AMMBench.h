@@ -98,12 +98,25 @@
  */
 /**
 * @subsection code_stru_parallelization Parallelization
-* This folder contains the parallelizationapproaches
+* This folder contains the parallelization approaches
 * @defgroup  AMMBENCH_PARALLELIZATION The parallelization classes
 * @{
 * We define the parallelization classes of AMM. here
 **/
 #include <Parallelization/BlockPartitionRunner.h>
+/**
+ * @}
+ *
+ */
+/**
+* @subsection code_stru_STREAMING STREAMING
+* This folder contains the STREAMING approaches
+* @defgroup  AMMBENCH_STREAMING The streaming classes
+* @{
+* We define the streaming classes of AMM. here
+**/
+#include <Streaming/TimeStamper.h>
+#include <Streaming/SingleThreadStreamer.h>
 /**
  * @}
  *

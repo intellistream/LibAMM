@@ -1,1 +1,1 @@
-1. add the c++ function of loading prototype from python, see test/systemTest/PQTest.cpp
+1. add the experimental feature of single thread streaming
