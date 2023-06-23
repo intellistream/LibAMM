@@ -10,6 +10,29 @@ using namespace std;
 using namespace INTELLI;
 using namespace torch;
 using namespace DIVERSE_METER;
+void streamingTest(ConfigMapPtr cfg,torch::Tensor A, torch::Tensor B, uint64_t sketchSize=1)
+{
+    AMMBench::SingleThreadStreamer ss;
+    ss.setConfig(cfg);
+    auto ssC=ss.streamingAmm(A,B,sketchSize);
+
+    auto resultCsv=newConfigMap();;
+    resultCsv->edit("throughput",(double )ss.getThroughput());
+    resultCsv->edit("throughputByElements",(double )(ss.getThroughput()*A.size(1)));
+    resultCsv->edit("95%latency",(double )ss.getLatencyPercentage(0.95));
+    INTELLI_WARNING("evaluating the error, may takes some time");
+    torch::Tensor rawC = torch::matmul(A, B);
+    double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(rawC, ssC);
+    double froBNormal = B.norm().item<double>();
+    double errorBoundRatio = froError / froBNormal;
+    INTELLI_INFO("B normal is " + to_string(froBNormal));
+    resultCsv->edit("froError", (double) froError);
+    resultCsv->edit("errorBoundRatio", (double) errorBoundRatio);
+    resultCsv->toFile( "result_streaming.csv");
+    INTELLI_INFO("Done. here is overall result");
+    std::cout << resultCsv->toString() << endl;
+    return;
+}
 void runSingleThreadTest(std::string configName) {
   MeterTable meterTable;
   AbstractMeterPtr eMeter = nullptr;
@@ -59,6 +82,12 @@ void runSingleThreadTest(std::string configName) {
   auto A = matLoaderPtr->getA();
   auto B = matLoaderPtr->getB();
   torch::Tensor C;
+  uint64_t isStreaming = cfg->tryU64("isStreaming", 0, true);
+  if(isStreaming)
+  {
+      streamingTest(cfg,A,B,sketchDimension);
+      return;
+  }
   //555
   /*torch::manual_seed(114514);
 //555
