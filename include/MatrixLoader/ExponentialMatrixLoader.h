@@ -4,7 +4,9 @@
 
 #ifndef INTELLISTREAM_EXPONENTIALMATRIXLOADER_H
 #define INTELLISTREAM_EXPONENTIALMATRIXLOADER_H
+
 #include <MatrixLoader/AbstractMatrixLoader.h>
+
 namespace AMMBench {
 /**
  * @ingroup AMMBENCH_MatrixLOADER
@@ -36,19 +38,23 @@ namespace AMMBench {
     protected:
         torch::Tensor A, B;
         uint64_t aRow, aCol, bCol, seed;
+
         /**
          * @brief Inline logic of reading a config file
          * @param cfg the config
          */
         void paraseConfig(INTELLI::ConfigMapPtr cfg);
+
         /**
          * @brief inline logic of generating A and B
          */
         void generateAB();
+
     public:
         ExponentialMatrixLoader() = default;
 
         ~ExponentialMatrixLoader() = default;
+
         /**
            * @brief Set the GLOBAL config map related to this loader
            * @param cfg The config map
@@ -56,17 +62,20 @@ namespace AMMBench {
             * @note
            */
         virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
+
         /**
          * @brief get the A matrix
          * @return the generated A matrix
          */
         virtual torch::Tensor getA();
+
         /**
         * @brief get the B matrix
         * @return the generated B matrix
         */
         virtual torch::Tensor getB();
     };
+
 /**
  * @ingroup AMMBENCH_MatrixLOADER_Exponential
  * @typedef ExponentialMatrixLoaderPtr

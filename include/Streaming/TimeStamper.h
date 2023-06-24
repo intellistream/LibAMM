@@ -5,11 +5,13 @@
 
 #ifndef INTELLISTREAM_TIMESTAMPER_H
 #define INTELLISTREAM_TIMESTAMPER_H
+
 #include <stdint.h>
 #include <Utils/MicroDataSet.hpp>
 #include <memory>
 #include <vector>
 #include <Utils/ConfigMap.hpp>
+
 namespace AMMBench {
 /**
  * @ingroup AMMBENCH_STREAMING
@@ -21,28 +23,30 @@ namespace AMMBench {
 * @brief The class to define timestamp in streaming
 * @ingroup AMMBENCH_STREAMING
 */
-    class AMMTimeStamp{
+    class AMMTimeStamp {
     public:
         /**
          * @brief The time when the related event (to a row or a column) happen
          */
-        uint64_t eventTime=0;
+        uint64_t eventTime = 0;
         /**
          * @brief The time when the related event (to a row or a column) arrive to the system
          */
-        uint64_t  arrivalTime=0;
+        uint64_t arrivalTime = 0;
         /**
          * @brief the time when the related event is fully processed
          */
-        uint64_t  processedTime=0;
-        AMMTimeStamp(){}
-        AMMTimeStamp(uint64_t te,uint64_t ta,uint64_t tp)
-        {
-            eventTime=te;
-            arrivalTime=ta;
-            processedTime=tp;
+        uint64_t processedTime = 0;
+
+        AMMTimeStamp() {}
+
+        AMMTimeStamp(uint64_t te, uint64_t ta, uint64_t tp) {
+            eventTime = te;
+            arrivalTime = ta;
+            processedTime = tp;
         }
-        ~AMMTimeStamp(){}
+
+        ~AMMTimeStamp() {}
     };
 
 /**
@@ -55,6 +59,7 @@ namespace AMMBench {
  * @brief (Macro) To creat a new @ref AMMTimeStamp under shared pointer.
  */
 #define newAMMTimeStamp std::make_shared<AMMBench::AMMTimeStamp>
+
     /**
    * @class TimeStamper Streaming/TimeStamper.h
    * @brief The basic class to generate time stamps
@@ -73,14 +78,15 @@ namespace AMMBench {
     protected:
         INTELLI::ConfigMapPtr cfgGlobal;
         INTELLI::MicroDataSet md;
-        uint64_t timeStamper_zipfEvent=0;
-        double timeStamper_zipfEventFactor=0;
+        uint64_t timeStamper_zipfEvent = 0;
+        double timeStamper_zipfEventFactor = 0;
         uint64_t testSize;
         std::vector<uint64_t> eventS;
         std::vector<uint64_t> arrivalS;
-        uint64_t eventRateTps=0;
-        uint64_t timeStepUs=40;
-        uint64_t seed=114514;
+        uint64_t eventRateTps = 0;
+        uint64_t timeStepUs = 40;
+        uint64_t seed = 114514;
+
         /**
       *
       *  @brief generate the vector of event
@@ -97,28 +103,32 @@ namespace AMMBench {
          * @brief generate the final result of s and r
          */
         void generateFinal();
+
         std::vector<AMMBench::AMMTimeStampPtr> constructTimeStamps(
-                                                 std::vector<uint64_t> eventS,
-                                                 std::vector<uint64_t> arrivalS);
+                std::vector<uint64_t> eventS,
+                std::vector<uint64_t> arrivalS);
 
     public:
-        TimeStamper(){}
-        ~TimeStamper(){}
+        TimeStamper() {}
+
+        ~TimeStamper() {}
+
         std::vector<AMMBench::AMMTimeStampPtr> myTs;
+
         /**
       * @brief Set the GLOBAL config map related to this TimerStamper
       * @param cfg The config map
        * @return bool whether the config is successfully set
       */
-      virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
+        virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
 
         /**
         * @brief get the vector of R tuple
         * @return the vector
         */
-      virtual  std::vector<AMMBench::AMMTimeStampPtr> getTimeStamps(){
+        virtual std::vector<AMMBench::AMMTimeStampPtr> getTimeStamps() {
             return myTs;
-      }
+        }
     };
 /**
  * @}

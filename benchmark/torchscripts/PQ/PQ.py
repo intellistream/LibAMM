@@ -2,6 +2,7 @@ import torch
 
 import time
 
+
 def kmeans(X, K, max_iters=100):
     N, D = X.shape
 
@@ -21,28 +22,34 @@ def kmeans(X, K, max_iters=100):
                 centroids[k] = torch.mean(X[labels == k], dim=0)
 
     return centroids, labels
+
+
 class MyModule(torch.nn.Module):
-    def __init__(self,prototypes):
+    def __init__(self, prototypes):
         super(MyModule, self).__init__()
-        #self.fc = torch.nn.Linear(10, 5)
-        self.prototypes=torch.nn.Parameter(prototypes)
-        self.QA=torch.nn.Parameter(torch.rand(5,5))
-        #self.register_parameter("prototypes", self.prototypes)
-    def forward(self,A: torch.Tensor):
-        return torch.matmul(A,A.T)+torch.sum(self.prototypes[0])+torch.sum(self.QA)
- 
+        # self.fc = torch.nn.Linear(10, 5)
+        self.prototypes = torch.nn.Parameter(prototypes)
+        self.QA = torch.nn.Parameter(torch.rand(5, 5))
+        # self.register_parameter("prototypes", self.prototypes)
+
+    def forward(self, A: torch.Tensor):
+        return torch.matmul(A, A.T) + torch.sum(self.prototypes[0]) + torch.sum(self.QA)
+
+
 def save_model(model, path, X):
     tx = X.to('cpu')
     # tx=X
     model2 = model.to('cpu')
     # model2=model
-    #model2.eval()
+    # model2.eval()
     X = torch.tensor([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
 
     traced_model = torch.jit.script(model2)
     ru = traced_model(tx)
-    
+
     traced_model.save(path)
+
+
 def main():
     learning = True
 
@@ -73,7 +80,7 @@ def main():
 
     if trainingSet != None:
         print("Starting prototypes learning on training set size of "
-            + str(trainingSet.shape[0]) + ", " + str(trainingSet.shape[1]))
+              + str(trainingSet.shape[0]) + ", " + str(trainingSet.shape[1]))
         t = time.time()
 
         for c in range(C):
@@ -87,13 +94,13 @@ def main():
             A_subspace_np = A_subspace.detach().numpy()
 
             # Run KMeans on the subspace
-            centroids_torch,LB = kmeans(A_subspace,K, 10)
+            centroids_torch, LB = kmeans(A_subspace, K, 10)
 
             # Get the centroids (prototypes)
-            #centroids = kmeans.cluster_centers_
+            # centroids = kmeans.cluster_centers_
 
             # Convert back to PyTorch tensor
-            #centroids_torch = torch.from_numpy(centroids)
+            # centroids_torch = torch.from_numpy(centroids)
 
             # Append to the list of prototypes
             prototypes.append(centroids_torch)
@@ -102,9 +109,9 @@ def main():
 
         print("\nPrototype Learning: " + str(time.time() - t) + "s")
         model = MyModule(torch.stack(prototypes))
-        save_model(model.to('cpu'), "prototypes.pt",torch.zeros(5,5))
-        #model.save_model("prototypes.pt")
-        #torch.save(prototypes, 'prototypes.pt')
+        save_model(model.to('cpu'), "prototypes.pt", torch.zeros(5, 5))
+        # model.save_model("prototypes.pt")
+        # torch.save(prototypes, 'prototypes.pt')
 
     else:
         print("Loading prototypes from serialized pickle file\n")
@@ -122,9 +129,9 @@ def main():
         for c in range(C):
             # Get the prototypes for this subspace
             prototypes_c = prototypes[c]
-            
+
             # Get the subvector for this subspace
-            a_subvector = a[c * D_c : (c + 1) * D_c]
+            a_subvector = a[c * D_c: (c + 1) * D_c]
 
             # Calculate the distances from the subvector to each prototype
             distances = torch.norm(prototypes_c - a_subvector, dim=1)
@@ -150,7 +157,6 @@ def main():
 
     # Assume that B is a PyTorch tensor of size D x M
 
-
     # Initialize a list to store the tables for each subspace
     tables = []
 
@@ -161,7 +167,7 @@ def main():
         prototypes_c = prototypes[c]
 
         # Slice B to get the corresponding subspace
-        B_subspace = B[c * D_c : (c + 1) * D_c, :]
+        B_subspace = B[c * D_c: (c + 1) * D_c, :]
 
         # Initialize an empty list to store the table for this subspace
         table_c = []
@@ -213,7 +219,6 @@ def main():
     # Convert the list of all rows to a PyTorch tensor
     result_tensor = torch.stack(result)
 
-
     print("Aggregation: " + str(time.time() - t) + "s")
     print("\nTotal: " + str(time.time() - total) + "s")
 
@@ -227,6 +232,8 @@ def main():
     print("Exact time: " + str(time.time() - t) + "s")
     print(eResult)
     print("\nerror: " + str(torch.norm(result_tensor - eResult, p='fro').item()))
-    print(len(prototypes),torch.stack(prototypes).size())
+    print(len(prototypes), torch.stack(prototypes).size())
+
+
 if __name__ == '__main__':
     main()

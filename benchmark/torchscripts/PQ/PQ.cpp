@@ -15,8 +15,8 @@ int main() {
     std::vector<torch::Tensor> prototypes;
     std::ifstream in_file("/home/haolan/PQ/prototypes.pt", std::ios::binary);
     if (!in_file.is_open()) {
-	    std::cerr << "Error opening file prototypes.pt\n";
-	    return 1;
+        std::cerr << "Error opening file prototypes.pt\n";
+        return 1;
     }
     torch::load(prototypes, in_file);
 

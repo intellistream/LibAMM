@@ -208,7 +208,9 @@ def DrawFigureXYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min,
     # plt.show()
     plt.savefig(filename + ".pdf", bbox_inches='tight')
 
+
 import matplotlib.ticker as mtick
+
 
 # draw a line chart
 def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
@@ -244,8 +246,8 @@ def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, 
     # plt.yscale('log')
 
     # you may control the limits on your own.
-    yMax=np.max(y_values)
-    plt.ylim(y_min, yMax*1.2)
+    yMax = np.max(y_values)
+    plt.ylim(y_min, yMax * 1.2)
 
     plt.grid(axis='y', color='gray')
     plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
@@ -265,7 +267,6 @@ def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, 
 
     # plt.show()
     plt.savefig(filename + ".pdf", bbox_inches='tight')
-
 
 
 # example for reading csv file

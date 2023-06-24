@@ -3,6 +3,7 @@
 //
 #include <MatrixLoader/ExponentialMatrixLoader.h>
 #include <Utils/IntelliLog.h>
+
 void AMMBench::ExponentialMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
     aRow = cfg->tryU64("aRow", 100, true);
     aCol = cfg->tryU64("aCol", 1000, true);
@@ -12,6 +13,7 @@ void AMMBench::ExponentialMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) 
             "Generating [" + to_string(aRow) + "x" + to_string(aCol) + "]*[" + to_string(aCol) + "x" + to_string(bCol)
             + "]");
 }
+
 void AMMBench::ExponentialMatrixLoader::generateAB() {
     torch::manual_seed(seed);
     A = torch::exponential(torch::empty({(long) aRow, (long) aCol}));
@@ -24,9 +26,11 @@ bool AMMBench::ExponentialMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
     generateAB();
     return true;
 }
+
 torch::Tensor AMMBench::ExponentialMatrixLoader::getA() {
     return A;
 }
+
 torch::Tensor AMMBench::ExponentialMatrixLoader::getB() {
     return B;
 }
