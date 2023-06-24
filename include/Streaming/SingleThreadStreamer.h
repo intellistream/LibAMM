@@ -40,6 +40,10 @@ namespace AMMBench {
          * @brief the timestamps to trace the streaming process
          */
         std::vector<AMMBench::AMMTimeStampPtr> myTs;
+      /**
+      * @brief the additional timestamps to trace the streaming process, if B is also stream
+      */
+      std::vector<AMMBench::AMMTimeStampPtr> myTsB;
 
         /**
      * @brief Set the GLOBAL config map related to this TimerStamper
@@ -55,6 +59,13 @@ namespace AMMBench {
       * @return bool whether the config is successfully set
      */
         virtual torch::Tensor streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1);
+      /**
+* @brief To run a streaming Amm, assuming the rows of A coming in a streaming manner and the cols of B coming in a streaming manner
+*  @param A The A matrix
+* @param B The B matrix
+ * @return bool whether the config is successfully set
+*/
+      virtual torch::Tensor streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1);
 
         /**
          * @brief to get the throughput of last streaming process, the unit is rows/second
