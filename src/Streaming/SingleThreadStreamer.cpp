@@ -34,7 +34,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
     matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
     struct timeval tstart;
     //INTELLI_INFO("I am mm");
-    INTELLI_INFO("Start Streaming");
+    INTELLI_INFO("Start Streaming A rows");
     uint64_t startRow = 0;
     uint64_t endRow = startRow + batchSize;
     uint64_t tNow = 0;
@@ -47,7 +47,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
         auto subA = A.slice(0, startRow, endRow);
         while (tNow < tEXpectedArrival) {
             tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
-            usleep(1);
+            //usleep(1);
         }
         /**
          * @brief now, the whole batch has arrived, compute
@@ -74,6 +74,97 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
     return *matC;
 }
 
+
+torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+  assert(sketchSize);
+  uint64_t aRows = A.size(0);
+  cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
+  if (batchSize > aRows) {
+    batchSize = aRows;
+  }
+  AMMBench::TimeStamper tsGen,tsGenB;
+  tsGen.setConfig(cfgGlobal);
+  myTs = tsGen.getTimeStamps();
+
+  tsGenB.setSeed(7758258);
+  tsGenB.setConfig(cfgGlobal);
+  myTsB = tsGenB.getTimeStamps();
+  INTELLI_INFO("Generate time stamps for two streams done");
+  matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
+  struct timeval tstart;
+  //INTELLI_INFO("I am mm");
+  INTELLI_INFO("Start Streaming A rows and B cols");
+  uint64_t startRow = 0;
+  uint64_t endRow = startRow + batchSize;
+  uint64_t tNow = 0;
+  uint64_t tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
+  if(myTsB[endRow-1]->arrivalTime>tEXpectedArrival)
+  {
+    tEXpectedArrival=myTsB[endRow-1]->arrivalTime;
+  }
+  uint64_t tp = 0;
+  uint64_t tDone = 0;
+  gettimeofday(&tstart, NULL);
+  uint64_t iterationCnt=0;
+  torch::Tensor incomingA,incomingB,newArrivedB,oldArrivedA;
+  uint64_t aBCols=0,lastABCols=0;
+  while (startRow < aRows) {
+    tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    //auto subA = A.slice(0, startRow, endRow);
+    incomingA =A.slice(0, startRow, endRow);
+    incomingB=B.slice(1,startRow,endRow);
+    newArrivedB=B.slice(1,0,endRow);
+    while (tNow < tEXpectedArrival) {
+      tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+      //usleep(1);
+    }
+    /**
+     * @brief now, the whole batch has arrived, compute
+     */
+     /**
+      * @brief do the incomingA*newArrivedB part
+      */
+      auto aB=cppAlgoPtr->amm(incomingA, newArrivedB, sketchSize);
+      lastABCols=aBCols;
+      aBCols=aB.size(1);
+      matC->slice(0,startRow,endRow).slice(1,0,aBCols).copy_(aB);
+    /**
+    * @brief do the oldArrivedA*incomingB part
+    */
+    if(iterationCnt!=0)
+    {
+      auto aB2=cppAlgoPtr->amm(oldArrivedA, incomingB, sketchSize);
+      uint64_t aB2Rows=aB2.size(0);
+      uint64_t aB2Cols=aB2.size(1);
+      matC->slice(0,0,aB2Rows).slice(1,lastABCols,lastABCols+aB2Cols).copy_(aB2);
+    }
+    oldArrivedA=A.slice(0, 0, endRow);
+    //matC->slice(0, startRow, endRow) = cppAlgoPtr->amm(subA, B, sketchSize);
+    tp = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    for (size_t i = startRow; i < endRow; i++) {
+      myTs[i]->processedTime = tp;
+    }
+    /**
+     * @brief update the indexes
+     */
+    startRow += batchSize;
+    endRow += batchSize;
+    if (endRow >= aRows) {
+      endRow = aRows;
+    }
+    tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
+    if(myTsB[endRow-1]->arrivalTime>tEXpectedArrival)
+    {
+      tEXpectedArrival=myTsB[endRow-1]->arrivalTime;
+    }
+    iterationCnt++;
+  }
+  tDone = INTELLI::UtilityFunctions::timeLastUs(tstart);
+  INTELLI_INFO("Done in " + to_string(tDone) + "us");
+  throughput = aRows;
+  throughput = throughput * 1e6 / tDone;
+  return *matC;
+}
 double AMMBench::SingleThreadStreamer::getLatencyPercentage(double fraction) {
     size_t rLen = myTs.size();
     size_t nonZeroCnt = 0;

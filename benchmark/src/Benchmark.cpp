@@ -15,8 +15,18 @@ using namespace DIVERSE_METER;
 void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1) {
     AMMBench::SingleThreadStreamer ss;
     ss.setConfig(cfg);
-    auto ssC = ss.streamingAmm(A, B, sketchSize);
-
+    uint64_t streamingTwoMatrixes=cfg->tryU64("streamingTwoMatrixes", 0, true);
+    torch::Tensor ssC;
+    if(streamingTwoMatrixes)
+    {
+      INTELLI_INFO("Both A,B will be streaming" );
+      ssC = ss.streamingAmm2S(A, B, sketchSize);
+    }
+    else
+    {
+      INTELLI_INFO("Only A will be streaming" );
+      ssC = ss.streamingAmm(A, B, sketchSize);
+    }
     auto resultCsv = newConfigMap();;
     resultCsv->edit("throughput", (double) ss.getThroughput());
     resultCsv->edit("throughputByElements", (double) (ss.getThroughput() * A.size(1)));

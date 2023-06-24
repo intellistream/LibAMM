@@ -40,6 +40,10 @@
    * - meterTag (String) the tag of meter, see also @ref MeterTable, default is intelMsr
    * - staticPower (Double) set this to >0 if you want to manually config the static power of the device
    * - meterAddress (String) set this to the file system path of the meter, if it is different from the meter's default
+   * - isStreaming (U64) whether or not use streaming, default 0
+   * @note this will only be run under single thread now, and perf or energy meter is not avaliable when setting to 1
+   * @note by default, we only make A matrix streaming, if also want yo streaming B, please also set streamingTwoMatrixes to 1
+   * - streamingTwoMatrixes (U64) whether make B matrix also streaming, default 0, will only affect when isStreaming=1
    * @warning For some platforms, the staticPower automatically measured by sleep is not accurate. Please do this mannulally.
   See also the template config.csv
  * @section subsec_extend_operator How to extend a new algorithm (pt-based)

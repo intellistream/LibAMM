@@ -71,6 +71,7 @@ namespace AMMBench {
    *  - timeStamper_zipfEventFactor, Double, the zpf factor for event rate, default 0.1, should be 0~1
    * @note  Default behavior
    * - create
+   * - call @ref setSetSeed if you want different seed, default seed is 114514
    * - call @ref setConfig to generate the timestamp under instructions
    * - call @ref getTimeStamps to get the timestamp
    */
@@ -114,7 +115,14 @@ namespace AMMBench {
         ~TimeStamper() {}
 
         std::vector<AMMBench::AMMTimeStampPtr> myTs;
-
+        /**
+         * @brief to set the seed of this timestamer
+         * @param _seed
+         */
+        void setSeed(uint64_t _seed)
+        {
+          seed=_seed;
+        }
         /**
       * @brief Set the GLOBAL config map related to this TimerStamper
       * @param cfg The config map
