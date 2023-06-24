@@ -237,12 +237,14 @@ namespace INTELLI {
             }
             return ret;
         }
+
         template<class tsType=size_t>
         vector<tsType> genSmoothTimeStamp(size_t len, size_t maxTime) {
-          vector<tsType> ret=genRandInt<tsType>(len,maxTime);
+            vector<tsType> ret = genRandInt<tsType>(len, maxTime);
             std::sort(ret.begin(), ret.end()); //just incremental re-arrange
             return ret;
         }
+
         /**
          * @brief The function to generate a vector of timestamp which has zipf distribution
          * @param tsType The data type of time stamp, default is size_t

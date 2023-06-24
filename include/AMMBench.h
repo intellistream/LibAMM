@@ -5,6 +5,7 @@
 
 #ifndef INTELLISTREAM_AMMBENCH_H
 #define INTELLISTREAM_AMMBENCH_H
+
 #include <torch/torch.h>
 #include <iostream>
 #include <torch/script.h>
