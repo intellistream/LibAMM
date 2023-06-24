@@ -29,6 +29,7 @@ class CLMMCPPAlgo : public AMMBench::AbstractCPPAlgo {
   torch::Tensor clmm(torch::Tensor A, torch::Tensor B);
   torch::Tensor clint8(torch::Tensor A, torch::Tensor B);
   std::string clFile="CL/CLMM";
+  uint64_t clWorkDim=2;
   TONY_CL_HOST::CLContainerPtr clc=nullptr;
   uint64_t localSize0=1,localSize1=1;
  public:

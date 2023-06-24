@@ -4,7 +4,7 @@
 
 #include <CPPAlgos/CLMMCPPAlgo.h>
 #include <Utils/UtilityFunctions.h>
-void clTest(TONY_CL_HOST::CLContainerPtr clc,float *h_a,float *h_b,float  *h_c,int64_t *params,uint64_t local0,uint64_t local1)
+void clTest(TONY_CL_HOST::CLContainerPtr clc,float *h_a,float *h_b,float  *h_c,int64_t *params,uint64_t local0,uint64_t local1,uint64_t workDim=2)
 {
 
   clc->addHostOutPara(HostPara(h_a,params[0]*params[1]*sizeof(float)));
@@ -18,12 +18,12 @@ void clTest(TONY_CL_HOST::CLContainerPtr clc,float *h_a,float *h_b,float  *h_c,i
   globalSz[0]=params[0];
   globalSz[1]=params[2];
 
-  clc->setWorkDimension(2);
+  clc->setWorkDimension(workDim);
   clc->execute(globalSz,localSz);
 
   return ;
 }
-void clint8Test(TONY_CL_HOST::CLContainerPtr clc,int8_t *h_a,int8_t *h_b,int32_t  *h_c,int64_t *params,uint64_t local0,uint64_t local1)
+void clint8Test(TONY_CL_HOST::CLContainerPtr clc,int8_t *h_a,int8_t *h_b,int32_t  *h_c,int64_t *params,uint64_t local0,uint64_t local1,uint64_t workDim=2)
 {
 
   clc->addHostOutPara(HostPara(h_a,params[0]*params[1]*sizeof(int8_t)));
@@ -37,7 +37,7 @@ void clint8Test(TONY_CL_HOST::CLContainerPtr clc,int8_t *h_a,int8_t *h_b,int32_t
   globalSz[0]=params[0];
   globalSz[1]=params[2];
 
-  clc->setWorkDimension(2);
+  clc->setWorkDimension(workDim);
   clc->execute(globalSz,localSz);
 
   return ;
@@ -84,7 +84,7 @@ torch::Tensor AMMBench::CLMMCPPAlgo::clmm(torch::Tensor tensor1, torch::Tensor t
   clc->addHostOutPara(HostPara(params,3*sizeof(int64_t)));
   clc->addHostInPara(HostPara(m3,(rows1*cols2)*sizeof(float)));
 */
-  clTest(clc,matrix1.data(),matrix2.data(),result.data(),params,localSize0,localSize1);
+  clTest(clc,matrix1.data(),matrix2.data(),result.data(),params,localSize0,localSize1,clWorkDim);
   // exit(-1);
   fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart)-buildATime-buildBTime;
 
@@ -148,7 +148,7 @@ torch::Tensor AMMBench::CLMMCPPAlgo::clint8(torch::Tensor tensor1, torch::Tensor
   params[1]=cols1;
   params[2]=cols2;
 
-  clint8Test(clc,matrix1.data(),matrix2.data(),result.data(),params,localSize0,localSize1);
+  clint8Test(clc,matrix1.data(),matrix2.data(),result.data(),params,localSize0,localSize1,clWorkDim);
   fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart)-buildATime-buildBTime;
 
   // exit(-1);
@@ -176,6 +176,7 @@ void AMMBench::CLMMCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   clc=newCLContainer(1,CL_DEVICE_TYPE_DEFAULT,"CLMM",clFile);
   localSize0=cfg->tryU64("localSize0",1,true);
   localSize1=cfg->tryU64("localSize1",1,true);
+  clWorkDim=cfg->tryU64("clWorkDim",2,true);
 }
 torch::Tensor AMMBench::CLMMCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
