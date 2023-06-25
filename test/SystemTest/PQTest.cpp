@@ -22,3 +22,18 @@ TEST_CASE("Test PQ", "[short]")
     double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
     REQUIRE(froError < 0.5);
 }
+TEST_CASE("Test PQ Hash", "[short]")
+{
+    torch::manual_seed(114514);
+    AMMBench::ProductQuantizationHash pqHash;
+    auto A = torch::rand({1000, 1000});
+    auto B = torch::rand({1000, 1000});
+    auto realC = torch::matmul(A, B);
+    auto ammC = pqHash.amm(A, B, 20);
+    std::cout << "PQ:" << std::endl;
+    std::cout << ammC << std::endl;
+    std::cout << "exact:" << std::endl;
+    std::cout << realC << std::endl;
+    double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+    REQUIRE(froError < 0.5);
+}
