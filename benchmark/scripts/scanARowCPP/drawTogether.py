@@ -151,8 +151,9 @@ def main():
         os.system("sudo mkdir " + commonBase)
         reRun = 1
     # skech
-    elapsedTimeAll, cacheMissAll, periodAll, fro, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
-                                                            reRun)
+    elapsedTimeAll, cacheMissAll, periodAll, fro, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates,
+                                                                     valueVec,
+                                                                     reRun)
     groupLine.DrawFigure(periodAll, elapsedTimeAll,
                          methodTags,
                          "#elements in A's row", "elapsed time (ms)", 0, 1,
@@ -164,17 +165,17 @@ def main():
                                 figPath + "/" + scanTag + "sketch_cpp_cacheMiss",
                                 True)
     groupLine.DrawFigureYnormal(periodAll,
-                                 fro * 100.0,
-                                 methodTags,
-                                 "#A's row", "normalized error %", 0, 100, figPath + "/" +scanTag +
+                                fro * 100.0,
+                                methodTags,
+                                "#A's row", "normalized error %", 0, 100, figPath + "/" + scanTag +
                                 "sketch_cpp_froError",
-                                 True)
+                                True)
     groupLine.DrawFigureYnormal(periodAll,
-                                 eb * 100.0,
-                                 methodTags,
-                                 "#A's row", "error bound ratio %", 0, 100, figPath + "/" + scanTag
+                                eb * 100.0,
+                                methodTags,
+                                "#A's row", "error bound ratio %", 0, 100, figPath + "/" + scanTag
                                 + "sketch_cpp_ebRatio",
-                                 True)
+                                True)
 
     # sampling
     # resultPaths = ["crs", "bcrs", "ews", "mm","mm-cpp","crs-cpp"]
@@ -184,8 +185,9 @@ def main():
     methodTags = ["CRS", "CRSV2", "Ber-CRS", "Weighted-CR", "EWS", "INT8", "MM"]
     # csvTemplates = ["config_CRS.csv", "config_BerCRS.csv", "config_EWS.csv", "config_RAWMM.csv","config_CPPMM.csv","config_CPPCRS.csv"]
     # methodTags = ["CRS", "Ber-CRS", "EWS",, "MM","MM_CPP","CRS_CPP"]
-    elapsedTimeAll, cacheMissAll, periodAll,fro,eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
-                                                            reRun)
+    elapsedTimeAll, cacheMissAll, periodAll, fro, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates,
+                                                                     valueVec,
+                                                                     reRun)
     groupLine.DrawFigure(periodAll, elapsedTimeAll,
                          methodTags,
                          "#A's row", "elapsed time (ms)", 0, 1,
@@ -197,17 +199,17 @@ def main():
                                 figPath + "/" + scanTag + "sampling_cpp_cacheMiss",
                                 True)
     groupLine.DrawFigureYnormal(periodAll,
-                                 fro * 100.0,
-                                 methodTags,
-                                 "#A's row", "normalized error %", 0, 100, figPath + "/" +scanTag +
+                                fro * 100.0,
+                                methodTags,
+                                "#A's row", "normalized error %", 0, 100, figPath + "/" + scanTag +
                                 "sampling_cpp_froError",
-                                 True)
+                                True)
     groupLine.DrawFigureYnormal(periodAll,
-                                 eb * 100.0,
-                                 methodTags,
-                                 "#A's row", "error bound ratio %", 0, 100, figPath + "/" + scanTag
+                                eb * 100.0,
+                                methodTags,
+                                "#A's row", "error bound ratio %", 0, 100, figPath + "/" + scanTag
                                 + "sampling_cpp_ebRatio",
-                                 True)
+                                True)
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,compVec,"95% Latency (ms)","Completeness","ms","",figPath+"wm_omp")
