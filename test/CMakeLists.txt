@@ -27,4 +27,4 @@ add_catch_test(smp_pca_test SystemTest/SMPPCATest.cpp IntelliStream)
 add_catch_test(block_partition_test SystemTest/BlockPartitionTest.cpp IntelliStream)
 add_catch_test(tug_of_war_test SystemTest/TugOfWarTest.cpp IntelliStream)
 add_catch_test(int8_test SystemTest/INT8Test.cpp IntelliStream)
-
+add_catch_test(pq_test SystemTest/PQTest.cpp IntelliStream)

@@ -124,7 +124,7 @@
 #include <CPPAlgos/EWSCPPAlgo.h>
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
 #include <CPPAlgos/BetaCoOFDCPPAlgo.h>
-
+#include <CPPAlgos/ProductQuantizationRaw.h>
 #include <CPPAlgos/INT8CPPAlgo.h>
 
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
