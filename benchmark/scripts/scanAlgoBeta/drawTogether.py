@@ -150,8 +150,9 @@ def main():
         os.system("sudo mkdir " + commonBase)
         reRun = 1
 
-    elapsedTimeAll, cacheMissAll, periodAll,fro,eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
-                                                            reRun)
+    elapsedTimeAll, cacheMissAll, periodAll, fro, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates,
+                                                                     valueVec,
+                                                                     reRun)
     groupLine.DrawFigure(periodAll, elapsedTimeAll,
                          methodTags,
                          "value of beta", "elapsed time (ms)", 0, 1,
@@ -163,15 +164,15 @@ def main():
                                 figPath + "/" + scanTag + "_cacheMiss",
                                 True)
     groupLine.DrawFigureYnormal(periodAll,
-                                 fro * 100.0,
-                                 methodTags,
-                                 "value of beta", "normalized error %", 0, 1, figPath + "/" +scanTag + "_froError",
-                                 True)
+                                fro * 100.0,
+                                methodTags,
+                                "value of beta", "normalized error %", 0, 1, figPath + "/" + scanTag + "_froError",
+                                True)
     groupLine.DrawFigureYnormal(periodAll,
-                                 eb * 100.0,
-                                 methodTags,
-                                 "value of beta", "error bound ratio %", 0, 1, figPath + "/" + scanTag + "_ebRatio",
-                                 True)
+                                eb * 100.0,
+                                methodTags,
+                                "value of beta", "error bound ratio %", 0, 1, figPath + "/" + scanTag + "_ebRatio",
+                                True)
 
 
 if __name__ == "__main__":
