@@ -19,7 +19,7 @@ void AMMBench::BinomialMatrixLoader::generateAB() {
     A = torch::zeros({(long) aRow, (long) aCol});
     B = torch::zeros({(long) aCol, (long) bCol});
 
-    for(int i = 0; i < trials; i++) {
+    for(uint64_t i = 0; i < trials; i++) {
         // Create a tensor filled with random numbers between 0 and 1
         torch::Tensor rand_tensor = torch::rand({(long) aRow, (long) aCol});
 
@@ -27,7 +27,7 @@ void AMMBench::BinomialMatrixLoader::generateAB() {
         A += (rand_tensor < probability).to(torch::kInt);
     }
 
-    for(int i = 0; i < trials; i++) {
+    for(uint64_t i = 0; i < trials; i++) {
         // Create a tensor filled with random numbers between 0 and 1
         torch::Tensor rand_tensor = torch::rand({(long) aCol, (long) bCol});
 

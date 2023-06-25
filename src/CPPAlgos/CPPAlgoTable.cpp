@@ -7,7 +7,7 @@
 #include <CPPAlgos/CRSV2CPPAlgo.h>
 
 #include <CPPAlgos/CountSketchCPPAlgo.h>
-
+#include <CPPAlgos/ProductQuantizationRaw.h>
 #include <CPPAlgos/BCRSCPPAlgo.h>
 #include <CPPAlgos/EWSCPPAlgo.h>
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
@@ -30,6 +30,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["tugOfWar"] = newTugOfWarCPPAlgo();
   algoMap["weighted-cr"] = newWeightedCRCPPAlgo();
   algoMap["smp-pca"] = newSMPPCACPPAlgo();
+  algoMap["pq-raw"] = newProductQuantizationRawAlgo();
 }
 
 } // AMMBench
