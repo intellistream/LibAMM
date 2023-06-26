@@ -17,6 +17,7 @@
 #include <CPPAlgos/SMPPCACPPAlgo.h>
 #include <CPPAlgos/INT8CPPAlgo.h>
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
+
 namespace AMMBench {
 AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["mm"] = newAbstractCPPAlgo();
@@ -34,5 +35,4 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["pq-raw"] = newProductQuantizationRawAlgo();
   algoMap["pq-hash"] = newProductQuantizationHashAlgo();
 }
-
 } // AMMBench

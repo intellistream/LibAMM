@@ -1,4 +1,4 @@
-BRANCH=INT8
+BRANCH=Streaming
 git init
 git checkout -b $BRANCH
 git add .

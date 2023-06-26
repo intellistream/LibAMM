@@ -28,3 +28,4 @@ add_catch_test(block_partition_test SystemTest/BlockPartitionTest.cpp IntelliStr
 add_catch_test(tug_of_war_test SystemTest/TugOfWarTest.cpp IntelliStream)
 add_catch_test(int8_test SystemTest/INT8Test.cpp IntelliStream)
 add_catch_test(pq_test SystemTest/PQTest.cpp IntelliStream)
+add_catch_test(streaming_test SystemTest/StreamingTest.cpp IntelliStream)

@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <torch/torch.h>
 #include <memory>
+
 namespace AMMBench {
 /**
  * @ingroup AMMBENCH_MatrixLOADER
@@ -30,36 +31,40 @@ namespace AMMBench {
 * - call @ref setConfig, this function will also generate the tensor A and B correspondingly
 * - call @ref getA and @ref getB (assuming we are benchmarking torch.mm(A,B))
  */
-class AbstractMatrixLoader {
- public:
-  AbstractMatrixLoader() = default;
+    class AbstractMatrixLoader {
+    public:
+        AbstractMatrixLoader() = default;
 
-  ~AbstractMatrixLoader() = default;
-  /**
-     * @brief Set the GLOBAL config map related to this loader
-     * @param cfg The config map
-      * @return bool whether the config is successfully set
-      * @note
-     */
-  virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
-  /**
-   * @brief get the A matrix
-   * @return the generated A matrix
-   */
-  virtual torch::Tensor getA();
-  /**
-  * @brief get the B matrix
-  * @return the generated B matrix
-  */
-  virtual torch::Tensor getB();
-};
+        ~AbstractMatrixLoader() = default;
+
+        /**
+           * @brief Set the GLOBAL config map related to this loader
+           * @param cfg The config map
+            * @return bool whether the config is successfully set
+            * @note
+           */
+        virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
+
+        /**
+         * @brief get the A matrix
+         * @return the generated A matrix
+         */
+        virtual torch::Tensor getA();
+
+        /**
+        * @brief get the B matrix
+        * @return the generated B matrix
+        */
+        virtual torch::Tensor getB();
+    };
+
 /**
  * @ingroup AMMBENCH_MatrixLOADER_abstract
  * @typedef AbstractMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref AbstractMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::AbstractMatrixLoader> AbstractMatrixLoaderPtr;
+    typedef std::shared_ptr<class AMMBench::AbstractMatrixLoader> AbstractMatrixLoaderPtr;
 /**
  * @ingroup AMMBENCH_MatrixLOADER_abstract
  * @def newAbstractMatrixLoader
