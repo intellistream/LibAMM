@@ -1,3 +1,4 @@
+/*! \file ProductQuantizationHash.h*/
 //
 // Created by haolan on 25/6/23.
 //
@@ -12,7 +13,7 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class ProductQuantizationRawAlgo CPPAlgos/ProductQuantizationRaw.h
+ * @class ProductQuantizationHash CPPAlgos/ProductQuantizationHash.h
  * @brief The Product Quantization AMM class of c++ algos, using hash function to find matching prototypes
  *
  */
