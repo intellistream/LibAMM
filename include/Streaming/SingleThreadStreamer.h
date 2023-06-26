@@ -22,6 +22,12 @@ namespace AMMBench {
       * @brief The class to run streaming amm under single thread, let each row of A coming in a streaming manner
       * @ingroup AMMBENCH_STREAMING
       * @note  Default behavior
+      * - create
+      * - call @ref setConfig, this will also determine how to generate time stamp and config will be passed to @ref TimeStamper
+      * - run streaming amm:
+        * - call @ref streamingAmm, if only A matrix will be streamed
+        * - call @ref streamingAmm2S, if both A and B will be streamed
+      * - call @ref getThroughput, and @ref getLatencyPercentage to get the streaming performance
       */
     class SingleThreadStreamer {
     protected:
