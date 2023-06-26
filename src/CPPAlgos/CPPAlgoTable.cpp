@@ -7,7 +7,8 @@
 #include <CPPAlgos/CRSV2CPPAlgo.h>
 
 #include <CPPAlgos/CountSketchCPPAlgo.h>
-
+#include <CPPAlgos/ProductQuantizationRaw.h>
+#include <CPPAlgos/ProductQuantizationHash.h>
 #include <CPPAlgos/BCRSCPPAlgo.h>
 #include <CPPAlgos/EWSCPPAlgo.h>
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
@@ -17,6 +18,9 @@
 #include <CPPAlgos/INT8CPPAlgo.h>
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
 #include <CPPAlgos/FastJLTCPPAlgo.h>
+
+
+
 namespace AMMBench {
 AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["mm"] = newAbstractCPPAlgo();
@@ -32,6 +36,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["weighted-cr"] = newWeightedCRCPPAlgo();
   algoMap["smp-pca"] = newSMPPCACPPAlgo();
   algoMap["fastjlt"] = newFastJLTCPPAlgo();
+  algoMap["pq-raw"] = newProductQuantizationRawAlgo();
+  algoMap["pq-hash"] = newProductQuantizationHashAlgo();
 }
-
 } // AMMBench

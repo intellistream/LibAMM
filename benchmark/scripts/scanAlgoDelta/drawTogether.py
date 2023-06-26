@@ -73,6 +73,7 @@ def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"
     for i in singleValueVec:
         singleRun(exePath, i, resultPath, templateName)
 
+
 def readResultSingle(singleValue, resultPath):
     resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
     elapsedTime = readConfig(resultFname, "perfElapsedTime")
@@ -149,8 +150,9 @@ def main():
         os.system("sudo mkdir " + commonBase)
         reRun = 1
 
-    elapsedTimeAll, cacheMissAll, periodAll, fro, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
-                                                            reRun)
+    elapsedTimeAll, cacheMissAll, periodAll, fro, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates,
+                                                                     valueVec,
+                                                                     reRun)
     groupLine.DrawFigure(periodAll, elapsedTimeAll,
                          methodTags,
                          "value of delta", "elapsed time (ms)", 0, 1,
@@ -163,15 +165,16 @@ def main():
                                 True)
 
     groupLine.DrawFigureYnormal(periodAll,
-                                 fro * 100.0,
-                                 methodTags,
-                                 "value of delta", "normalized error %", 0, 1, figPath + "/" +scanTag + "_froError",
-                                 True)
+                                fro * 100.0,
+                                methodTags,
+                                "value of delta", "normalized error %", 0, 1, figPath + "/" + scanTag + "_froError",
+                                True)
     groupLine.DrawFigureYnormal(periodAll,
-                                 eb * 100.0,
-                                 methodTags,
-                                 "value of delta", "error bound ratio %", 0, 1, figPath + "/" + scanTag + "_ebRatio",
-                                 True)
+                                eb * 100.0,
+                                methodTags,
+                                "value of delta", "error bound ratio %", 0, 1, figPath + "/" + scanTag + "_ebRatio",
+                                True)
+
 
 if __name__ == "__main__":
     main()
