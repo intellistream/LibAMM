@@ -1,3 +1,4 @@
+/*! \file ProductQuantizationRaw.h*/
 //
 // Created by haolan on 22/6/23.
 //
@@ -12,7 +13,7 @@ namespace AMMBench {
  * @{
  */
 /**
- * @class ProductQuantizationRawAlgo CPPAlgos/ProductQuantizationRaw.h
+ * @class ProductQuantizationRaw CPPAlgos/ProductQuantizationRaw.h
  * @brief The Product Quantization AMM class of c++ algos, using Euclidean distance
  *
  */
