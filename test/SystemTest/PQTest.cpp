@@ -1,25 +1,40 @@
+
+//
+// Created by haolan on 25/6/23.
+//
 #include <vector>
 
 #define CATCH_CONFIG_MAIN
-
 #include "catch.hpp"
 #include <AMMBench.h>
-
-using namespace std;
-using namespace INTELLI;
-using namespace torch;
-
-TEST_CASE("Test Load PQ", "[short]")
+#include <iostream>
+TEST_CASE("Test PQ", "[short]")
 {
-    torch::serialize::InputArchive archive;
-    archive.load_from("torchscripts/PQ/prototypes.pt");
-    torch::Tensor prototypes;
-    archive.read("prototypes", prototypes);
-    auto pt_size = prototypes.sizes();
-    std::cout << "prototype size:" + to_string(pt_size[0]) + "x" + to_string(pt_size[1]) + "x" + to_string(pt_size[2])
-              << std::endl;
-    std::cout << prototypes << endl;
-    std::cout << "print first one" << endl;
-    std::cout << prototypes[0] << endl;
-    std::cout << prototypes[0][0][0] << endl;
+    torch::manual_seed(114514);
+    AMMBench::ProductQuantizationRaw pqRaw;
+    auto A = torch::rand({1000, 1000});
+    auto B = torch::rand({1000, 1000});
+    auto realC = torch::matmul(A, B);
+    auto ammC = pqRaw.amm(A, B, 20);
+    std::cout << "PQ:" << std::endl;
+    std::cout << ammC << std::endl;
+    std::cout << "exact:" << std::endl;
+    std::cout << realC << std::endl;
+    double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+    REQUIRE(froError < 0.5);
+}
+TEST_CASE("Test PQ Hash", "[short]")
+{
+    torch::manual_seed(114514);
+    AMMBench::ProductQuantizationHash pqHash;
+    auto A = torch::rand({1000, 1000});
+    auto B = torch::rand({1000, 1000});
+    auto realC = torch::matmul(A, B);
+    auto ammC = pqHash.amm(A, B, 20);
+    std::cout << "PQ:" << std::endl;
+    std::cout << ammC << std::endl;
+    std::cout << "exact:" << std::endl;
+    std::cout << realC << std::endl;
+    double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+    REQUIRE(froError < 0.5);
 }
