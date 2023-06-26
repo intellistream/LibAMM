@@ -5,6 +5,7 @@
 
 #ifndef INTELLISTREAM_INCLUDE_CPPALGOS_INT8CPPALGO_H_
 #define INTELLISTREAM_INCLUDE_CPPALGOS_INT8CPPALGO_H_
+
 #include <Utils/AbstractC20Thread.hpp>
 #include <Utils/ConfigMap.hpp>
 #include <torch/torch.h>
@@ -12,6 +13,7 @@
 #include <memory>
 #include <vector>
 #include <CPPAlgos/AbstractCPPAlgo.h>
+
 namespace AMMBench {
 /**
  * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
@@ -25,64 +27,72 @@ namespace AMMBench {
  * @note additionally parameters
  * - fpMode, String, default FP32, can also use INT8 or INT16
  */
-class INT8CPPAlgo : public AMMBench::AbstractCPPAlgo {
- protected:
-  /**
-  * @brief the inline amm under nested loop fp32
-  * @param A the A matrix
-  * @param B the B matrix
-  * @return the output c matrix
-  */
-  torch::Tensor fp32amm(torch::Tensor A, torch::Tensor B);
-  /**
-  * @brief the inline amm under nested loop int8
-  * @param A the A matrix
-  * @param B the B matrix
-  * @return the output c matrix
-  */
-  torch::Tensor int8amm(torch::Tensor A, torch::Tensor B);
-  /**
-  * @brief the inline amm under nested loop int4
-  * @param A the A matrix
-  * @param B the B matrix
-  * @return the output c matrix
-  */
-  torch::Tensor int4amm(torch::Tensor A, torch::Tensor B);
-  /**
- * @brief the inline amm under nested loop int16
- * @param A the A matrix
- * @param B the B matrix
- * @return the output c matrix
- */
-  torch::Tensor int16amm(torch::Tensor A, torch::Tensor B);
-  std::string fpMode="FP32";
- public:
-  INT8CPPAlgo() {
+    class INT8CPPAlgo : public AMMBench::AbstractCPPAlgo {
+    protected:
+        /**
+        * @brief the inline amm under nested loop fp32
+        * @param A the A matrix
+        * @param B the B matrix
+        * @return the output c matrix
+        */
+        torch::Tensor fp32amm(torch::Tensor A, torch::Tensor B);
 
-  }
-  ~INT8CPPAlgo() {
+        /**
+        * @brief the inline amm under nested loop int8
+        * @param A the A matrix
+        * @param B the B matrix
+        * @return the output c matrix
+        */
+        torch::Tensor int8amm(torch::Tensor A, torch::Tensor B);
 
-  }
-  /**
-   * @brief the virtual function provided for outside callers, rewrite in children classes
-   * @param A the A matrix
-   * @param B the B matrix
-   * @param sketchSize the size of sketc or sampling
-   * @return the output c matrix
-   */
-  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
-  /**
- * @brief set the alo-specfic config related to one algorithm
- */
-  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
-};
+        /**
+        * @brief the inline amm under nested loop int4
+        * @param A the A matrix
+        * @param B the B matrix
+        * @return the output c matrix
+        */
+        torch::Tensor int4amm(torch::Tensor A, torch::Tensor B);
+
+        /**
+       * @brief the inline amm under nested loop int16
+       * @param A the A matrix
+       * @param B the B matrix
+       * @return the output c matrix
+       */
+        torch::Tensor int16amm(torch::Tensor A, torch::Tensor B);
+
+        std::string fpMode = "FP32";
+    public:
+        INT8CPPAlgo() {
+
+        }
+
+        ~INT8CPPAlgo() {
+
+        }
+
+        /**
+         * @brief the virtual function provided for outside callers, rewrite in children classes
+         * @param A the A matrix
+         * @param B the B matrix
+         * @param sketchSize the size of sketc or sampling
+         * @return the output c matrix
+         */
+        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+
+        /**
+       * @brief set the alo-specfic config related to one algorithm
+       */
+        virtual void setConfig(INTELLI::ConfigMapPtr cfg);
+    };
+
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @typedef INT8MatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref INT8CPPAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::INT8CPPAlgo> INT8CPPAlgoPtr;
+    typedef std::shared_ptr<class AMMBench::INT8CPPAlgo> INT8CPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newINT8CppAlgo

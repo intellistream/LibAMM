@@ -1,4 +1,4 @@
-BRANCH=INT8
+BRANCH=Nightly_fix_2
 git init
 git checkout -b $BRANCH
 git add .

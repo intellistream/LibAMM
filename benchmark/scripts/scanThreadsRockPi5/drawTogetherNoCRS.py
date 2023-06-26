@@ -134,13 +134,14 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     resultPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag+"_NOCRS"
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag + "_NOCRS"
     configTemplate = exeSpace + "config.csv"
     commonBase = resultPath + "/"
-    resultPaths = ["mm","ews","counterSketch","cofd","tow"]
-    csvTemplates = ["config_CPPMM.csv","config_CPPEWS.csv","config_CPPCOUNTERSKETCH.csv","config_CPPCOFD.csv","config_CPPTOW.csv"]
-    methodTags = ["mm","ews","counterSketch","cofd","tow"]
-    valueVec = [1,2,3,4,5,6,7,8]
+    resultPaths = ["mm", "ews", "counterSketch", "cofd", "tow"]
+    csvTemplates = ["config_CPPMM.csv", "config_CPPEWS.csv", "config_CPPCOUNTERSKETCH.csv", "config_CPPCOFD.csv",
+                    "config_CPPTOW.csv"]
+    methodTags = ["mm", "ews", "counterSketch", "cofd", "tow"]
+    valueVec = [1, 2, 3, 4, 5, 6, 7, 8]
     valueVecRun = valueVec
     print(configTemplate)
     reRun = 0
