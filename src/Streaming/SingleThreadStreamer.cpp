@@ -54,6 +54,9 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
          */
         matC->slice(0, startRow, endRow) = cppAlgoPtr->amm(subA, B, sketchSize);
         tp = INTELLI::UtilityFunctions::timeLastUs(tstart);
+        /**
+         * @brief the new arrived A will be no longer probed, so we can assign the processed time now
+         */
         for (size_t i = startRow; i < endRow; i++) {
             myTs[i]->processedTime = tp;
         }
@@ -102,7 +105,6 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
   {
     tEXpectedArrival=myTsB[endRow-1]->arrivalTime;
   }
-  uint64_t tp = 0;
   uint64_t tDone = 0;
   gettimeofday(&tstart, NULL);
   uint64_t iterationCnt=0;
@@ -118,6 +120,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
       tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
       //usleep(1);
     }
+    INTELLI_INFO("batch of "+ to_string(startRow)+" to "+ to_string(endRow)+" are ready");
     /**
      * @brief now, the whole batch has arrived, compute
      */
@@ -139,11 +142,6 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
       matC->slice(0,0,aB2Rows).slice(1,lastABCols,lastABCols+aB2Cols).copy_(aB2);
     }
     oldArrivedA=A.slice(0, 0, endRow);
-    //matC->slice(0, startRow, endRow) = cppAlgoPtr->amm(subA, B, sketchSize);
-    tp = INTELLI::UtilityFunctions::timeLastUs(tstart);
-    for (size_t i = startRow; i < endRow; i++) {
-      myTs[i]->processedTime = tp;
-    }
     /**
      * @brief update the indexes
      */
@@ -160,6 +158,13 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
     iterationCnt++;
   }
   tDone = INTELLI::UtilityFunctions::timeLastUs(tstart);
+  /**
+   * @brief The latency calculation is different from one stream case here,
+   * as older A will still be probed by newer B
+   */
+    for (size_t i = 0; i < aRows; i++) {
+      myTs[i]->processedTime = tDone;
+    }
   INTELLI_INFO("Done in " + to_string(tDone) + "us");
   throughput = aRows;
   throughput = throughput * 1e6 / tDone;
