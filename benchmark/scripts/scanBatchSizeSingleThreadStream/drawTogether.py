@@ -132,10 +132,10 @@ def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag + "CPP"
-    methodTags = ["CRS", "MM","SMP-PCA"]
-    resultPaths = ["CRS",  "mm","smp-pca"]
-    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv","config_CPPSMPPCA.csv"]
-    valueVec = [1,10,20,50,100,200,500]
+    methodTags = ["CRS","MM","SMP-PCA",  "CS", "PQ-hash", "ToG"]
+    resultPaths = ["CRS","MM","SMP-PCA",  "CS", "PQ-hash", "ToG"]
+    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv","config_CPPSMPPCA.csv",  "config_CPPCOUNTERSKETCH.csv", "config_PQHash.csv", "config_CPPToW.csv"]
+    valueVec = [10,20,50,100,200,500]
     valueVecDisp = np.array(valueVec)
     # run
     reRun = 0
