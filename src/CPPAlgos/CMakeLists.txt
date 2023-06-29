@@ -13,6 +13,7 @@ add_sources(
         TugOfWarCPPAlgo.cpp
         SMPPCACPPAlgo.cpp
         RIPCPPAlgo.cpp
+        BlockLRACPPAlgo.cpp
         ProductQuantizationRaw.cpp
         ProductQuantizationHash.cpp
 )

@@ -149,6 +149,8 @@
 #include <CPPAlgos/WeightedCRCPPAlgo.h>
 #include <CPPAlgos/SMPPCACPPAlgo.h>
 #include <CPPAlgos/RIPCPPAlgo.h>
+#include <CPPAlgos/BlockLRACPPAlgo.h>
+
 /**
  * @}
  *
