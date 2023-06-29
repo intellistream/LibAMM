@@ -24,46 +24,53 @@ namespace DIVERSE_METER {
  * - meterAddress, String, The file system path of meter, default "/dev/ttyUSB0";
  * @note tag is "espUart"
  */
-class EspMeterUart : public AbstractMeter {
- private:
-  int devFd = -1;
-  /**
-   * @brief The file system path of meter
-   */
-  std::string meterAddress = "/dev/ttyUSB0";
-  void openUartDev();
-  // uint64_t accessEsp32(uint64_t cmd);
- public:
-  EspMeterUart(/* args */);
-  ~EspMeterUart();
-  /**
- * @brief to set the configmap
-  * @param cfg the config map
- */
-  virtual void setConfig(INTELLI::ConfigMapPtr _cfg);
-  /**
-    * @brief to start the meter into some measuring tasks
-    */
-  void startMeter();
-  /**
-  * @brief to stop the meter into some measuring tasks
-  */
-  void stopMeter();
-  /**
-* @brief to get the energy in J, including static energy consumption of system
-*/
-  double getE();
-  //peak power in mW
-  /**
- * @brief to get the peak power in W, including static power of system
- */
-  double getPeak();
+    class EspMeterUart : public AbstractMeter {
+    private:
+        int devFd = -1;
+        /**
+         * @brief The file system path of meter
+         */
+        std::string meterAddress = "/dev/ttyUSB0";
 
-  bool isValid() {
-    return (devFd != -1);
-  }
-};
-typedef std::shared_ptr<DIVERSE_METER::EspMeterUart> EspMeterUartPtr;
+        void openUartDev();
+        // uint64_t accessEsp32(uint64_t cmd);
+    public:
+        EspMeterUart(/* args */);
+
+        ~EspMeterUart();
+
+        /**
+       * @brief to set the configmap
+        * @param cfg the config map
+       */
+        virtual void setConfig(INTELLI::ConfigMapPtr _cfg);
+
+        /**
+          * @brief to start the meter into some measuring tasks
+          */
+        void startMeter();
+
+        /**
+        * @brief to stop the meter into some measuring tasks
+        */
+        void stopMeter();
+
+        /**
+      * @brief to get the energy in J, including static energy consumption of system
+      */
+        double getE();
+        //peak power in mW
+        /**
+       * @brief to get the peak power in W, including static power of system
+       */
+        double getPeak();
+
+        bool isValid() {
+            return (devFd != -1);
+        }
+    };
+
+    typedef std::shared_ptr<DIVERSE_METER::EspMeterUart> EspMeterUartPtr;
 #define newEspMeterUart() std::make_shared<EspMeterUart>();
 }
 

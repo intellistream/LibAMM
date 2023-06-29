@@ -23,181 +23,191 @@
 
 namespace Catch {
 
-struct TeamCityReporter : StreamingReporterBase<TeamCityReporter> {
-  TeamCityReporter(ReporterConfig const &_config)
-      : StreamingReporterBase(_config) {
-    m_reporterPrefs.shouldRedirectStdOut = true;
-  }
+    struct TeamCityReporter : StreamingReporterBase<TeamCityReporter> {
+        TeamCityReporter(ReporterConfig const &_config)
+                : StreamingReporterBase(_config) {
+            m_reporterPrefs.shouldRedirectStdOut = true;
+        }
 
-  static std::string escape(std::string const &str) {
-    std::string escaped = str;
-    replaceInPlace(escaped, "|", "||");
-    replaceInPlace(escaped, "'", "|'");
-    replaceInPlace(escaped, "\n", "|n");
-    replaceInPlace(escaped, "\r", "|r");
-    replaceInPlace(escaped, "[", "|[");
-    replaceInPlace(escaped, "]", "|]");
-    return escaped;
-  }
-  ~TeamCityReporter() override;
+        static std::string escape(std::string const &str) {
+            std::string escaped = str;
+            replaceInPlace(escaped, "|", "||");
+            replaceInPlace(escaped, "'", "|'");
+            replaceInPlace(escaped, "\n", "|n");
+            replaceInPlace(escaped, "\r", "|r");
+            replaceInPlace(escaped, "[", "|[");
+            replaceInPlace(escaped, "]", "|]");
+            return escaped;
+        }
 
-  static std::string getDescription() {
-    return "Reports test results as TeamCity service messages";
-  }
+        ~TeamCityReporter() override;
 
-  void skipTest(TestCaseInfo const & /* testInfo */ ) override {
-  }
+        static std::string getDescription() {
+            return "Reports test results as TeamCity service messages";
+        }
 
-  void noMatchingTestCases(std::string const & /* spec */ ) override {}
+        void skipTest(TestCaseInfo const & /* testInfo */ ) override {
+        }
 
-  void testGroupStarting(GroupInfo const &groupInfo) override {
-    StreamingReporterBase::testGroupStarting(groupInfo);
-    stream << "##teamcity[testSuiteStarted name='"
-           << escape(groupInfo.name) << "']\n";
-  }
-  void testGroupEnded(TestGroupStats const &testGroupStats) override {
-    StreamingReporterBase::testGroupEnded(testGroupStats);
-    stream << "##teamcity[testSuiteFinished name='"
-           << escape(testGroupStats.groupInfo.name) << "']\n";
-  }
+        void noMatchingTestCases(std::string const & /* spec */ ) override {}
 
-  void assertionStarting(AssertionInfo const &) override {}
+        void testGroupStarting(GroupInfo const &groupInfo) override {
+            StreamingReporterBase::testGroupStarting(groupInfo);
+            stream << "##teamcity[testSuiteStarted name='"
+                   << escape(groupInfo.name) << "']\n";
+        }
 
-  bool assertionEnded(AssertionStats const &assertionStats) override {
-    AssertionResult const &result = assertionStats.assertionResult;
-    if (!result.isOk()) {
+        void testGroupEnded(TestGroupStats const &testGroupStats) override {
+            StreamingReporterBase::testGroupEnded(testGroupStats);
+            stream << "##teamcity[testSuiteFinished name='"
+                   << escape(testGroupStats.groupInfo.name) << "']\n";
+        }
 
-      ReusableStringStream msg;
-      if (!m_headerPrintedForThisSection)
-        printSectionHeader(msg.get());
-      m_headerPrintedForThisSection = true;
+        void assertionStarting(AssertionInfo const &) override {}
 
-      msg << result.getSourceInfo() << "\n";
+        bool assertionEnded(AssertionStats const &assertionStats) override {
+            AssertionResult const &result = assertionStats.assertionResult;
+            if (!result.isOk()) {
 
-      switch (result.getResultType()) {
-        case ResultWas::ExpressionFailed:msg << "expression failed";
-          break;
-        case ResultWas::ThrewException:msg << "unexpected exception";
-          break;
-        case ResultWas::FatalErrorCondition:msg << "fatal error condition";
-          break;
-        case ResultWas::DidntThrowException:msg << "no exception was thrown where one was expected";
-          break;
-        case ResultWas::ExplicitFailure:msg << "explicit failure";
-          break;
+                ReusableStringStream msg;
+                if (!m_headerPrintedForThisSection)
+                    printSectionHeader(msg.get());
+                m_headerPrintedForThisSection = true;
 
-          // We shouldn't get here because of the isOk() test
-        case ResultWas::Ok:
-        case ResultWas::Info:
-        case ResultWas::Warning:CATCH_ERROR("Internal error in TeamCity reporter");
-          // These cases are here to prevent compiler warnings
-        case ResultWas::Unknown:
-        case ResultWas::FailureBit:
-        case ResultWas::Exception:CATCH_ERROR("Not implemented");
-      }
-      if (assertionStats.infoMessages.size() == 1)
-        msg << " with message:";
-      if (assertionStats.infoMessages.size() > 1)
-        msg << " with messages:";
-      for (auto const &messageInfo : assertionStats.infoMessages)
-        msg << "\n  \"" << messageInfo.message << "\"";
+                msg << result.getSourceInfo() << "\n";
 
-      if (result.hasExpression()) {
-        msg <<
-            "\n  " << result.getExpressionInMacro() << "\n"
-                                                       "with expansion:\n" <<
-            "  " << result.getExpandedExpression() << "\n";
-      }
+                switch (result.getResultType()) {
+                    case ResultWas::ExpressionFailed:
+                        msg << "expression failed";
+                        break;
+                    case ResultWas::ThrewException:
+                        msg << "unexpected exception";
+                        break;
+                    case ResultWas::FatalErrorCondition:
+                        msg << "fatal error condition";
+                        break;
+                    case ResultWas::DidntThrowException:
+                        msg << "no exception was thrown where one was expected";
+                        break;
+                    case ResultWas::ExplicitFailure:
+                        msg << "explicit failure";
+                        break;
 
-      if (currentTestCaseInfo->okToFail()) {
-        msg << "- failure ignore as test marked as 'ok to fail'\n";
-        stream << "##teamcity[testIgnored"
-               << " name='" << escape(currentTestCaseInfo->name) << "'"
-               << " message='" << escape(msg.str()) << "'"
-               << "]\n";
-      } else {
-        stream << "##teamcity[testFailed"
-               << " name='" << escape(currentTestCaseInfo->name) << "'"
-               << " message='" << escape(msg.str()) << "'"
-               << "]\n";
-      }
-    }
-    stream.flush();
-    return true;
-  }
+                        // We shouldn't get here because of the isOk() test
+                    case ResultWas::Ok:
+                    case ResultWas::Info:
+                    case ResultWas::Warning:
+                        CATCH_ERROR("Internal error in TeamCity reporter");
+                        // These cases are here to prevent compiler warnings
+                    case ResultWas::Unknown:
+                    case ResultWas::FailureBit:
+                    case ResultWas::Exception:
+                        CATCH_ERROR("Not implemented");
+                }
+                if (assertionStats.infoMessages.size() == 1)
+                    msg << " with message:";
+                if (assertionStats.infoMessages.size() > 1)
+                    msg << " with messages:";
+                for (auto const &messageInfo: assertionStats.infoMessages)
+                    msg << "\n  \"" << messageInfo.message << "\"";
 
-  void sectionStarting(SectionInfo const &sectionInfo) override {
-    m_headerPrintedForThisSection = false;
-    StreamingReporterBase::sectionStarting(sectionInfo);
-  }
+                if (result.hasExpression()) {
+                    msg <<
+                        "\n  " << result.getExpressionInMacro() << "\n"
+                                                                   "with expansion:\n" <<
+                        "  " << result.getExpandedExpression() << "\n";
+                }
 
-  void testCaseStarting(TestCaseInfo const &testInfo) override {
-    m_testTimer.start();
-    StreamingReporterBase::testCaseStarting(testInfo);
-    stream << "##teamcity[testStarted name='"
-           << escape(testInfo.name) << "']\n";
-    stream.flush();
-  }
+                if (currentTestCaseInfo->okToFail()) {
+                    msg << "- failure ignore as test marked as 'ok to fail'\n";
+                    stream << "##teamcity[testIgnored"
+                           << " name='" << escape(currentTestCaseInfo->name) << "'"
+                           << " message='" << escape(msg.str()) << "'"
+                           << "]\n";
+                } else {
+                    stream << "##teamcity[testFailed"
+                           << " name='" << escape(currentTestCaseInfo->name) << "'"
+                           << " message='" << escape(msg.str()) << "'"
+                           << "]\n";
+                }
+            }
+            stream.flush();
+            return true;
+        }
 
-  void testCaseEnded(TestCaseStats const &testCaseStats) override {
-    StreamingReporterBase::testCaseEnded(testCaseStats);
-    if (!testCaseStats.stdOut.empty())
-      stream << "##teamcity[testStdOut name='"
-             << escape(testCaseStats.testInfo.name)
-             << "' out='" << escape(testCaseStats.stdOut) << "']\n";
-    if (!testCaseStats.stdErr.empty())
-      stream << "##teamcity[testStdErr name='"
-             << escape(testCaseStats.testInfo.name)
-             << "' out='" << escape(testCaseStats.stdErr) << "']\n";
-    stream << "##teamcity[testFinished name='"
-           << escape(testCaseStats.testInfo.name) << "' duration='"
-           << m_testTimer.getElapsedMilliseconds() << "']\n";
-    stream.flush();
-  }
+        void sectionStarting(SectionInfo const &sectionInfo) override {
+            m_headerPrintedForThisSection = false;
+            StreamingReporterBase::sectionStarting(sectionInfo);
+        }
 
- private:
-  void printSectionHeader(std::ostream &os) {
-    assert(!m_sectionStack.empty());
+        void testCaseStarting(TestCaseInfo const &testInfo) override {
+            m_testTimer.start();
+            StreamingReporterBase::testCaseStarting(testInfo);
+            stream << "##teamcity[testStarted name='"
+                   << escape(testInfo.name) << "']\n";
+            stream.flush();
+        }
 
-    if (m_sectionStack.size() > 1) {
-      os << getLineOfChars<'-'>() << "\n";
+        void testCaseEnded(TestCaseStats const &testCaseStats) override {
+            StreamingReporterBase::testCaseEnded(testCaseStats);
+            if (!testCaseStats.stdOut.empty())
+                stream << "##teamcity[testStdOut name='"
+                       << escape(testCaseStats.testInfo.name)
+                       << "' out='" << escape(testCaseStats.stdOut) << "']\n";
+            if (!testCaseStats.stdErr.empty())
+                stream << "##teamcity[testStdErr name='"
+                       << escape(testCaseStats.testInfo.name)
+                       << "' out='" << escape(testCaseStats.stdErr) << "']\n";
+            stream << "##teamcity[testFinished name='"
+                   << escape(testCaseStats.testInfo.name) << "' duration='"
+                   << m_testTimer.getElapsedMilliseconds() << "']\n";
+            stream.flush();
+        }
 
-      std::vector<SectionInfo>::const_iterator
-          it = m_sectionStack.begin() + 1, // Skip first section (test case)
-      itEnd = m_sectionStack.end();
-      for (; it != itEnd; ++it)
-        printHeaderString(os, it->name);
-      os << getLineOfChars<'-'>() << "\n";
-    }
+    private:
+        void printSectionHeader(std::ostream &os) {
+            assert(!m_sectionStack.empty());
 
-    SourceLineInfo lineInfo = m_sectionStack.front().lineInfo;
+            if (m_sectionStack.size() > 1) {
+                os << getLineOfChars<'-'>() << "\n";
 
-    os << lineInfo << "\n";
-    os << getLineOfChars<'.'>() << "\n\n";
-  }
+                std::vector<SectionInfo>::const_iterator
+                        it = m_sectionStack.begin() + 1, // Skip first section (test case)
+                itEnd = m_sectionStack.end();
+                for (; it != itEnd; ++it)
+                    printHeaderString(os, it->name);
+                os << getLineOfChars<'-'>() << "\n";
+            }
 
-  // if string has a : in first line will set indent to follow it on
-  // subsequent lines
-  static void printHeaderString(std::ostream &os, std::string const &_string, std::size_t indent = 0) {
-    std::size_t i = _string.find(": ");
-    if (i != std::string::npos)
-      i += 2;
-    else
-      i = 0;
-    os << Column(_string)
-        .indent(indent + i)
-        .initialIndent(indent) << "\n";
-  }
- private:
-  bool m_headerPrintedForThisSection = false;
-  Timer m_testTimer;
-};
+            SourceLineInfo lineInfo = m_sectionStack.front().lineInfo;
+
+            os << lineInfo << "\n";
+            os << getLineOfChars<'.'>() << "\n\n";
+        }
+
+        // if string has a : in first line will set indent to follow it on
+        // subsequent lines
+        static void printHeaderString(std::ostream &os, std::string const &_string, std::size_t indent = 0) {
+            std::size_t i = _string.find(": ");
+            if (i != std::string::npos)
+                i += 2;
+            else
+                i = 0;
+            os << Column(_string)
+                    .indent(indent + i)
+                    .initialIndent(indent) << "\n";
+        }
+
+    private:
+        bool m_headerPrintedForThisSection = false;
+        Timer m_testTimer;
+    };
 
 #ifdef CATCH_IMPL
-TeamCityReporter::~TeamCityReporter() {}
+    TeamCityReporter::~TeamCityReporter() {}
 #endif
 
-CATCH_REGISTER_REPORTER( "teamcity", TeamCityReporter )
+    CATCH_REGISTER_REPORTER( "teamcity", TeamCityReporter )
 
 } // end namespace Catch
 

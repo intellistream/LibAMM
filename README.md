@@ -217,5 +217,6 @@ You will find the figures then.
    to validate the highlight when you need it, and comment it during a compile. :)
 4. When setting up torch for cpu under python version > 3.10, torch == 1.13.0 would conflict with torchaudio according
    to https://pytorch.org/audio/stable/installation.html. Use Python version <= 3.10 for smooth installation.
-5. Some heavy-weight algos like co-occurring FD may be treated as a zombie thread by some OS like ubuntu if running in default benchmark program, in this case
-, please force them to be executed as a running child thread by setting forceMP(U64)=1 and threads(U64)=1 in config
+5. Some heavy-weight algos like co-occurring FD may be treated as a zombie thread by some OS like ubuntu if running in
+   default benchmark program, in this case
+   , please force them to be executed as a running child thread by setting forceMP(U64)=1 and threads(U64)=1 in config
