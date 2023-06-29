@@ -148,6 +148,7 @@
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
 #include <CPPAlgos/WeightedCRCPPAlgo.h>
 #include <CPPAlgos/SMPPCACPPAlgo.h>
+#include <CPPAlgos/FastJLTCPPAlgo.h>
 #include <CPPAlgos/RIPCPPAlgo.h>
 #include <CPPAlgos/BlockLRACPPAlgo.h>
 
