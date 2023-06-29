@@ -49,7 +49,7 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
-scanTag = "batchSize"
+scanTag = "threads"
 
 
 def singleRun(exePath, singleValue, resultPath, configTemplate):
@@ -135,7 +135,10 @@ def main():
     methodTags = ["CRS","MM","SMP-PCA",  "CS"]
     resultPaths = ["CRS","MM","SMP-PCA",  "CS"]
     csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv","config_CPPSMPPCA.csv",  "config_CPPCOUNTERSKETCH.csv"]
-    valueVec = [10,20,50,100,250,500,1000]
+    #methodTags = ["CRS","MM"]
+    #resultPaths = ["CRS","MM"]
+    #csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv"]
+    valueVec = [1, 2, 4, 6, 8, 10]
     valueVecDisp = np.array(valueVec)
     # run
     reRun = 0
@@ -145,23 +148,24 @@ def main():
         os.system("mkdir " + figPath)
         os.system("sudo rm -rf " + commonBase)
         os.system("sudo mkdir " + commonBase)
+
         reRun = 1
     # skech
     thrAll, lat95All, periodAll, fro, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
                                                             reRun)
     groupLine.DrawFigureYnormal(periodAll, thrAll/1000.0,
                          methodTags,
-                         "batch size (#rows)", "throughput (K elements/s)", 0, 1,
+                         "threads", "throughput (K elements/s)", 0, 1,
                          figPath + "/" + scanTag + "stream_cpp_thr",
                          True)
     groupLine.DrawFigure(periodAll, lat95All,
                          methodTags,
-                         "batch size (#rows)", "95% latency (ms)", 0, 1,
+                         "threads", "95% latency (ms)", 0, 1,
                          figPath + "/" + scanTag + "stream_cpp_lat95",
                          True)
     groupLine.DrawFigureYnormal(periodAll, fro*100.0,
                          methodTags,
-                         "batch size (#rows)", "fro error (%)", 0, 1,
+                         "threads", "fro error (%)", 0, 1,
                          figPath + "/" + scanTag + "stream_cpp_fro",
                          True)
 
