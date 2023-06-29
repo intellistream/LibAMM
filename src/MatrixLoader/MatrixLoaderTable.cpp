@@ -10,6 +10,7 @@
 #include <MatrixLoader/PoissonMatrixLoader.h>
 #include <MatrixLoader/BinomialMatrixLoader.h>
 #include <MatrixLoader/BetaMatrixLoader.h>
+#include <MatrixLoader/SIFTMatrixLoader.h>
 
 namespace AMMBench {
 /**
@@ -23,6 +24,7 @@ namespace AMMBench {
         loaderMap["binomial"] = newBinomialMatrixLoader();
         loaderMap["poisson"] = newPoissonMatrixLoader();
         loaderMap["beta"] = newBetaMatrixLoader();
+        loaderMap["sift"] = newSIFTMatrixLoader();
     }
 
 } // AMMBench
