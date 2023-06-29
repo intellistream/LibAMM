@@ -13,6 +13,27 @@ using namespace torch;
 using namespace DIVERSE_METER;
 
 void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1) {
+    uint64_t threads=cfg->tryU64("threads", 1, true);
+    if (threads > 1) {
+        AMMBench::BlockPartitionStreamer ss;
+        ss.setConfig(cfg);
+        torch::Tensor ssC = ss.streamingAmm(A, B, sketchSize);
+        auto resultCsv = newConfigMap();;
+        resultCsv->edit("throughput", (double) ss.getThroughput());
+        resultCsv->edit("throughputByElements", (double) (ss.getThroughput() * A.size(1)));
+        resultCsv->edit("95%latency", (double) ss.getLatencyPercentage(0.95));
+        torch::Tensor rawC = torch::matmul(A, B);
+        double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(rawC, ssC);
+        double froBNormal = B.norm().item<double>();
+        double errorBoundRatio = froError / froBNormal;
+        INTELLI_INFO("B normal is " + to_string(froBNormal));
+        resultCsv->edit("froError", (double) froError);
+        resultCsv->edit("errorBoundRatio", (double) errorBoundRatio);
+        resultCsv->toFile("result_streaming.csv");
+        INTELLI_INFO("Done. here is overall result");
+        std::cout << resultCsv->toString() << endl;
+        return;
+    }
     AMMBench::SingleThreadStreamer ss;
     ss.setConfig(cfg);
     uint64_t streamingTwoMatrixes=cfg->tryU64("streamingTwoMatrixes", 0, true);
