@@ -24,7 +24,7 @@ namespace AMMBench {
         loaderMap["binomial"] = newBinomialMatrixLoader();
         loaderMap["poisson"] = newPoissonMatrixLoader();
         loaderMap["beta"] = newBetaMatrixLoader();
-        loaderMap["sift"] = newSIFTMatrixLoader();
+        loaderMap["SIFT"] = newSIFTMatrixLoader();
     }
 
 } // AMMBench

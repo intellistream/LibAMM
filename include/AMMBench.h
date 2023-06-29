@@ -97,6 +97,7 @@
 #include <MatrixLoader/BinomialMatrixLoader.h>
 #include <MatrixLoader/PoissonMatrixLoader.h>
 #include <MatrixLoader/BetaMatrixLoader.h>
+#include <MatrixLoader/SIFTMatrixLoader.h>
 #include <MatrixLoader/MatrixLoaderTable.h>
 /**
  * @}
