@@ -122,6 +122,7 @@
 **/
 #include <Streaming/TimeStamper.h>
 #include <Streaming/SingleThreadStreamer.h>
+#include <Streaming/BlockPartitionStreamer.h>
 /**
  * @}
  *
