@@ -6,3 +6,6 @@ add_subdirectory(Streaming)
 add_sources(
         myVecAdd.cpp
 )
+include_directories("../include/")
+add_executable(RIPCPPAlgo "CPPAlgos/RIPCPPAlgo.cpp")
+target_link_libraries(RIPCPPAlgo IntelliStream)
