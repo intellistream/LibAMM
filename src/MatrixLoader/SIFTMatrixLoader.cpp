@@ -3,14 +3,16 @@
 //
 #include <MatrixLoader/SIFTMatrixLoader.h>
 #include <Utils/IntelliLog.h>
+#include <AMMBench.h>
 
 void AMMBench::SIFTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+    assert(cfg); // do nothing, as cfg is not needed
     INTELLI_INFO("For SIFT dataset, parsing config step is skipped");
 }
 
 void AMMBench::SIFTMatrixLoader::generateAB() {
 
-    char filename[] = "siftsmall_base.fvecs";
+    char filename[] = "/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/src/MatrixLoader/siftsmall_base.fvecs";
     float* data = NULL;
     unsigned num, dim;
 
@@ -33,10 +35,11 @@ void AMMBench::SIFTMatrixLoader::generateAB() {
     }
     in.close();
 
-    torch::Tensor tensor A = torch.tensor(float_ptr, size=((size_t)num * (size_t)dim,), dtype=torch.float32)
+    torch::TensorOptions options(torch::kFloat32);
+    A = torch::from_blob(data, {(int)num, (int)dim}, options).clone();
+    B = A.t();
 
-    torch::Tensor tensor B = A.t()
-
+    delete[] data; // deallocate
 }
 
 //do nothing in abstract class
@@ -52,4 +55,18 @@ torch::Tensor AMMBench::SIFTMatrixLoader::getA() {
 
 torch::Tensor AMMBench::SIFTMatrixLoader::getB() {
     return B;
+}
+
+int main() {
+    AMMBench::MatrixLoaderTable mLoaderTable;
+    auto matLoaderPtr = mLoaderTable.findMatrixLoader("SIFT");
+    assert(matLoaderPtr);
+
+    INTELLI::ConfigMapPtr cfg = newConfigMap();
+    matLoaderPtr->setConfig(cfg);
+    
+    auto A = matLoaderPtr->getA();
+    auto B = matLoaderPtr->getB();
+    std::cout << A.sizes() << endl;
+    std::cout << B.sizes() << endl;
 }
