@@ -7,5 +7,6 @@ add_sources(
         BinomialMatrixLoader.cpp
         PoissonMatrixLoader.cpp
         BetaMatrixLoader.cpp
+        SIFTMatrixLoader.cpp
         MatrixLoaderTable.cpp
 )
