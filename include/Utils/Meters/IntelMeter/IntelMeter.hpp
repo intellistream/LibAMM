@@ -1,5 +1,6 @@
 #ifndef ADB_INCLUDE_UTILS_IntelMeter_HPP_
 #define ADB_INCLUDE_UTILS_IntelMeter_HPP_
+
 #include <Utils/Meters/AbstractMeter.hpp>
 #include <vector>
 #include <unistd.h>
@@ -17,13 +18,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
+
 using namespace std;
 namespace DIVERSE_METER {
-typedef struct rapl_power_unit {
-  double PU;       //power units
-  double ESU;      //energy status units
-  double TU;       //time units
-} rapl_power_unit;
+    typedef struct rapl_power_unit {
+        double PU;       //power units
+        double ESU;      //energy status units
+        double TU;       //time units
+    } rapl_power_unit;
 /*class:IntelMeter
 description:the entity of intel msr-based power meter, providing all function including:
 E,PeakPower
@@ -45,39 +47,48 @@ date:20211202
  * @warning: only works for some x64 machines
  * @note: no peak power support, tag is "intelMsr"
  */
-class IntelMeter : public AbstractMeter {
- private:
-  int devFd;
-  uint64_t rdmsr(int cpu, uint32_t reg);
-  rapl_power_unit get_rapl_power_unit();
-  double eSum = 0;
+    class IntelMeter : public AbstractMeter {
+    private:
+        int devFd;
 
-  uint32_t maxCpu = 0;
-  vector<int> cpus;
-  vector<double> st;
-  vector<double> en;
-  vector<double> count;
-  rapl_power_unit power_units;
- public:
-  /**
-* @brief to set the configmap
-* @param cfg the config map
-*/
-  virtual void setConfig(INTELLI::ConfigMapPtr _cfg);
-  IntelMeter(/* args */);
-  ~IntelMeter();
-  void startMeter();
-  void stopMeter();
-  //energy in J
-  double getE();
-  //peak power in mW
-  // double getPeak();
+        uint64_t rdmsr(int cpu, uint32_t reg);
 
-  bool isValid() {
-    return (devFd != -1);
-  }
-};
-typedef std::shared_ptr<DIVERSE_METER::IntelMeter> IntelMeterPtr;
+        rapl_power_unit get_rapl_power_unit();
+
+        double eSum = 0;
+
+        uint32_t maxCpu = 0;
+        vector<int> cpus;
+        vector<double> st;
+        vector<double> en;
+        vector<double> count;
+        rapl_power_unit power_units;
+    public:
+        /**
+      * @brief to set the configmap
+      * @param cfg the config map
+      */
+        virtual void setConfig(INTELLI::ConfigMapPtr _cfg);
+
+        IntelMeter(/* args */);
+
+        ~IntelMeter();
+
+        void startMeter();
+
+        void stopMeter();
+
+        //energy in J
+        double getE();
+        //peak power in mW
+        // double getPeak();
+
+        bool isValid() {
+            return (devFd != -1);
+        }
+    };
+
+    typedef std::shared_ptr<DIVERSE_METER::IntelMeter> IntelMeterPtr;
 #define newIntelMeter() std::make_shared<IntelMeter>();
 }
 
