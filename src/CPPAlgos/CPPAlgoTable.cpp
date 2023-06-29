@@ -17,6 +17,9 @@
 #include <CPPAlgos/SMPPCACPPAlgo.h>
 #include <CPPAlgos/INT8CPPAlgo.h>
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
+#include <CPPAlgos/FastJLTCPPAlgo.h>
+
+
 
 namespace AMMBench {
 AMMBench::CPPAlgoTable::CPPAlgoTable() {
@@ -32,6 +35,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["tugOfWar"] = newTugOfWarCPPAlgo();
   algoMap["weighted-cr"] = newWeightedCRCPPAlgo();
   algoMap["smp-pca"] = newSMPPCACPPAlgo();
+  algoMap["fastjlt"] = newFastJLTCPPAlgo();
   algoMap["pq-raw"] = newProductQuantizationRawAlgo();
   algoMap["pq-hash"] = newProductQuantizationHashAlgo();
 }
