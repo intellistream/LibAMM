@@ -6,12 +6,14 @@
 
 namespace AMMBench {
     torch::Tensor AMMBench::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
+        
         // Step 1: Input A:n1*d B:d*n2
         A = A.t(); // d*n1
         int64_t d = A.size(0);
         int64_t n1 = A.size(1);
         int64_t n2 = B.size(1);
         int64_t k = (int64_t) k2;
+
         // Step 2: Get sketched matrix
         torch::Tensor pi = 1 / std::sqrt(k) * torch::randn({k, d}); // Gaussian sketching matrix
         torch::Tensor A_tilde = torch::matmul(pi, A); // k*n1
@@ -19,7 +21,7 @@ namespace AMMBench {
 
         torch::Tensor A_tilde_B_tilde = torch::matmul(A_tilde.t(), B_tilde);
 
-        // Compute column norms of A and B
+        // Step 3: Compute column norms of A and B
         torch::Tensor col_norm_A = torch::linalg::vector_norm(A, 2, {0}, false, c10::nullopt); // ||Ai|| for i in [n1]
         torch::Tensor col_norm_B = torch::linalg::vector_norm(B, 2, {0}, false, c10::nullopt); // ||Bj|| for j in [n2]
 
@@ -28,7 +30,7 @@ namespace AMMBench {
         torch::Tensor col_norm_B_tilde = torch::linalg::vector_norm(B_tilde, 2, {0}, false,
                                                                     c10::nullopt); // ||Bj|| for j in [n2]
 
-        // Compute M_tilde
+        // Step 4: Compute M_tilde
         torch::Tensor col_norm_A_col_norm_B = torch::matmul(col_norm_A.reshape({n1, 1}), col_norm_B.reshape({1, n2}));
         torch::Tensor col_norm_A_tilde_col_norm_B_tilde = torch::matmul(col_norm_A_tilde.reshape({n1, 1}),
                                                                         col_norm_B_tilde.reshape({1, n2}));

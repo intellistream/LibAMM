@@ -6,7 +6,7 @@ sketchDimension,25,U64
 threads,1,U64
 useCPP,1,U64
 cppAlgoTag,smp-pca,String
-eventRateTps,200,U64
+eventRateTps,120,U64
 isStreaming,1,U64
 streamingTwoMatrixes,1,U64
 batchSize,1,U64
