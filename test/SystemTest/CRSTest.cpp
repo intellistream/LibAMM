@@ -77,6 +77,7 @@ TEST_CASE("Test CRS in cpp", "[short]")
     auto ammC = crs.amm(A, B, 20);
     double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
     REQUIRE(froError < 0.5);
+    std::cout << froError << std::endl;
 }
 
 TEST_CASE("Test CRS v2 in cpp", "[short]")
@@ -89,6 +90,7 @@ TEST_CASE("Test CRS v2 in cpp", "[short]")
     auto ammC = crs.amm(A, B, 20);
     double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
     REQUIRE(froError < 0.5);
+    std::cout << froError << std::endl;
 }
 
 TEST_CASE("Test Bernoulli CRS in cpp", "[short]")
@@ -101,4 +103,5 @@ TEST_CASE("Test Bernoulli CRS in cpp", "[short]")
     auto ammC = bcrs.amm(A, B, 20);
     double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
     REQUIRE(froError < 0.5);
+    std::cout << froError << std::endl;
 }

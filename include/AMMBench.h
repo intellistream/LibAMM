@@ -145,10 +145,13 @@
 #include <CPPAlgos/ProductQuantizationRaw.h>
 #include <CPPAlgos/ProductQuantizationHash.h>
 #include <CPPAlgos/INT8CPPAlgo.h>
-
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
 #include <CPPAlgos/WeightedCRCPPAlgo.h>
 #include <CPPAlgos/SMPPCACPPAlgo.h>
+#include <CPPAlgos/FastJLTCPPAlgo.h>
+#include <CPPAlgos/RIPCPPAlgo.h>
+#include <CPPAlgos/BlockLRACPPAlgo.h>
+
 /**
  * @}
  *
