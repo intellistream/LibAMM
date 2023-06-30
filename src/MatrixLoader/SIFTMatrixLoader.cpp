@@ -57,16 +57,16 @@ torch::Tensor AMMBench::SIFTMatrixLoader::getB() {
     return B;
 }
 
-int main() {
-    AMMBench::MatrixLoaderTable mLoaderTable;
-    auto matLoaderPtr = mLoaderTable.findMatrixLoader("SIFT");
-    assert(matLoaderPtr);
+// int main() {
+//     AMMBench::MatrixLoaderTable mLoaderTable;
+//     auto matLoaderPtr = mLoaderTable.findMatrixLoader("SIFT");
+//     assert(matLoaderPtr);
 
-    INTELLI::ConfigMapPtr cfg = newConfigMap();
-    matLoaderPtr->setConfig(cfg);
+//     INTELLI::ConfigMapPtr cfg = newConfigMap();
+//     matLoaderPtr->setConfig(cfg);
     
-    auto A = matLoaderPtr->getA();
-    auto B = matLoaderPtr->getB();
-    std::cout << A.sizes() << endl;
-    std::cout << B.sizes() << endl;
-}
+//     auto A = matLoaderPtr->getA();
+//     auto B = matLoaderPtr->getB();
+//     std::cout << A.sizes() << endl;
+//     std::cout << B.sizes() << endl;
+// }

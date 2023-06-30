@@ -2,8 +2,8 @@
 // Created by yuhao on 6/30/23.
 //
 
-#ifndef INTELLISTREAM_SIFTMATRIXLOADER_H
-#define INTELLISTREAM_SIFTMATRIXLOADER_H
+#ifndef INTELLISTREAM_MNISTMATRIXLOADER_H
+#define INTELLISTREAM_MNISTMATRIXLOADER_H
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
@@ -13,13 +13,13 @@ namespace AMMBench {
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_SIFT The SIFTsmall dataset generator
+ * @ingroup AMMBENCH_MatrixLOADER_MNIST The MNIST training image dataset generator
  * @{
  */
 /**
- * @class SIFTMatrixLoader MatrixLoader/SIFTMatrixLoader.h
- * @brief The SIFT class of matrix loader http://corpus-texmex.irisa.fr/
- * @ingroup AMMBENCH_MatrixLOADER_SIFT
+ * @class MNISTMatrixLoader MatrixLoader/MNISTMatrixLoader.h
+ * @brief The MNIST class of matrix loader https://www.kaggle.com/datasets/hojjatk/mnist-dataset
+ * @ingroup AMMBENCH_MatrixLOADER_MNIST
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -28,9 +28,9 @@ namespace AMMBench {
 * - call @ref getA and @ref getB (assuming we are benchmarking torch.mm(A,B))
  * @note: does not need config
  * @note: default name tags
- * "SIFT": @ref SIFTMatrixLoader
+ * "MNIST": @ref MNISTMatrixLoader
  */
-    class SIFTMatrixLoader : public AbstractMatrixLoader {
+    class MNISTMatrixLoader : public AbstractMatrixLoader {
     protected:
         torch::Tensor A, B;
 
@@ -46,9 +46,9 @@ namespace AMMBench {
         void generateAB();
 
     public:
-        SIFTMatrixLoader() = default;
+        MNISTMatrixLoader() = default;
 
-        ~SIFTMatrixLoader() = default;
+        ~MNISTMatrixLoader() = default;
 
         /**
            * @brief Set the GLOBAL config map related to this loader
@@ -72,18 +72,18 @@ namespace AMMBench {
     };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_SIFT
- * @typedef SIFTMatrixLoaderPtr
- * @brief The class to describe a shared pointer to @ref SIFTMatrixLoader
+ * @ingroup AMMBENCH_MatrixLOADER_MNIST
+ * @typedef MNISTMatrixLoaderPtr
+ * @brief The class to describe a shared pointer to @ref MNISTMatrixLoader
 
  */
-    typedef std::shared_ptr<class AMMBench::SIFTMatrixLoader> SIFTMatrixLoaderPtr;
+    typedef std::shared_ptr<class AMMBench::MNISTMatrixLoader> MNISTMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_SIFT
- * @def newSIFTMatrixLoader
- * @brief (Macro) To creat a new @ref SIFTMatrixLoader under shared pointer.
+ * @ingroup AMMBENCH_MatrixLOADER_MNIST
+ * @def newMNISTMatrixLoader
+ * @brief (Macro) To creat a new @ref MNISTMatrixLoader under shared pointer.
  */
-#define newSIFTMatrixLoader std::make_shared<AMMBench::SIFTMatrixLoader>
+#define newMNISTMatrixLoader std::make_shared<AMMBench::MNISTMatrixLoader>
 /**
  * @}
  */
@@ -91,4 +91,4 @@ namespace AMMBench {
  * @}
  */
 }
-#endif //INTELLISTREAM_SIFTMATRIXLOADER_H
+#endif //INTELLISTREAM_MNISTMATRIXLOADER_H

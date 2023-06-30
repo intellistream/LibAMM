@@ -98,6 +98,7 @@
 #include <MatrixLoader/PoissonMatrixLoader.h>
 #include <MatrixLoader/BetaMatrixLoader.h>
 #include <MatrixLoader/SIFTMatrixLoader.h>
+#include <MatrixLoader/MNISTMatrixLoader.h>
 #include <MatrixLoader/MatrixLoaderTable.h>
 /**
  * @}
