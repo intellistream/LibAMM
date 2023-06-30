@@ -8,5 +8,6 @@ add_sources(
         PoissonMatrixLoader.cpp
         BetaMatrixLoader.cpp
         SIFTMatrixLoader.cpp
+        MNISTMatrixLoader.cpp
         MatrixLoaderTable.cpp
 )

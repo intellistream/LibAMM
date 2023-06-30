@@ -1,5 +1,5 @@
 //
-// Created by haolan on 6/5/23.
+// Created by yuhao on 6/30/23.
 //
 
 #ifndef INTELLISTREAM_SIFTMATRIXLOADER_H
@@ -28,7 +28,7 @@ namespace AMMBench {
 * - call @ref getA and @ref getB (assuming we are benchmarking torch.mm(A,B))
  * @note: does not need config
  * @note: default name tags
- * "sift": @ref SIFTMatrixLoader
+ * "SIFT": @ref SIFTMatrixLoader
  */
     class SIFTMatrixLoader : public AbstractMatrixLoader {
     protected:
