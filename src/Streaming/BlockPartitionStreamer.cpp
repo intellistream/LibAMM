@@ -5,6 +5,7 @@
 #include <Streaming/BlockPartitionStreamer.h>
 #include <Utils/UtilityFunctions.h>
 #include <Parallelization/BlockPartitionRunner.h>
+#include <Utils/BS_thread_pool.hpp>
 
 bool AMMBench::BlockPartitionStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
     cfgGlobal = cfg;
@@ -47,7 +48,9 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
     gettimeofday(&tstart, NULL);
     size_t slice_size = batchSize / threads;
 
-    std::vector<std::thread> threadVector(threads);
+    //std::vector<std::thread> threadVector(threads);
+    auto pool = std::make_shared<BS::thread_pool>(threads);
+    BS::multi_future<void> tasks(threads);
     while (startRow < aRows) {
         tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
         while (tNow < tEXpectedArrival) {
@@ -56,13 +59,15 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
         }
         // stream by rows
         for (size_t i = 0; i < threads; ++i) {
-            size_t startRowThread = startRow + i * slice_size;
-            size_t endRowThread = (i == threads - 1) ? endRow : startRowThread + slice_size;
-            threadVector[i] = std::thread([&](size_t startRowThread, size_t endRowThread) {
+            tasks[i] = pool->submit([&, i]() { // Capture by reference, but capture 'i' by value
+                cout << "created" << endl;
+                    size_t startRowThread = startRow + i * slice_size;
+                    size_t endRowThread = (i == threads - 1) ? endRow : startRowThread + slice_size;
                 auto subA = A.slice(0, startRowThread, endRowThread);
                 matC->slice(0, startRowThread, endRowThread) = cppAlgoPtr->amm(subA, B, sketchSize);
-            }, startRowThread, endRowThread);
+            });
         }
+        tasks.wait();
         // stream by columns
         /*
         for (size_t i = 0; i < threads; ++i) {
@@ -75,11 +80,10 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
                 matC->slice(start, 0, end) = cppAlgoPtr->amm(subA, subB, sketchSize).t();
             }, startColThread, endColThread);
         }*/
-        for(auto& thread : threadVector) {
+        /*for(auto& thread : threadVector) {
             thread.join();
-        }
+        }*/
         tp = INTELLI::UtilityFunctions::timeLastUs(tstart);
-        cout << tp << endl;
         for (size_t i = startRow; i < endRow; i++) {
             myTs[i]->processedTime = tp;
         }
