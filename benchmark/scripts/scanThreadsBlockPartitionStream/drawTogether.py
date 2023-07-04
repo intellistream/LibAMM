@@ -132,13 +132,13 @@ def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag + "CPP"
-    methodTags = ["CRS","MM","SMP-PCA",  "CS"]
-    resultPaths = ["CRS","MM","SMP-PCA",  "CS"]
-    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv","config_CPPSMPPCA.csv",  "config_CPPCOUNTERSKETCH.csv"]
+    methodTags = ["CRS","MM","SMP-PCA",  "CS", "PQ-hash", "CO-FD", "ToW"]
+    resultPaths = ["CRS","MM","SMP-PCA",  "CS", "PQ-hash", "CO-FD", "ToW"]
+    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv","config_CPPSMPPCA.csv",  "config_CPPCOUNTERSKETCH.csv", "config_PQHash.csv", "config_CPPCOFD.csv", "config_CPPToW.csv"]
     #methodTags = ["CRS","MM"]
     #resultPaths = ["CRS","MM"]
     #csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv"]
-    valueVec = [1, 2, 4, 6, 8, 10]
+    valueVec = [1, 2, 4, 8]
     valueVecDisp = np.array(valueVec)
     # run
     reRun = 0

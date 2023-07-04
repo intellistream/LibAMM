@@ -7,6 +7,7 @@
 #include <Streaming/TimeStamper.h>
 #include <CPPAlgos/CPPAlgoTable.h>
 #include <Parallelization/BlockPartitionRunner.h>
+#include <Utils/BS_thread_pool.hpp>
 
 namespace AMMBench {
 
@@ -36,6 +37,7 @@ namespace AMMBench {
         AMMBench::TensorPtr matC = nullptr;
         double throughput = 0.0;
         uint64_t threads = 1;
+
     public:
         BlockPartitionStreamer() {}
 
