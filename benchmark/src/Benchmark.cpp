@@ -14,11 +14,23 @@ using namespace DIVERSE_METER;
 
 void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1) {
     uint64_t threads=cfg->tryU64("threads", 1, true);
+    uint64_t streamingTwoMatrixes=cfg->tryU64("streamingTwoMatrixes", 0, true);
     if (threads > 1) {
         AMMBench::BlockPartitionStreamer ss;
         ss.setConfig(cfg);
-        torch::Tensor ssC = ss.streamingAmm(A, B, sketchSize);
-        auto resultCsv = newConfigMap();;
+        torch::Tensor ssC;
+        if(streamingTwoMatrixes)
+        {
+            INTELLI_INFO("Both A,B will be streaming" );
+            ssC = ss.streamingAmm2S(A, B, sketchSize);
+            cout << "completed" << endl;
+        }
+        else
+        {
+            INTELLI_INFO("Only A will be streaming" );
+            ssC = ss.streamingAmm(A, B, sketchSize);
+        }
+        auto resultCsv = newConfigMap();
         resultCsv->edit("throughput", (double) ss.getThroughput());
         resultCsv->edit("throughputByElements", (double) (ss.getThroughput() * A.size(1)));
         resultCsv->edit("95%latency", (double) ss.getLatencyPercentage(0.95));
@@ -36,7 +48,6 @@ void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t 
     }
     AMMBench::SingleThreadStreamer ss;
     ss.setConfig(cfg);
-    uint64_t streamingTwoMatrixes=cfg->tryU64("streamingTwoMatrixes", 0, true);
     torch::Tensor ssC;
     if(streamingTwoMatrixes)
     {

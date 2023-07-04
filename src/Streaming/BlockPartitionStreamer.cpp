@@ -37,7 +37,6 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
     INTELLI_INFO("Generate time stamp done");
     matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
     struct timeval tstart;
-    //INTELLI_INFO("I am mm");
     INTELLI_INFO("Start Streaming A rows");
     uint64_t startRow = 0;
     uint64_t endRow = startRow + batchSize;
@@ -48,7 +47,6 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
     gettimeofday(&tstart, NULL);
     size_t slice_size = batchSize / threads;
 
-    //std::vector<std::thread> threadVector(threads);
     auto pool = std::make_shared<BS::thread_pool>(threads);
     BS::multi_future<void> tasks(threads);
     while (startRow < aRows) {
@@ -57,10 +55,8 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
             tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
             //usleep(1);
         }
-        // stream by rows
         for (size_t i = 0; i < threads; ++i) {
             tasks[i] = pool->submit([&, i]() { // Capture by reference, but capture 'i' by value
-                cout << "created" << endl;
                     size_t startRowThread = startRow + i * slice_size;
                     size_t endRowThread = (i == threads - 1) ? endRow : startRowThread + slice_size;
                 auto subA = A.slice(0, startRowThread, endRowThread);
@@ -68,21 +64,6 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
             });
         }
         tasks.wait();
-        // stream by columns
-        /*
-        for (size_t i = 0; i < threads; ++i) {
-            size_t startColThread = i * slice_size;
-            size_t endColThread = (i == threads - 1) ? A.size(1) : startColThread + slice_size;
-
-            threadVector[i] = std::thread([&](size_t start, size_t end) {
-                auto subA = A.t().slice(start, 0, end).t();
-                auto subB = B.slice(start, 0, end);
-                matC->slice(start, 0, end) = cppAlgoPtr->amm(subA, subB, sketchSize).t();
-            }, startColThread, endColThread);
-        }*/
-        /*for(auto& thread : threadVector) {
-            thread.join();
-        }*/
         tp = INTELLI::UtilityFunctions::timeLastUs(tstart);
         for (size_t i = startRow; i < endRow; i++) {
             myTs[i]->processedTime = tp;
@@ -137,10 +118,13 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
     uint64_t iterationCnt=0;
     torch::Tensor incomingA,incomingB,newArrivedB,oldArrivedA;
     uint64_t aBCols=0,lastABCols=0;
+
+    size_t slice_size = batchSize / threads;
+    auto pool = std::make_shared<BS::thread_pool>(threads);
+    BS::multi_future<void> tasks(threads);
+
     while (startRow < aRows) {
         tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
-        //auto subA = A.slice(0, startRow, endRow);
-        incomingA =A.slice(0, startRow, endRow);
         incomingB=B.slice(1,startRow,endRow);
         newArrivedB=B.slice(1,0,endRow);
         while (tNow < tEXpectedArrival) {
@@ -154,7 +138,19 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
         /**
          * @brief do the incomingA*newArrivedB part
          */
-        auto aB=cppAlgoPtr->amm(incomingA, newArrivedB, sketchSize);
+        vector<torch::Tensor> aBs(threads);
+        for (size_t i = 0; i < threads; ++i) {
+            tasks[i] = pool->submit([&, i]() {
+                size_t startRowThread = startRow + i * slice_size;
+                size_t endRowThread = (i == threads - 1) ? endRow : startRowThread + slice_size;
+                auto subA = A.slice(0, startRowThread, endRowThread);
+
+                aBs[i] = cppAlgoPtr->amm(subA, newArrivedB, sketchSize);
+            });
+        }
+        tasks.wait();
+        torch::Tensor aB = torch::cat(aBs, 0);
+
         lastABCols=aBCols;
         aBCols=aB.size(1);
         matC->slice(0,startRow,endRow).slice(1,0,aBCols).copy_(aB);
@@ -163,7 +159,25 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
         */
         if(iterationCnt!=0)
         {
-            auto aB2=cppAlgoPtr->amm(oldArrivedA, incomingB, sketchSize);
+            torch::Tensor aB2 = torch::empty({(long)oldArrivedA.size(0), incomingB.size(1)});
+            std::vector<std::future<void>> tasks(threads);
+
+            for (size_t i = 0; i < threads; ++i) {
+                tasks[i] = pool->submit([&, i]() { // Capture by reference, but capture 'i' by value
+                    size_t slice_size = oldArrivedA.size(0) / threads;
+                    size_t startRowThread = i * slice_size;
+                    size_t endRowThread = (i == threads - 1) ? oldArrivedA.size(0) : startRowThread + slice_size;
+
+                    auto oldArrivedA_sub = oldArrivedA.slice(0, startRowThread, endRowThread);
+                    auto subAB2 = cppAlgoPtr->amm(oldArrivedA_sub, incomingB, sketchSize);
+                    aB2.slice(0, startRowThread, endRowThread) = subAB2;
+                });
+            }
+            for(auto &task : tasks) {
+                task.get();  // wait for tasks to finish
+            }
+            //aB2=cppAlgoPtr->amm(oldArrivedA, incomingB, sketchSize);
+
             uint64_t aB2Rows=aB2.size(0);
             uint64_t aB2Cols=aB2.size(1);
             matC->slice(0,0,aB2Rows).slice(1,lastABCols,lastABCols+aB2Cols).copy_(aB2);
