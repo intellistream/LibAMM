@@ -6,6 +6,7 @@
 #include <Utils/UtilityFunctions.h>
 #include <Parallelization/BlockPartitionRunner.h>
 #include <Utils/BS_thread_pool.hpp>
+#include <Utils/UtilityFunctions.h>
 
 bool AMMBench::BlockPartitionStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
     cfgGlobal = cfg;
@@ -53,12 +54,12 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
         tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
         while (tNow < tEXpectedArrival) {
             tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
-            //usleep(1);
         }
         for (size_t i = 0; i < threads; ++i) {
-            tasks[i] = pool->submit([&, i]() { // Capture by reference, but capture 'i' by value
-                    size_t startRowThread = startRow + i * slice_size;
-                    size_t endRowThread = (i == threads - 1) ? endRow : startRowThread + slice_size;
+            tasks[i] = pool->submit([&, i]() {
+                INTELLI::UtilityFunctions::bind2Core(i+1);
+                size_t startRowThread = startRow + i * slice_size;
+                size_t endRowThread = (i == threads - 1) ? endRow : startRowThread + slice_size;
                 auto subA = A.slice(0, startRowThread, endRowThread);
                 matC->slice(0, startRowThread, endRowThread) = cppAlgoPtr->amm(subA, B, sketchSize);
             });
@@ -141,6 +142,7 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
         vector<torch::Tensor> aBs(threads);
         for (size_t i = 0; i < threads; ++i) {
             tasks[i] = pool->submit([&, i]() {
+                INTELLI::UtilityFunctions::bind2Core(i+1);
                 size_t startRowThread = startRow + i * slice_size;
                 size_t endRowThread = (i == threads - 1) ? endRow : startRowThread + slice_size;
                 auto subA = A.slice(0, startRowThread, endRowThread);
@@ -164,6 +166,7 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
 
             for (size_t i = 0; i < threads; ++i) {
                 tasks[i] = pool->submit([&, i]() { // Capture by reference, but capture 'i' by value
+                    INTELLI::UtilityFunctions::bind2Core(i+1);
                     size_t slice_size = oldArrivedA.size(0) / threads;
                     size_t startRowThread = i * slice_size;
                     size_t endRowThread = (i == threads - 1) ? oldArrivedA.size(0) : startRowThread + slice_size;
