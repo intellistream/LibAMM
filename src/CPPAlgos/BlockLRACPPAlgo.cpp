@@ -8,7 +8,12 @@
 #include <AMMBench.h>
 
 namespace AMMBench {
-torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize,  float ARankRatio, float BRankRatio) {
+  void AMMBench::BlockLRACPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
+    ARankRatio = cfg->tryDouble("algoARankRatio", 0.5, true);
+    BRankRatio = cfg->tryDouble("algoBRankRatio", 0.5, true);
+    }
+
+  torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize) {
   
   // Input size and block size
   uint64_t m = A.size(0);
