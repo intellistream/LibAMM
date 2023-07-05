@@ -12,10 +12,12 @@ void AMMBench::SIFTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 
 void AMMBench::SIFTMatrixLoader::generateAB() {
 
+    // Step1. locate file
     char filename[] = "/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/src/MatrixLoader/siftsmall_base.fvecs";
     float* data = NULL;
     unsigned num, dim;
 
+    // Step2. read in binary
     std::ifstream in(filename, std::ios::binary);	//以二进制的方式打开文件
     if (!in.is_open()) {
     std::cout << "open file error" << std::endl;
@@ -35,9 +37,26 @@ void AMMBench::SIFTMatrixLoader::generateAB() {
     }
     in.close();
 
+    // Step3. convert to torch tensor and standardize the matrix
     torch::TensorOptions options(torch::kFloat32);
-    A = torch::from_blob(data, {(int)num, (int)dim}, options).clone();
-    B = A.t();
+    B = torch::from_blob(data, {(int)num, (int)dim}, options).clone();
+
+    // 3.1 Compute the mean and standard deviation along each feature (column)
+    torch::Tensor mean = B.mean(/*dim=*/0);
+    torch::Tensor std = B.std(/*dim=*/0);
+
+    // 3.2 Standardize the matrix
+    torch::Tensor standardizedB = (B - mean) / std;
+    
+    B = standardizedB;
+    A = B.t();
+
+    int ACol = A.size(0);
+    int ARow = A.size(1);
+    int BCol = B.size(0);
+    int BRow = B.size(1);
+    INTELLI_INFO(
+            "Generating [" + to_string(ACol) + "x" + to_string(ARow) + "]*[" + to_string(BCol) + "x" + to_string(BRow) + "]");
 
     delete[] data; // deallocate
 }

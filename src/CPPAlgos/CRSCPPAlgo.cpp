@@ -7,6 +7,7 @@
 namespace AMMBench {
     torch::Tensor AMMBench::CRSCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k) {
         A = A.t();
+
         //INTELLI_INFO("I am CPP-CRS");
         int64_t n = A.size(0);
         //int64_t m = A.size(1);

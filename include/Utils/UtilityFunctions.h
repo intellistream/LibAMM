@@ -77,6 +77,34 @@ namespace INTELLI {
             return frobeniusNormError / frobeniusNormA;
         }
 
+        static double relativeSpectralNormError(torch::Tensor A, torch::Tensor B) {
+
+            torch::Tensor eigenvaluesA = torch::linalg::eigvals(A);
+            torch::Tensor eigenvaluesError = torch::linalg::eigvals(A-B);
+
+            // c10::IntArrayRef shape = eigenvaluesA.sizes();
+            // std::vector<int64_t> shapeVec(shape.vec());
+            // std::cout << "eigenvaluesA shape: ";
+            // for (int64_t dim : shapeVec) {
+            //     std::cout << dim << " ";
+            // }
+            // std::cout << std::endl;
+
+            // for (int i = 0; i < eigenvaluesA.size(0); ++i) {
+            //     std::cout << eigenvaluesA[i].item<double>() << " ";
+            // }
+
+            double SpectralNormA = eigenvaluesA[0].item<double>();
+            double SpectralNormError = eigenvaluesError[0].item<double>();
+            double relativeSpectralNormError = abs(SpectralNormError/SpectralNormA);
+
+            // std::cout << "SpectralNormA: " << SpectralNormA << " ";
+            // std::cout << "SpectralNormError: " << SpectralNormError << " ";
+            // std::cout << "relativeSpectralNormError: " << relativeSpectralNormError << " ";
+
+            return relativeSpectralNormError;
+        }
+
         static double errorBoundRatio(torch::Tensor A, torch::Tensor B) {
             torch::Tensor error = A - B;
             double frobeniusNormA = A.norm().item<double>();
