@@ -8,5 +8,6 @@ forceMP,1,U64
 useCPP,1,U64
 cppAlgoTag,smp-pca,String
 isStreaming,1,U64
-batchSize,50,U64
-eventRateTps,200,U64
+batchSize,100,U64
+eventRateTps,10000,U64
+streamingTwoMatrixes,1,U64
