@@ -157,7 +157,7 @@ def DrawFigure(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, 
 # draw a line chart
 def DrawFigureXYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(10, 3))
+    fig = plt.figure(figsize=(10, 6))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
