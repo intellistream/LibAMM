@@ -1,0 +1,11 @@
+key,value,type
+aRow,1000,U64
+aCol,10000,U64
+bCol,1000,U64
+matrixLoaderTag,random,String
+sketchDimension,25,U64
+threads,1,U64
+useCPP,1,U64
+forceMP,1,U64
+cppAlgoTag,countSketch,String
+usingMeter,1,U64

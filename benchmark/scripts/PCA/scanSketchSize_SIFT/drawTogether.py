@@ -77,56 +77,64 @@ def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"
 
 def readResultSingle(singleValue, resultPath):
     resultFname = resultPath + "/" + str(singleValue) + "/PCA.csv"
-    elapsedTime = readConfig(resultFname, "perfElapsedTime")
+    AMMElapsedTime = readConfig(resultFname, "AMMElapsedTime")
+    AMMError = readConfig(resultFname, "AMMError")
     # cacheMiss = readConfig(resultFname, "cacheMiss")
     # cacheRefs = readConfig(resultFname, "cacheRefs")
+    ElseElapsedTime = readConfig(resultFname, "ElseElapsedTime")
     PCAError = readConfig(resultFname, "PCAError")
     # errorBoundRatio = readConfig(resultFname, "errorBoundRatio")
     # return elapsedTime, cacheMiss, cacheRefs, PCAError, errorBoundRatio
-    return elapsedTime, PCAError
+    return AMMElapsedTime, AMMError, ElseElapsedTime, PCAError
 
 
 def readResultVector(singleValueVec, resultPath):
-    elapseTimeVec = []
+    AMMElapsedTimeVec = []
+    AMMErrorVec = []
     cacheMissVec = []
     cacheRefVec = []
+    ElseElapsedTimeVec = []
     PCAErrorVec = []
     errorBoundRatioVec = []
     for i in singleValueVec:
         # elapsedTime, cacheMiss, cacheRefs, PCAError, errorBoundRatio = readResultSingle(i, resultPath)
-        elapsedTime, PCAError = readResultSingle(i, resultPath)
-        elapseTimeVec.append(float(elapsedTime) / 1000.0)
+        AMMElapsedTime, AMMError, ElseElapsedTime, PCAError = readResultSingle(i, resultPath)
+        AMMElapsedTimeVec.append(float(AMMElapsedTime) / 1000.0)
+        AMMErrorVec.append(float(AMMError))
         # cacheMissVec.append(float(cacheMiss))
         # cacheRefVec.append(float(cacheRefs))
+        ElseElapsedTimeVec.append(float(ElseElapsedTime) / 1000.0)
         PCAErrorVec.append(float(PCAError))
         # errorBoundRatioVec.append(float(errorBoundRatio))
     # return np.array(elapseTimeVec), np.array(cacheMissVec), np.array(cacheRefVec), np.array(PCAErrorVec), np.array(errorBoundRatioVec)
-    return np.array(elapseTimeVec), np.array(PCAErrorVec)
+    return np.array(AMMElapsedTimeVec), np.array(AMMErrorVec), np.array(ElseElapsedTimeVec), np.array(PCAErrorVec)
 
 
 def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec, reRun=1):
-    elapsedTimeAll = []
-    cacheMissAll = []
+    
+    AMMElapsedTimeAll = []
+    AMMErrorAll = []
+    cacheMissAll= []
     cacheRefAll = []
-    periodAll = []
-    errorAll = []
+    ElseElapsedTimeAll = []
+    PCAErrorAll = []
     errorBoundRatioAll = []
+    periodAll = []
+
     for i in range(len(csvTemplates)):
         resultPath = commonPathBase + resultPaths[i]
         if (reRun == 1):
             Path(resultPath).mkdir(parents=True, exist_ok=True)
             runScanVector(exeSpace, periodVec, resultPath, csvTemplates[i])
         # elapsedTime, cacheMiss, cacheRef, error, eb = readResultVector(periodVec, resultPath)
-        elapsedTime, error= readResultVector(periodVec, resultPath)
-        elapsedTimeAll.append(elapsedTime)
-        # cacheMissAll.append(cacheMiss)
-        # cacheRefAll.append(cacheRef)
+        AMMElapsedTime, AMMerror, ElseElapsedTime, PCAError = readResultVector(periodVec, resultPath)
+        AMMElapsedTimeAll.append(AMMElapsedTime)
+        AMMErrorAll.append(AMMerror)
+        ElseElapsedTimeAll.append(ElseElapsedTime)
+        PCAErrorAll.append(PCAError)
         periodAll.append(periodVec)
-        # cacheMissRateAll = np.array(cacheMissAll) / np.array(cacheRefAll) * 100.0
-        errorAll.append(error)
-        # errorBoundRatioAll.append(eb)
-    # return np.array(elapsedTimeAll), cacheMissRateAll, periodAll, np.array(errorAll), np.array(errorBoundRatioAll)
-    return np.array(elapsedTimeAll), periodAll, np.array(errorAll)
+
+    return np.array(AMMElapsedTimeAll), np.array(AMMErrorAll), np.array(ElseElapsedTimeAll), np.array(PCAErrorAll), periodAll
 
 
 def main():
@@ -135,10 +143,10 @@ def main():
     figPath = os.path.abspath(os.path.join(os.getcwd(), "..")) + "/figures/" + scanTag
     configTemplate = exeSpace + "config.csv"
     commonBase = resultPath + "/"
-    resultPaths = ["mm", "crs", "countSketch", "rip", "tugOfWar", "cooFD", "bcooFD", "blockLRA", "mp-pca"]
+    resultPaths = ["mm", "crs", "countSketch", "tugOfWar", "cooFD", "smp-pca"]
     csvTemplates = ["config_"+i+".csv" for i in resultPaths]
     evaTypes = resultPaths
-    valueVec = [100, 200] #, 500, 1000, 2000, 5000]
+    valueVec = [100, 200, 500, 1000, 2000, 5000]
     print(configTemplate)
     reRun = 0
     # run
@@ -151,20 +159,26 @@ def main():
         reRun = 1
         tRows = len(resultPaths)
         tCols = len(valueVec)
-        elapseTimeAllSum = np.zeros((tRows, tCols))
+        AMMElapsedTimeAllSum = np.zeros((tRows, tCols))
+        AMMErrorAllSum = np.zeros((tRows, tCols))
+        ElseElapsedTimeAllSum = np.zeros((tRows, tCols))
         PCAErrorAllSum = np.zeros((tRows, tCols))
         errorBoundRatioSum = np.zeros((tRows, tCols))
         cacheMissAll = np.zeros((tRows, tCols))
     rounds = 1
     for i in range(rounds):
         # elapseTimeAll, ch, periodAll, error, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec, reRun)
-        elapseTimeAll, periodAll, error = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec, reRun)
-        elapseTimeAllSum = elapseTimeAllSum + elapseTimeAll
-        PCAErrorAllSum = PCAErrorAllSum + error
+        AMMElapsedTimeAll, AMMErrorAll, ElseElapsedTimeAll, PCAErrorAll, periodAll = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec, reRun)
+        AMMElapsedTimeAllSum = AMMElapsedTimeAllSum + AMMElapsedTimeAll
+        AMMErrorAllSum = AMMErrorAllSum + AMMErrorAll
+        ElseElapsedTimeAllSum = ElseElapsedTimeAllSum + ElseElapsedTimeAll
+        PCAErrorAllSum = PCAErrorAllSum + PCAErrorAll
         # errorBoundRatioSum = errorBoundRatioSum + eb
         # cacheMissAll = cacheMissAll + ch
-    elapseTimeAllSum = elapseTimeAllSum / float(rounds)
-    PCAErrorAllSum = PCAErrorAllSum / float(rounds)
+    AMMElapsedTimeAllSum /= float(rounds)
+    AMMErrorAllSum /= float(rounds)
+    ElseElapsedTimeAllSum /= float(rounds)
+    PCAErrorAllSum /= float(rounds)
     # errorBoundRatioSum = errorBoundRatioSum / float(rounds)
     # cacheMissAll = cacheMissAll / float(rounds)
     # evaTypes = ['FDAMM', 'MM', 'Co-FD', 'BCO-FD']
@@ -175,14 +189,24 @@ def main():
 
     # os.system("mkdir " + figPath)
     groupLine.DrawFigureXYnormal(periodAll,
-                                 1 / elapseTimeAllSum,
+                                 1 / AMMElapsedTimeAllSum,
                                  evaTypes,
-                                 "sketch dimension", "1/elapsed time (1/ms)", 0, 1, figPath + "/" + "_elapsedTime",
+                                 "sketch dimension", "1/AMM elapsed time (1/ms)", 0, 1, figPath + "/" + "AMMElapsedTime",
+                                 True)
+    groupLine.DrawFigureXYnormal(periodAll,
+                                 AMMErrorAllSum * 100.0,
+                                 evaTypes,
+                                 "sketch dimension", "AMM error %", 0, 1, figPath + "/" + "AMMError",
+                                 True)
+    groupLine.DrawFigureXYnormal(periodAll,
+                                 1 / ElseElapsedTimeAllSum,
+                                 evaTypes,
+                                 "sketch dimension", "1/Else elapsed time (1/ms)", 0, 1, figPath + "/" + "ElseElapsedTime",
                                  True)
     groupLine.DrawFigureXYnormal(periodAll,
                                  PCAErrorAllSum * 100.0,
                                  evaTypes,
-                                 "sketch dimension", "normalized error %", 0, 1, figPath + "/" + "_PCAError",
+                                 "sketch dimension", "PCA error %", 0, 1, figPath + "/" + "PCAError",
                                  True)
     # groupLine.DrawFigureXYnormal(periodAll,
     #                              errorBoundRatioSum * 100.0,

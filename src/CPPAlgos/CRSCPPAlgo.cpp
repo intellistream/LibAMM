@@ -21,8 +21,9 @@ namespace AMMBench {
 
         // Sample k columns from A
         torch::Tensor A_sampled = A.index_select(0, indices);
-        int64_t ratio = std::ceil(static_cast<double>(n) / k);
-        A_sampled = (A_sampled / (int) k).t().div(probs.index_select(0, torch::arange(0, n, ratio)));
+        // int64_t ratio = std::ceil(static_cast<double>(n) / k);
+        // A_sampled = (A_sampled / (int) k).t().div(probs.index_select(0, torch::arange(0, n, ratio)));
+        A_sampled = (A_sampled / (int) k).t().div(torch::ones(1) / n);
 
         // Sample k rows from B
         torch::Tensor B_sampled = B.index_select(0, indices);
