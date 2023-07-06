@@ -49,7 +49,7 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
-scanTag = "eventRateTps"
+scanTag = "threads"
 
 
 def singleRun(exePath, singleValue, resultPath, configTemplate):
@@ -132,10 +132,13 @@ def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag + "CPP"
-    methodTags = ["CRS","MM","SMP-PCA",  "CS", "PQ-hash", "ToG"]
-    resultPaths = ["CRS","MM","SMP-PCA",  "CS", "PQ-hash", "ToG"]
-    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv","config_CPPSMPPCA.csv",  "config_CPPCOUNTERSKETCH.csv", "config_PQHash.csv", "config_CPPToW.csv"]
-    valueVec = [100,200,500,1000,2000,5000]
+    methodTags = ["CRS","MM","SMP-PCA",  "CS", "PQ-hash", "CO-FD", "ToW"]
+    resultPaths = ["CRS","MM","SMP-PCA",  "CS", "PQ-hash", "CO-FD", "ToW"]
+    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv","config_CPPSMPPCA.csv",  "config_CPPCOUNTERSKETCH.csv", "config_PQHash.csv", "config_CPPCOFD.csv", "config_CPPToW.csv"]
+    #methodTags = ["CRS","MM"]
+    #resultPaths = ["CRS","MM"]
+    #csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv"]
+    valueVec = [1, 2, 4, 8]
     valueVecDisp = np.array(valueVec)
     # run
     reRun = 0
@@ -152,17 +155,17 @@ def main():
                                                             reRun)
     groupLine.DrawFigureYnormal(periodAll, thrAll/1000.0,
                          methodTags,
-                         "event rate (#rows/s)", "throughput (K elements/s)", 0, 1,
+                         "threads", "throughput (K elements/s)", 0, 1,
                          figPath + "/" + scanTag + "stream_cpp_thr",
                          True)
     groupLine.DrawFigure(periodAll, lat95All,
                          methodTags,
-                         "event rate (#rows/s)", "95% latency (ms)", 0, 1,
+                         "threads", "95% latency (ms)", 0, 1,
                          figPath + "/" + scanTag + "stream_cpp_lat95",
                          True)
     groupLine.DrawFigureYnormal(periodAll, fro*100.0,
                          methodTags,
-                         "event rate (#rows)", "fro error (%)", 0, 1,
+                         "threads", "fro error (%)", 0, 1,
                          figPath + "/" + scanTag + "stream_cpp_fro",
                          True)
 
