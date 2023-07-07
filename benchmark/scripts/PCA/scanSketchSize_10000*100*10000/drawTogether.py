@@ -143,10 +143,10 @@ def main():
     figPath = os.path.abspath(os.path.join(os.getcwd(), "..")) + "/figures/" + scanTag
     configTemplate = exeSpace + "config.csv"
     commonBase = resultPath + "/"
-    resultPaths = ["mm", "crs", "countSketch", "tugOfWar", "cooFD", "smp-pca"]
+    resultPaths = ["mm", "crs", "tugOfWar", "cooFD", "smp-pca"]
     csvTemplates = ["config_"+i+".csv" for i in resultPaths]
     evaTypes = resultPaths
-    valueVec = [100, 200, 500, 1000, 2000, 5000]
+    valueVec = [1, 5, 10, 30, 50]
     print(configTemplate)
     reRun = 0
     # run

@@ -146,7 +146,7 @@ def main():
     resultPaths = ["mm", "crs", "tugOfWar", "cooFD", "smp-pca"]
     csvTemplates = ["config_"+i+".csv" for i in resultPaths]
     evaTypes = resultPaths
-    valueVec = [100, 500, 1000, 3000, 5000]
+    valueVec = [1000, 5000, 10000, 30000, 50000]
     print(configTemplate)
     reRun = 0
     # run

@@ -9,6 +9,7 @@
 #include <barrier>
 #include <functional>
 #include <torch/torch.h>
+#include <ATen/ATen.h>
 //#include <Common/Types.h>
 
 #include <vector>
@@ -79,8 +80,19 @@ namespace INTELLI {
 
         static double relativeSpectralNormError(torch::Tensor A, torch::Tensor B) {
 
-            torch::Tensor eigenvaluesA = torch::linalg::eigvals(A);
-            torch::Tensor eigenvaluesError = torch::linalg::eigvals(A-B);
+            torch::Tensor UA;
+            torch::Tensor SA;
+            torch::Tensor VhA;
+            std::tie(UA, SA, VhA) = torch::linalg::svd(A, false, c10::nullopt);
+            torch::Tensor UError;
+            torch::Tensor SError;
+            torch::Tensor VhError;
+            std::tie(UError, SError, VhError) = torch::linalg::svd(A-B, false, c10::nullopt);
+
+            double SpectralNormA = SA[0].item<double>();
+            // std::cout << "SA: " << SA << " ";
+            double SpectralNormError = SError[0].item<double>();
+            // std::cout << "SError: " << SError << " ";
 
             // c10::IntArrayRef shape = eigenvaluesA.sizes();
             // std::vector<int64_t> shapeVec(shape.vec());
@@ -90,12 +102,6 @@ namespace INTELLI {
             // }
             // std::cout << std::endl;
 
-            // for (int i = 0; i < eigenvaluesA.size(0); ++i) {
-            //     std::cout << eigenvaluesA[i].item<double>() << " ";
-            // }
-
-            double SpectralNormA = eigenvaluesA[0].item<double>();
-            double SpectralNormError = eigenvaluesError[0].item<double>();
             double relativeSpectralNormError = abs(SpectralNormError/SpectralNormA);
 
             // std::cout << "SpectralNormA: " << SpectralNormA << " ";
