@@ -41,17 +41,28 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
     uint64_t tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
     uint64_t tp = 0;
     uint64_t tDone = 0;
+
+    //pre-partition
+    std::vector<torch::Tensor> partitions;
+    for (uint64_t i = 0; i < aRows; i += batchSize) {
+        uint64_t end = std::min(i + batchSize , aRows);
+        auto subA = A.slice(0, i, end);
+        partitions.push_back(subA);
+    }
+    uint64_t index = -1;
     gettimeofday(&tstart, NULL);
+
     while (startRow < aRows) {
         tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
-        auto subA = A.slice(0, startRow, endRow);
+        index++;
         while (tNow < tEXpectedArrival) {
             tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
-            //usleep(1);
         }
         /**
          * @brief now, the whole batch has arrived, compute
          */
+        //auto subA = A.slice(0, startRow, endRow);
+        auto subA = partitions[index];
         matC->slice(0, startRow, endRow) = cppAlgoPtr->amm(subA, B, sketchSize);
         tp = INTELLI::UtilityFunctions::timeLastUs(tstart);
         /**

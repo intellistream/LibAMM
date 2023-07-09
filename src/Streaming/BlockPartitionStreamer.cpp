@@ -45,12 +45,31 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
     uint64_t tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
     uint64_t tp = 0;
     uint64_t tDone = 0;
-    gettimeofday(&tstart, NULL);
     size_t slice_size = batchSize / threads;
 
+    // pre-partition
+    std::vector<std::vector<torch::Tensor>> partitions;
+    uint64_t start = 0;
+    uint64_t end = batchSize;
+    for (int i = 0; i < std::ceil(aRows / batchSize); ++i) {
+        //partitions.push_back(vector<torch::Tensor>(threads));
+        partitions.emplace_back(threads);
+        for (int j = 0; j < threads; ++j) {
+            size_t startRowThread = start + j * slice_size;
+            size_t endRowThread = (j == threads - 1) ? end : startRowThread + slice_size;
+            partitions[i][j] = A.slice(0, startRowThread, endRowThread);
+        }
+        start += batchSize;
+        end += batchSize;
+        if (end > aRows) end = aRows;
+    }
     auto pool = std::make_shared<BS::thread_pool>(threads);
     BS::multi_future<void> tasks(threads);
+    int index = -1;
+    gettimeofday(&tstart, NULL);
+
     while (startRow < aRows) {
+        index++;
         tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
         while (tNow < tEXpectedArrival) {
             tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
@@ -60,8 +79,7 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
                 INTELLI::UtilityFunctions::bind2Core(i+1);
                 size_t startRowThread = startRow + i * slice_size;
                 size_t endRowThread = (i == threads - 1) ? endRow : startRowThread + slice_size;
-                auto subA = A.slice(0, startRowThread, endRowThread);
-                matC->slice(0, startRowThread, endRowThread) = cppAlgoPtr->amm(subA, B, sketchSize);
+                matC->slice(0, startRowThread, endRowThread) = cppAlgoPtr->amm(partitions[index][i], B, sketchSize);
             });
         }
         tasks.wait();
