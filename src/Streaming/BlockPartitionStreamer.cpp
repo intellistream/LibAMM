@@ -54,7 +54,7 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
     for (int i = 0; i < std::ceil(aRows / batchSize); ++i) {
         //partitions.push_back(vector<torch::Tensor>(threads));
         partitions.emplace_back(threads);
-        for (int j = 0; j < threads; ++j) {
+        for (uint64_t j = 0; j < threads; ++j) {
             size_t startRowThread = start + j * slice_size;
             size_t endRowThread = (j == threads - 1) ? end : startRowThread + slice_size;
             partitions[i][j] = A.slice(0, startRowThread, endRowThread);
