@@ -77,7 +77,6 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
     return *matC;
 }
 
-
 torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   uint64_t aRows = A.size(0);
@@ -170,6 +169,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
   throughput = throughput * 1e6 / tDone;
   return *matC;
 }
+
 double AMMBench::SingleThreadStreamer::getLatencyPercentage(double fraction) {
     size_t rLen = myTs.size();
     size_t nonZeroCnt = 0;

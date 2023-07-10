@@ -13,18 +13,17 @@ namespace AMMBench {
         std::cout << "B shape: " << B.sizes() << std::endl;
 
         // Probability distribution
-        torch::Tensor col_norm_A = torch::norm(A, /*p=*/2, /*dim=*/0); // norm on columns of A
-        torch::Tensor row_norm_B = torch::norm(B, /*p=*/2, /*dim=*/1); // norm on rows of B
-        torch::Tensor probability_distribution = torch::mul(col_norm_A, row_norm_B);
-        probability_distribution /= probability_distribution.sum();
-
+        // torch::Tensor col_norm_A = torch::norm(A, /*p=*/2, /*dim=*/0); // norm on columns of A
+        // torch::Tensor row_norm_B = torch::norm(B, /*p=*/2, /*dim=*/1); // norm on rows of B
+        // torch::Tensor probability_distribution = torch::mul(col_norm_A, row_norm_B);
+        // probability_distribution /= probability_distribution.sum();
+        torch::Tensor probability_distribution = torch::ones(n) / n;
+        
         // S
-        torch::Tensor sample_indices = torch::multinomial(probability_distribution, /*num_samples*/c, /*replacement*/
-                                                          true);
+        torch::Tensor sample_indices = torch::multinomial(probability_distribution, /*num_samples*/c, /*replacement*/true);
 
         torch::Tensor unique_indices, _, occurences;
-        std::tie(unique_indices, _, occurences) = at::_unique2(sample_indices, /*sorted*/false, /*return_inverse*/
-                                                               false, /*return_counts*/true);
+        std::tie(unique_indices, _, occurences) = at::_unique2(sample_indices, /*sorted*/false, /*return_inverse*/false, /*return_counts*/true);
 
         torch::Tensor S = torch::zeros({n, unique_indices.size(0)});
         torch::Tensor trial = torch::arange(unique_indices.size(0));
