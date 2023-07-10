@@ -6,12 +6,14 @@
 #include <ATen/ATen.h>
 #include <vector>
 #include <AMMBench.h>
-using namespace std;
-using namespace INTELLI;
-using namespace torch;
 
 namespace AMMBench {
-torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize,  float ARankRatio, float BRankRatio) {
+  void AMMBench::BlockLRACPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
+    ARankRatio = cfg->tryDouble("algoARankRatio", 0.5, true);
+    BRankRatio = cfg->tryDouble("algoBRankRatio", 0.5, true);
+    }
+
+  torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize) {
   
   // Input size and block size
   uint64_t m = A.size(0);
@@ -60,17 +62,17 @@ torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, u
 } // AMMBench
 
 
-int main() {
+// int main() {
   
-  torch::manual_seed(114514);
-  AMMBench::BlockLRACPPAlgo wcr;
-  auto A = torch::rand({500, 400});
-  auto B = torch::rand({400, 600});
-  auto realC = torch::matmul(A, B);
-  auto ammC = wcr.amm(A, B, 100, 0.5, 0.5);
-  double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
-  std::cout << "froError: " << froError << std::endl;
+//   torch::manual_seed(114514);
+//   AMMBench::BlockLRACPPAlgo wcr;
+//   auto A = torch::rand({500, 400});
+//   auto B = torch::rand({400, 600});
+//   auto realC = torch::matmul(A, B);
+//   auto ammC = wcr.amm(A, B, 100, 0.5, 0.5);
+//   double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, ammC);
+//   std::cout << "froError: " << froError << std::endl;
 
-  return 0;
-}
+//   return 0;
+// }
 
