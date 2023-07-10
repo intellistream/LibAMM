@@ -121,6 +121,7 @@
 * We define the streaming classes of AMM. here
 **/
 #include <Streaming/TimeStamper.h>
+#include <Streaming/Streamer.h>
 #include <Streaming/SingleThreadStreamer.h>
 #include <Streaming/BlockPartitionStreamer.h>
 /**
