@@ -6,10 +6,9 @@ sketchDimension,25,U64
 ptFile,torchscripts/RAWMM.pt,String
 useCPP,1,U64
 cppAlgoTag,mm,String
-threads,2,U64
+threads,1,U64
 forceMP,1,U64
-eventRateTps,200,U64
+eventRateTps,10000,U64
 isStreaming,1,U64
+batchSize,100,U64
 streamingTwoMatrixes,1,U64
-batchSize,1,U64
-coreBind,2,U64

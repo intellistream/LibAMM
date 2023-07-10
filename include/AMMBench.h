@@ -124,6 +124,7 @@
 **/
 #include <Streaming/TimeStamper.h>
 #include <Streaming/SingleThreadStreamer.h>
+#include <Streaming/BlockPartitionStreamer.h>
 /**
  * @}
  *
@@ -178,6 +179,7 @@
 #include <Utils/ThreadPerf.hpp>
 #include <Utils/IntelliLog.h>
 #include <Utils/UtilityFunctions.h>
+#include <Utils/BS_thread_pool.hpp>
 /**
  * @}
  */
