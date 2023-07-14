@@ -91,6 +91,7 @@ void benchmarkPCA(std::string configName){
     // if (eMeter != nullptr) {
     //     eMeter->stopMeter();
     // }
+    INTELLI_INFO("AMM finished in " + to_string(br.getElapsedTime()));
 
     // 2.2 elapsed time and error for AMM
     ConfigMapPtr resultCsv = newConfigMap();
@@ -111,13 +112,15 @@ void benchmarkPCA(std::string configName){
 
     // Step3. Test accuracy on PCA task
     // 3.1 elapsed time for other tasks in PCA except AMM
+    INTELLI_INFO("Start SVD task..");
     gettimeofday(&tstart, NULL);
     torch::Tensor UCovC;
     torch::Tensor SCovC;
     torch::Tensor VhCovC;
-    torch::Tensor covC = C/A.size(1);
+    torch::Tensor covC = C/A.size(1); // covirance estimator
     std::tie(UCovC, SCovC, VhCovC) = torch::linalg::svd(covC, false, c10::nullopt);
     gettimeofday(&tend, NULL);
+    INTELLI_INFO("SVD finished in " + to_string(INTELLI::UtilityFunctions::timeLast(tstart, tend)));
     resultCsv->edit("ElseElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
 
     // 3.2 PCA relative spectral error
