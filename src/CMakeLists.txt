@@ -5,6 +5,7 @@ add_subdirectory(CPPAlgos)
 add_subdirectory(Streaming)
 add_sources(
         myVecAdd.cpp
+        pythonBoundings.cpp
 )
 include_directories("../include/")
 # add_executable(RIPCPPAlgo "CPPAlgos/RIPCPPAlgo.cpp")
