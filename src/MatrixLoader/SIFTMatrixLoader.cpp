@@ -6,14 +6,70 @@
 #include <AMMBench.h>
 
 void AMMBench::SIFTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
-    assert(cfg); // do nothing, as cfg is not needed
-    INTELLI_INFO("For SIFT dataset, parsing config step is skipped");
+
+    aRow = cfg->tryU64("aRow", 0, true);
+    aCol = cfg->tryU64("aCol", 0, true);
+    bCol = cfg->tryU64("bCol", 0, true);
+
+    if (aRow!=0 && aCol!=0 && bCol!=0){
+        if (aRow!=bCol){
+            std::runtime_error("in PCA task, B=A.t, so bCol==aRow should be hold all the time. Otherwise we can not get a symmetric real matrix for the rest of PCA task");
+        }
+        INTELLI_INFO("aRow, aCol, bCol are specified in config.csv, so will make the default SIFT dataset [128x10000]*[10000x128] into the specified size [" + to_string(aRow) + "x" + to_string(aCol) + "]*[" + to_string(aCol) + "x" + to_string(bCol) + "]");
+    }
+    else{ // use default SIFT dataset 128*10000, 10000*128
+        INTELLI_INFO("At least one of [aRow, aCol, bCol] is not specified in config.csv, so will use default SIFT dataset [128x10000]*[10000x128]");
+    }
+}
+
+torch::Tensor repeatAndCropMatrix(torch::Tensor matrix, int height, int width) {
+    // Get the dimensions of the original matrix
+    int originalHeight = matrix.size(0);
+    int originalWidth = matrix.size(1);
+
+    // Compute the number of repetitions required
+    int repeatHeight = (height + originalHeight - 1) / originalHeight;
+    int repeatWidth = (width + originalWidth - 1) / originalWidth;
+
+    // Repeat the matrix horizontally and vertically
+    torch::Tensor repeatedMatrix = matrix.repeat({repeatHeight, repeatWidth});
+
+    // Crop the repeated matrix to the desired height and width
+    torch::Tensor croppedMatrix = repeatedMatrix.slice(0, 0, height).slice(1, 0, width);
+
+    // // Check distribution
+    // std::unordered_map<float, int> distribution;
+    // float interval=0.1;
+
+    // // Flatten the matrix into a 1D tensor
+    // auto flattenedMatrix = croppedMatrix.reshape({-1});
+
+    // // Iterate over the flattened tensor and count the occurrences of each value
+    // for (int i = 0; i < flattenedMatrix.size(0); ++i) {
+    //     float value = flattenedMatrix[i].item<float>();
+    //     float roundedValue = std::floor(value / interval) * interval;  // Round down to the nearest interval
+    //     distribution[roundedValue]++;
+    // }
+
+    // std::cout << std::endl;
+    // for (const auto& pair : distribution) {
+    //     // std::cout << "Value: " << pair.first << ", Count: " << pair.second << std::endl;
+    //     std::cout << pair.first << ", ";
+    // }
+    // std::cout << std::endl;
+    // for (const auto& pair : distribution) {
+    //     // std::cout << "Value: " << pair.first << ", Count: " << pair.second << std::endl;
+    //     std::cout << pair.second << ", ";
+    // }
+    // std::cout << std::endl;
+
+    return croppedMatrix;
 }
 
 void AMMBench::SIFTMatrixLoader::generateAB() {
 
     // Step1. locate file
-    char filename[] = "/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/src/MatrixLoader/siftsmall_base.fvecs";
+    char filename[] = "/home/heyuhao/AMMBench/src/MatrixLoader/siftsmall_base.fvecs";
     float* data = NULL;
     unsigned num, dim;
 
@@ -47,8 +103,15 @@ void AMMBench::SIFTMatrixLoader::generateAB() {
 
     // 3.2 Standardize the matrix
     torch::Tensor standardizedB = (B - mean) / std;
+
+    // 3.3 Check if need to resize
+    if (aRow!=0 && aCol!=0 && bCol!=0){
+        B = repeatAndCropMatrix(standardizedB, aCol, bCol);
+    }
+    else{
+        B = standardizedB;
+    }
     
-    B = standardizedB;
     A = B.t();
 
     int ACol = A.size(0);
