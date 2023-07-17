@@ -25,11 +25,11 @@ namespace AMMBench {
   assert(n % blockSize == 0);
 
   // for each block, calculate LRA
-  torch::Tensor finalLRA = torch::zeros({m, n});
+  torch::Tensor finalLRA = torch::zeros({(long) m, (long) n});
 
   for (uint64_t I=0; I<m/blockSize; ++I){
     for (uint64_t J=0; J<n/blockSize; ++J){
-      torch::Tensor subFinalLRA = torch::zeros({blockSize, blockSize});
+      torch::Tensor subFinalLRA = torch::zeros({(long) blockSize, (long) blockSize});
       for (uint64_t K=0; K<k/blockSize; ++K){
         // get sub matrix
         torch::Tensor AIK = A.index({torch::indexing::Slice(I*blockSize, (I+1)*blockSize), torch::indexing::Slice(K*blockSize, (K+1)*blockSize)});
