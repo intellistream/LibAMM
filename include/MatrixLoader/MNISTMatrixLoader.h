@@ -33,6 +33,9 @@ namespace AMMBench {
     class MNISTMatrixLoader : public AbstractMatrixLoader {
     protected:
         torch::Tensor A, B;
+        torch::Tensor Sxx, Syy, Sxy;
+        torch::Tensor SxxNegativeHalf, SyyNegativeHalf, M;
+        torch::Tensor correlation;
 
         /**
          * @brief Inline logic of reading a config file
@@ -59,6 +62,11 @@ namespace AMMBench {
         virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
 
         /**
+           * @brief Calulate the correlation by mm, and generate tensor Sxx, Sxy, Syy, M, correlation
+           */
+        virtual void calculate_correlation();
+
+        /**
          * @brief get the A matrix
          * @return the generated A matrix
          */
@@ -69,6 +77,48 @@ namespace AMMBench {
         * @return the generated B matrix
         */
         virtual torch::Tensor getB();
+
+        /**
+        * @brief get the Sxx matrix
+        * @return the generated Sxx matrix by calling calculate_correlation()
+        */
+        virtual torch::Tensor getSxx();
+
+        /**
+        * @brief get the Sxyymatrix
+        * @return the generated Syy matrix by calling calculate_correlation()
+        */
+        virtual torch::Tensor getSyy();
+
+        /**
+        * @brief get the Sxy matrix
+        * @return the generated Sxy matrix by calling calculate_correlation()
+        */
+        virtual torch::Tensor getSxy();
+
+        /**
+        * @brief get the SxxNegativeHalf matrix
+        * @return the generated SxxNegativeHalf matrix by calling calculate_correlation()
+        */
+        virtual torch::Tensor getSxxNegativeHalf();
+
+        /**
+        * @brief get the SyyNegativeHalf matrix
+        * @return the generated SyyNegativeHalf matrix by calling calculate_correlation()
+        */
+        virtual torch::Tensor getSyyNegativeHalf();
+
+        /**
+        * @brief get the M matrix
+        * @return the generated M matrix by calling calculate_correlation()
+        */
+        virtual torch::Tensor getM();
+
+        /**
+        * @brief get the correlation value
+        * @return the generated correlation by calling calculate_correlation()
+        */
+        virtual torch::Tensor getCorrelation();
     };
 
 /**

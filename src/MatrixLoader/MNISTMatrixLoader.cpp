@@ -4,6 +4,8 @@
 #include <MatrixLoader/MNISTMatrixLoader.h>
 #include <Utils/IntelliLog.h>
 #include <AMMBench.h>
+#include <fstream>
+#include <iostream>
 
 void AMMBench::MNISTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
     assert(cfg); // do nothing, as cfg is not needed
@@ -31,14 +33,8 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
 	int n_cols = 0;
 
     // Dynamically allocate memory for left half and right half
-    float** leftHalf = new float*[60000];
-    for (int i = 0; i < 60000; ++i) {
-        leftHalf[i] = new float[28*14];
-    }
-    float** rightHalf = new float*[60000];
-    for (int i = 0; i < 60000; ++i) {
-        rightHalf[i] = new float[28*14];
-    }
+	A = torch::empty({60000, 28*14});
+	B = torch::empty({60000, 28*14});
 
     // Read in file
 	ifstream file(fileName, ios::binary);
@@ -67,35 +63,52 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
 				file.read((char*)&temp, sizeof(temp));
 				//可以在下面这一步将每个像素值归一化
 				float pixel_value = float(temp);
+				if (pixel_value>255 || pixel_value<0){
+					std::cout << pixel_value << " " << endl;
+				}
 				if ((j%28)<14){
-					leftHalf[i][int(floor(static_cast<double>(j)/28)*14+(j%28))] = pixel_value;
+					A[i][int(floor(static_cast<double>(j)/28)*14+(j%28))] = pixel_value; // 60000*392
 				}
 				else{
-					rightHalf[i][int(floor(static_cast<double>(j)/28)*14+(j%28)-14)] = pixel_value;
+					B[i][int(floor(static_cast<double>(j)/28)*14+(j%28)-14)] = pixel_value; // 60000*392
 				}
 			}
 		}
-
+	
 		// cout << "Finished reading images......" << endl;
-
-        INTELLI_INFO("Generating [60000 x 392]*[60000 x 392]");
-
 	}
 	file.close();
 
-    torch::TensorOptions options(torch::kFloat32);
-    A = torch::from_blob(leftHalf[0], {60000, 28*14}, options).clone();
-    B = torch::from_blob(rightHalf[0], {60000, 28*14}, options).clone();
+	auto pickledA = torch::pickle_save(A);
+	std::ofstream foutA("A.pt", std::ios::out | std::ios::binary);
+	foutA.write(pickledA.data(), pickledA.size());
+	foutA.close();
 
-    // Deallocate memory for data when no longer needed
-    for (int i = 0; i < 60000; ++i) {
-    delete[] leftHalf[i];
-    }
-    delete[] leftHalf;
-	for (int i = 0; i < 60000; ++i) {
-    delete[] rightHalf[i];
-    }
-    delete[] rightHalf;
+	auto pickledB = torch::pickle_save(B);
+	std::ofstream foutB("B.pt", std::ios::out | std::ios::binary);
+	foutB.write(pickledB.data(), pickledB.size());
+	foutB.close();
+
+	// torch::save(A, "A.pt");
+    // torch::save(B, "B.pt");
+
+	// std::cout << A.mean(/*dim=*/0) << endl;
+	// std::cout << B.mean(/*dim=*/0) << endl;
+
+	// normalization and transpose
+	// A = A - A.mean(/*dim=*/0); // mean along feature (column)
+	// B = B - B.mean(/*dim=*/0); // mean along feature (column)
+	// std::cout << A.mean(/*dim=*/0) << endl;
+	// std::cout << B.mean(/*dim=*/0) << endl;
+	// std::cout << A.std(/*dim=*/0) << endl;
+	// std::cout << B.std(/*dim=*/0) << endl;
+
+	A = A.t(); // 392*60000
+	B = B.t(); // 392*60000
+	// std::cout << A.sizes() << endl;
+	// std::cout << B.sizes() << endl;
+
+	INTELLI_INFO("Generating [" + to_string(A.size(0)) +  " x " + to_string(A.size(1)) + "]*[" + to_string(B.size(0)) +" x " + to_string(B.size(1)) + "]");
 }
 
 //do nothing in abstract class
@@ -106,16 +119,77 @@ bool AMMBench::MNISTMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 torch::Tensor AMMBench::MNISTMatrixLoader::getA() {
+	std::cout << A.sizes() << endl;
     return A;
 }
 
 torch::Tensor AMMBench::MNISTMatrixLoader::getB() {
+	std::cout << B.sizes() << endl;
     return B;
 }
 
+torch::Tensor AMMBench::MNISTMatrixLoader::getSxx() {
+    return Sxx;
+}
+
+torch::Tensor AMMBench::MNISTMatrixLoader::getSyy() {
+    return Syy;
+}
+
+torch::Tensor AMMBench::MNISTMatrixLoader::getSxy() {
+    return Sxy;
+}
+
+torch::Tensor AMMBench::MNISTMatrixLoader::getSxxNegativeHalf() {
+    return SxxNegativeHalf;
+}
+
+torch::Tensor AMMBench::MNISTMatrixLoader::getSyyNegativeHalf() {
+    return SyyNegativeHalf;
+}
+
+torch::Tensor AMMBench::MNISTMatrixLoader::getM() {
+    return M;
+}
+
+torch::Tensor AMMBench::MNISTMatrixLoader::getCorrelation() {
+    return correlation;
+}
+
+void AMMBench::MNISTMatrixLoader::calculate_correlation() {
+
+	// Sxx, Syy, Sxy: covariance matrix
+	Sxx = torch::matmul(A, A.t())/A.size(1); // 392x60000 * 60000x392 max 12752.4 min -3912.51
+	Syy = torch::matmul(B, B.t())/A.size(1); // 392x60000 * 60000x392 max 12953.4 min -5121.09
+	Sxy = torch::matmul(A, B.t())/A.size(1); // 392x60000 * 60000x392 max 10653.1 min -5307.15
+
+	// Sxx^(-1/2), Syy^(-1/2), M
+	// Sxx^(-1/2)
+	torch::Tensor eigenvaluesSxx, eigenvectorsSxx;
+	std::tie(eigenvaluesSxx, eigenvectorsSxx) = torch::linalg::eig(Sxx); // diagonization
+	torch::Tensor diagonalMatrixSxx = torch::diag(1.0 / torch::sqrt(eigenvaluesSxx+torch::full({}, 1e-12))); // 1/sqrt(eigenvalue+epsilon) +epsilon to avoid nan
+	SxxNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSxx, diagonalMatrixSxx), eigenvectorsSxx.t());
+	SxxNegativeHalf = at::real(SxxNegativeHalf); // ignore complex part, it comes from numerical computations
+	// Syy^(-1/2)
+	torch::Tensor eigenvaluesSyy, eigenvectorsSyy;
+	std::tie(eigenvaluesSyy, eigenvectorsSyy) = torch::linalg::eig(Syy);
+	torch::Tensor diagonalMatrixSyy = torch::diag(1.0 / torch::sqrt(eigenvaluesSyy+torch::full({}, 1e-12)));
+	SyyNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSyy, diagonalMatrixSyy), eigenvectorsSyy.t());
+	SyyNegativeHalf = at::real(SyyNegativeHalf);
+	// M
+	M = torch::matmul(torch::matmul(SxxNegativeHalf, Sxy), SyyNegativeHalf);
+	
+	// correlation
+	torch::Tensor U, S, Vh;
+    std::tie(U, S, Vh) = torch::linalg::svd(M, false, c10::nullopt);
+	correlation = torch::clamp(S, -1.0, 1.0);
+}
+
+
 // int main() {
 //     AMMBench::MatrixLoaderTable mLoaderTable;
-//     auto matLoaderPtr = mLoaderTable.findMatrixLoader("MNIST");
+//     std::shared_ptr<AMMBench::AbstractMatrixLoader> basePtr = mLoaderTable.findMatrixLoader("MNIST");
+// 	std::shared_ptr<AMMBench::MNISTMatrixLoader> matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MNISTMatrixLoader>(basePtr);
 //     assert(matLoaderPtr);
 
 //     INTELLI::ConfigMapPtr cfg = newConfigMap();
@@ -125,6 +199,12 @@ torch::Tensor AMMBench::MNISTMatrixLoader::getB() {
 //     auto B = matLoaderPtr->getB();
 //     std::cout << A.sizes() << endl;
 //     std::cout << B.sizes() << endl;
-//     // std::cout << A[0] << endl;
-//     // std::cout << B[0] << endl;
+
+// 	// if you want to visualize the image, pls comment out normalization and transpose step in generateAB()
+// 	// auto A0 = A[0].view({28, 14});
+// 	// auto B0 = B[0].view({28, 14});
+// 	// std::cout << A0 << endl;
+//     // std::cout << B0 << endl;
+
+// 	matLoaderPtr->calculate_correlation();
 // }
