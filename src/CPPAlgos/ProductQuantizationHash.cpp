@@ -36,7 +36,7 @@ torch::Tensor AMMBench::ProductQuantizationHash::amm(torch::Tensor A, torch::Ten
         torch::Tensor a = A[i];
         std::vector<torch::Tensor> a_encoded;
         for (int c = 0; c < C; ++c) {
-            auto prototypes_c = prototypes[c];
+            //auto prototypes_c = prototypes[c];
             auto a_subvector = a.slice(0, c * D_c, (c + 1) * D_c);
 
             auto closest_prototype_index = compute_hash_bucket(split_indices, split_thresholds, a_subvector);
