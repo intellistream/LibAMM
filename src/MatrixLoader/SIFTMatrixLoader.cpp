@@ -13,7 +13,7 @@ void AMMBench::SIFTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 void AMMBench::SIFTMatrixLoader::generateAB() {
 
     // Step1. locate file
-    char filename[] = "/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/src/MatrixLoader/siftsmall_base.fvecs";
+    char filename[] = "../../datasets/siftsmall_base.fvecs";
     float* data = NULL;
     unsigned num, dim;
 
