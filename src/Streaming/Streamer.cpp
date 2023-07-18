@@ -11,20 +11,18 @@
 
 using namespace INTELLI;
 
-torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1) {
+torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
     metrics = newConfigMap();
     matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
-    torch::Tensor realC = torch::matmul(A, B);
     uint64_t isStreaming = cfg->tryU64("isStreaming", 0, true);
     uint64_t threads = cfg->tryU64("threads", 1, true);
     sketchSize = cfg->tryU64("sketchDimension", sketchSize, true);
-    uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
-    UtilityFunctions::bind2Core((int) coreBind);
 
     if (isStreaming) {
         uint64_t streamingTwoMatrices = cfg->tryU64("streamingTwoMatrixes", 0, true);
         double throughput;
-        if (threads) {
+        if (threads>1) {
+            INTELLI_INFO("streaming, multithread "+to_string(threads));
             AMMBench::BlockPartitionStreamer ss;
             ss.setConfig(cfg);
             if (streamingTwoMatrices) {
@@ -35,6 +33,7 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
             metrics->edit("throughputByElements", (double) (throughput * A.size(1)));
             metrics->edit("95%latency", (double) ss.getLatencyPercentage(0.95));
         } else {
+            INTELLI_INFO("streaming, singlethread");
             AMMBench::SingleThreadStreamer ss;
             ss.setConfig(cfg);
             if (streamingTwoMatrices) {
@@ -51,29 +50,41 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
     }
     else{
         // non-streaming
-        std::string meterTag = cfg->tryString("meterTag", "intelMsr", true);
         cfg->edit("useCPP", (uint64_t)1);
         uint64_t forceMP = cfg->tryU64("forceMP", 1, true);
-
-        ThreadPerf pef(-1);
-        pef.setPerfList();
-        AMMBench::BlockPartitionRunner br;
+        uint64_t elapsedTime = 0;
+        
         if (threads > 1 || forceMP) {
+            INTELLI_INFO("non-streaming, multithread "+to_string(threads));
+            AMMBench::BlockPartitionRunner br;
             br.setConfig(cfg);
             br.createABC(A, B);
-            pef.start();
             *matC = br.parallelForward();
-            pef.end();
+            elapsedTime = br.getElapsedTime();
         } else {
+            INTELLI_INFO("non-streaming, singlethread");
+            uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
+            UtilityFunctions::bind2Core((int) coreBind);
             AMMBench::CPPAlgoTable cppAlgoTable;
             std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
             AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
             cppAlgoPtr->setConfig(cfg);
+            ThreadPerf pef(-1);
+            pef.setPerfList();
+            // pef result example
+            // cacheMiss       0       U64
+            // cacheRefs       0       U64
+            // cpuClock        0       U64
+            // cpuCycle        0       U64
+            // instructions    0       U64
+            // perfElapsedTime 83432   U64
+            // taskClock       0       U64
             pef.start();
             *matC = cppAlgoPtr->amm(A, B, sketchSize);
             pef.end();
+            auto resultCsv = pef.resultToConfigMap();
+            elapsedTime = resultCsv->getU64("perfElapsedTime");
         }
-        uint64_t elapsedTime = br.getElapsedTime();
         double throughput = (A.size(0) * 1e6) / elapsedTime;
         metrics->edit("throughput", throughput);
         metrics->edit("throughputByElements", (double) (throughput * A.size(1)));
@@ -81,11 +92,9 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
     }
 
     // calculate error
+    torch::Tensor realC = torch::matmul(A, B);
     double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, *matC);
-    double froBNormal = B.norm().item<double>();
-    double errorBoundRatio = froError / froBNormal;
     metrics->edit("froError", (double) froError);
-    metrics->edit("errorBoundRatio", (double) errorBoundRatio);
     return *matC;
 }
 
