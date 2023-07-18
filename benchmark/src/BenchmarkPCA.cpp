@@ -77,35 +77,17 @@ void benchmarkPCA(std::string configName){
     // 2.1 Run AMM
     // TODO Fow now, use single thread + no streaming, later will change
     INTELLI_INFO("2.1 no streaming, single thread, force MP");
-    AMMBench::BlockPartitionRunner br;
-    br.setConfig(cfg);
-    br.createABC(A, B);
-
-    // if (eMeter != nullptr) {
-    //     eMeter->startMeter();
-    // }
     struct timeval tstart, tend;
-    // pef.start();
-    torch::Tensor C = br.parallelForward(); // TODO change here, run a function that execute AMM in streaming/non-streaming and single-thread/multi-thread according to the config file
-    // pef.end();
-    // if (eMeter != nullptr) {
-    //     eMeter->stopMeter();
-    // }
-    INTELLI_INFO("AMM finished in " + to_string(br.getElapsedTime()));
+    pef.start();
+    gettimeofday(&tstart, NULL);
+    torch::Tensor C = cppAlgoPtr->amm(A, B, sketchDimension);
+    gettimeofday(&tend, NULL);
+    pef.end();
+    auto resultCsv = pef.resultToConfigMap();
+    INTELLI_INFO("AMM finished in " + to_string(INTELLI::UtilityFunctions::timeLast(tstart, tend)));
+    resultCsv->edit("AMMElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
 
-    // 2.2 elapsed time and error for AMM
-    ConfigMapPtr resultCsv = newConfigMap();
-    // auto resultCsv = pef.resultToConfigMap();
-    // if (eMeter != nullptr) {
-    //     double energyConsumption = eMeter->getE();
-    //     double staticEnergyConsumption = eMeter->getStaicEnergyConsumption(resultCsv->tryU64("perfElapsedTime", 0, false));
-    //     double pureEnergy = energyConsumption - staticEnergyConsumption;
-    //     resultCsv->edit("energyAll", (double) energyConsumption);
-    //     resultCsv->edit("energyOnlyMe", (double) pureEnergy);
-    // }
-    resultCsv->edit("AMMElapsedTime", (uint64_t) br.getElapsedTime());
-    br.appendThreadInfo(resultCsv);
-
+    // 2.2 MM
     torch::Tensor realC = torch::matmul(A, B);
     double relativeFroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, C);
     resultCsv->edit("AMMError", (double) relativeFroError);
