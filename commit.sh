@@ -1,4 +1,4 @@
-BRANCH=pyBoundings
+BRANCH=ipmTest
 git init
 git checkout -b $BRANCH
 git add .
