@@ -58,16 +58,17 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 scan_dictionary = {
     'scanPara': "sketchDimension",
     'paras':{
-        'cppAlgoTag': ["mm", 'crs', 'smp-pca', 'cooFD'], # find the correct config_AMM.csv
+        'cppAlgoTag': ["mm", 'smp-pca', 'tugOfWar', 'cooFD'], # find the correct config_AMM.csv
         'sketchDimension': [100, 200, 500, 1000, 2000, 3000, 4000, 5000],
-        'coreBind': 7, # single thread
+        'coreBind': 7,
+        'threads': 1,# single thread
         'matrixLoaderTag': 'SIFT',
     },
     'plot':{ # what needs to be plotted from results.csv
-        'AMM Error %': 'AMMError', # key shown in figure, value is from results.csv
+        'AMM Fro Error %': 'AMMfroError', # key shown in figure, value is from results.csv
         'PCA Error %': 'PCAError',
         '1 Per AMM Elapsed Time (1 per ms)': 'AMMElapsedTime',
-        '1 Per Else Elapsed Time (1 per ms)': 'ElseElapsedTime',
+        '1 Per Else Elapsed Time (1 per ms)': 'SVDElapsedTime',
     },
     'rounds':1,
 }

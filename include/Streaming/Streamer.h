@@ -17,7 +17,7 @@ namespace AMMBench {
 
         ~Streamer() {}
 
-        torch::Tensor run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1);
+        torch::Tensor run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1, string metricPrefix = "");
         /**
          * @return all the running metrics as a ConfigMap
          */

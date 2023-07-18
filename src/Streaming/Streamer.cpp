@@ -11,7 +11,7 @@
 
 using namespace INTELLI;
 
-torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize, string metricsPrefix) {
     metrics = newConfigMap();
     matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
     uint64_t isStreaming = cfg->tryU64("isStreaming", 0, true);
@@ -29,9 +29,9 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
                 *matC = ss.streamingAmm2S(A, B, sketchSize);
             } else *matC = ss.streamingAmm(A, B, sketchSize);
             throughput = ss.getThroughput();
-            metrics->edit("throughput", throughput);
-            metrics->edit("throughputByElements", (double) (throughput * A.size(1)));
-            metrics->edit("95%latency", (double) ss.getLatencyPercentage(0.95));
+            metrics->edit(metricsPrefix+"Throughput", throughput);
+            metrics->edit(metricsPrefix+"ThroughputByElements", (double) (throughput * A.size(1)));
+            metrics->edit(metricsPrefix+"95%latency", (double) ss.getLatencyPercentage(0.95));
         } else {
             INTELLI_INFO("streaming, singlethread");
             AMMBench::SingleThreadStreamer ss;
@@ -42,15 +42,15 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
                 *matC = ss.streamingAmm(A, B, sketchSize);
             }
             throughput = ss.getThroughput();
-            metrics->edit("throughput", throughput);
-            metrics->edit("throughputByElements", (double) (throughput * A.size(1)));
-            metrics->edit("95%latency", (double) ss.getLatencyPercentage(0.95));
+            metrics->edit(metricsPrefix+"Throughput", throughput);
+            metrics->edit(metricsPrefix+"ThroughputByElements", (double) (throughput * A.size(1)));
+            metrics->edit(metricsPrefix+"95%latency", (double) ss.getLatencyPercentage(0.95));
         }
-        metrics->edit("elapsedTime", (uint64_t)((A.size(0) * 1e6) / throughput));
+        metrics->edit(metricsPrefix+"ElapsedTime", (uint64_t)((A.size(0) * 1e6) / throughput));
     }
     else{
         // non-streaming
-        cfg->edit("useCPP", (uint64_t)1);
+        cfg->edit(metricsPrefix+"useCPP", (uint64_t)1);
         uint64_t forceMP = cfg->tryU64("forceMP", 1, true);
         uint64_t elapsedTime = 0;
         
@@ -86,15 +86,15 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
             elapsedTime = resultCsv->getU64("perfElapsedTime");
         }
         double throughput = (A.size(0) * 1e6) / elapsedTime;
-        metrics->edit("throughput", throughput);
-        metrics->edit("throughputByElements", (double) (throughput * A.size(1)));
-        metrics->edit("elapsedTime", elapsedTime);
+        metrics->edit(metricsPrefix+"Throughput", throughput);
+        metrics->edit(metricsPrefix+"ThroughputByElements", (double) (throughput * A.size(1)));
+        metrics->edit(metricsPrefix+"ElapsedTime", elapsedTime);
     }
 
     // calculate error
     torch::Tensor realC = torch::matmul(A, B);
     double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, *matC);
-    metrics->edit("froError", (double) froError);
+    metrics->edit(metricsPrefix+"FroError", (double) froError);
     return *matC;
 }
 
