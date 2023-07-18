@@ -58,12 +58,12 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 scan_dictionary = {
     'scanPara': "aCol",
     'paras':{
-        'cppAlgoTag': ["mm", "crs"], #, "tugOfWar", "cooFD", "smp-pca"], # find the correct config_AMM.csv
-        'aRow': 1000,
-        'aCol': [100, 200], #, 500, 1000, 2000, 5000, 10000, 20000, 50000],
-        'bCol': 1000,
+        'cppAlgoTag': ["mm"], # find the correct config_AMM.csv
+        'aRow': 10000,
+        'aCol': [1000, 5000, 10000, 50000, 100000, 500000, 1000000],
+        'bCol': 10000,
         'sketchDimension': 0.1, # in config, the sketchDimension = aCol*sketchDimension
-        'coreBind': 1, # single thread
+        'coreBind': 13, # single thread
         'matrixLoaderTag': 'random',
     },
     'plot':{ # what needs to be plotted from results.csv
@@ -72,7 +72,7 @@ scan_dictionary = {
     },
     'rounds':1,
 }
-scanTag = f"scan{scan_dictionary['scanPara']}_aRow{scan_dictionary['paras']['aRow']}_bCol{scan_dictionary['paras']['bCol']}_sketch{scan_dictionary['paras']['sketchDimension']}_dataset{scan_dictionary['paras']['matrixLoaderTag']}"
+scanTag = f"scan{scan_dictionary['scanPara']}_largeACol_aRow{scan_dictionary['paras']['aRow']}_bCol{scan_dictionary['paras']['bCol']}_sketch{scan_dictionary['paras']['sketchDimension']}_dataset{scan_dictionary['paras']['matrixLoaderTag']}"
 
 
 def singleRun(exePath, singleValue, resultPath, configTemplate):
@@ -155,8 +155,8 @@ def main():
     figPath = join(exeSpace, 'figures', scanTag)
     
     # clear
-    if os.path.exists(resultPath): shutil.rmtree(resultPath)
-    if os.path.exists(figPath): shutil.rmtree(figPath)
+    # if os.path.exists(resultPath): shutil.rmtree(resultPath)
+    # if os.path.exists(figPath): shutil.rmtree(figPath)
     Path(resultPath).mkdir(parents=True, exist_ok=True)
     Path(figPath).mkdir(parents=True, exist_ok=True)
 
