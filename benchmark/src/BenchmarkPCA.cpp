@@ -6,42 +6,40 @@
  */
 #include <AMMBench.h>
 #include <Utils/UtilityFunctions.h>
+#include <Streaming/Streamer.h>
 
 using namespace std;
 using namespace INTELLI;
 using namespace torch;
 using namespace DIVERSE_METER;
-
+using namespace AMMBench;
 
 void benchmarkPCA(std::string configName){
+
+    INTELLI_INFO("Running Benchmark PCA");
 
     // Step1. Set up environments
     ConfigMapPtr cfg = newConfigMap();
     cfg->fromFile(configName);
 
-    // 1.1 AMM algorithm
-    AMMBench::CPPAlgoTable cppAlgoTable;
-    std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
-    AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
-    cppAlgoPtr->setConfig(cfg);
-    INTELLI_INFO("1.1 algo: " + cppAlgoTag);
 
-    // 1.2 matrixLoader uses SIFT dataset
     AMMBench::MatrixLoaderTable mLoaderTable;
     std::string matrixLoaderTag = cfg->tryString("matrixLoaderTag", "SIFT", true);
-    INTELLI_INFO("1.2 matrixLoaderTag: " + matrixLoaderTag);
+    INTELLI_INFO("matrixLoaderTag: " + matrixLoaderTag);
     auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);
     assert(matLoaderPtr);
     matLoaderPtr->setConfig(cfg);
     auto A = matLoaderPtr->getA();
     auto B = matLoaderPtr->getB();
 
-    // 1.3 sketch dimension
     uint64_t sketchDimension;
     sketchDimension = cfg->tryU64("sketchDimension", 50, true);
-    INTELLI_INFO("1.3 sketch dimension: " + to_string(sketchDimension));
+    INTELLI_INFO("sketchDimension: " + sketchDimension);
 
-    // 1.4 coreBind
+    Streamer streamer;
+    torch::Tensor C = streamer.run(cfg, A, B, sketchDimension);
+
+    /*// 1.4 coreBind
     uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
     UtilityFunctions::bind2Core((int) coreBind);
     INTELLI_INFO("1.4 corebind:" + to_string(coreBind));
@@ -78,23 +76,33 @@ void benchmarkPCA(std::string configName){
     // TODO Fow now, use single thread + no streaming, later will change
     INTELLI_INFO("2.1 no streaming, single thread, force MP");
     struct timeval tstart, tend;
-    pef.start();
-    gettimeofday(&tstart, NULL);
-    torch::Tensor C = cppAlgoPtr->amm(A, B, sketchDimension);
-    gettimeofday(&tend, NULL);
-    pef.end();
-    auto resultCsv = pef.resultToConfigMap();
-    INTELLI_INFO("AMM finished in " + to_string(INTELLI::UtilityFunctions::timeLast(tstart, tend)));
-    resultCsv->edit("AMMElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
+    // pef.start();
+    torch::Tensor C = br.parallelForward(); // TODO change here, run a function that execute AMM in streaming/non-streaming and single-thread/multi-thread according to the config file
+    // pef.end();
+    // if (eMeter != nullptr) {
+    //     eMeter->stopMeter();
+    // }*/
+
+    // 2.2 elapsed time and error for AMM
+    ConfigMapPtr resultCsv = streamer.getMetrics();
+    // auto resultCsv = pef.resultToConfigMap();
+    // if (eMeter != nullptr) {
+    //     double energyConsumption = eMeter->getE();
+    //     double staticEnergyConsumption = eMeter->getStaicEnergyConsumption(resultCsv->tryU64("perfElapsedTime", 0, false));
+    //     double pureEnergy = energyConsumption - staticEnergyConsumption;
+    //     resultCsv->edit("energyAll", (double) energyConsumption);
+    //     resultCsv->edit("energyOnlyMe", (double) pureEnergy);
+    // }
+    resultCsv->edit("AMMElapsedTime", resultCsv->getU64("elapsedTime"));
 
     // 2.2 MM
     torch::Tensor realC = torch::matmul(A, B);
-    double relativeFroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, C);
-    resultCsv->edit("AMMError", (double) relativeFroError);
+    resultCsv->edit("AMMError", resultCsv->getDouble("froError"));
 
     // Step3. Test accuracy on PCA task
     // 3.1 elapsed time for other tasks in PCA except AMM
     INTELLI_INFO("Start SVD task..");
+    struct timeval tstart, tend;
     gettimeofday(&tstart, NULL);
     torch::Tensor UCovC;
     torch::Tensor SCovC;
