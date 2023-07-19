@@ -6,18 +6,33 @@
 #include <CPPAlgos/AbstractCPPAlgo.h>
 #include <Utils/UtilityFunctions.h>
 #include <time.h>
-
+#include <chrono>
 void AMMBench::AbstractCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
     assert(cfg);
+    useCuda=cfg->tryU64("useCuda",0, false);
 }
 
 torch::Tensor AMMBench::AbstractCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
     assert(sketchSize);
-    struct timeval tstart;
-    //INTELLI_INFO("I am mm");
-    gettimeofday(&tstart, NULL);
-    auto C = torch::matmul(A, B);
-    fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart);
+  auto start = std::chrono::high_resolution_clock::now();
+    torch::Tensor C;
+    if(useCuda)
+    { INTELLI_INFO("I am mm, USING CUDA");
+      auto ac=A.to(torch::kCUDA);
+      buildATime= chronoElapsedTime(start);
+      auto bc=B.to(torch::kCUDA);
+      buildBTime=  chronoElapsedTime(start)-buildATime;
+      auto cc = torch::matmul(ac, bc);
+      fABTime =  chronoElapsedTime(start)-buildATime-buildBTime;
+      C=cc.to(torch::kCPU);
+      postProcessTime=  chronoElapsedTime(start)-buildATime-buildBTime-fABTime;
+    }
+    else
+    {
+      C= torch::matmul(A, B);
+      fABTime =  chronoElapsedTime(start);
+    }
+
     return C;
 }
 

@@ -44,7 +44,9 @@ You may refer to https://pytorch.org/get-started/locally/ for mor details, follo
 
 ### (Optional) Cuda-based torch
 
-Note: this branch only allows blackbox call on torch-cuda functions!
+Note: 
+- useCuda config is only valid when cuda is installed
+- this branch only allows blackbox call on torch-cuda functions!
 You may wish to install cuda for faster pre-training on models, following is a reference procedure. Please refer
 to https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#ubuntu
 
