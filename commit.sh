@@ -1,4 +1,4 @@
-BRANCH=ipmTest
+BRANCH=cudaTest
 git init
 git checkout -b $BRANCH
 git add .
