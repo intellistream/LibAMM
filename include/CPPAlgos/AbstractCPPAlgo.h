@@ -31,6 +31,7 @@ namespace AMMBench {
          * - buildB, to translate B matrix
          * - fABTime, to conduct mm or table look-up over the reduced A,B
          * - postProcessTime, if f(A,B) is not the finall result, measure the time spend for post process
+         * - useCuda, whether or not use cuda to conduct computation, default 0
          */
         uint64_t buildATime = 0, buildBTime = 0, fABTime = 0, postProcessTime = 0;
         uint64_t useCuda=0;

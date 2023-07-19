@@ -4,7 +4,6 @@
 
 #include <CPPAlgos/CPPAlgoTable.h>
 #include <CPPAlgos/CRSCPPAlgo.h>
-#include <CPPAlgos/CRSCudaAlgo.h>
 #include <CPPAlgos/CRSV2CPPAlgo.h>
 
 #include <CPPAlgos/CountSketchCPPAlgo.h>
@@ -27,7 +26,6 @@ namespace AMMBench {
 AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["mm"] = newAbstractCPPAlgo();
   algoMap["crs"] = newCRSCPPAlgo();
-  algoMap["crsCuda"] = newCRSCudaAlgo();
   algoMap["crsV2"] = newCRSV2CPPAlgo();
   algoMap["countSketch"] = newCountSketchCPPAlgo();
   algoMap["bcrs"] = newBCRSCPPAlgo();

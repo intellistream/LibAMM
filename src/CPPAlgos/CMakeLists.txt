@@ -1,7 +1,6 @@
 add_sources(
         AbstractCPPAlgo.cpp
         CRSCPPAlgo.cpp
-        CRSCudaAlgo.cpp
         WeightedCRCPPAlgo.cpp
         CPPAlgoTable.cpp
         CRSV2CPPAlgo.cpp

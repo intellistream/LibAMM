@@ -1,1 +1,2 @@
 1. fix latency calculation bugs
+2. add optional cuda to mm and crs
