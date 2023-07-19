@@ -24,7 +24,7 @@ namespace INTELLI {
     typedef std::shared_ptr<std::barrier<>> BarrierPtr;
 #define TIME_LAST_UNIT_MS 1000
 #define TIME_LAST_UNIT_US 1000000
-
+#define chronoElapsedTime(start) std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count()
 /**
  * @defgroup
  */
@@ -119,6 +119,7 @@ namespace INTELLI {
 
             return frobeniusNormError / frobeniusNormA / frobeniusNormB;
         }
+
     };
 }
 #endif //IntelliStream_SRC_UTILS_UTILITYFUNCTIONS_HPP_
