@@ -43,8 +43,6 @@ CLContainer::CLContainer(cl_uint id, cl_device_type type, string kernelName, cha
   unsigned char *programBinary = new unsigned char[binarySize];
   fread(programBinary, 1, binarySize, fp);
   fclose(fp);
-
-  program;
   program = clCreateProgramWithBinary(context,
                                       1,
                                       &dev,

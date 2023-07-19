@@ -22,9 +22,10 @@
 #include <CPPAlgos/FastJLTCPPAlgo.h>
 #include <CPPAlgos/BlockLRACPPAlgo.h>
 #include <CPPAlgos/RIPCPPAlgo.h>
-
+#include <include/opencl_config.h>
+#if AMMBENCH_CL==1
 #include <CPPAlgos/CLMMCPPAlgo.h>
-
+#endif
 namespace AMMBench {
 AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["mm"] = newAbstractCPPAlgo();
@@ -46,8 +47,8 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["pq-raw"] = newProductQuantizationRawAlgo();
   algoMap["pq-hash"] = newProductQuantizationHashAlgo();
   algoMap["vq"] = newVectorQuantizationAlgo();
-
+#if AMMBENCH_CL==1
   algoMap["cl"]=newCLMMCPPAlgo();
-
+#endif
 }
 } // AMMBench
