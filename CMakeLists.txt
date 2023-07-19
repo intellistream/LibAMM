@@ -72,7 +72,7 @@ set_property(TARGET IntelliStream PROPERTY CXX_STANDARD 20)
 
 target_include_directories(IntelliStream PUBLIC "include")
 target_include_directories(IntelliStream PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-target_link_libraries(IntelliStream PUBLIC ${LIBRARIES})
+target_link_libraries(IntelliStream PUBLIC ${LIBRARIES} OpenCL)
 #add_subdirectory(test)
 #Add benchmarks with command
 add_subdirectory(benchmark)
