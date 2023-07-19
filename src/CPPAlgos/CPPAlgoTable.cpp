@@ -7,7 +7,9 @@
 #include <CPPAlgos/CRSV2CPPAlgo.h>
 
 #include <CPPAlgos/CountSketchCPPAlgo.h>
-
+#include <CPPAlgos/ProductQuantizationRaw.h>
+#include <CPPAlgos/ProductQuantizationHash.h>
+#include <CPPAlgos/VectorQuantization.h>
 #include <CPPAlgos/BCRSCPPAlgo.h>
 #include <CPPAlgos/EWSCPPAlgo.h>
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
@@ -16,7 +18,13 @@
 #include <CPPAlgos/SMPPCACPPAlgo.h>
 #include <CPPAlgos/INT8CPPAlgo.h>
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
+
+#include <CPPAlgos/FastJLTCPPAlgo.h>
+#include <CPPAlgos/BlockLRACPPAlgo.h>
+#include <CPPAlgos/RIPCPPAlgo.h>
+
 #include <CPPAlgos/CLMMCPPAlgo.h>
+
 namespace AMMBench {
 AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["mm"] = newAbstractCPPAlgo();
@@ -31,7 +39,15 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["tugOfWar"] = newTugOfWarCPPAlgo();
   algoMap["weighted-cr"] = newWeightedCRCPPAlgo();
   algoMap["smp-pca"] = newSMPPCACPPAlgo();
-  algoMap["cl"]=newCLMMCPPAlgo();
-}
 
+  algoMap["blockLRA"] = newBlockLRACPPAlgo();
+  algoMap["rip"] = newRIPCPPAlgo();
+  algoMap["fastjlt"] = newFastJLTCPPAlgo();
+  algoMap["pq-raw"] = newProductQuantizationRawAlgo();
+  algoMap["pq-hash"] = newProductQuantizationHashAlgo();
+  algoMap["vq"] = newVectorQuantizationAlgo();
+
+  algoMap["cl"]=newCLMMCPPAlgo();
+
+}
 } // AMMBench
