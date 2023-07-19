@@ -8,6 +8,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/torchscripts
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/scripts
         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/src/CL
+        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
 macro(add_catch_test appName SOURCE_FILES SOURCE_LIBS)
     get_property(SOURCE_FILES_LOCAL GLOBAL PROPERTY "${PROP_NAME}_SOURCE_PROP")
     set(${SOURCE_FILES} ${SOURCE_FILES_LOCAL})
@@ -29,5 +31,10 @@ add_catch_test(block_partition_test SystemTest/BlockPartitionTest.cpp IntelliStr
 add_catch_test(rip_test SystemTest/RIPTest.cpp IntelliStream)
 add_catch_test(tug_of_war_test SystemTest/TugOfWarTest.cpp IntelliStream)
 add_catch_test(int8_test SystemTest/INT8Test.cpp IntelliStream)
+
 add_catch_test(pq_test SystemTest/PQTest.cpp IntelliStream)
 add_catch_test(streaming_test SystemTest/StreamingTest.cpp IntelliStream)
+
+add_catch_test(cl_test SystemTest/CLTest.cpp IntelliStream)
+
+

@@ -32,6 +32,9 @@ if (BUILD_BENCHMARKS)
 
     set_target_properties(benchmarkPCA PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/PCA)
 
+
+    file(COPY ${PROJECT_SOURCE_DIR}/src/CL
+            DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
     message("---Done building benchmarks")
 else (BUILD_BENCHMARKS)
     message("---Not building benchmarks!")
