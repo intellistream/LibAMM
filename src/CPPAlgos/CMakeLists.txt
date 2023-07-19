@@ -19,8 +19,10 @@ add_sources(
         ProductQuantizationRaw.cpp
         ProductQuantizationHash.cpp
         VectorQuantization.cpp
-
-        CLMMCPPAlgo.cpp
-
 )
+if ( DEFINED ENV{AMMBENCH_CL})
+    add_sources(
+            CLMMCPPAlgo.cpp
+    )
+endif ()
 

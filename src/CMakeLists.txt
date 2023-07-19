@@ -6,6 +6,12 @@ add_subdirectory(Streaming)
 add_sources(
         myVecAdd.cpp
         pythonBoundings.cpp
-        CLContainer.cpp
 )
+#gcc options
+if ( DEFINED ENV{AMMBENCH_CL})
+    add_sources(
+            CLContainer.cpp
+    )
+endif ()
+
 include_directories("../include/")

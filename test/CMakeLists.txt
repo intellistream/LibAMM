@@ -35,6 +35,8 @@ add_catch_test(int8_test SystemTest/INT8Test.cpp IntelliStream)
 add_catch_test(pq_test SystemTest/PQTest.cpp IntelliStream)
 add_catch_test(streaming_test SystemTest/StreamingTest.cpp IntelliStream)
 
+if ( DEFINED ENV{AMMBENCH_CL})
 add_catch_test(cl_test SystemTest/CLTest.cpp IntelliStream)
+endif ()
 
 

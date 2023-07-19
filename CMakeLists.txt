@@ -25,7 +25,19 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Wno-ignored-qualifiers -Wno-sign-compare -O3")
 #set(CMAKE_CUDA_STANDARD 11)
 #set(CMAKE_CUDA_FLAGS "-std=c++11")
 
-
+#gcc options
+if (NOT DEFINED ENV{AMMBENCH_CL})
+    message(STATUS "I will NOT include opencl support ")
+    set(AMMBENCH_CL 0)
+else ()
+    set(AMMBENCH_CL 1)
+    message(STATUS "I will include opencl support, pls make sure you have corresponding libs")
+    set(LIBRARIES ${LIBRARIES} OpenCL)
+endif ()
+configure_file (
+        "${PROJECT_SOURCE_DIR}/include/opencl_config.h.in"
+        "${PROJECT_BINARY_DIR}/include/opencl_config.h"
+)
 #set(CMAKE_CUDA_ARCHITECTURES 55)
 # Set LOGGING_LEVEL Flag
 if (IntelliStream_LOGGING_LEVEL)
@@ -72,7 +84,8 @@ set_property(TARGET IntelliStream PROPERTY CXX_STANDARD 20)
 
 target_include_directories(IntelliStream PUBLIC "include")
 target_include_directories(IntelliStream PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-target_link_libraries(IntelliStream PUBLIC ${LIBRARIES} OpenCL)
+
+target_link_libraries(IntelliStream PUBLIC ${LIBRARIES})
 #add_subdirectory(test)
 #Add benchmarks with command
 add_subdirectory(benchmark)
