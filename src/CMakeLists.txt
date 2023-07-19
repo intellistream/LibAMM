@@ -6,5 +6,6 @@ add_subdirectory(Streaming)
 add_sources(
         myVecAdd.cpp
         pythonBoundings.cpp
+        CLContainer.cpp
 )
 include_directories("../include/")
