@@ -9,6 +9,7 @@
 
 void AMMBench::AbstractCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
     assert(cfg);
+    useCuda=cfg->tryU64("useCuda",0, false);
 }
 
 torch::Tensor AMMBench::AbstractCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
@@ -16,8 +17,24 @@ torch::Tensor AMMBench::AbstractCPPAlgo::amm(torch::Tensor A, torch::Tensor B, u
     struct timeval tstart;
     //INTELLI_INFO("I am mm");
     gettimeofday(&tstart, NULL);
-    auto C = torch::matmul(A, B);
-    fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    torch::Tensor C;
+    if(useCuda)
+    { INTELLI_INFO("I am mm, USING CUDA");
+      auto ac=A.to(torch::kCUDA);
+      buildATime=INTELLI::UtilityFunctions::timeLastUs(tstart);
+      auto bc=B.to(torch::kCUDA);
+      buildBTime= INTELLI::UtilityFunctions::timeLastUs(tstart)-buildATime;
+      auto cc = torch::matmul(ac, bc);
+      fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart)-buildATime-buildBTime;
+      C=cc.to(torch::kCPU);
+      postProcessTime= INTELLI::UtilityFunctions::timeLastUs(tstart)-buildATime-buildBTime-fABTime;
+    }
+    else
+    {
+      C= torch::matmul(A, B);
+      fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    }
+
     return C;
 }
 

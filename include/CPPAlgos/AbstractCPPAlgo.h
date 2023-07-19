@@ -33,7 +33,7 @@ namespace AMMBench {
          * - postProcessTime, if f(A,B) is not the finall result, measure the time spend for post process
          */
         uint64_t buildATime = 0, buildBTime = 0, fABTime = 0, postProcessTime = 0;
-
+        uint64_t useCuda=0;
     public:
         AbstractCPPAlgo() {
 
