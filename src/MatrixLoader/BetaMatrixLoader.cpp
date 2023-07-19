@@ -3,6 +3,7 @@
 //
 #include <MatrixLoader/BetaMatrixLoader.h>
 #include <Utils/IntelliLog.h>
+
 void AMMBench::BetaMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
     aRow = cfg->tryU64("aRow", 100, true);
     aCol = cfg->tryU64("aCol", 1000, true);
@@ -14,6 +15,7 @@ void AMMBench::BetaMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
             "Generating [" + to_string(aRow) + "x" + to_string(aCol) + "]*[" + to_string(aCol) + "x" + to_string(bCol)
             + "]" + " Parameter: " + to_string(a) + ", " + to_string(b));
 }
+
 void AMMBench::BetaMatrixLoader::generateAB() {
     torch::manual_seed(seed);
 
@@ -40,9 +42,11 @@ bool AMMBench::BetaMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
     generateAB();
     return true;
 }
+
 torch::Tensor AMMBench::BetaMatrixLoader::getA() {
     return A;
 }
+
 torch::Tensor AMMBench::BetaMatrixLoader::getB() {
     return B;
 }

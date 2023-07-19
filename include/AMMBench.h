@@ -5,6 +5,7 @@
 
 #ifndef INTELLISTREAM_AMMBENCH_H
 #define INTELLISTREAM_AMMBENCH_H
+
 #include <torch/torch.h>
 #include <iostream>
 #include <torch/script.h>
@@ -39,6 +40,10 @@
    * - meterTag (String) the tag of meter, see also @ref MeterTable, default is intelMsr
    * - staticPower (Double) set this to >0 if you want to manually config the static power of the device
    * - meterAddress (String) set this to the file system path of the meter, if it is different from the meter's default
+   * - isStreaming (U64) whether or not use streaming, default 0
+   * @note this will only be run under single thread now, and perf or energy meter is not avaliable when setting to 1
+   * @note by default, we only make A matrix streaming, if also want yo streaming B, please also set streamingTwoMatrixes to 1
+   * - streamingTwoMatrixes (U64) whether make B matrix also streaming, default 0, will only affect when isStreaming=1
    * @warning For some platforms, the staticPower automatically measured by sleep is not accurate. Please do this mannulally.
   See also the template config.csv
  * @section subsec_extend_operator How to extend a new algorithm (pt-based)
@@ -92,18 +97,35 @@
 #include <MatrixLoader/BinomialMatrixLoader.h>
 #include <MatrixLoader/PoissonMatrixLoader.h>
 #include <MatrixLoader/BetaMatrixLoader.h>
+#include <MatrixLoader/SIFTMatrixLoader.h>
+#include <MatrixLoader/MNISTMatrixLoader.h>
 #include <MatrixLoader/MatrixLoaderTable.h>
 /**
  * @}
  */
 /**
 * @subsection code_stru_parallelization Parallelization
-* This folder contains the parallelizationapproaches
+* This folder contains the parallelization approaches
 * @defgroup  AMMBENCH_PARALLELIZATION The parallelization classes
 * @{
 * We define the parallelization classes of AMM. here
 **/
 #include <Parallelization/BlockPartitionRunner.h>
+/**
+ * @}
+ *
+ */
+/**
+* @subsection code_stru_STREAMING STREAMING
+* This folder contains the STREAMING approaches
+* @defgroup  AMMBENCH_STREAMING The streaming classes
+* @{
+* We define the streaming classes of AMM. here
+**/
+#include <Streaming/TimeStamper.h>
+#include <Streaming/Streamer.h>
+#include <Streaming/SingleThreadStreamer.h>
+#include <Streaming/BlockPartitionStreamer.h>
 /**
  * @}
  *
@@ -124,13 +146,21 @@
 #include <CPPAlgos/EWSCPPAlgo.h>
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
 #include <CPPAlgos/BetaCoOFDCPPAlgo.h>
-
+#include <CPPAlgos/ProductQuantizationRaw.h>
+#include <CPPAlgos/ProductQuantizationHash.h>
+#include <CPPAlgos/VectorQuantization.h>
 #include <CPPAlgos/INT8CPPAlgo.h>
-
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
 #include <CPPAlgos/WeightedCRCPPAlgo.h>
 #include <CPPAlgos/SMPPCACPPAlgo.h>
+
+#include <CPPAlgos/FastJLTCPPAlgo.h>
+#include <CPPAlgos/RIPCPPAlgo.h>
+#include <CPPAlgos/BlockLRACPPAlgo.h>
+
+
 #include <CPPAlgos/CLMMCPPAlgo.h>
+
 /**
  * @}
  *
@@ -155,6 +185,7 @@
 #include <Utils/ThreadPerf.hpp>
 #include <Utils/IntelliLog.h>
 #include <Utils/UtilityFunctions.h>
+#include <Utils/BS_thread_pool.hpp>
 /**
  * @}
  */

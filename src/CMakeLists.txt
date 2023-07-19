@@ -2,7 +2,9 @@ add_subdirectory(Utils)
 add_subdirectory(MatrixLoader)
 add_subdirectory(Parallelization)
 add_subdirectory(CPPAlgos)
+add_subdirectory(Streaming)
 add_sources(
         myVecAdd.cpp
-        CLContainer.cpp
+        pythonBoundings.cpp
 )
+include_directories("../include/")

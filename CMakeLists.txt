@@ -90,4 +90,8 @@ install(DIRECTORY "include" DESTINATION "/IntelliStream" COMPONENT IntelliStream
 file(GLOB allCopyFiles "${PROJECT_SOURCE_DIR}/scripts/*")
 file(COPY ${allCopyFiles} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/benchmark/scripts)
 file(COPY ${allCopyFiles} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/benchmark/scripts)
-#file(COPY ${allCopyFiles} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/scripts)
+
+# copy files needed for real world matrix loader
+set(source_directory "${CMAKE_SOURCE_DIR}/benchmark/datasets/")
+set(destination_directory "${CMAKE_BINARY_DIR}/benchmark/datasets/")
+file(COPY ${source_directory} DESTINATION ${destination_directory})

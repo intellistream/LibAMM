@@ -5,18 +5,18 @@ def main():
     # load the library, assume it is located together with this file
     torch.ops.load_library("../libIntelliStream.so")
     # gen the input tensor
-    a = torch.randn(2, 10)
-    b = torch.randn(2, 10)
+    a = torch.rand(100, 100)
+    b = torch.rand(100, 100)
     # The pytorch +
     print('/****test add****/')
-    print('pytorch+:', a + b)
+    print('pytorch-mm:', torch.matmul(a,b))
     # our c++ extension of +
-    print('myLib+:', torch.ops.myLib.myVecAdd(a, b))
-    # The pytorch -
-    print('/****test sub****/')
-    print('pytorch-:', a - b)
-    # our c++ extension of -
-    print('myLib-:', torch.ops.myLib.myVecSub(a, b))
+    torch.ops.load_library("../libIntelliStream.so")
+    torch.ops.AMMBench.setTag('mm')
+    print('AMMBench-MM+:', torch.ops.AMMBench.ammDefault(a, b))
+    torch.ops.AMMBench.setTag('crs')
+    print('AMMBench-CRS+:', torch.ops.AMMBench.ammDefault(a, b))
+
 
 
 if __name__ == "__main__":
