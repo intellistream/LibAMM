@@ -6,11 +6,6 @@ add_subdirectory(Streaming)
 add_sources(
         myVecAdd.cpp
         pythonBoundings.cpp
+        CLContainer.cpp
 )
 include_directories("../include/")
-# add_executable(RIPCPPAlgo "CPPAlgos/RIPCPPAlgo.cpp")
-# target_link_libraries(RIPCPPAlgo IntelliStream)
-# add_executable(SIFTMatrixLoader "MatrixLoader/SIFTMatrixLoader.cpp")
-# target_link_libraries(SIFTMatrixLoader IntelliStream)
-# add_executable(MNISTMatrixLoader "MatrixLoader/MNISTMatrixLoader.cpp")
-# target_link_libraries(MNISTMatrixLoader IntelliStream)
