@@ -5,6 +5,12 @@
 #include <string.h>
 #include <mutex>
 
+#define RESET   "\033[0m"
+#define GREEN   "\033[32m"
+#define BLUE    "\033[34m"
+#define YELLOW  "\033[33m"
+#define RED     "\033[31m"
+
 INTELLI::IntelliLog_FileProtector fp_doNotTouchMe;
 
 void INTELLI::IntelliLog::setupLoggingFile(string fname) {
@@ -28,7 +34,25 @@ void INTELLI::IntelliLog::log(std::string level, std::string_view message, const
     str += +source.function_name();
     str += +"|";
 
-    str += message;
+    if (level=="DEBUG"){
+        str += message;
+    }
+    else if (level=="INFO"){
+        str += BLUE;
+        str += message;
+        str += RESET;
+    }
+    else if (level=="WARNING"){
+        str += YELLOW;
+        str += message;
+        str += RESET;
+    }
+    else if (level=="ERROR"){
+        str += RED;
+        str += message;
+        str += RESET;
+    }
+    
     cout << str + "\n";
 
     fp_doNotTouchMe.appendLogFile(str + "\n");

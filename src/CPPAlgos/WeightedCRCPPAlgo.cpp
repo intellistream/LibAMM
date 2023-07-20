@@ -9,8 +9,8 @@ namespace AMMBench {
     torch::Tensor AMMBench::WeightedCRCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t c) {
 
         int64_t n = A.size(1); // A: m*n, B: n*d
-        std::cout << "A shape: " << A.sizes() << std::endl;
-        std::cout << "B shape: " << B.sizes() << std::endl;
+        // std::cout << "A shape: " << A.sizes() << std::endl;
+        // std::cout << "B shape: " << B.sizes() << std::endl;
 
         // Probability distribution
         // torch::Tensor col_norm_A = torch::norm(A, /*p=*/2, /*dim=*/0); // norm on columns of A

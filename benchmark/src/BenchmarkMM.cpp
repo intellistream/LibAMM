@@ -14,9 +14,7 @@ using namespace torch;
 using namespace DIVERSE_METER;
 using namespace AMMBench;
 
-void benchmarkPCA(std::string configName){
-
-    INTELLI_INFO("Running Benchmark PCA");
+void benchmarkMM(std::string configName){
 
     // Step1. Set up environments
     ConfigMapPtr cfg = newConfigMap();
@@ -37,35 +35,13 @@ void benchmarkPCA(std::string configName){
     sketchDimension = cfg->tryU64("sketchDimension", 1, true);
     INTELLI_INFO("sketchDimension: " + sketchDimension);
 
-    // Step2. Test elapsedTime and error on AMM in streaming and parallelism
-    // 2.1 Run AMM
+    // Step2. AMM vs MM
     INTELLI_INFO("Run AMM");
     Streamer streamer;
     torch::Tensor C = streamer.run(cfg, A, B, sketchDimension, "AMM");
     ConfigMapPtr resultCsv = streamer.getMetrics();
 
-    // Step3. Test accuracy on PCA task
-    // 3.1 elapsed time for other tasks in PCA except AMM
-    INTELLI_INFO("Start SVD task..");
-    struct timeval tstart, tend;
-    gettimeofday(&tstart, NULL);
-    torch::Tensor UCovC;
-    torch::Tensor SCovC;
-    torch::Tensor VhCovC;
-    torch::Tensor covC = C/A.size(1); // covirance estimator
-    std::tie(UCovC, SCovC, VhCovC) = torch::linalg::svd(covC, false, c10::nullopt);
-    gettimeofday(&tend, NULL);
-    INTELLI_INFO("SVD finished in " + to_string(INTELLI::UtilityFunctions::timeLast(tstart, tend)));
-    resultCsv->edit("SVDElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
-
-    // 3.2 PCA relative spectral error
-    torch::Tensor realC = torch::matmul(A, B);
-    torch::Tensor covRealC = realC/A.size(1);
-    double relativeSpectralNormError = INTELLI::UtilityFunctions::relativeSpectralNormError(covRealC, covC);
-    resultCsv->edit("PCAError", (double) relativeSpectralNormError);
-    
-    // 3.3 Save results
-    std::string ruName = "PCA";
+    std::string ruName = "MM";
     resultCsv->toFile(ruName + ".csv");
     INTELLI_INFO("Done. here is overall result");
     std::cout << resultCsv->toString() << endl;
@@ -78,7 +54,7 @@ int main(int argc, char **argv) {
     } else {
         configName = "config.csv";
     }
-    benchmarkPCA(configName);
+    benchmarkMM(configName);
     return 0;
 }
 

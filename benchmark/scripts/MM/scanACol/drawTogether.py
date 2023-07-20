@@ -56,23 +56,23 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 #     2. only one except cppAlgoTag in scan_dictionary['paras'] can be list, which is the target to do scanning. The rest in scan_dictionary['paras'] MUST be scalar
 
 scan_dictionary = {
-    'scanPara': "sketchDimension",
+    'scanPara': "aCol",
     'paras':{
-        'cppAlgoTag': ["mm", 'smp-pca', 'tugOfWar', 'cooFD'], # find the correct config_AMM.csv
-        'sketchDimension': [100, 200, 500, 1000, 2000, 3000, 4000, 5000],
-        'coreBind': 7,
-        'threads': 1,# single thread
-        'matrixLoaderTag': 'SIFT',
+        'cppAlgoTag': ["mm"], # find the correct config_AMM.csv
+        'aRow': 10000,
+        'aCol': [1000, 5000, 10000, 50000, 100000, 500000, 1000000],
+        'bCol': 10000,
+        'sketchDimension': 0.1, # in config, the sketchDimension = aCol*sketchDimension
+        'coreBind': 13, # single thread
+        'matrixLoaderTag': 'random',
     },
     'plot':{ # what needs to be plotted from results.csv
-        'AMM Fro Error %': 'AMMfroError', # key shown in figure, value is from results.csv
-        'PCA Error %': 'PCAError',
-        '1 Per AMM Elapsed Time (1 per ms)': 'AMMElapsedTime',
-        '1 Per Else Elapsed Time (1 per ms)': 'SVDElapsedTime',
+        'AMM Error %': 'AMMError', # key shown in figure, value is from results.csv
+        '1 Per AMM Elapsed Time (1 per ms)': 'AMMElapsedTime'
     },
     'rounds':1,
 }
-scanTag = f"scan{scan_dictionary['scanPara']}_dataset{scan_dictionary['paras']['matrixLoaderTag']}"
+scanTag = f"scan{scan_dictionary['scanPara']}_largeACol_aRow{scan_dictionary['paras']['aRow']}_bCol{scan_dictionary['paras']['bCol']}_sketch{scan_dictionary['paras']['sketchDimension']}_dataset{scan_dictionary['paras']['matrixLoaderTag']}"
 
 
 def singleRun(exePath, singleValue, resultPath, configTemplate):
@@ -84,15 +84,19 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     config_update_dict = scan_dictionary['paras'].copy()
     del config_update_dict['cppAlgoTag']
     config_update_dict[scan_dictionary['scanPara']] = singleValue
-    assert config_update_dict['sketchDimension'] > 10
+    if config_update_dict['sketchDimension'] < 1:
+        config_update_dict['sketchDimension'] = int(config_update_dict['aCol'] * config_update_dict['sketchDimension'])
 
     # udpate config
     df = pd.read_csv(configTemplate)
     for key, value in config_update_dict.items(): df.loc[df['key'] == key, 'value'] = value
     # (Pdb) df
     #                 key                                              value    type
-    # 3   matrixLoaderTag                                               SIFT  String
-    # 4   sketchDimension                                                100     U64
+    # 0              aRow                                               1000     U64
+    # 1              aCol                                                100     U64
+    # 2              bCol                                               1000     U64
+    # 3   matrixLoaderTag                                             random  String
+    # 4   sketchDimension                                                 10     U64
     # 5          coreBind                                                  1     U64
     # 6           threads                                                  1     U64
     # 7            useCPP                                                  1     U64
@@ -102,7 +106,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     df.to_csv(join(resultPath, 'config.csv'), index=False)
 
     # run benchmark to generate result.csv
-    os.system(f"cd {resultPath} && {exePath}/benchmarkPCA config.csv")
+    os.system(f"cd {resultPath} && {exePath}/benchmarkMM config.csv")
     
 
 def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"):
@@ -113,7 +117,7 @@ def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"
 
 
 def readResultSingle(singleValue, resultPath):
-    resultFname = join(resultPath, str(singleValue), "PCA.csv")
+    resultFname = join(resultPath, str(singleValue), "MM.csv")
     return {k:readConfig(resultFname, scan_dictionary['plot'][k]) for k in scan_dictionary['plot']}
 
 
@@ -177,7 +181,7 @@ def main():
         if 'time' in key.lower(): # calculate inverse
             groupLine.DrawFigureXYnormal(
                 xvalues=periodAll,
-                yvalues=1000/metrics_kwargs[key], # here apply 1/time!!
+                yvalues=1000/metrics_kwargs[key],
                 legend_labels=evaTypes,
                 x_label=scan_dictionary['scanPara'], 
                 y_label=key, 
@@ -196,18 +200,6 @@ def main():
                 y_max=1, # not used 
                 filename= figPath + "/" + key,
                 allow_legend=True)
-    
-    # other custom plot
-    groupLine.DrawFigureXYnormal(
-        xvalues=periodAll,
-        yvalues=metrics_kwargs['1 Per AMM Elapsed Time (1 per ms)']/metrics_kwargs['1 Per Else Elapsed Time (1 per ms)'],
-        legend_labels=evaTypes,
-        x_label=scan_dictionary['scanPara'], 
-        y_label='AMM time over Else time', 
-        y_min=0, # not used 
-        y_max=1, # not used 
-        filename= figPath + "/" + 'AMM time over Else time',
-        allow_legend=True)
 
 
 if __name__ == "__main__":

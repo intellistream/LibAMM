@@ -34,11 +34,15 @@ namespace AMMBench {
 
         // Step 4: Compute M_tilde
         torch::Tensor col_norm_A_col_norm_B = torch::matmul(col_norm_A.reshape({n1, 1}), col_norm_B.reshape({1, n2}));
-        torch::Tensor col_norm_A_tilde_col_norm_B_tilde = torch::matmul(col_norm_A_tilde.reshape({n1, 1}),
-                                                                        col_norm_B_tilde.reshape({1, n2}));
-        torch::Tensor M_tilde = torch::div(torch::mul(A_tilde_B_tilde, col_norm_A_col_norm_B),
-                                           col_norm_A_tilde_col_norm_B_tilde);
 
+        torch::Tensor col_norm_A_tilde_col_norm_B_tilde = torch::matmul(col_norm_A_tilde.reshape({n1, 1}), col_norm_B_tilde.reshape({1, n2}));
+        torch::Tensor mask = (col_norm_A_tilde_col_norm_B_tilde == 0);
+        col_norm_A_tilde_col_norm_B_tilde.masked_fill_(mask, 1e-6); // incase divide by 0 in next step
+
+        torch::Tensor ratio = torch::div(col_norm_A_col_norm_B, col_norm_A_tilde_col_norm_B_tilde);
+
+        torch::Tensor M_tilde = torch::mul(A_tilde_B_tilde, ratio);
+        
         return M_tilde;
     }
 } // AMMBench
