@@ -37,7 +37,7 @@ namespace AMMBench {
         AMMBench::TensorPtr matC = nullptr;
         double throughput = 0.0;
         uint64_t threads = 1;
-
+        int coreBind;
     public:
         BlockPartitionStreamer() {}
 
