@@ -7,10 +7,11 @@ add_sources(
         myVecAdd.cpp
         pythonBoundings.cpp
 )
+#gcc options
+if ( DEFINED ENV{AMMBENCH_CL})
+    add_sources(
+            CLContainer.cpp
+    )
+endif ()
+
 include_directories("../include/")
-# add_executable(RIPCPPAlgo "CPPAlgos/RIPCPPAlgo.cpp")
-# target_link_libraries(RIPCPPAlgo IntelliStream)
-# add_executable(SIFTMatrixLoader "MatrixLoader/SIFTMatrixLoader.cpp")
-# target_link_libraries(SIFTMatrixLoader IntelliStream)
-# add_executable(MNISTMatrixLoader "MatrixLoader/MNISTMatrixLoader.cpp")
-# target_link_libraries(MNISTMatrixLoader IntelliStream)
