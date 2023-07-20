@@ -9,6 +9,7 @@
 #include <CPPAlgos/CountSketchCPPAlgo.h>
 #include <CPPAlgos/ProductQuantizationRaw.h>
 #include <CPPAlgos/ProductQuantizationHash.h>
+#include <CPPAlgos/VectorQuantization.h>
 #include <CPPAlgos/BCRSCPPAlgo.h>
 #include <CPPAlgos/EWSCPPAlgo.h>
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
@@ -40,5 +41,6 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["fastjlt"] = newFastJLTCPPAlgo();
   algoMap["pq-raw"] = newProductQuantizationRawAlgo();
   algoMap["pq-hash"] = newProductQuantizationHashAlgo();
+  algoMap["vq"] = newVectorQuantizationAlgo();
 }
 } // AMMBench
