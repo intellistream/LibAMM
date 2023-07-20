@@ -12,6 +12,7 @@ add_sources(
         INT8CPPAlgo.cpp
         TugOfWarCPPAlgo.cpp
         SMPPCACPPAlgo.cpp
+
         FastJLTCPPAlgo.cpp
         RIPCPPAlgo.cpp
         BlockLRACPPAlgo.cpp
@@ -19,4 +20,9 @@ add_sources(
         ProductQuantizationHash.cpp
         VectorQuantization.cpp
 )
+if ( DEFINED ENV{AMMBENCH_CL})
+    add_sources(
+            CLMMCPPAlgo.cpp
+    )
+endif ()
 
