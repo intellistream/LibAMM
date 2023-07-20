@@ -17,5 +17,6 @@ add_sources(
         BlockLRACPPAlgo.cpp
         ProductQuantizationRaw.cpp
         ProductQuantizationHash.cpp
+        VectorQuantization.cpp
 )
 
