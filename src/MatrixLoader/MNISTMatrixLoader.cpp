@@ -26,7 +26,7 @@ int reverseInt(int i) {
 
 void AMMBench::MNISTMatrixLoader::generateAB() {
 
-    string fileName = "/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/src/MatrixLoader/train-images.idx3-ubyte";
+	string fileName = "/home/heyuhao/AMMBench/benchmark/datasets/train-images.idx3-ubyte";
 	int magic_number = 0;
 	int number_of_images = 0;
 	int n_rows = 0;
@@ -79,15 +79,15 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
 	}
 	file.close();
 
-	auto pickledA = torch::pickle_save(A);
-	std::ofstream foutA("A.pt", std::ios::out | std::ios::binary);
-	foutA.write(pickledA.data(), pickledA.size());
-	foutA.close();
+	// auto pickledA = torch::pickle_save(A);
+	// std::ofstream foutA("A.pt", std::ios::out | std::ios::binary);
+	// foutA.write(pickledA.data(), pickledA.size());
+	// foutA.close();
 
-	auto pickledB = torch::pickle_save(B);
-	std::ofstream foutB("B.pt", std::ios::out | std::ios::binary);
-	foutB.write(pickledB.data(), pickledB.size());
-	foutB.close();
+	// auto pickledB = torch::pickle_save(B);
+	// std::ofstream foutB("B.pt", std::ios::out | std::ios::binary);
+	// foutB.write(pickledB.data(), pickledB.size());
+	// foutB.close();
 
 	// torch::save(A, "A.pt");
     // torch::save(B, "B.pt");
