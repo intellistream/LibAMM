@@ -16,20 +16,24 @@ namespace AMMBench {
   torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize) {
   
   // Input size and block size
-  int64_t m = A.size(0);
-  int64_t k = A.size(1);
-  int64_t n = B.size(1);
+  uint64_t m = A.size(0);
+  uint64_t k = A.size(1);
+  uint64_t n = B.size(1);
 
-  assert(m % blockSize == 0);
-  assert(k % blockSize == 0);
-  assert(n % blockSize == 0);
+  uint64_t gcdOfmkn = std::gcd(std::gcd(m, k), n);
+  blockSize = std::min(gcdOfmkn, blockSize);
+  if (blockSize==1){
+    INTELLI_ERROR("m=" + to_string(m) + ", k=" + to_string(k) + ", n=" + to_string(n) + ", gcd(m, k, n)=1, BlockLRA is not usable anymore");
+    return torch::zeros({(long) m, (long) n});
+  }
+  INTELLI_INFO("BlockLRA with adjusted blockSize: " + to_string(blockSize));
 
   // for each block, calculate LRA
   torch::Tensor finalLRA = torch::zeros({(long) m, (long) n});
 
   for (uint64_t I=0; I<m/blockSize; ++I){
     for (uint64_t J=0; J<n/blockSize; ++J){
-      torch::Tensor subFinalLRA = torch::zeros({(int64_t)blockSize, (int64_t)blockSize});
+      torch::Tensor subFinalLRA = torch::zeros({(long)blockSize, (long)blockSize});
       for (uint64_t K=0; K<k/blockSize; ++K){
         // get sub matrix
         torch::Tensor AIK = A.index({torch::indexing::Slice(I*blockSize, (I+1)*blockSize), torch::indexing::Slice(K*blockSize, (K+1)*blockSize)});

@@ -21,6 +21,7 @@ bool AMMBench::BlockPartitionStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
      */
     batchSize = cfg->tryU64("batchSize", 1, true);
     threads = cfg->tryU64("threads", 1, true);
+    coreBind = cfg->tryU64("coreBind", 0, true);
     return true;
 }
 
@@ -31,7 +32,6 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
     if (batchSize > aRows) {
         batchSize = aRows;
     }
-    std::string cppAlgoTag = cfgGlobal->tryString("cppAlgoTag", "mm", true);
     AMMBench::TimeStamper tsGen;
     tsGen.setConfig(cfgGlobal);
     myTs = tsGen.getTimeStamps();
@@ -76,7 +76,7 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
         }
         for (size_t i = 0; i < threads; ++i) {
             tasks[i] = pool->submit([&, i]() {
-                INTELLI::UtilityFunctions::bind2Core(i+1);
+                INTELLI::UtilityFunctions::bind2Core(i+coreBind);
                 size_t startRowThread = startRow + i * slice_size;
                 size_t endRowThread = (i == threads - 1) ? endRow : startRowThread + slice_size;
                 matC->slice(0, startRowThread, endRowThread) = cppAlgoPtr->amm(partitions[index][i], B, sketchSize);
@@ -160,7 +160,7 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
         vector<torch::Tensor> aBs(threads);
         for (size_t i = 0; i < threads; ++i) {
             tasks[i] = pool->submit([&, i]() {
-                INTELLI::UtilityFunctions::bind2Core(i+1);
+                INTELLI::UtilityFunctions::bind2Core(i+coreBind);
                 size_t startRowThread = startRow + i * slice_size;
                 size_t endRowThread = (i == threads - 1) ? endRow : startRowThread + slice_size;
                 auto subA = A.slice(0, startRowThread, endRowThread);

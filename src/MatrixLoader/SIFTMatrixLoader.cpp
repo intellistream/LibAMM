@@ -69,15 +69,15 @@ torch::Tensor repeatAndCropMatrix(torch::Tensor matrix, int height, int width) {
 void AMMBench::SIFTMatrixLoader::generateAB() {
 
     // Step1. locate file
-    char filename[] = "../../datasets/siftsmall_base.fvecs";
+    std::string filename = "../../../../../../datasets/siftsmall_base.fvecs"; //benchmark execute path e.g. /home/heyuhao/AMMBench/build/benchmark/scripts/PCA/results/scansketchDimension_datasetSIFT/crs/100, dataset file path e.g. /home/heyuhao/AMMBench/build/benchmark/datasets/siftsmall_base.fvecs
     float* data = NULL;
     unsigned num, dim;
 
     // Step2. read in binary
     std::ifstream in(filename, std::ios::binary);	//以二进制的方式打开文件
     if (!in.is_open()) {
-    std::cout << "open file error" << std::endl;
-    exit(-1);
+        INTELLI_ERROR("Double check your executed path, the dataset file should be relative to your exe path like this: " + filename + " e.g. benchmark execute path: /home/user/AMMBench/build/benchmark/scripts/PCA/results/scansketchDimension_datasetSIFT/crs/100; dataset file path /home/user/AMMBench/build/benchmark/datasets/siftsmall_base.fvecs");
+        exit(-1);
     }
     in.read((char*)&dim, 4);	//读取向量维度
     in.seekg(0, std::ios::end);	//光标定位到文件末尾
