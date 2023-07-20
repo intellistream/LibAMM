@@ -87,7 +87,7 @@ void AMMBench::BlockPartitionRunner::setConfig(INTELLI::ConfigMapPtr _cfg) {
     cfg = _cfg;
     threads = cfg->tryU64("threads", 2, true);
     workers = std::vector<BlockPartitionWorkerPtr>(threads);
-    firstCoreBind = cfg->tryU64("firstCoreBind", 0, false);
+    firstCoreBind = cfg->tryU64("coreBind", 0, false);
     for (uint64_t i = 0; i < threads; i++) {
         workers[i] = newBlockPartitionWorker();
         workers[i]->setConfig(cfg);
@@ -106,11 +106,8 @@ void AMMBench::BlockPartitionRunner::createABC(torch::Tensor A, torch::Tensor B)
         uint64_t start_row = i * rows_per_worker;
         uint64_t end_row = (i == threads - 1) ? A.size(0) : start_row + rows_per_worker;
         workers[i]->setABC(matA, matB, matC);
-        workers[i]->setWorkParameters(start_row, end_row, i);
-    }
-    if (firstCoreBind != 0) {
-        workers[0]->setCoreBInd((int) firstCoreBind);
-        INTELLI_INFO("first thread is bound to core" + to_string(firstCoreBind));
+        workers[i]->setWorkParameters(start_row, end_row, firstCoreBind+i);
+        INTELLI_INFO("thread " + to_string(i) + " is bound to core " + to_string(firstCoreBind+i));
     }
 }
 

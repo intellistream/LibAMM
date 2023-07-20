@@ -58,17 +58,28 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 scan_dictionary = {
     'scanPara': "sketchDimension",
     'paras':{
-        'cppAlgoTag': ["mm", 'smp-pca', 'tugOfWar', 'cooFD'], # find the correct config_AMM.csv
-        'sketchDimension': [100, 200, 500, 1000, 2000, 3000, 4000, 5000],
+        'cppAlgoTag': ['crs'],# 'smp-pca', 'tugOfWar', 'cooFD'], # find the correct config_AMM.csv
+        'sketchDimension': [40000], #[100, 200], #, 500, 1000, 2000, 3000, 4000, 5000],
         'coreBind': 7,
         'threads': 1,# single thread
-        'matrixLoaderTag': 'SIFT',
+        'matrixLoaderTag': 'MNIST',
     },
     'plot':{ # what needs to be plotted from results.csv
-        'AMM Fro Error %': 'AMMfroError', # key shown in figure, value is from results.csv
-        'PCA Error %': 'PCAError',
-        '1 Per AMM Elapsed Time (1 per ms)': 'AMMElapsedTime',
-        '1 Per Else Elapsed Time (1 per ms)': 'SVDElapsedTime',
+        'SxxFroError': 'SxxFroError',
+        'SyyFroError': 'SyyFroError',
+        'SxyFroError': 'SxyFroError',
+        'MFroError': 'MFroError',
+        'CorrelationError': 'CorrelationError',
+        'SyyElapsedTime (1 per ms)': 'SyyElapsedTime',
+        'SxxElapsedTime (1 per ms)': 'SxxElapsedTime',
+        'SxyElapsedTime (1 per ms)': 'SxyElapsedTime',
+        'SxxNegativeHalfElapsedTime (1 per ms)': 'SxxNegativeHalfElapsedTime',
+        'SyyNegativeHalfElapsedTime (1 per ms)': 'SyyNegativeHalfElapsedTime',
+        'MElapsedTime (1 per ms)': 'MElapsedTime',
+        'CorrelationElapsedTime (1 per ms)': 'CorrelationElapsedTime',
+        'SxxThroughput': 'SxxThroughput',
+        'SyyThroughput': 'SyyThroughput',
+        'SxyThroughput': 'SxyThroughput',
     },
     'rounds':1,
 }
@@ -91,7 +102,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     for key, value in config_update_dict.items(): df.loc[df['key'] == key, 'value'] = value
     # (Pdb) df
     #                 key                                              value    type
-    # 3   matrixLoaderTag                                               SIFT  String
+    # 3   matrixLoaderTag                                               MNIST  String
     # 4   sketchDimension                                                100     U64
     # 5          coreBind                                                  1     U64
     # 6           threads                                                  1     U64
@@ -102,7 +113,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     df.to_csv(join(resultPath, 'config.csv'), index=False)
 
     # run benchmark to generate result.csv
-    os.system(f"cd {resultPath} && {exePath}/benchmarkPCA config.csv")
+    os.system(f"cd {resultPath} && {exePath}/benchmarkCCA config.csv")
     
 
 def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"):
@@ -113,7 +124,7 @@ def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"
 
 
 def readResultSingle(singleValue, resultPath):
-    resultFname = join(resultPath, str(singleValue), "PCA.csv")
+    resultFname = join(resultPath, str(singleValue), "CCA.csv")
     return {k:readConfig(resultFname, scan_dictionary['plot'][k]) for k in scan_dictionary['plot']}
 
 
@@ -200,7 +211,7 @@ def main():
     # other custom plot
     groupLine.DrawFigureXYnormal(
         xvalues=periodAll,
-        yvalues=metrics_kwargs['1 Per AMM Elapsed Time (1 per ms)']/metrics_kwargs['1 Per Else Elapsed Time (1 per ms)'],
+        yvalues=(metrics_kwargs['SxxElapsedTime (1 per ms)']+metrics_kwargs['SyyElapsedTime (1 per ms)']+metrics_kwargs['SxyElapsedTime (1 per ms)'])/(metrics_kwargs['CorrelationElapsedTime (1 per ms)']+metrics_kwargs['MElapsedTime (1 per ms)']+metrics_kwargs['SxxNegativeHalfElapsedTime (1 per ms)']+metrics_kwargs['SyyNegativeHalfElapsedTime (1 per ms)']),
         legend_labels=evaTypes,
         x_label=scan_dictionary['scanPara'], 
         y_label='AMM time over Else time', 

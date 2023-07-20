@@ -18,8 +18,12 @@ if (BUILD_BENCHMARKS)
     include_directories("include/")
     add_executable(benchmark "src/Benchmark.cpp")
     target_link_libraries(benchmark IntelliStream)
+    add_executable(benchmarkMM "src/BenchmarkMM.cpp")
+    target_link_libraries(benchmarkMM IntelliStream)
     add_executable(benchmarkPCA "src/BenchmarkPCA.cpp")
     target_link_libraries(benchmarkPCA IntelliStream)
+    add_executable(benchmarkCCA "src/BenchmarkCCA.cpp")
+    target_link_libraries(benchmarkCCA IntelliStream)
 
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/scripts
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -30,7 +34,9 @@ if (BUILD_BENCHMARKS)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.csv
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
+    set_target_properties(benchmarkMM PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/MM)
     set_target_properties(benchmarkPCA PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/PCA)
+    set_target_properties(benchmarkCCA PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/CCA)
 
     message("---Done building benchmarks")
 else (BUILD_BENCHMARKS)
