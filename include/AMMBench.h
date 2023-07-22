@@ -41,14 +41,17 @@
    * - staticPower (Double) set this to >0 if you want to manually config the static power of the device
    * - meterAddress (String) set this to the file system path of the meter, if it is different from the meter's default
    * - isStreaming (U64) whether or not use streaming, default 0
-   * @note Additional tags for hardware counters
-   * - usePAPI (U64) whether or not use PAPI if papi exists, default 1
-   *        - if PAPI is used, please refer to class @ref ThreadPerfPAPI, otherwise, see class @ref ThreadPerf
-   * @note this will only be run under single thread now, and perf or energy meter is not avaliable when setting to 1
    * @note by default, we only make A matrix streaming, if also want yo streaming B, please also set streamingTwoMatrixes to 1
    * - streamingTwoMatrixes (U64) whether make B matrix also streaming, default 0, will only affect when isStreaming=1
    * @warning For some platforms, the staticPower automatically measured by sleep is not accurate. Please do this mannulally.
   See also the template config.csv
+   * @note Additional tags for hardware counters
+   * - usePAPI (U64) whether or not use PAPI if papi exists, default 1
+   *        - if PAPI is used, please refer to class @ref ThreadPerfPAPI, otherwise, see class @ref ThreadPerf
+   *        - under PAPI, here is an unified way to custoimize perf events without recompile
+   *            - create a configmap readable csv for perfList at perfLists folder, the key is tag you want to display, and the value is inline PAPI tag, type should be String
+   *            - set perfUseExternalList (U64) in top configfile to 1
+   *            - set perfListSrc (String) in top configfile to perfLists/<your file name>
  * @section subsec_extend_operator How to extend a new algorithm (pt-based)
  * - go to the benchmark/torchscripts
  * - find any .python as an example
