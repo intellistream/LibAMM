@@ -17,7 +17,7 @@
 namespace AMMBench {
 
 #define  newTensor make_shared<torch::Tensor>
-    typedef std::shared_ptr<torch::Tensor> TensorPtr;
+typedef std::shared_ptr<torch::Tensor> TensorPtr;
 /**
  * @ingroup AMMBENCH_PARALLELIZATION
  * @{
@@ -28,84 +28,84 @@ namespace AMMBench {
  * @ingroup PARTITION_RUNNER
  * @brief The basic partition worker
  */
-    class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
-    protected:
-        virtual void inlineMain();
+class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
+ protected:
+  virtual void inlineMain();
 
-        AMMBench::CPPAlgoTable cppAlgoTable;
-        struct timeval tstart, tend;
-        uint64_t useCPP = 0;
-        uint64_t osScheduling = 0;
-        AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
-        /**
-         * @brief Input matrix A
-         */
-        TensorPtr matA = nullptr;  // Input matrix A
-        /**
-          * @brief Input matrix B
-          */
-        TensorPtr matB = nullptr;  // Input matrix B
-        /**
-        * @brief OUTput matrix C
-        */
-        TensorPtr matC = nullptr;  // Output matrix C
+  AMMBench::CPPAlgoTable cppAlgoTable;
+  struct timeval tstart, tend;
+  uint64_t useCPP = 0;
+  uint64_t osScheduling = 0;
+  AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
+  /**
+   * @brief Input matrix A
+   */
+  TensorPtr matA = nullptr;  // Input matrix A
+  /**
+    * @brief Input matrix B
+    */
+  TensorPtr matB = nullptr;  // Input matrix B
+  /**
+  * @brief OUTput matrix C
+  */
+  TensorPtr matC = nullptr;  // Output matrix C
 
-        INTELLI::ConfigMapPtr cfg;
-        torch::jit::script::Module module;
-        uint64_t sketchDimension = 0;
-        int coreBind;
-    public:
-        torch::Tensor irC, subA;
-        uint64_t startRow = 0;  // Start row index for the assigned range
-        uint64_t endRow = 0;  // End row index (exclusive) for the assigned range
+  INTELLI::ConfigMapPtr cfg;
+  torch::jit::script::Module module;
+  uint64_t sketchDimension = 0;
+  int coreBind;
+ public:
+  torch::Tensor irC, subA;
+  uint64_t startRow = 0;  // Start row index for the assigned range
+  uint64_t endRow = 0;  // End row index (exclusive) for the assigned range
 
-        BlockPartitionWorker() {
+  BlockPartitionWorker() {
 
-        }
+  }
 
-        /**
-        * @brief set the config map
-        * @param _cfg
-        */
-        void setConfig(INTELLI::ConfigMapPtr _cfg);
+  /**
+  * @brief set the config map
+  * @param _cfg
+  */
+  void setConfig(INTELLI::ConfigMapPtr _cfg);
 
-        /**
-         * @brief set the pointer to A,B,C matrix
-         */
-        void setABC(TensorPtr A, TensorPtr B, TensorPtr C);
+  /**
+   * @brief set the pointer to A,B,C matrix
+   */
+  void setABC(TensorPtr A, TensorPtr B, TensorPtr C);
 
-        /**
-         * @brief set work parmeters
-         * @param aStart The start row in A
-         * @param aEnd The end row in A
-         * @param mycore the core to be binded
-         */
-        void setWorkParameters(uint64_t aStart, uint64_t aEnd, int mycore);
+  /**
+   * @brief set work parmeters
+   * @param aStart The start row in A
+   * @param aEnd The end row in A
+   * @param mycore the core to be binded
+   */
+  void setWorkParameters(uint64_t aStart, uint64_t aEnd, int mycore);
 
-        void setCoreBInd(int cno) {
-            coreBind = cno;
-        }
+  void setCoreBInd(int cno) {
+    coreBind = cno;
+  }
 
-        ~BlockPartitionWorker() {
+  ~BlockPartitionWorker() {
 
-        }
+  }
 
-        uint64_t getElapsedTime();
+  uint64_t getElapsedTime();
 
-        /**
-        * @brief to export the algorithm breakdown
-         * @note only valid for c++ algo
-        * @return the key-value table breakdown in ConfigMapPtr;
-        */
-        virtual INTELLI::ConfigMapPtr getBreakDown();
-    };
+  /**
+  * @brief to export the algorithm breakdown
+   * @note only valid for c++ algo
+  * @return the key-value table breakdown in ConfigMapPtr;
+  */
+  virtual INTELLI::ConfigMapPtr getBreakDown();
+};
 /**
 * @ingroup PARTITION_RUNNER
 * @def newBlockPartitionWorker
 * @brief (Macro) To creat a new @ref BlockPartitionWorker under shared pointer.
 */
 #define  newBlockPartitionWorker std::make_shared<AMMBench::BlockPartitionWorker>
-    typedef std::shared_ptr<AMMBench::BlockPartitionWorker> BlockPartitionWorkerPtr;
+typedef std::shared_ptr<AMMBench::BlockPartitionWorker> BlockPartitionWorkerPtr;
 
 /**
  * @class BlockPartitionRunner Parallelization/BlockPartitionRunner.h
@@ -122,83 +122,83 @@ namespace AMMBench {
  * - call @ref runAMM and return result
  * - call @ref getElapsedTime
  */
-    class BlockPartitionRunner {
+class BlockPartitionRunner {
 
-    protected:
-        INTELLI::ConfigMapPtr cfg;
-        uint64_t threads = 0;
-        /**
-         * @brief Input matrix A
-         */
-        TensorPtr matA = nullptr;  // Input matrix A
-        /**
-          * @brief Input matrix B
-          */
-        TensorPtr matB = nullptr;  // Input matrix B
-        /**
-        * @brief OUTput matrix C
-        */
-        TensorPtr matC = nullptr;  // Output matrix C
-        std::vector<BlockPartitionWorkerPtr> workers;
-        /**
-         * @brief special bind of first core, if need
-         */
-        uint64_t firstCoreBind = 0;
-    public:
-        BlockPartitionRunner() {}
+ protected:
+  INTELLI::ConfigMapPtr cfg;
+  uint64_t threads = 0;
+  /**
+   * @brief Input matrix A
+   */
+  TensorPtr matA = nullptr;  // Input matrix A
+  /**
+    * @brief Input matrix B
+    */
+  TensorPtr matB = nullptr;  // Input matrix B
+  /**
+  * @brief OUTput matrix C
+  */
+  TensorPtr matC = nullptr;  // Output matrix C
+  std::vector<BlockPartitionWorkerPtr> workers;
+  /**
+   * @brief special bind of first core, if need
+   */
+  uint64_t firstCoreBind = 0;
+ public:
+  BlockPartitionRunner() {}
 
-        ~BlockPartitionRunner() {}
+  ~BlockPartitionRunner() {}
 
-        /**
-         * @brief set the config map
-         * @param _cfg
-         */
-        void setConfig(INTELLI::ConfigMapPtr _cfg);
+  /**
+   * @brief set the config map
+   * @param _cfg
+   */
+  void setConfig(INTELLI::ConfigMapPtr _cfg);
 
-        /**
-         * @brief create the A,B,C matrix and pass it to all workers
-         *  @param A The A matrix
-          * @param B The B matrix
-          * @warnning call after @ref setConfig
-         */
-        void createABC(torch::Tensor A, torch::Tensor B);
+  /**
+   * @brief create the A,B,C matrix and pass it to all workers
+   *  @param A The A matrix
+    * @param B The B matrix
+    * @warnning call after @ref setConfig
+   */
+  void createABC(torch::Tensor A, torch::Tensor B);
 
-        /**
-      * @brief run a parallel forward of A,B, and return C
-      * @return C=matA*matB
-      *  @warnning call after @ref createABC
-      */
-        torch::Tensor parallelForward();
+  /**
+* @brief run a parallel forward of A,B, and return C
+* @return C=matA*matB
+*  @warnning call after @ref createABC
+*/
+  torch::Tensor parallelForward();
 
-        /**
-        * @brief conducte the multithread AMM and return
-        * @param A The A matrix
-        * @param B The B matrix
-        * @return The AMM(A,B)
-        * @warnning call after @ref setConfig
-        */
-        torch::Tensor runAMM(torch::Tensor A, torch::Tensor B);
+  /**
+  * @brief conducte the multithread AMM and return
+  * @param A The A matrix
+  * @param B The B matrix
+  * @return The AMM(A,B)
+  * @warnning call after @ref setConfig
+  */
+  torch::Tensor runAMM(torch::Tensor A, torch::Tensor B);
 
-        /**
-         * @brief get the elapsed time of multithread running
-         * @return the elapsed time
-         * @note Exclude the overhead of cleaning thread states such as loaded module
-         */
-        uint64_t getElapsedTime();
+  /**
+   * @brief get the elapsed time of multithread running
+   * @return the elapsed time
+   * @note Exclude the overhead of cleaning thread states such as loaded module
+   */
+  uint64_t getElapsedTime();
 
-        /**
-         * @brief append the running information of each thread to the result csv
-         * @param ru The result csv to be appended
-         */
-        void appendThreadInfo(INTELLI::ConfigMapPtr ru);
+  /**
+   * @brief append the running information of each thread to the result csv
+   * @param ru The result csv to be appended
+   */
+  void appendThreadInfo(INTELLI::ConfigMapPtr ru);
 
-        /**
-        * @brief to export the algorithm breakdown
-         * @note only valid for c++ algo
-        * @return the key-value table breakdown in ConfigMapPtr;
-        */
-        virtual INTELLI::ConfigMapPtr getBreakDown();
-    };
+  /**
+  * @brief to export the algorithm breakdown
+   * @note only valid for c++ algo
+  * @return the key-value table breakdown in ConfigMapPtr;
+  */
+  virtual INTELLI::ConfigMapPtr getBreakDown();
+};
 
 } // AMMBench
 /**

@@ -6,14 +6,14 @@
 
 //do nothing in abstract class
 bool AMMBench::AbstractMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
-    assert(cfg);
-    return true;
+  assert(cfg);
+  return true;
 }
 
 torch::Tensor AMMBench::AbstractMatrixLoader::getA() {
-    return torch::rand({1, 1});
+  return torch::rand({1, 1});
 }
 
 torch::Tensor AMMBench::AbstractMatrixLoader::getB() {
-    return torch::rand({1, 1});
+  return torch::rand({1, 1});
 }

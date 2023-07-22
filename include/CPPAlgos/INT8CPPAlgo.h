@@ -27,64 +27,64 @@ namespace AMMBench {
  * @note additionally parameters
  * - fpMode, String, default FP32, can also use INT8 or INT16
  */
-    class INT8CPPAlgo : public AMMBench::AbstractCPPAlgo {
-    protected:
-        /**
-        * @brief the inline amm under nested loop fp32
-        * @param A the A matrix
-        * @param B the B matrix
-        * @return the output c matrix
-        */
-        torch::Tensor fp32amm(torch::Tensor A, torch::Tensor B);
+class INT8CPPAlgo : public AMMBench::AbstractCPPAlgo {
+ protected:
+  /**
+  * @brief the inline amm under nested loop fp32
+  * @param A the A matrix
+  * @param B the B matrix
+  * @return the output c matrix
+  */
+  torch::Tensor fp32amm(torch::Tensor A, torch::Tensor B);
 
-        /**
-        * @brief the inline amm under nested loop int8
-        * @param A the A matrix
-        * @param B the B matrix
-        * @return the output c matrix
-        */
-        torch::Tensor int8amm(torch::Tensor A, torch::Tensor B);
+  /**
+  * @brief the inline amm under nested loop int8
+  * @param A the A matrix
+  * @param B the B matrix
+  * @return the output c matrix
+  */
+  torch::Tensor int8amm(torch::Tensor A, torch::Tensor B);
 
-        /**
-        * @brief the inline amm under nested loop int4
-        * @param A the A matrix
-        * @param B the B matrix
-        * @return the output c matrix
-        */
-        torch::Tensor int4amm(torch::Tensor A, torch::Tensor B);
+  /**
+  * @brief the inline amm under nested loop int4
+  * @param A the A matrix
+  * @param B the B matrix
+  * @return the output c matrix
+  */
+  torch::Tensor int4amm(torch::Tensor A, torch::Tensor B);
 
-        /**
-       * @brief the inline amm under nested loop int16
-       * @param A the A matrix
-       * @param B the B matrix
-       * @return the output c matrix
-       */
-        torch::Tensor int16amm(torch::Tensor A, torch::Tensor B);
+  /**
+ * @brief the inline amm under nested loop int16
+ * @param A the A matrix
+ * @param B the B matrix
+ * @return the output c matrix
+ */
+  torch::Tensor int16amm(torch::Tensor A, torch::Tensor B);
 
-        std::string fpMode = "FP32";
-    public:
-        INT8CPPAlgo() {
+  std::string fpMode = "FP32";
+ public:
+  INT8CPPAlgo() {
 
-        }
+  }
 
-        ~INT8CPPAlgo() {
+  ~INT8CPPAlgo() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-        /**
-       * @brief set the alo-specfic config related to one algorithm
-       */
-        virtual void setConfig(INTELLI::ConfigMapPtr cfg);
-    };
+  /**
+ * @brief set the alo-specfic config related to one algorithm
+ */
+  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -92,7 +92,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref INT8CPPAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::INT8CPPAlgo> INT8CPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::INT8CPPAlgo> INT8CPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newINT8CppAlgo

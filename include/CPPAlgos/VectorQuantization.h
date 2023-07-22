@@ -16,26 +16,26 @@ namespace AMMBench {
  * @brief The Vector Quantization AMM class of c++ algos
  *
  */
-    class VectorQuantization : public AMMBench::AbstractCPPAlgo {
-    public:
-        VectorQuantization() {
+class VectorQuantization : public AMMBench::AbstractCPPAlgo {
+ public:
+  VectorQuantization() {
 
-        }
+  }
 
-        ~VectorQuantization() {
+  ~VectorQuantization() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -43,7 +43,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref VectorQuantizationAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::VectorQuantization> VectorQuantizationPtr;
+typedef std::shared_ptr<class AMMBench::VectorQuantization> VectorQuantizationPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newVectorQuantizationAlgo

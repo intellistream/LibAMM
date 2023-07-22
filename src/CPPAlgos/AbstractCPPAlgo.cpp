@@ -8,39 +8,37 @@
 #include <time.h>
 #include <chrono>
 void AMMBench::AbstractCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
-    assert(cfg);
-    useCuda=cfg->tryU64("useCuda",0, false);
+  assert(cfg);
+  useCuda = cfg->tryU64("useCuda", 0, false);
 }
 
 torch::Tensor AMMBench::AbstractCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
-    assert(sketchSize);
+  assert(sketchSize);
   auto start = std::chrono::high_resolution_clock::now();
-    torch::Tensor C;
-    if(useCuda)
-    { INTELLI_INFO("I am mm, USING CUDA");
-      auto ac=A.to(torch::kCUDA);
-      buildATime= chronoElapsedTime(start);
-      auto bc=B.to(torch::kCUDA);
-      buildBTime=  chronoElapsedTime(start)-buildATime;
-      auto cc = torch::matmul(ac, bc);
-      fABTime =  chronoElapsedTime(start)-buildATime-buildBTime;
-      C=cc.to(torch::kCPU);
-      postProcessTime=  chronoElapsedTime(start)-buildATime-buildBTime-fABTime;
-    }
-    else
-    {
-      C= torch::matmul(A, B);
-      fABTime =  chronoElapsedTime(start);
-    }
+  torch::Tensor C;
+  if (useCuda) {
+    INTELLI_INFO("I am mm, USING CUDA");
+    auto ac = A.to(torch::kCUDA);
+    buildATime = chronoElapsedTime(start);
+    auto bc = B.to(torch::kCUDA);
+    buildBTime = chronoElapsedTime(start) - buildATime;
+    auto cc = torch::matmul(ac, bc);
+    fABTime = chronoElapsedTime(start) - buildATime - buildBTime;
+    C = cc.to(torch::kCPU);
+    postProcessTime = chronoElapsedTime(start) - buildATime - buildBTime - fABTime;
+  } else {
+    C = torch::matmul(A, B);
+    fABTime = chronoElapsedTime(start);
+  }
 
-    return C;
+  return C;
 }
 
 INTELLI::ConfigMapPtr AMMBench::AbstractCPPAlgo::getBreakDown() {
-    INTELLI::ConfigMapPtr cfg = newConfigMap();
-    cfg->edit("buildATime", (uint64_t) buildATime);
-    cfg->edit("buildBTime", (uint64_t) buildBTime);
-    cfg->edit("fABTime", (uint64_t) fABTime);
-    cfg->edit("postProcessTime", (uint64_t) postProcessTime);
-    return cfg;
+  INTELLI::ConfigMapPtr cfg = newConfigMap();
+  cfg->edit("buildATime", (uint64_t) buildATime);
+  cfg->edit("buildBTime", (uint64_t) buildBTime);
+  cfg->edit("fABTime", (uint64_t) fABTime);
+  cfg->edit("postProcessTime", (uint64_t) postProcessTime);
+  return cfg;
 }

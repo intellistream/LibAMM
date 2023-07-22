@@ -17,26 +17,26 @@ namespace AMMBench {
  * @brief The Co-Occurring FD AMM class of c++ algos
  *
  */
-    class CoOccurringFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
-    public:
-        CoOccurringFDCPPAlgo() {
+class CoOccurringFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
+ public:
+  CoOccurringFDCPPAlgo() {
 
-        }
+  }
 
-        ~CoOccurringFDCPPAlgo() {
+  ~CoOccurringFDCPPAlgo() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -44,7 +44,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref CoOccurringFDCppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::CoOccurringFDCPPAlgo> CoOccurringFDCPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::CoOccurringFDCPPAlgo> CoOccurringFDCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newCoOccurringFDCppAlgo

@@ -3,6 +3,7 @@ import time
 import os
 import math
 
+
 def hadamard_transform_matrix(n: int) -> torch.Tensor:
     H = torch.tensor([[1.]])
     i = 1
@@ -41,7 +42,7 @@ def FastJLT(A: torch.Tensor, B: torch.Tensor, d: int):
     # Dimensionality reduction
     keep_prob = log2_D * log2_D / D_pad
     P = (torch.rand((D_pad, d)) > keep_prob).float()
-    P *= torch.randn(P.shape[0], P.shape[1]) * (d/keep_prob)
+    P *= torch.randn(P.shape[0], P.shape[1]) * (d / keep_prob)
     P *= 1.0 / torch.linalg.norm(P, dim=0)
 
     return (A_pad @ P) @ (P.t() @ B_pad)

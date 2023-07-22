@@ -18,26 +18,26 @@ namespace AMMBench {
  * @brief New and improved Johnson-Lindenstrauss embeddings via the Restricted Isometry Property
  *
  */
-    class RIPCPPAlgo : public AMMBench::AbstractCPPAlgo {
-    public:
-        RIPCPPAlgo() {
+class RIPCPPAlgo : public AMMBench::AbstractCPPAlgo {
+ public:
+  RIPCPPAlgo() {
 
-        }
+  }
 
-        ~RIPCPPAlgo() {
+  ~RIPCPPAlgo() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -45,7 +45,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref RIPCppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::RIPCPPAlgo> RIPCPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::RIPCPPAlgo> RIPCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newRIPCppAlgo

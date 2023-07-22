@@ -18,26 +18,26 @@ namespace AMMBench {
  * @brief sketch scaled JL class of c++ algos
  *
  */
-    class SMPPCACPPAlgo : public AMMBench::AbstractCPPAlgo {
-    public:
-        SMPPCACPPAlgo() {
+class SMPPCACPPAlgo : public AMMBench::AbstractCPPAlgo {
+ public:
+  SMPPCACPPAlgo() {
 
-        }
+  }
 
-        ~SMPPCACPPAlgo() {
+  ~SMPPCACPPAlgo() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketch
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketch
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -45,7 +45,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref SMPPCACppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::SMPPCACPPAlgo> SMPPCACPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::SMPPCACPPAlgo> SMPPCACPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newSMPPCACppAlgo

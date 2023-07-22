@@ -20,7 +20,7 @@ CLContainer::CLContainer(cl_uint id, cl_device_type type, string kernelName) {
   CLGetDevice(id, type);
   buildProgramFromFile(sourceName.data());
 }
-CLContainer::CLContainer(cl_uint id, cl_device_type type, string kernelName,string clName) {
+CLContainer::CLContainer(cl_uint id, cl_device_type type, string kernelName, string clName) {
   // CLProbe();
 
   myName = kernelName;
