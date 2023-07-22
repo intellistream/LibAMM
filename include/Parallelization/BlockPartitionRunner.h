@@ -54,6 +54,9 @@ namespace AMMBench {
         torch::jit::script::Module module;
         uint64_t sketchDimension = 0;
         int coreBind;
+
+        INTELLI::ConfigMapPtr pefResult; // to save pef results
+
     public:
         torch::Tensor irC, subA;
         uint64_t startRow = 0;  // Start row index for the assigned range
@@ -92,6 +95,8 @@ namespace AMMBench {
 
         uint64_t getElapsedTime();
 
+        INTELLI::ConfigMapPtr getPefResult();
+
         /**
         * @brief to export the algorithm breakdown
          * @note only valid for c++ algo
@@ -121,6 +126,7 @@ namespace AMMBench {
  * - call @ref setConfig
  * - call @ref runAMM and return result
  * - call @ref getElapsedTime
+ * - call @ref getMetrics
  */
     class BlockPartitionRunner {
 
@@ -144,6 +150,9 @@ namespace AMMBench {
          * @brief special bind of first core, if need
          */
         uint64_t firstCoreBind = 0;
+
+        INTELLI::ConfigMapPtr metrics = newConfigMap();
+
     public:
         BlockPartitionRunner() {}
 
@@ -164,11 +173,10 @@ namespace AMMBench {
         void createABC(torch::Tensor A, torch::Tensor B);
 
         /**
-      * @brief run a parallel forward of A,B, and return C
-      * @return C=matA*matB
+      * @brief run a parallel forward of A,B
       *  @warnning call after @ref createABC
       */
-        torch::Tensor parallelForward();
+        void parallelForward();
 
         /**
         * @brief conducte the multithread AMM and return
@@ -191,6 +199,17 @@ namespace AMMBench {
          * @param ru The result csv to be appended
          */
         void appendThreadInfo(INTELLI::ConfigMapPtr ru);
+
+        /**
+         * @brief calculate metrics including the pef result for all threads used in the runner, and elapsed time, throughput..
+         */
+        void calculateMetrics();
+
+        /**
+         * @brief get metrics
+         * @return metrics ConfigMapPtr
+         */
+        INTELLI::ConfigMapPtr getMetrics();
 
         /**
         * @brief to export the algorithm breakdown

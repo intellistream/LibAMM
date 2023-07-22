@@ -11,7 +11,7 @@ namespace AMMBench {
     class Streamer {
     protected:
         AMMBench::TensorPtr matC = nullptr;
-        INTELLI::ConfigMapPtr metrics;
+        INTELLI::ConfigMapPtr metrics = nullptr;
     public:
         Streamer() {}
 

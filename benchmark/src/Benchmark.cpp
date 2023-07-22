@@ -14,12 +14,12 @@ using namespace DIVERSE_METER;
 
 void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1) {
     uint64_t threads=cfg->tryU64("threads", 1, true);
-    uint64_t streamingTwoMatrixes=cfg->tryU64("streamingTwoMatrixes", 0, true);
+    uint64_t streamingTwoMatrices=cfg->tryU64("streamingTwoMatrices", 0, true);
     if (threads > 1) {
         AMMBench::BlockPartitionStreamer ss;
         ss.setConfig(cfg);
         torch::Tensor ssC;
-        if(streamingTwoMatrixes)
+        if(streamingTwoMatrices)
         {
             INTELLI_INFO("Both A,B will be streaming" );
             ssC = ss.streamingAmm2S(A, B, sketchSize);
@@ -49,7 +49,7 @@ void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t 
     AMMBench::SingleThreadStreamer ss;
     ss.setConfig(cfg);
     torch::Tensor ssC;
-    if(streamingTwoMatrixes)
+    if(streamingTwoMatrices)
     {
       INTELLI_INFO("Both A,B will be streaming" );
       ssC = ss.streamingAmm2S(A, B, sketchSize);
@@ -149,7 +149,7 @@ void runSingleThreadTest(std::string configName) {
             eMeter->startMeter();
         }
         pef.start();
-        C = br.parallelForward();
+        C = br.runAMM(A, B);
         pef.end();
         if (eMeter != nullptr) {
             eMeter->stopMeter();
