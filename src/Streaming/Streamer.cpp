@@ -12,15 +12,14 @@
 using namespace INTELLI;
 
 torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize, string metricsPrefix) {
-    metrics = newConfigMap();
+    metrics = newConfigMap(); // has error and pef events: time, instructions, memory access etc.
     matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
     uint64_t isStreaming = cfg->tryU64("isStreaming", 0, true);
     uint64_t threads = cfg->tryU64("threads", 1, true);
     sketchSize = cfg->tryU64("sketchDimension", sketchSize, true);
 
     if (isStreaming) {
-        uint64_t streamingTwoMatrices = cfg->tryU64("streamingTwoMatrixes", 0, true);
-        double throughput;
+        uint64_t streamingTwoMatrices = cfg->tryU64("streamingTwoMatrices", 0, true);
         if (threads>1) {
             INTELLI_INFO("streaming, multithread "+to_string(threads));
             AMMBench::BlockPartitionStreamer ss;
@@ -28,10 +27,8 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
             if (streamingTwoMatrices) {
                 *matC = ss.streamingAmm2S(A, B, sketchSize);
             } else *matC = ss.streamingAmm(A, B, sketchSize);
-            throughput = ss.getThroughput();
-            metrics->edit(metricsPrefix+"Throughput", throughput);
-            metrics->edit(metricsPrefix+"ThroughputByElements", (double) (throughput * A.size(1)));
-            metrics->edit(metricsPrefix+"95%latency", (double) ss.getLatencyPercentage(0.95));
+            metrics = ss.getMetrics();
+            metrics->addPrefixToKeys(metricsPrefix);
         } else {
             INTELLI_INFO("streaming, singlethread");
             AMMBench::SingleThreadStreamer ss;
@@ -41,28 +38,39 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
             } else {
                 *matC = ss.streamingAmm(A, B, sketchSize);
             }
-            throughput = ss.getThroughput();
-            metrics->edit(metricsPrefix+"Throughput", throughput);
-            metrics->edit(metricsPrefix+"ThroughputByElements", (double) (throughput * A.size(1)));
-            metrics->edit(metricsPrefix+"95%latency", (double) ss.getLatencyPercentage(0.95));
+            metrics = ss.getMetrics();
+            metrics->addPrefixToKeys(metricsPrefix);
         }
-        metrics->edit(metricsPrefix+"ElapsedTime", (uint64_t)((A.size(0) * 1e6) / throughput));
     }
     else{
         // non-streaming
         cfg->edit(metricsPrefix+"useCPP", (uint64_t)1);
-        uint64_t forceMP = cfg->tryU64("forceMP", 1, true);
-        uint64_t elapsedTime = 0;
+        uint64_t forceMP = cfg->tryU64("forceMP", 0, true);
+        // uint64_t elapsedTime = 0;
         
         if (threads > 1 || forceMP) {
-            INTELLI_INFO("non-streaming, multithread "+to_string(threads));
+            INTELLI_INFO("AMM non-streaming, multithread "+to_string(threads));
             AMMBench::BlockPartitionRunner br;
             br.setConfig(cfg);
-            br.createABC(A, B);
-            *matC = br.parallelForward();
-            elapsedTime = br.getElapsedTime();
+            *matC = br.runAMM(A, B);
+            metrics = br.getMetrics();
+            metrics->addPrefixToKeys(metricsPrefix);
+            // metrics example, metricsPrefix="AMM"
+            // key       value   type
+            // AMMPerfElapsedTime      3125    U64
+            // AMMThread0CacheMiss     20605   U64
+            // AMMThread0CacheRefs     109254  U64
+            // AMMThread0CpuClock      2126446 U64
+            // AMMThread0CpuCycle      5279889 U64
+            // AMMThread0Instructions  4868176 U64
+            // AMMThread0PerfElapsedTime       2129    U64
+            // AMMThread0TaskClock     2128291 U64
+            // AMMThread1CacheMiss     15074   U64
+            // AMMThread1CacheRefs     96926   U64
+            // AMMThread1CpuClock      3096037 U64
+            // ...
         } else {
-            INTELLI_INFO("non-streaming, singlethread");
+            INTELLI_INFO("AMM non-streaming, singlethread");
             uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
             UtilityFunctions::bind2Core((int) coreBind);
             AMMBench::CPPAlgoTable cppAlgoTable;
@@ -71,24 +79,25 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
             cppAlgoPtr->setConfig(cfg);
             ThreadPerf pef(-1);
             pef.setPerfList();
-            // pef result example
-            // cacheMiss       0       U64
-            // cacheRefs       0       U64
-            // cpuClock        0       U64
-            // cpuCycle        0       U64
-            // instructions    0       U64
-            // perfElapsedTime 83432   U64
-            // taskClock       0       U64
             pef.start();
             *matC = cppAlgoPtr->amm(A, B, sketchSize);
             pef.end();
-            auto resultCsv = pef.resultToConfigMap();
-            elapsedTime = resultCsv->getU64("perfElapsedTime");
+            metrics = pef.resultToConfigMap();
+            metrics->addPrefixToKeys(metricsPrefix);
+            // metrics example, metricsPrefix="AMM"
+            // AMMCacheMiss,8596,U64
+            // AMMCacheRefs,76066,U64
+            // AMMCpuClock,2615984,U64
+            // AMMCpuCycle,6501701,U64
+            // AMMInstructions,3269080,U64
+            // AMMPerfElapsedTime,2624,U64
+            // AMMTaskClock,2618774,U64
+            // AMMFroError,0.119820,Double
+            double throughput = (A.size(0) * 1e6) / metrics->getU64(metricsPrefix+"PerfElapsedTime");
+            metrics->edit(metricsPrefix+"Throughput", throughput);
+            metrics->edit(metricsPrefix+"ThroughputByElements", (double) (throughput * A.size(1)));
         }
-        double throughput = (A.size(0) * 1e6) / elapsedTime;
-        metrics->edit(metricsPrefix+"Throughput", throughput);
-        metrics->edit(metricsPrefix+"ThroughputByElements", (double) (throughput * A.size(1)));
-        metrics->edit(metricsPrefix+"ElapsedTime", elapsedTime);
+        
     }
 
     // calculate error

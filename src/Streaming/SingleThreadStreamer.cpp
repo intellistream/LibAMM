@@ -4,6 +4,11 @@
 
 #include <Streaming/SingleThreadStreamer.h>
 #include <Utils/UtilityFunctions.h>
+#include "Utils/ThreadPerf.hpp"
+#include <time.h>
+#include <chrono>
+
+using namespace INTELLI;
 
 bool AMMBench::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
     cfgGlobal = cfg;
@@ -17,6 +22,8 @@ bool AMMBench::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
      * @brief 2. set the batch size
      */
     batchSize = cfg->tryU64("batchSize", 1, true);
+    coreBind = cfg->tryU64("coreBind", 0, true);
+    INTELLI::UtilityFunctions::bind2Core(coreBind);
     return true;
 }
 
@@ -29,34 +36,40 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
     }
     AMMBench::TimeStamper tsGen;
     tsGen.setConfig(cfgGlobal);
-    myTs = tsGen.getTimeStamps();
+    myTs = tsGen.getTimeStamps(); // a vector of pointers to timestamp objects
     INTELLI_INFO("Generate time stamp done");
     matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
-    struct timeval tstart;
+    
     //INTELLI_INFO("I am mm");
     INTELLI_INFO("Start Streaming A rows");
     uint64_t startRow = 0;
     uint64_t endRow = startRow + batchSize;
-    uint64_t tNow = 0;
+    uint64_t tNow = 0; // used to store the elapsed time from tstart
     uint64_t tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
-    uint64_t tp = 0;
-    uint64_t tDone = 0;
+    uint64_t tp = 0; // the processing time of the current batch
+    uint64_t tDone = 0; // the total time taken to complete the computation
 
     //pre-partition
-    std::vector<torch::Tensor> partitions;
+    std::vector<torch::Tensor> partitions; // store partitions of matrix A to process in batches
     for (uint64_t i = 0; i < aRows; i += batchSize) {
         uint64_t end = std::min(i + batchSize , aRows);
         auto subA = A.slice(0, i, end);
         partitions.push_back(subA);
     }
     uint64_t index = -1;
-    gettimeofday(&tstart, NULL);
+
+    ThreadPerf pef(-1);
+    pef.setPerfList();
+    pef.start();
+    auto tstart = std::chrono::high_resolution_clock::now();
+    // struct timeval tstart;
+    // gettimeofday(&tstart, NULL);
 
     while (startRow < aRows) {
-        tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+        tNow = chronoElapsedTime(tstart);
         index++;
         while (tNow < tEXpectedArrival) {
-            tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+            tNow = chronoElapsedTime(tstart);
         }
         /**
          * @brief now, the whole batch has arrived, compute
@@ -64,7 +77,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
         //auto subA = A.slice(0, startRow, endRow);
         auto subA = partitions[index];
         matC->slice(0, startRow, endRow) = cppAlgoPtr->amm(subA, B, sketchSize);
-        tp = INTELLI::UtilityFunctions::timeLastUs(tstart);
+        tp = chronoElapsedTime(tstart);
         /**
          * @brief the new arrived A will be no longer probed, so we can assign the processed time now
          */
@@ -81,10 +94,19 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
         }
         tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
     }
-    tDone = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    tDone = chronoElapsedTime(tstart);
+    pef.end();
+
+    metrics = pef.resultToConfigMap();
+
     INTELLI_INFO("Done in " + to_string(tDone) + "us");
-    throughput = aRows;
-    throughput = throughput * 1e6 / tDone;
+    throughput = aRows * 1e6 / tDone;
+    double throughputByElements = throughput * A.size(1);
+    double latency95 = getLatencyPercentage(0.95);
+    metrics->edit("throughput", throughput);
+    metrics->edit("throughputByElements", throughputByElements);
+    metrics->edit("95%latency", latency95);
+
     return *matC;
 }
 
@@ -104,7 +126,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
   myTsB = tsGenB.getTimeStamps();
   INTELLI_INFO("Generate time stamps for two streams done");
   matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
-  struct timeval tstart;
+  
   //INTELLI_INFO("I am mm");
   INTELLI_INFO("Start Streaming A rows and B cols");
   uint64_t startRow = 0;
@@ -116,18 +138,25 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
     tEXpectedArrival=myTsB[endRow-1]->arrivalTime;
   }
   uint64_t tDone = 0;
-  gettimeofday(&tstart, NULL);
+
+  ThreadPerf pef(-1);
+  pef.setPerfList();
+  pef.start();
+
+  auto tstart = std::chrono::high_resolution_clock::now();
+  // struct timeval tstart;
+  // gettimeofday(&tstart, NULL);
   uint64_t iterationCnt=0;
   torch::Tensor incomingA,incomingB,newArrivedB,oldArrivedA;
   uint64_t aBCols=0,lastABCols=0;
   while (startRow < aRows) {
-    tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    tNow = chronoElapsedTime(tstart);;
     //auto subA = A.slice(0, startRow, endRow);
     incomingA =A.slice(0, startRow, endRow);
     incomingB=B.slice(1,startRow,endRow);
     newArrivedB=B.slice(1,0,endRow);
     while (tNow < tEXpectedArrival) {
-      tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+      tNow = chronoElapsedTime(tstart);;
       //usleep(1);
     }
     INTELLI_INFO("batch of "+ to_string(startRow)+" to "+ to_string(endRow)+" are ready");
@@ -167,7 +196,8 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
     }
     iterationCnt++;
   }
-  tDone = INTELLI::UtilityFunctions::timeLastUs(tstart);
+  tDone = chronoElapsedTime(tstart);
+  pef.end();
   /**
    * @brief The latency calculation is different from one stream case here,
    * as older A will still be probed by newer B
@@ -175,9 +205,16 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
     for (size_t i = 0; i < aRows; i++) {
       myTs[i]->processedTime = tDone;
     }
+
+  metrics = pef.resultToConfigMap();
+
   INTELLI_INFO("Done in " + to_string(tDone) + "us");
-  throughput = aRows;
-  throughput = throughput * 1e6 / tDone;
+  throughput = aRows * 1e6 / tDone;
+  double throughputByElements = throughput * A.size(1);
+  double latency95 = getLatencyPercentage(0.95);
+  metrics->edit("throughput", throughput);
+  metrics->edit("throughputByElements", throughputByElements);
+  metrics->edit("95%latency", latency95);
   return *matC;
 }
 

@@ -35,7 +35,7 @@ void benchmarkPCA(std::string configName){
 
     uint64_t sketchDimension;
     sketchDimension = cfg->tryU64("sketchDimension", 1, true);
-    INTELLI_INFO("sketchDimension: " + sketchDimension);
+    INTELLI_INFO("sketchDimension: " + to_string(sketchDimension));
 
     // Step2. Test elapsedTime and error on AMM in streaming and parallelism
     // 2.1 Run AMM
@@ -43,7 +43,6 @@ void benchmarkPCA(std::string configName){
     Streamer streamer;
     torch::Tensor C = streamer.run(cfg, A, B, sketchDimension, "AMM");
     ConfigMapPtr resultCsv = streamer.getMetrics();
-
     // Step3. Test accuracy on PCA task
     // 3.1 elapsed time for other tasks in PCA except AMM
     INTELLI_INFO("Start SVD task..");
@@ -68,7 +67,7 @@ void benchmarkPCA(std::string configName){
     std::string ruName = "PCA";
     resultCsv->toFile(ruName + ".csv");
     INTELLI_INFO("Done. here is overall result");
-    std::cout << resultCsv->toString() << endl;
+    INTELLI_INFO(resultCsv->toString());
 }
 
 int main(int argc, char **argv) {

@@ -4,6 +4,9 @@
 
 #include <Parallelization/BlockPartitionRunner.h>
 #include <Utils/UtilityFunctions.h>
+#include "Utils/ThreadPerf.hpp"
+
+using namespace INTELLI;
 
 void AMMBench::BlockPartitionWorker::setConfig(INTELLI::ConfigMapPtr _cfg) {
     cfg = _cfg;
@@ -54,12 +57,15 @@ void AMMBench::BlockPartitionWorker::inlineMain() {
     /**
      * @brief 2. multiply sub-matrix of A
      */
-    gettimeofday(&tstart, NULL);
+    
     //torch::Tensor
     //torch::Tensor subC =  module.forward({subA, *matB, (long) sketchDimension}).toTensor();
     // Copy the results back to the output matrix C
     //matC->slice(0, startRow, endRow) = subC;
     subA = matA->slice(0, startRow, endRow);
+    ThreadPerf pef(coreBind);
+    pef.setPerfList();
+    pef.start();
     //irC=module.forward({subA, *matB, (long) sketchDimension}).toTensor();
     if (useCPP) {
         INTELLI_WARNING("USE CPP ALGO");
@@ -67,8 +73,8 @@ void AMMBench::BlockPartitionWorker::inlineMain() {
     } else {
         matC->slice(0, startRow, endRow) =module.forward({subA, *matB, (long) sketchDimension}).toTensor();
     }
-
-    gettimeofday(&tend, NULL);
+    pef.end();
+    pefResult = pef.resultToConfigMap();
     //std::cout<<subC;
 }
 
@@ -80,8 +86,12 @@ INTELLI::ConfigMapPtr AMMBench::BlockPartitionWorker::getBreakDown() {
 }
 
 uint64_t AMMBench::BlockPartitionWorker::getElapsedTime() {
-    return INTELLI::UtilityFunctions::timeLast(tstart, tend);
+    return pefResult->getU64("perfElapsedTime");
 }
+
+INTELLI::ConfigMapPtr AMMBench::BlockPartitionWorker::getPefResult(){
+    return pefResult;
+};
 
 void AMMBench::BlockPartitionRunner::setConfig(INTELLI::ConfigMapPtr _cfg) {
     cfg = _cfg;
@@ -111,7 +121,7 @@ void AMMBench::BlockPartitionRunner::createABC(torch::Tensor A, torch::Tensor B)
     }
 }
 
-torch::Tensor AMMBench::BlockPartitionRunner::parallelForward() {
+void AMMBench::BlockPartitionRunner::parallelForward() {
     for (uint64_t i = 0; i < threads; i++) {
         workers[i]->startThread();
     }
@@ -123,12 +133,13 @@ torch::Tensor AMMBench::BlockPartitionRunner::parallelForward() {
      {
        matC->slice(0, workers[i]->startRow, workers[i]->endRow) = workers[i]->irC;
      }*/
-    return *matC;
 }
 
 torch::Tensor AMMBench::BlockPartitionRunner::runAMM(torch::Tensor A, torch::Tensor B) {
     createABC(A, B);
-    return parallelForward();
+    parallelForward();
+    calculateMetrics();
+    return *matC;
 }
 
 uint64_t AMMBench::BlockPartitionRunner::getElapsedTime() {
@@ -148,6 +159,27 @@ void AMMBench::BlockPartitionRunner::appendThreadInfo(INTELLI::ConfigMapPtr ru) 
         std::string keyElapesedTime = "thread" + to_string(i) + "RunTime";
         ru->edit(keyElapesedTime, (uint64_t) workers[i]->getElapsedTime());
     }
+}
+
+void AMMBench::BlockPartitionRunner::calculateMetrics() {
+    ConfigMap allThreadPefResult;
+    ConfigMap singleThreadperResult;
+    for (uint64_t i = 0; i < threads; i++) {
+        workers[i]->getPefResult()->cloneInto(singleThreadperResult);
+        singleThreadperResult.addPrefixToKeys("thread" + to_string(i));
+        singleThreadperResult.cloneInto(allThreadPefResult);
+    }
+    metrics = std::make_shared<ConfigMap>(allThreadPefResult);
+    INTELLI_INFO(metrics->toString());
+    uint64_t elapsedTime = getElapsedTime(); // max thread time among all threads
+    metrics->edit("perfElapsedTime", elapsedTime);
+    double throughput = (matA->size(0) * 1e6) / metrics->getU64("perfElapsedTime");
+    metrics->edit("throughput", throughput);
+    metrics->edit("throughputByElements", (double) (throughput * matA->size(1)));
+}
+
+INTELLI::ConfigMapPtr AMMBench::BlockPartitionRunner::getMetrics() {
+    return metrics;
 }
 
 INTELLI::ConfigMapPtr AMMBench::BlockPartitionRunner::getBreakDown() {
