@@ -30,96 +30,96 @@ namespace AMMBench {
  * @note: default name tags
  * "MNIST": @ref MNISTMatrixLoader
  */
-    class MNISTMatrixLoader : public AbstractMatrixLoader {
-    protected:
-        torch::Tensor A, B;
-        torch::Tensor Sxx, Syy, Sxy;
-        torch::Tensor SxxNegativeHalf, SyyNegativeHalf, M;
-        torch::Tensor correlation;
+class MNISTMatrixLoader : public AbstractMatrixLoader {
+ protected:
+  torch::Tensor A, B;
+  torch::Tensor Sxx, Syy, Sxy;
+  torch::Tensor SxxNegativeHalf, SyyNegativeHalf, M;
+  torch::Tensor correlation;
 
-        /**
-         * @brief Inline logic of reading a config file
-         * @param cfg the config
-         */
-        void paraseConfig(INTELLI::ConfigMapPtr cfg);
+  /**
+   * @brief Inline logic of reading a config file
+   * @param cfg the config
+   */
+  void paraseConfig(INTELLI::ConfigMapPtr cfg);
 
-        /**
-         * @brief inline logic of generating A and B
-         */
-        void generateAB();
+  /**
+   * @brief inline logic of generating A and B
+   */
+  void generateAB();
 
-    public:
-        MNISTMatrixLoader() = default;
+ public:
+  MNISTMatrixLoader() = default;
 
-        ~MNISTMatrixLoader() = default;
+  ~MNISTMatrixLoader() = default;
 
-        /**
-           * @brief Set the GLOBAL config map related to this loader
-           * @param cfg The config map
-            * @return bool whether the config is successfully set
-            * @note
-           */
-        virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
+  /**
+     * @brief Set the GLOBAL config map related to this loader
+     * @param cfg The config map
+      * @return bool whether the config is successfully set
+      * @note
+     */
+  virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
 
-        /**
-           * @brief Calulate the correlation by mm, and generate tensor Sxx, Sxy, Syy, M, correlation
-           */
-        virtual void calculate_correlation();
+  /**
+     * @brief Calulate the correlation by mm, and generate tensor Sxx, Sxy, Syy, M, correlation
+     */
+  virtual void calculate_correlation();
 
-        /**
-         * @brief get the A matrix
-         * @return the generated A matrix
-         */
-        virtual torch::Tensor getA();
+  /**
+   * @brief get the A matrix
+   * @return the generated A matrix
+   */
+  virtual torch::Tensor getA();
 
-        /**
-        * @brief get the B matrix
-        * @return the generated B matrix
-        */
-        virtual torch::Tensor getB();
+  /**
+  * @brief get the B matrix
+  * @return the generated B matrix
+  */
+  virtual torch::Tensor getB();
 
-        /**
-        * @brief get the Sxx matrix
-        * @return the generated Sxx matrix by calling calculate_correlation()
-        */
-        virtual torch::Tensor getSxx();
+  /**
+  * @brief get the Sxx matrix
+  * @return the generated Sxx matrix by calling calculate_correlation()
+  */
+  virtual torch::Tensor getSxx();
 
-        /**
-        * @brief get the Sxyymatrix
-        * @return the generated Syy matrix by calling calculate_correlation()
-        */
-        virtual torch::Tensor getSyy();
+  /**
+  * @brief get the Sxyymatrix
+  * @return the generated Syy matrix by calling calculate_correlation()
+  */
+  virtual torch::Tensor getSyy();
 
-        /**
-        * @brief get the Sxy matrix
-        * @return the generated Sxy matrix by calling calculate_correlation()
-        */
-        virtual torch::Tensor getSxy();
+  /**
+  * @brief get the Sxy matrix
+  * @return the generated Sxy matrix by calling calculate_correlation()
+  */
+  virtual torch::Tensor getSxy();
 
-        /**
-        * @brief get the SxxNegativeHalf matrix
-        * @return the generated SxxNegativeHalf matrix by calling calculate_correlation()
-        */
-        virtual torch::Tensor getSxxNegativeHalf();
+  /**
+  * @brief get the SxxNegativeHalf matrix
+  * @return the generated SxxNegativeHalf matrix by calling calculate_correlation()
+  */
+  virtual torch::Tensor getSxxNegativeHalf();
 
-        /**
-        * @brief get the SyyNegativeHalf matrix
-        * @return the generated SyyNegativeHalf matrix by calling calculate_correlation()
-        */
-        virtual torch::Tensor getSyyNegativeHalf();
+  /**
+  * @brief get the SyyNegativeHalf matrix
+  * @return the generated SyyNegativeHalf matrix by calling calculate_correlation()
+  */
+  virtual torch::Tensor getSyyNegativeHalf();
 
-        /**
-        * @brief get the M matrix
-        * @return the generated M matrix by calling calculate_correlation()
-        */
-        virtual torch::Tensor getM();
+  /**
+  * @brief get the M matrix
+  * @return the generated M matrix by calling calculate_correlation()
+  */
+  virtual torch::Tensor getM();
 
-        /**
-        * @brief get the correlation value
-        * @return the generated correlation by calling calculate_correlation()
-        */
-        virtual torch::Tensor getCorrelation();
-    };
+  /**
+  * @brief get the correlation value
+  * @return the generated correlation by calling calculate_correlation()
+  */
+  virtual torch::Tensor getCorrelation();
+};
 
 /**
  * @ingroup AMMBENCH_MatrixLOADER_MNIST
@@ -127,7 +127,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref MNISTMatrixLoader
 
  */
-    typedef std::shared_ptr<class AMMBench::MNISTMatrixLoader> MNISTMatrixLoaderPtr;
+typedef std::shared_ptr<class AMMBench::MNISTMatrixLoader> MNISTMatrixLoaderPtr;
 /**
  * @ingroup AMMBENCH_MatrixLOADER_MNIST
  * @def newMNISTMatrixLoader

@@ -3,6 +3,13 @@
 An universal parallel approximate matrix multiplication (AMM) on multiple devices. This project is compatable with
 libtorch
 
+## Environment variables for compiling
+
+- AMMBENCH_OPENCL, this will enable opencl support in compiling
+    - you have to make sure your compiler knows where opencl is
+- AMMBENCH_PAPI, this will enable PAPI-based perf tools
+    - you need first cd to thirdparty and run installPAPI.sh to enable PAPI support
+
 ## Requires G++11
 
 The default version of gcc/g++ on ubuntu 22.04 (jammy) is good enough.
@@ -44,11 +51,12 @@ You may refer to https://pytorch.org/get-started/locally/ for mor details, follo
 
 ### (Optional) Cuda-based torch
 
-Note: 
+Note:
+
 - useCuda config is only valid when cuda is installed
 - this branch only allows blackbox call on torch-cuda functions!
-You may wish to install cuda for faster pre-training on models, following is a reference procedure. Please refer
-to https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#ubuntu
+  You may wish to install cuda for faster pre-training on models, following is a reference procedure. Please refer
+  to https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#ubuntu
 
 ```shell
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb

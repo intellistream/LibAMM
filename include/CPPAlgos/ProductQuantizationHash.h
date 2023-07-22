@@ -17,26 +17,26 @@ namespace AMMBench {
  * @brief The Product Quantization AMM class of c++ algos, using hash function to find matching prototypes
  *
  */
-    class ProductQuantizationHash : public AMMBench::AbstractCPPAlgo {
-    public:
-        ProductQuantizationHash() {
+class ProductQuantizationHash : public AMMBench::AbstractCPPAlgo {
+ public:
+  ProductQuantizationHash() {
 
-        }
+  }
 
-        ~ProductQuantizationHash() {
+  ~ProductQuantizationHash() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -44,7 +44,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref ProductQuantizationHashAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::ProductQuantizationHash> ProductQuantizationHashPtr;
+typedef std::shared_ptr<class AMMBench::ProductQuantizationHash> ProductQuantizationHashPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newProductQuantizationHashAlgo

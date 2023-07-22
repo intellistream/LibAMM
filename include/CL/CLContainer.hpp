@@ -70,7 +70,7 @@ class CLContainer {
   vector<uint64_t> boundArray;
 
   size_t hins = 0;
-  int workDimensions=1;
+  int workDimensions = 1;
   //read a file from filename and build program
   void buildProgramFromFile(const char *filename);
   string myName;
@@ -80,13 +80,12 @@ class CLContainer {
   //creat from source file with [kernelName],please delte the appendix "*.cl"
   CLContainer(cl_uint id, cl_device_type type, string kernelName);
   //creat from source file with [kernelName],please delte the appendix "*.cl"
-  CLContainer(cl_uint id, cl_device_type type, string kernelName,string clName);
+  CLContainer(cl_uint id, cl_device_type type, string kernelName, string clName);
   //creat from binary file, kernelName is assigned when build the program
   CLContainer(cl_uint id, cl_device_type type, string kernelName, char *filenameFull);
   ~CLContainer();
-  void setWorkDimension(int nd)
-  {
-    workDimensions=nd;
+  void setWorkDimension(int nd) {
+    workDimensions = nd;
   }
 
   //save the created program file

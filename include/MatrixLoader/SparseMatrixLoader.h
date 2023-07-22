@@ -39,57 +39,57 @@ namespace AMMBench {
  * @note: default name tags
  * "sparse": @ref SparseMatrixLoader
  */
-    class SparseMatrixLoader : public AbstractMatrixLoader {
-    protected:
-        torch::Tensor A, B;
-        uint64_t aRow, aCol, bCol, seed, aReduce, bReduce;
-        double aDensity, bDensity;
+class SparseMatrixLoader : public AbstractMatrixLoader {
+ protected:
+  torch::Tensor A, B;
+  uint64_t aRow, aCol, bCol, seed, aReduce, bReduce;
+  double aDensity, bDensity;
 
-        /**
-         * @brief Inline logic of generate the sparse matrix
-         * @param m the rows
-         * @param n the cols
-         * @param density the density in 0~1
-         * @param reduceRows the number of rows to be reduced
-         */
-        torch::Tensor genSparseMatrix(uint64_t m, uint64_t n, double density, uint64_t reduceRows);
+  /**
+   * @brief Inline logic of generate the sparse matrix
+   * @param m the rows
+   * @param n the cols
+   * @param density the density in 0~1
+   * @param reduceRows the number of rows to be reduced
+   */
+  torch::Tensor genSparseMatrix(uint64_t m, uint64_t n, double density, uint64_t reduceRows);
 
-        /**
-         * @brief Inline logic of reading a config file
-         * @param cfg the config
-         */
-        void paraseConfig(INTELLI::ConfigMapPtr cfg);
+  /**
+   * @brief Inline logic of reading a config file
+   * @param cfg the config
+   */
+  void paraseConfig(INTELLI::ConfigMapPtr cfg);
 
-        /**
-         * @brief inline logic of generating A and B
-         */
-        void generateAB();
+  /**
+   * @brief inline logic of generating A and B
+   */
+  void generateAB();
 
-    public:
-        SparseMatrixLoader() = default;
+ public:
+  SparseMatrixLoader() = default;
 
-        ~SparseMatrixLoader() = default;
+  ~SparseMatrixLoader() = default;
 
-        /**
-           * @brief Set the GLOBAL config map related to this loader
-           * @param cfg The config map
-            * @return bool whether the config is successfully set
-            * @note
-           */
-        virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
+  /**
+     * @brief Set the GLOBAL config map related to this loader
+     * @param cfg The config map
+      * @return bool whether the config is successfully set
+      * @note
+     */
+  virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
 
-        /**
-         * @brief get the A matrix
-         * @return the generated A matrix
-         */
-        virtual torch::Tensor getA();
+  /**
+   * @brief get the A matrix
+   * @return the generated A matrix
+   */
+  virtual torch::Tensor getA();
 
-        /**
-        * @brief get the B matrix
-        * @return the generated B matrix
-        */
-        virtual torch::Tensor getB();
-    };
+  /**
+  * @brief get the B matrix
+  * @return the generated B matrix
+  */
+  virtual torch::Tensor getB();
+};
 
 /**
  * @ingroup AMMBENCH_MatrixLOADER_Sparse
@@ -97,7 +97,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref SparseMatrixLoader
 
  */
-    typedef std::shared_ptr<class AMMBench::SparseMatrixLoader> SparseMatrixLoaderPtr;
+typedef std::shared_ptr<class AMMBench::SparseMatrixLoader> SparseMatrixLoaderPtr;
 /**
  * @ingroup AMMBENCH_MatrixLOADER_Sparse
  * @def newSparseMatrixLoader

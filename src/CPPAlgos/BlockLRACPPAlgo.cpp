@@ -8,13 +8,13 @@
 #include <AMMBench.h>
 
 namespace AMMBench {
-  void AMMBench::BlockLRACPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
-    ARankRatio = cfg->tryDouble("algoARankRatio", 0.5, true);
-    BRankRatio = cfg->tryDouble("algoBRankRatio", 0.5, true);
-    }
+void AMMBench::BlockLRACPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
+  ARankRatio = cfg->tryDouble("algoARankRatio", 0.5, true);
+  BRankRatio = cfg->tryDouble("algoBRankRatio", 0.5, true);
+}
 
-  torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize) {
-  
+torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize) {
+
   // Input size and block size
   uint64_t m = A.size(0);
   uint64_t k = A.size(1);
@@ -22,8 +22,9 @@ namespace AMMBench {
 
   uint64_t gcdOfmkn = std::gcd(std::gcd(m, k), n);
   blockSize = std::min(gcdOfmkn, blockSize);
-  if (blockSize==1){
-    INTELLI_ERROR("m=" + to_string(m) + ", k=" + to_string(k) + ", n=" + to_string(n) + ", gcd(m, k, n)=1, BlockLRA is not usable anymore");
+  if (blockSize == 1) {
+    INTELLI_ERROR("m=" + to_string(m) + ", k=" + to_string(k) + ", n=" + to_string(n)
+                      + ", gcd(m, k, n)=1, BlockLRA is not usable anymore");
     return torch::zeros({(long) m, (long) n});
   }
   INTELLI_INFO("BlockLRA with adjusted blockSize: " + to_string(blockSize));
@@ -31,13 +32,15 @@ namespace AMMBench {
   // for each block, calculate LRA
   torch::Tensor finalLRA = torch::zeros({(long) m, (long) n});
 
-  for (uint64_t I=0; I<m/blockSize; ++I){
-    for (uint64_t J=0; J<n/blockSize; ++J){
-      torch::Tensor subFinalLRA = torch::zeros({(long)blockSize, (long)blockSize});
-      for (uint64_t K=0; K<k/blockSize; ++K){
+  for (uint64_t I = 0; I < m / blockSize; ++I) {
+    for (uint64_t J = 0; J < n / blockSize; ++J) {
+      torch::Tensor subFinalLRA = torch::zeros({(long) blockSize, (long) blockSize});
+      for (uint64_t K = 0; K < k / blockSize; ++K) {
         // get sub matrix
-        torch::Tensor AIK = A.index({torch::indexing::Slice(I*blockSize, (I+1)*blockSize), torch::indexing::Slice(K*blockSize, (K+1)*blockSize)});
-        torch::Tensor BKJ = B.index({torch::indexing::Slice(K*blockSize, (K+1)*blockSize), torch::indexing::Slice(J*blockSize, (J+1)*blockSize)});
+        torch::Tensor AIK = A.index({torch::indexing::Slice(I * blockSize, (I + 1) * blockSize),
+                                     torch::indexing::Slice(K * blockSize, (K + 1) * blockSize)});
+        torch::Tensor BKJ = B.index({torch::indexing::Slice(K * blockSize, (K + 1) * blockSize),
+                                     torch::indexing::Slice(J * blockSize, (J + 1) * blockSize)});
         // SVD
         torch::Tensor UA;
         torch::Tensor SA;
@@ -48,16 +51,21 @@ namespace AMMBench {
         std::tie(UA, SA, VhA) = torch::linalg::svd(AIK, false, c10::nullopt);
         std::tie(UB, SB, VhB) = torch::linalg::svd(BKJ, false, c10::nullopt);
         // LRA
-        torch::Tensor UATruncated = UA.narrow(1,0,ARankRatio*blockSize);
-        torch::Tensor SATruncated = torch::diag(SA.narrow(0,0,ARankRatio*blockSize));
-        torch::Tensor VhATruncated = VhA.narrow(0,0,ARankRatio*blockSize);
-        torch::Tensor UBTruncated = UB.narrow(1,0,BRankRatio*blockSize);
-        torch::Tensor SBTruncated = torch::diag(SB.narrow(0,0,BRankRatio*blockSize));
-        torch::Tensor VhBTruncated = VhB.narrow(0,0,BRankRatio*blockSize);
+        torch::Tensor UATruncated = UA.narrow(1, 0, ARankRatio * blockSize);
+        torch::Tensor SATruncated = torch::diag(SA.narrow(0, 0, ARankRatio * blockSize));
+        torch::Tensor VhATruncated = VhA.narrow(0, 0, ARankRatio * blockSize);
+        torch::Tensor UBTruncated = UB.narrow(1, 0, BRankRatio * blockSize);
+        torch::Tensor SBTruncated = torch::diag(SB.narrow(0, 0, BRankRatio * blockSize));
+        torch::Tensor VhBTruncated = VhB.narrow(0, 0, BRankRatio * blockSize);
         // MM
-        subFinalLRA += torch::matmul(torch::matmul(UATruncated, torch::matmul(torch::matmul(SATruncated, torch::matmul(VhATruncated,UBTruncated)), SBTruncated)), VhBTruncated);
+        subFinalLRA += torch::matmul(torch::matmul(UATruncated,
+                                                   torch::matmul(torch::matmul(SATruncated,
+                                                                               torch::matmul(VhATruncated,
+                                                                                             UBTruncated)),
+                                                                 SBTruncated)), VhBTruncated);
       }
-    finalLRA.index_put_({torch::indexing::Slice(I*blockSize, (I+1)*blockSize), torch::indexing::Slice(J*blockSize, (J+1)*blockSize)}, subFinalLRA);
+      finalLRA.index_put_({torch::indexing::Slice(I * blockSize, (I + 1) * blockSize),
+                           torch::indexing::Slice(J * blockSize, (J + 1) * blockSize)}, subFinalLRA);
     }
   }
 
@@ -67,7 +75,7 @@ namespace AMMBench {
 
 
 // int main() {
-  
+
 //   torch::manual_seed(114514);
 //   AMMBench::BlockLRACPPAlgo wcr;
 //   auto A = torch::rand({500, 400});
