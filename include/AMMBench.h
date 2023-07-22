@@ -41,6 +41,9 @@
    * - staticPower (Double) set this to >0 if you want to manually config the static power of the device
    * - meterAddress (String) set this to the file system path of the meter, if it is different from the meter's default
    * - isStreaming (U64) whether or not use streaming, default 0
+   * @note Additional tags for hardware counters
+   * - usePAPI (U64) whether or not use PAPI if papi exists, default 1
+   *        - if PAPI is used, please refer to class @ref ThreadPerfPAPI, otherwise, see class @ref ThreadPerf
    * @note this will only be run under single thread now, and perf or energy meter is not avaliable when setting to 1
    * @note by default, we only make A matrix streaming, if also want yo streaming B, please also set streamingTwoMatrixes to 1
    * - streamingTwoMatrixes (U64) whether make B matrix also streaming, default 0, will only affect when isStreaming=1
@@ -157,7 +160,6 @@
 #include <CPPAlgos/FastJLTCPPAlgo.h>
 #include <CPPAlgos/RIPCPPAlgo.h>
 #include <CPPAlgos/BlockLRACPPAlgo.h>
-
 
 #include <CPPAlgos/CLMMCPPAlgo.h>
 

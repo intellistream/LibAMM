@@ -18,33 +18,33 @@ namespace AMMBench {
  * @note parameters
  * - algoBeta Double, the beta parameters in this algo, default 1.0
  */
-    class BetaCoOFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
-    protected:
-        float algoBeta = 1.0;
-    public:
-        BetaCoOFDCPPAlgo() {
+class BetaCoOFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
+ protected:
+  float algoBeta = 1.0;
+ public:
+  BetaCoOFDCPPAlgo() {
 
-        }
+  }
 
-        ~BetaCoOFDCPPAlgo() {
+  ~BetaCoOFDCPPAlgo() {
 
-        }
+  }
 
-        /**
-         * @brief set the alo-specfic config related to one algorithm
-         */
-        virtual void setConfig(INTELLI::ConfigMapPtr cfg);
+  /**
+   * @brief set the alo-specfic config related to one algorithm
+   */
+  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -52,7 +52,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref BetaCoOFDCppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::BetaCoOFDCPPAlgo> BetaCoOFDCPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::BetaCoOFDCPPAlgo> BetaCoOFDCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newBetaCoOFDCppAlgo

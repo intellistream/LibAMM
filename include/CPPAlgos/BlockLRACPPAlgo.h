@@ -18,50 +18,50 @@ namespace AMMBench {
  * @brief The block SVD LRA class of c++ algos
  *
  */
-  class BlockLRACPPAlgo : public AMMBench::AbstractCPPAlgo {
+class BlockLRACPPAlgo : public AMMBench::AbstractCPPAlgo {
 
-  protected:
-    float ARankRatio = 0.5;
-    float BRankRatio = 0.5;
+ protected:
+  float ARankRatio = 0.5;
+  float BRankRatio = 0.5;
 
-  public:
-    BlockLRACPPAlgo() {
+ public:
+  BlockLRACPPAlgo() {
 
-    }
-    
-    ~BlockLRACPPAlgo() {
+  }
 
-    }
-    
-    /**
-     * @brief set the alo-specfic config related to one algorithm
-     * @param ARankRatio LRA rank ratio over A complete SVD rank
-     * @param BRankRatio LRA rank ratio over B complete SVD rank
-     */
-    virtual void setConfig(INTELLI::ConfigMapPtr cfg);
-    
-    /**
-     * @brief Implementation of paper [IEEE-HPCS 2017] Accelerating Matrix Multiplication in Deep Learning by Using Low-Rank Approximation https://ieeexplore.ieee.org/abstract/document/8035076
-     * @param A the A matrix
-     * @param B the B matrix
-     * @param blockSize the size of block to do SVD
-     * @return the output c matrix
-     */
-    virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize);
+  ~BlockLRACPPAlgo() {
 
-  };
+  }
+
   /**
+   * @brief set the alo-specfic config related to one algorithm
+   * @param ARankRatio LRA rank ratio over A complete SVD rank
+   * @param BRankRatio LRA rank ratio over B complete SVD rank
+   */
+  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
+
+  /**
+   * @brief Implementation of paper [IEEE-HPCS 2017] Accelerating Matrix Multiplication in Deep Learning by Using Low-Rank Approximation https://ieeexplore.ieee.org/abstract/document/8035076
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param blockSize the size of block to do SVD
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize);
+
+};
+/**
+ * @ingroup AMMBENCH_CPPAlgos
+ * @typedef AbstractMatrixCPPAlgoPtr
+ * @brief The class to describe a shared pointer to @ref BlockLRACPPAlgo
+
+*/
+typedef std::shared_ptr<class AMMBench::BlockLRACPPAlgo> BlockLRACPPAlgoPtr;
+/**
    * @ingroup AMMBENCH_CPPAlgos
-   * @typedef AbstractMatrixCPPAlgoPtr
-   * @brief The class to describe a shared pointer to @ref BlockLRACPPAlgo
-
-  */
-  typedef std::shared_ptr<class AMMBench::BlockLRACPPAlgo> BlockLRACPPAlgoPtr;
-  /**
-     * @ingroup AMMBENCH_CPPAlgos
-     * @def newBlockLRACPPAlgo
-     * @brief (Macro) To creat a new @ref  BlockLRACPPAlgounder shared pointer.
-     */
+   * @def newBlockLRACPPAlgo
+   * @brief (Macro) To creat a new @ref  BlockLRACPPAlgounder shared pointer.
+   */
 #define newBlockLRACPPAlgo std::make_shared<AMMBench::BlockLRACPPAlgo>
 }
 /**

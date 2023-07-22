@@ -25,35 +25,35 @@ namespace AMMBench {
  * - mm @ref AbstractCPPAlgo (default matmul)
  * - crs @ref CRSCPPAlgo (the column-row-sampling, crs)
 */
-    class CPPAlgoTable {
-    protected:
-        std::map<std::string, AMMBench::AbstractCPPAlgoPtr> algoMap;
-    public:
-        CPPAlgoTable();
+class CPPAlgoTable {
+ protected:
+  std::map<std::string, AMMBench::AbstractCPPAlgoPtr> algoMap;
+ public:
+  CPPAlgoTable();
 
-        ~CPPAlgoTable() {}
+  ~CPPAlgoTable() {}
 
-        /**
-         * @brief To register a new ALGO
-         * @param anew The new algo
-         * @param tag THe name tag
-         */
-        void registerNewCppAlgo(AMMBench::AbstractCPPAlgoPtr anew, std::string tag) {
-            algoMap[tag] = anew;
-        }
+  /**
+   * @brief To register a new ALGO
+   * @param anew The new algo
+   * @param tag THe name tag
+   */
+  void registerNewCppAlgo(AMMBench::AbstractCPPAlgoPtr anew, std::string tag) {
+    algoMap[tag] = anew;
+  }
 
-        /**
-         * @brief find a dataloader in the table according to its name
-         * @param name The nameTag of loader
-         * @return The AbstractCppAlgoPtr, nullptr if not found
-         */
-        AMMBench::AbstractCPPAlgoPtr findCppAlgo(std::string name) {
-            if (algoMap.count(name)) {
-                return algoMap[name];
-            }
-            return nullptr;
-        }
-    };
+  /**
+   * @brief find a dataloader in the table according to its name
+   * @param name The nameTag of loader
+   * @return The AbstractCppAlgoPtr, nullptr if not found
+   */
+  AMMBench::AbstractCPPAlgoPtr findCppAlgo(std::string name) {
+    if (algoMap.count(name)) {
+      return algoMap[name];
+    }
+    return nullptr;
+  }
+};
 /**
  * @}
  */

@@ -36,48 +36,48 @@ namespace AMMBench {
  * @note: default name tags
  * "random": @ref BetaMatrixLoader
  */
-    class BetaMatrixLoader : public AbstractMatrixLoader {
-    protected:
-        torch::Tensor A, B;
-        uint64_t aRow, aCol, bCol, seed;
-        double a, b;
+class BetaMatrixLoader : public AbstractMatrixLoader {
+ protected:
+  torch::Tensor A, B;
+  uint64_t aRow, aCol, bCol, seed;
+  double a, b;
 
-        /**
-         * @brief Inline logic of reading a config file
-         * @param cfg the config
-         */
-        void paraseConfig(INTELLI::ConfigMapPtr cfg);
+  /**
+   * @brief Inline logic of reading a config file
+   * @param cfg the config
+   */
+  void paraseConfig(INTELLI::ConfigMapPtr cfg);
 
-        /**
-         * @brief inline logic of generating A and B
-         */
-        void generateAB();
+  /**
+   * @brief inline logic of generating A and B
+   */
+  void generateAB();
 
-    public:
-        BetaMatrixLoader() = default;
+ public:
+  BetaMatrixLoader() = default;
 
-        ~BetaMatrixLoader() = default;
+  ~BetaMatrixLoader() = default;
 
-        /**
-           * @brief Set the GLOBAL config map related to this loader
-           * @param cfg The config map
-            * @return bool whether the config is successfully set
-            * @note
-           */
-        virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
+  /**
+     * @brief Set the GLOBAL config map related to this loader
+     * @param cfg The config map
+      * @return bool whether the config is successfully set
+      * @note
+     */
+  virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
 
-        /**
-         * @brief get the A matrix
-         * @return the generated A matrix
-         */
-        virtual torch::Tensor getA();
+  /**
+   * @brief get the A matrix
+   * @return the generated A matrix
+   */
+  virtual torch::Tensor getA();
 
-        /**
-        * @brief get the B matrix
-        * @return the generated B matrix
-        */
-        virtual torch::Tensor getB();
-    };
+  /**
+  * @brief get the B matrix
+  * @return the generated B matrix
+  */
+  virtual torch::Tensor getB();
+};
 
 /**
  * @ingroup AMMBENCH_MatrixLOADER_Beta
@@ -85,7 +85,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref BetaMatrixLoader
 
  */
-    typedef std::shared_ptr<class AMMBench::BetaMatrixLoader> BetaMatrixLoaderPtr;
+typedef std::shared_ptr<class AMMBench::BetaMatrixLoader> BetaMatrixLoaderPtr;
 /**
  * @ingroup AMMBENCH_MatrixLOADER_Beta
  * @def newBetaMatrixLoader
