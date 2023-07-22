@@ -25,7 +25,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Wno-ignored-qualifiers -Wno-sign-compare -O3")
 #set(CMAKE_CUDA_STANDARD 11)
 #set(CMAKE_CUDA_FLAGS "-std=c++11")
 
-#gcc options
+#OPTIONAL OPENCL
 if (NOT DEFINED ENV{AMMBENCH_CL})
     message(STATUS "I will NOT include opencl support ")
     set(AMMBENCH_CL 0)
@@ -38,6 +38,29 @@ configure_file (
         "${PROJECT_SOURCE_DIR}/include/opencl_config.h.in"
         "${PROJECT_BINARY_DIR}/include/opencl_config.h"
 )
+# OPTIONAL PAPI
+if (NOT DEFINED ENV{AMMBENCH_PAPI})
+    message(STATUS "I will NOT use PAPI ")
+    set(AMMBENCH_PAPI 0)
+else ()
+    set(AMMBENCH_PAPI 1)
+    message(STATUS "I will try to use PAPI for HW counters, pls make sure your arch supports it")
+    if (DEFINED ENV{REBUILDPAPI})
+        set (PAPISCRIPTPATH ../thirdparty)
+        execute_process(COMMAND bash ${PAPISCRIPTPATH}/makeClean.sh WORKING_DIRECTORY ${PAPISCRIPTPATH})
+        execute_process(COMMAND bash ${PAPISCRIPTPATH}/installPAPI.sh WORKING_DIRECTORY ${PAPISCRIPTPATH})
+        message(STATUS "I have rebuilt PAPI" )
+    endif()
+    find_library (libPAPI libpapi.a ./thirdparty/papi_build/lib)
+    message(STATUS "papiLibs= " ${libPAPI} )
+    set(LIBRARIES ${LIBRARIES} ${libPAPI})
+
+endif ()
+configure_file (
+        "${PROJECT_SOURCE_DIR}/include/papi_config.h.in"
+        "${PROJECT_BINARY_DIR}/include/papi_config.h"
+)
+
 #set(CMAKE_CUDA_ARCHITECTURES 55)
 # Set LOGGING_LEVEL Flag
 if (IntelliStream_LOGGING_LEVEL)
@@ -79,12 +102,12 @@ add_subdirectory(src)
 # Add Library
 get_sources(IntelliStream_SOURCE_FILES)
 get_headers(IntelliStream_HEADER_FILES)
-add_library(IntelliStream SHARED ${IntelliStream_SOURCE_FILES} ${IntelliStream_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR} )
+add_library(IntelliStream SHARED ${IntelliStream_SOURCE_FILES} ${IntelliStream_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR} include/Utils/ThreadPerfPAPI.hpp)
 set_property(TARGET IntelliStream PROPERTY CXX_STANDARD 20)
 
 target_include_directories(IntelliStream PUBLIC "include")
 target_include_directories(IntelliStream PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-
+target_include_directories  (IntelliStream PUBLIC "thirdparty/papi_build/include")
 target_link_libraries(IntelliStream PUBLIC ${LIBRARIES})
 #add_subdirectory(test)
 #Add benchmarks with command

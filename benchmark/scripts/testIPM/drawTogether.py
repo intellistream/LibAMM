@@ -62,8 +62,8 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     editConfig(configTemplate, exePath + configFname, scanTag, singleValue)
     # prepare new file
     # run
-    #os.system('export OMP_NUM_THREADS=1')
-    os.system("export OMP_NUM_THREADS=1 &&"+"cd " + exePath + "&& sudo ./benchmark " + configFname)
+    # os.system('export OMP_NUM_THREADS=1')
+    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmark " + configFname)
     # copy result
     os.system("sudo rm -rf " + resultPath + "/" + str(singleValue))
     os.system("sudo mkdir " + resultPath + "/" + str(singleValue))
@@ -83,7 +83,7 @@ def readResultSingle(singleValue, resultPath):
     froError = readConfig(resultFname, "froError")
     instructions = readConfig(resultFname, "instructions")
     errorBoundRatio = readConfig(resultFname, "errorBoundRatio")
-    return elapsedTime, cacheMiss, cacheRefs, froError, errorBoundRatio,instructions
+    return elapsedTime, cacheMiss, cacheRefs, froError, errorBoundRatio, instructions
 
 
 def cleanPath(path):
@@ -97,9 +97,9 @@ def readResultVector(singleValueVec, resultPath):
     cacheRefVec = []
     froErrorVec = []
     errorBoundRatioVec = []
-    instructionVec=[]
+    instructionVec = []
     for i in singleValueVec:
-        elapsedTime, cacheMiss, cacheRefs, froError, errorBoundRatio,ins = readResultSingle(i, resultPath)
+        elapsedTime, cacheMiss, cacheRefs, froError, errorBoundRatio, ins = readResultSingle(i, resultPath)
         elapseTimeVec.append(float(elapsedTime) / 1000.0)
         cacheMissVec.append(float(cacheMiss))
         cacheRefVec.append(float(cacheRefs))
@@ -107,7 +107,7 @@ def readResultVector(singleValueVec, resultPath):
         errorBoundRatioVec.append(float(errorBoundRatio))
         instructionVec.append(float(ins))
     return np.array(elapseTimeVec), np.array(cacheMissVec), np.array(cacheRefVec), np.array(froErrorVec), np.array(
-        errorBoundRatioVec),np.array(instructionVec)
+        errorBoundRatioVec), np.array(instructionVec)
 
 
 def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec, reRun=1):
@@ -117,15 +117,15 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
     periodAll = []
     froAll = []
     errorBoundRatioAll = []
-    insAll=[]
-    memAll=[]
+    insAll = []
+    memAll = []
     for i in range(len(csvTemplates)):
         resultPath = commonPathBase + resultPaths[i]
         if (reRun == 1):
             os.system("sudo rm -rf " + resultPath)
             os.system("sudo mkdir " + resultPath)
             runScanVector(exeSpace, periodVec, resultPath, csvTemplates[i])
-        elapsedTime, cacheMiss, cacheRef, fro, eb,insv = readResultVector(periodVec, resultPath)
+        elapsedTime, cacheMiss, cacheRef, fro, eb, insv = readResultVector(periodVec, resultPath)
         elapsedTimeAll.append(elapsedTime)
         cacheMissAll.append(cacheMiss)
         cacheRefAll.append(cacheRef)
@@ -136,18 +136,19 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
         insAll.append(insv)
         memAll.append(cacheRef)
         # periodAll.append(periodVec)
-    return np.array(elapsedTimeAll), cacheMissRateAll, periodAll, np.array(froAll), np.array(errorBoundRatioAll),np.array(insAll),np.array(memAll)
+    return np.array(elapsedTimeAll), cacheMissRateAll, periodAll, np.array(froAll), np.array(
+        errorBoundRatioAll), np.array(insAll), np.array(memAll)
 
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "IPM/"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag + "CPPIPM"
-    #methodTags = ["Co-AMM", "BCo-AMM", "Count-sketch", "Tug-of-War", "SMP-PCA", "MM"]
-    valueVec = [100,200,500,1000,2000,5000]
+    # methodTags = ["Co-AMM", "BCo-AMM", "Count-sketch", "Tug-of-War", "SMP-PCA", "MM"]
+    valueVec = [100, 200, 500, 1000, 2000, 5000]
     # run
     reRun = 0
-    
+
     if (len(sys.argv) < 2):
         os.system("mkdir ../../results")
         os.system("mkdir ../../figures")
@@ -157,14 +158,15 @@ def main():
         reRun = 1
     # sampling
     # resultPaths = ["crs", "bcrs", "ews", "mm","mm-cpp","crs-cpp"]
-    resultPaths = ["crs", "smp-pca","cofd", "mm"]
-    csvTemplates = ["config_CPPCRS.csv", "config_CPPSMPPCA.csv","config_CPPCOFD.csv","config_CPPMM.csv"]
-    methodTags = ["CRS","SMP-PCA", "COFD","MM"]
+    resultPaths = ["crs", "smp-pca", "cofd", "mm"]
+    csvTemplates = ["config_CPPCRS.csv", "config_CPPSMPPCA.csv", "config_CPPCOFD.csv", "config_CPPMM.csv"]
+    methodTags = ["CRS", "SMP-PCA", "COFD", "MM"]
     # csvTemplates = ["config_CRS.csv", "config_BerCRS.csv", "config_EWS.csv", "config_RAWMM.csv","config_CPPMM.csv","config_CPPCRS.csv"]
     # methodTags = ["CRS", "Ber-CRS", "EWS",, "MM","MM_CPP","CRS_CPP"]
-    elapsedTimeAll, cacheMissAll, periodAll, fro, eb,ins,mem = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates,
-                                                                     valueVec,
-                                                                     reRun)
+    elapsedTimeAll, cacheMissAll, periodAll, fro, eb, ins, mem = compareMethod(exeSpace, commonBase, resultPaths,
+                                                                               csvTemplates,
+                                                                               valueVec,
+                                                                               reRun)
     groupLine.DrawFigureYnormal(periodAll,
                                 ins,
                                 methodTags,
@@ -178,17 +180,18 @@ def main():
                                 + "sampling_cpp_mem",
                                 True)
     groupLine.DrawFigureYnormal(periodAll,
-                                ins/mem,
+                                ins / mem,
                                 methodTags,
                                 "#A's row", "ipm", 0, 100, figPath + "/" + scanTag
                                 + "sampling_cpp_ipm",
-                                True) 
+                                True)
     resultPaths = ["crs", "smp-pca", "mm"]
-    csvTemplates = ["config_CPPCRS.csv", "config_CPPSMPPCA.csv","config_CPPMM.csv"]
-    methodTags = ["CRS","SMP-PCA", "MM"]
-    elapsedTimeAll, cacheMissAll, periodAll, fro, eb,ins,mem = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates,
-                                                                     valueVec,
-                                                                     reRun)
+    csvTemplates = ["config_CPPCRS.csv", "config_CPPSMPPCA.csv", "config_CPPMM.csv"]
+    methodTags = ["CRS", "SMP-PCA", "MM"]
+    elapsedTimeAll, cacheMissAll, periodAll, fro, eb, ins, mem = compareMethod(exeSpace, commonBase, resultPaths,
+                                                                               csvTemplates,
+                                                                               valueVec,
+                                                                               reRun)
     groupLine.DrawFigureYnormal(periodAll,
                                 ins,
                                 methodTags,
@@ -202,11 +205,11 @@ def main():
                                 + "nocdfd_cpp_mem",
                                 True)
     groupLine.DrawFigureYnormal(periodAll,
-                                ins/mem,
+                                ins / mem,
                                 methodTags,
                                 "#A's row", "ipm", 0, 100, figPath + "/" + scanTag
                                 + "nocofd_cpp_ipm",
-                                True) 
+                                True)
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,compVec,"95% Latency (ms)","Completeness","ms","",figPath+"wm_omp")

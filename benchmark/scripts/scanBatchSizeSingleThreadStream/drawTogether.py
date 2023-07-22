@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#I will streaming A only!!!
+# I will streaming A only!!!
 import csv
 import numpy as np
 import accuBar as accuBar
@@ -81,7 +81,7 @@ def readResultSingle(singleValue, resultPath):
     lat95 = readConfig(resultFname, "95%latency")
     froError = readConfig(resultFname, "froError")
     errorBoundRatio = readConfig(resultFname, "errorBoundRatio")
-    return throughput,lat95, froError, errorBoundRatio
+    return throughput, lat95, froError, errorBoundRatio
 
 
 def cleanPath(path):
@@ -91,13 +91,13 @@ def cleanPath(path):
 
 def readResultVector(singleValueVec, resultPath):
     thrVec = []
-    lat95Vec= []
+    lat95Vec = []
     froErrorVec = []
     errorBoundRatioVec = []
     for i in singleValueVec:
-        thr,lat95,froError, errorBoundRatio = readResultSingle(i, resultPath)
+        thr, lat95, froError, errorBoundRatio = readResultSingle(i, resultPath)
         thrVec.append(float(thr))
-        lat95Vec.append(float(lat95)/1000.0)
+        lat95Vec.append(float(lat95) / 1000.0)
         froErrorVec.append(float(froError))
         errorBoundRatioVec.append(float(errorBoundRatio))
     return np.array(thrVec), np.array(lat95Vec), np.array(froErrorVec), np.array(
@@ -116,26 +116,26 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
             os.system("sudo rm -rf " + resultPath)
             os.system("sudo mkdir " + resultPath)
             runScanVector(exeSpace, periodVec, resultPath, csvTemplates[i])
-        thr,lat95,fro, eb = readResultVector(periodVec, resultPath)
+        thr, lat95, fro, eb = readResultVector(periodVec, resultPath)
         thrAll.append(thr)
         lat95All.append(lat95)
-      
+
         periodAll.append(periodVec)
-    
+
         froAll.append(fro)
         errorBoundRatioAll.append(eb)
         # periodAll.append(periodVec)
-    return np.array(thrAll),np.array(lat95All), periodAll, np.array(froAll), np.array(errorBoundRatioAll)
+    return np.array(thrAll), np.array(lat95All), periodAll, np.array(froAll), np.array(errorBoundRatioAll)
 
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag + "CPP"
-    methodTags = ["CRS","MM","SMP-PCA",  "CS"]
-    resultPaths = ["CRS","MM","SMP-PCA",  "CS"]
-    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv","config_CPPSMPPCA.csv",  "config_CPPCOUNTERSKETCH.csv"]
-    valueVec = [10,20,50,100,250,500,1000]
+    methodTags = ["CRS", "MM", "SMP-PCA", "CS"]
+    resultPaths = ["CRS", "MM", "SMP-PCA", "CS"]
+    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv", "config_CPPSMPPCA.csv", "config_CPPCOUNTERSKETCH.csv"]
+    valueVec = [10, 20, 50, 100, 250, 500, 1000]
     valueVecDisp = np.array(valueVec)
     # run
     reRun = 0
@@ -148,22 +148,22 @@ def main():
         reRun = 1
     # skech
     thrAll, lat95All, periodAll, fro, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
-                                                            reRun)
-    groupLine.DrawFigureYnormal(periodAll, thrAll/1000.0,
-                         methodTags,
-                         "batch size (#rows)", "throughput (K elements/s)", 0, 1,
-                         figPath + "/" + scanTag + "stream_cpp_thr",
-                         True)
+                                                         reRun)
+    groupLine.DrawFigureYnormal(periodAll, thrAll / 1000.0,
+                                methodTags,
+                                "batch size (#rows)", "throughput (K elements/s)", 0, 1,
+                                figPath + "/" + scanTag + "stream_cpp_thr",
+                                True)
     groupLine.DrawFigure(periodAll, lat95All,
                          methodTags,
                          "batch size (#rows)", "95% latency (ms)", 0, 1,
                          figPath + "/" + scanTag + "stream_cpp_lat95",
                          True)
-    groupLine.DrawFigureYnormal(periodAll, fro*100.0,
-                         methodTags,
-                         "batch size (#rows)", "fro error (%)", 0, 1,
-                         figPath + "/" + scanTag + "stream_cpp_fro",
-                         True)
+    groupLine.DrawFigureYnormal(periodAll, fro * 100.0,
+                                methodTags,
+                                "batch size (#rows)", "fro error (%)", 0, 1,
+                                figPath + "/" + scanTag + "stream_cpp_fro",
+                                True)
 
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")

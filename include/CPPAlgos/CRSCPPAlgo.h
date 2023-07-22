@@ -18,26 +18,26 @@ namespace AMMBench {
  * @brief The column row sampling (CRS) class of c++ algos
  *
  */
-    class CRSCPPAlgo : public AMMBench::AbstractCPPAlgo {
-    public:
-        CRSCPPAlgo() {
+class CRSCPPAlgo : public AMMBench::AbstractCPPAlgo {
+ public:
+  CRSCPPAlgo() {
 
-        }
+  }
 
-        ~CRSCPPAlgo() {
+  ~CRSCPPAlgo() {
 
-        }
+  }
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -45,7 +45,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref CRSCppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::CRSCPPAlgo> CRSCPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::CRSCPPAlgo> CRSCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newCRSCppAlgo

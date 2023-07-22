@@ -57,7 +57,7 @@ TEST_CASE("Test the cl", "[short]")
   auto B = torch::rand({(long) 4, (long) 4});
   AMMBench::CLMMCPPAlgo cl;
   cl.setConfig(cfg);
-  auto C1 =cl.amm(A,B,1);
+  auto C1 = cl.amm(A, B, 1);
   auto C2 = torch::matmul(A, B);
   std::cout << "parallel MM" << endl;
   std::cout << C1 << std::endl;
@@ -73,13 +73,13 @@ TEST_CASE("Test the cl-int8", "[short]")
   int a = 0;
   ConfigMapPtr cfg = newConfigMap();
   cfg->edit("ptFile", "torchscripts/RAWMM.pt");
-  cfg->edit("clFile","CL/CLINT8.cl");
+  cfg->edit("clFile", "CL/CLINT8.cl");
   torch::manual_seed(114514);
   auto A = torch::rand({(long) 4, (long) 4});
   auto B = torch::rand({(long) 4, (long) 4});
   AMMBench::CLMMCPPAlgo cl;
   cl.setConfig(cfg);
-  auto C1 =cl.amm(A,B,1);
+  auto C1 = cl.amm(A, B, 1);
   auto C2 = torch::matmul(A, B);
   std::cout << "parallel MM" << endl;
   std::cout << C1 << std::endl;

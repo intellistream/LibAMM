@@ -19,36 +19,36 @@ namespace AMMBench {
  * @note parameters
  * - algoDelta Double, the delta parameter in this algo, default 0.02
  */
-    class TugOfWarCPPAlgo : public AMMBench::AbstractCPPAlgo {
-        double algoDelta = 0.02;
+class TugOfWarCPPAlgo : public AMMBench::AbstractCPPAlgo {
+  double algoDelta = 0.02;
 
-    public:
-        TugOfWarCPPAlgo() {
+ public:
+  TugOfWarCPPAlgo() {
 
-        }
+  }
 
-        ~TugOfWarCPPAlgo() {
+  ~TugOfWarCPPAlgo() {
 
-        }
+  }
 
-        /**
-       * @brief set the algo-specfic config related to one algorithm
-       */
-        virtual void setConfig(INTELLI::ConfigMapPtr cfg);
+  /**
+ * @brief set the algo-specfic config related to one algorithm
+ */
+  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
 
-        /**
-         * @brief the virtual function provided for outside callers, rewrite in children classes
-         * @param A the A matrix
-         * @param B the B matrix
-         * @param sketchSize the size of sketc or sampling
-         * @return the output c matrix
-         */
-        virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  /**
+   * @brief the virtual function provided for outside callers, rewrite in children classes
+   * @param A the A matrix
+   * @param B the B matrix
+   * @param sketchSize the size of sketc or sampling
+   * @return the output c matrix
+   */
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
-    private:
-        torch::Tensor generateTugOfWarMatrix(int64_t m, int64_t n);
+ private:
+  torch::Tensor generateTugOfWarMatrix(int64_t m, int64_t n);
 
-    };
+};
 
 /**
  * @ingroup AMMBENCH_CppAlgos
@@ -56,7 +56,7 @@ namespace AMMBench {
  * @brief The class to describe a shared pointer to @ref TugOfWarCppAlgo
 
  */
-    typedef std::shared_ptr<class AMMBench::TugOfWarCPPAlgo> TugOfWarCPPAlgoPtr;
+typedef std::shared_ptr<class AMMBench::TugOfWarCPPAlgo> TugOfWarCPPAlgoPtr;
 /**
  * @ingroup AMMBENCH_CppAlgos
  * @def newTugOfWarCppAlgo
