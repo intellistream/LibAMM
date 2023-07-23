@@ -75,10 +75,9 @@ pfm_arm_detect_v1(void *this)
 	}
 	return PFM_ERR_NOTSUPP;
 }
-
 static int isA57OrHigher(int part)
 {
-	if(part==0xd07)
+	if(part==0xd07||part==0xd05) //a57 and a55
 	{
 		return 1;
 	}
@@ -87,7 +86,7 @@ static int isA57OrHigher(int part)
 		return 1;
 	}
 	if(0xd41<=part&&part<=0xd42) //A78,A78AE
-	{   //printf("this is A78\r\n");
+	{   printf("this is A78\r\n");
 		return 1;
 	}
 	return 0;
