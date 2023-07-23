@@ -1,4 +1,5 @@
 #!/bin/bash
+sh ./makeClean.sh
 cp -r papi papi_temp
 cd papi_temp/src
 ./configure --prefix=$PWD/../../papi_build 
