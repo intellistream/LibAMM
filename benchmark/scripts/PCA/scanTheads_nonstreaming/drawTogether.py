@@ -56,23 +56,26 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 #     2. only one except cppAlgoTag in scan_dictionary['paras'] can be list, which is the target to do scanning. The rest in scan_dictionary['paras'] MUST be scalar
 
 scan_dictionary = {
-    'scanPara': "sketchDimension",
+    'scanPara': "threads",
     'paras':{
-        'cppAlgoTag': ["mm", 'smp-pca', 'tugOfWar', 'cooFD'], # find the correct config_AMM.csv
-        'sketchDimension': [100, 200, 500, 1000, 2000, 3000, 4000, 5000],
-        'coreBind': 7,
-        'threads': 1,# single thread
+        # 'cppAlgoTag': ["mm", 'crs', 'countSketch', 'tugOfWar', 'weighted-cr', 'smp-pca', 'blockLRA', 'rip', 'cooFD'],
+        'cppAlgoTag': ['pq-hash', 'mm', 'crs', 'countSketch', 'tugOfWar', 'smp-pca', 'blockLRA', 'rip', 'cooFD'],
+        'sketchDimension': 1000,
+        'coreBind': 0,
+        'threads': [1, 2, 4, 6, 8, 10, 12],
         'matrixLoaderTag': 'SIFT',
+        'forceMP': 1,
+        'isStreaming': 0,
     },
     'plot':{ # what needs to be plotted from results.csv
-        'AMM Fro Error %': 'AMMfroError', # key shown in figure, value is from results.csv
+        'AMM Fro Error %': 'AMMFroError', # key shown in figure, value is from results.csv
         'PCA Error %': 'PCAError',
-        '1 Per AMM Elapsed Time (1 per ms)': 'AMMElapsedTime',
-        '1 Per Else Elapsed Time (1 per ms)': 'SVDElapsedTime',
+        '1 Per AMM Elapsed Time (1 per ms)': 'AMMPerfElapsedTime',
+        '1 Per Else Elapsed Time (1 per ms)': 'elsePerfElapsedTime',
     },
     'rounds':1,
 }
-scanTag = f"scan{scan_dictionary['scanPara']}_dataset{scan_dictionary['paras']['matrixLoaderTag']}"
+scanTag = "scanTheads_nonstreaming"
 
 
 def singleRun(exePath, singleValue, resultPath, configTemplate):
@@ -102,7 +105,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     df.to_csv(join(resultPath, 'config.csv'), index=False)
 
     # run benchmark to generate result.csv
-    os.system(f"cd {resultPath} && {exePath}/benchmarkPCA config.csv")
+    os.system(f"cd {resultPath} && sudo {exePath}/benchmarkPCA config.csv")
     
 
 def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"):

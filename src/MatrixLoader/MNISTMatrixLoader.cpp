@@ -79,25 +79,12 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
 	}
 	file.close();
 
-	// auto pickledA = torch::pickle_save(A);
-	// std::ofstream foutA("A.pt", std::ios::out | std::ios::binary);
-	// foutA.write(pickledA.data(), pickledA.size());
-	// foutA.close();
-
-	// auto pickledB = torch::pickle_save(B);
-	// std::ofstream foutB("B.pt", std::ios::out | std::ios::binary);
-	// foutB.write(pickledB.data(), pickledB.size());
-	// foutB.close();
-
-	// torch::save(A, "A.pt");
-    // torch::save(B, "B.pt");
-
 	// std::cout << A.mean(/*dim=*/0) << endl;
 	// std::cout << B.mean(/*dim=*/0) << endl;
 
 	// normalization and transpose
-	// A = A - A.mean(/*dim=*/0); // mean along feature (column)
-	// B = B - B.mean(/*dim=*/0); // mean along feature (column)
+	A = A - A.mean(/*dim=*/0); // mean along feature (column)
+	B = B - B.mean(/*dim=*/0); // mean along feature (column)
 	// std::cout << A.mean(/*dim=*/0) << endl;
 	// std::cout << B.mean(/*dim=*/0) << endl;
 	// std::cout << A.std(/*dim=*/0) << endl;
@@ -107,6 +94,17 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
 	B = B.t(); // 392*60000
 	// std::cout << A.sizes() << endl;
 	// std::cout << B.sizes() << endl;
+
+	// for PQ pretraining
+	// auto pickledA = torch::pickle_save(A);
+	// std::ofstream foutA("CCA_MNIST_train_A_minus_mean.pt", std::ios::out | std::ios::binary);
+	// foutA.write(pickledA.data(), pickledA.size());
+	// foutA.close();
+
+	// auto pickledB = torch::pickle_save(B);
+	// std::ofstream foutB("CCA_MNIST_train_B_minus_mean.pt", std::ios::out | std::ios::binary);
+	// foutB.write(pickledB.data(), pickledB.size());
+	// foutB.close();
 
 	INTELLI_INFO("Generating [" + to_string(A.size(0)) +  " x " + to_string(A.size(1)) + "]*[" + to_string(B.size(0)) +" x " + to_string(B.size(1)) + "]");
 }

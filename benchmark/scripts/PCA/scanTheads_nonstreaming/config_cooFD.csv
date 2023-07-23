@@ -3,6 +3,9 @@ sketchDimension,25,U64
 threads,1,U64
 useCPP,1,U64
 forceMP,1,U64
-cppAlgoTag,blockLRA,String
+cppAlgoTag,cooFD,String
 matrixLoaderTag,SIFT,String
 usingMeter,1,U64
+eventRateTps,200,U64
+isStreaming,0,U64
+streamingTwoMatrices,0,U64

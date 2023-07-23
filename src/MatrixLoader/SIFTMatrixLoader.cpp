@@ -99,10 +99,10 @@ void AMMBench::SIFTMatrixLoader::generateAB() {
 
     // 3.1 Compute the mean and standard deviation along each feature (column)
     torch::Tensor mean = B.mean(/*dim=*/0);
-    torch::Tensor std = B.std(/*dim=*/0);
+    // torch::Tensor std = B.std(/*dim=*/0);
 
     // 3.2 Standardize the matrix
-    torch::Tensor standardizedB = (B - mean) / std;
+    torch::Tensor standardizedB = (B - mean); // / std;
 
     // 3.3 Check if need to resize
     if (aRow!=0 && aCol!=0 && bCol!=0){
@@ -112,7 +112,17 @@ void AMMBench::SIFTMatrixLoader::generateAB() {
         B = standardizedB;
     }
     
-    A = B.t();
+    A = B.t(); // A 128*10000
+
+    // auto pickledA = torch::pickle_save(A);
+	// std::ofstream foutA("PCA_SIFT_Small_A_minus_mean.pt", std::ios::out | std::ios::binary);
+	// foutA.write(pickledA.data(), pickledA.size());
+	// foutA.close();
+
+	// auto pickledB = torch::pickle_save(B);
+	// std::ofstream foutB("PCA_SIFT_Small_At_minus_mean.pt", std::ios::out | std::ios::binary);
+	// foutB.write(pickledB.data(), pickledB.size());
+	// foutB.close();
 
     int ACol = A.size(0);
     int ARow = A.size(1);

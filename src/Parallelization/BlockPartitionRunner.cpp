@@ -170,7 +170,6 @@ void AMMBench::BlockPartitionRunner::calculateMetrics() {
         singleThreadperResult.cloneInto(allThreadPefResult);
     }
     metrics = std::make_shared<ConfigMap>(allThreadPefResult);
-    INTELLI_INFO(metrics->toString());
     uint64_t elapsedTime = getElapsedTime(); // max thread time among all threads
     metrics->edit("perfElapsedTime", elapsedTime);
     double throughput = (matA->size(0) * 1e6) / metrics->getU64("perfElapsedTime");

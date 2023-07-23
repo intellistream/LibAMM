@@ -18,6 +18,11 @@ namespace AMMBench {
  *
  */
     class ProductQuantizationHash : public AMMBench::AbstractCPPAlgo {
+
+    protected:
+        string prototypesLoadPath;
+        string hashLoadPath;
+
     public:
         ProductQuantizationHash() {
 
@@ -26,6 +31,13 @@ namespace AMMBench {
         ~ProductQuantizationHash() {
 
         }
+
+        /**
+         * @brief set the alo-specfic config related to one algorithm
+         * @param prototypesLoadPath where to load prototypes
+         * @param hashLoadPath where to load hash
+         */
+        virtual void setConfig(INTELLI::ConfigMapPtr cfg);
 
         /**
          * @brief the virtual function provided for outside callers, rewrite in children classes
