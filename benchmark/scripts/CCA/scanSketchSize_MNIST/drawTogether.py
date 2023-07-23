@@ -113,7 +113,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     df.to_csv(join(resultPath, 'config.csv'), index=False)
 
     # run benchmark to generate result.csv
-    os.system(f"cd {resultPath} && {exePath}/benchmarkCCA config.csv")
+    os.system(f"cd {resultPath} && env OMP_NUM_THREADS=1 {exePath}/benchmarkCCA config.csv")
 
 
 def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"):
