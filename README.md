@@ -8,7 +8,7 @@ libtorch
 - AMMBENCH_OPENCL, this will enable opencl support in compiling
     - you have to make sure your compiler knows where opencl is
 - AMMBENCH_PAPI, this will enable PAPI-based perf tools
-    - you need first cd to thirdparty and run installPAPI.sh to enable PAPI support
+    - you need first cd to thirdparty and run installPAPI.sh to enable PAPI support, or set REBUILDPAPI to 1
 
 ## Requires G++11
 
