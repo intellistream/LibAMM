@@ -129,7 +129,7 @@ PAPI is a consistent interface and methodology for collecting performance counte
 - cd to thirdparty/papi_build/bin , and run papi_avail by sudo, there should be at least one event avaliable
 - the run papi_native_avail, the printed tags are valid native events.
 - please report to PAPI authors if you find your machine not supported
-### HOw to use PAPI in AMMBench
+### How to use PAPI in AMMBench
 - set -DENABLE_PAPI=ON in cmake AMMBench
 - in your top config file, add two config options:
     - usePAPI,1,U64
