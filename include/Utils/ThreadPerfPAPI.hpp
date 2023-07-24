@@ -217,7 +217,7 @@ class ThreadPerfPAPI : public ThreadPerf {
         //return;
       }
     }
-    if (cfg->tryU64("perfInstructions", 0)) {
+    /*if (cfg->tryU64("perfInstructions", 0)) {
       addPapiTag("instructions", PAPI_TOT_INS);
     }
     if (cfg->tryU64("perfCycles", 0)) {
@@ -231,7 +231,7 @@ class ThreadPerfPAPI : public ThreadPerf {
     }
     if (cfg->tryU64("perfX64InstructionStall", 0)) {
       addPapiTag("instructionStall", "ILD_STALL:IQ_FULL");
-    }
+    }*/
    // addPapiTag("llcMiss", ":IQ_FULL");
   }
 };
