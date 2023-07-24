@@ -3,12 +3,12 @@
 An universal parallel approximate matrix multiplication (AMM) on multiple devices. This project is compatable with
 libtorch
 
-## Environment variables for compiling
+## Extra Cmake options (set by cmake -Dxxx=ON/OFF)
 
-- AMMBENCH_OPENCL, this will enable opencl support in compiling
+- ENABLE_OPENCL, this will enable opencl support in compiling (OFF by default)
     - you have to make sure your compiler knows where opencl is
-- AMMBENCH_PAPI, this will enable PAPI-based perf tools
-    - you need first cd to thirdparty and run installPAPI.sh to enable PAPI support, or set REBUILDPAPI to 1
+- ENABLE_PAPI, this will enable PAPI-based perf tools (OFF by default)
+    - you need first cd to thirdparty and run installPAPI.sh to enable PAPI support, or also set REBUILD_PAPI to ON
 
 ## Requires G++11
 
@@ -81,14 +81,14 @@ Instead, please only check your libcudnn8 and libcublas
 sudo apt-get install libcudnn8 libcudnn8-dev libcublas-*
 ```
 
-### (Required) Install pytorch
+### (Required) Install pytorch (should install separately)
 
 ```shell
 sudo apt-get install python3 python3-pip
 ```
 
 (w/ CUDA):
-(Please make all cuda dependencies installed before pytorck!!!)
+(Please make all cuda dependencies installed before pytorch!!!)
 
 ```shell
 pip3 install torch==1.13.0 torchvision torchaudio
@@ -120,7 +120,25 @@ python3 -m pip install --upgrade pip; python3 -m pip install aiohttp numpy=='1.1
 sudo apt-get install graphviz
 pip install torchviz
 ```
-
+## (optional) Requires PAPI (contained source in this repo as third party)
+PAPI is a consistent interface and methodology for collecting performance counter information from various hardware and software components: https://icl.utk.edu/papi/.
+, AMMBench includes it in thirdparty/papi_7_0_1.
+### How to build PAPI
+- cd to thirdparty and run installPAPI.sh, PAPI will be compiled and installed in thirdparty/papi_build
+### How to verify if PAPI works on my machine
+- cd to thirdparty/papi_build/bin , and run papi_avail by sudo, there should be at least one event avaliable
+- the run papi_native_avail, the printed tags are valid native events.
+- please report to PAPI authors if you find your machine not supported
+### HOw to use PAPI in AMMBench
+- set -DENABLE_PAPI=ON in cmake AMMBench
+- in your top config file, add two config options:
+    - usePAPI,1,U64
+    - perfUseExternalList,1,U64
+    - if you want to change the file to event lists, please also set the following:
+      - perfListSrc,<the path to your list>,String
+- edit the perfLists/perfList.csv in your BINARY build path of benchmark (or your own list path), use the following format
+    - <the event name tag you want AMMBench to display>, <The inline PAPI tags from papi_native_avail/papi_avail>, String
+- please note that papi has a limitation of events due to hardware constraints, so only put 2~3 in each run
 ## How to build
 
 (CUDA-related is only necessary if your pytorch has cuda, but it's harmless if you don't have cuda.)
