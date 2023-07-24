@@ -24,9 +24,12 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DNO_RACE_CHECK -DIntelliStream_DEBUG_MODE=1")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wno-ignored-qualifiers -Wno-sign-compare -O3")
 #set(CMAKE_CUDA_STANDARD 11)
 #set(CMAKE_CUDA_FLAGS "-std=c++11")
-
+option (ENABLE_OPENCL
+        "Enable opencl support"
+        OFF
+        )
 #OPTIONAL OPENCL
-if (NOT DEFINED ENV{AMMBENCH_CL})
+if (NOT ENABLE_OPENCL)
     message(STATUS "I will NOT include opencl support ")
     set(AMMBENCH_CL 0)
 else ()
@@ -38,14 +41,22 @@ configure_file (
         "${PROJECT_SOURCE_DIR}/include/opencl_config.h.in"
         "${PROJECT_BINARY_DIR}/include/opencl_config.h"
 )
+option (ENABLE_PAPI
+        "Enable papi support, pls first compile papi or set REBUILD_PAPI to ON"
+        OFF
+        )
 # OPTIONAL PAPI
-if (NOT DEFINED ENV{AMMBENCH_PAPI})
+if (NOT ENABLE_PAPI)
     message(STATUS "I will NOT use PAPI ")
     set(AMMBENCH_PAPI 0)
 else ()
     set(AMMBENCH_PAPI 1)
     message(STATUS "I will try to use PAPI for HW counters, pls make sure your arch supports it")
-    if (DEFINED ENV{REBUILDPAPI})
+    option (REBUILD_PAPI
+            "Rebuild the papi libs"
+            OFF
+            )
+    if (REBUILD_PAPI)
         set (PAPISCRIPTPATH ../thirdparty)
         execute_process(COMMAND bash ${PAPISCRIPTPATH}/makeClean.sh WORKING_DIRECTORY ${PAPISCRIPTPATH})
         execute_process(COMMAND bash ${PAPISCRIPTPATH}/installPAPI.sh WORKING_DIRECTORY ${PAPISCRIPTPATH})
