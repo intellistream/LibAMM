@@ -70,11 +70,38 @@ def DrawLegend(legend_labels, filename):
                      )
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
+def DrawBarPlot(x_values, y_values, legend_labels, x_label, y_label, filename):
+    # x_values = ['A', 'B', 'C', 'D']
+    # y_values = [10, 15, 20, 25]
+    # legend_labels = 'Category 1'
+    # x_label = 'X-axis Label'
+    # y_label = 'Y-axis Label'
+    fig, ax = plt.subplots(figsize=(15, 12))
 
-# draw a bar chart
+    # the bar width.
+    width = 0.3
+
+    # draw the bars
+    bars = ax.bar(x_values, y_values, width, color='b', label=legend_labels, linewidth=3)
+
+    plt.xlabel(x_label, fontsize=20)  # Reduced font size for x-axis label
+    plt.ylabel(y_label, fontsize=20)
+
+    # Display the value on top of each bar
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate('{:.2f}'.format(height),  # Display y-value with 3 decimal digits
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha='center', va='bottom', fontweight='bold', fontsize=16)
+
+    plt.tight_layout()
+    plt.savefig(filename + ".pdf", bbox_inches='tight')
+
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(10, 3))
+    fig = plt.figure(figsize=(30, 10))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -83,7 +110,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     index = np.arange(len(x_values))
     # the bar width.
     # you may need to tune it to get the best figure.
-    width = 0.08
+    width = 0.2
     # draw the bars
     bars = []
     ts = 0
@@ -134,7 +161,6 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     plt.ylabel(y_label, fontproperties=LABEL_FP)
     plt.ylim(y_min, y_max)
     plt.savefig(filename + ".pdf", bbox_inches='tight')
-
 
 # example for reading csv file
 def ReadFile():

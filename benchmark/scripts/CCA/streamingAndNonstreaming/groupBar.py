@@ -11,7 +11,7 @@ from matplotlib.ticker import LogLocator, LinearLocator
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 24
 LABEL_FONT_SIZE = 28
-LEGEND_FONT_SIZE = 30
+LEGEND_FONT_SIZE = 15
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -19,12 +19,12 @@ TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 MARKERS = (["", 'o', 's', 'v', "^", "", "h", "<", ">", "+", "d", "<", "|", "", "+", "_"])
 # you may want to change the color map for different figures
 COLOR_MAP = (
-    '#FFFFFF', '#B03A2E', '#2874A6', '#239B56', '#7D3C98', '#00FFFF', '#F1C40F', '#F5CBA7', '#82E0AA', '#AEB6BF',
+    '#7FFFFF', '#B03A2E', '#2874A6', '#FFFFFF', '#7FFFFF', '#B03A2E', '#2874A6', '#FFFFFF', '#F5CBA7', '#82E0AA',
+    '#AEB6BF',
     '#AA4499')
 # you may want to change the patterns for different figures
 PATTERNS = (
-    ["", "////", "\\\\", "//", "o", "", "||", "-", "//", "\\", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\",
-     "*"])
+    ["////", "\\\\", "//", "o", "*", "||", "-", "//", "\\", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
 LINE_COLORS = COLOR_MAP
 LINE_WIDTH = 3.0
@@ -70,6 +70,34 @@ def DrawLegend(legend_labels, filename):
                      )
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
+def DrawBarPlot(x_values, y_values, legend_labels, x_label, y_label, filename):
+    # x_values = ['A', 'B', 'C', 'D']
+    # y_values = [10, 15, 20, 25]
+    # legend_labels = 'Category 1'
+    # x_label = 'X-axis Label'
+    # y_label = 'Y-axis Label'
+    fig, ax = plt.subplots(figsize=(15, 12))
+
+    # the bar width.
+    width = 0.3
+
+    # draw the bars
+    bars = ax.bar(x_values, y_values, width, color='b', label=legend_labels, linewidth=3)
+
+    plt.xlabel(x_label, fontsize=20)  # Reduced font size for x-axis label
+    plt.ylabel(y_label, fontsize=20)
+
+    # Display the value on top of each bar
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate('{:.2f}'.format(height),  # Display y-value with 3 decimal digits
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha='center', va='bottom', fontweight='bold', fontsize=16)
+
+    plt.tight_layout()
+    plt.savefig(filename + ".pdf", bbox_inches='tight')
 
 # draw a bar chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
@@ -83,25 +111,30 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     index = np.arange(len(x_values))
     # the bar width.
     # you may need to tune it to get the best figure.
-    width = 0.12
+    width = 0.08
     # draw the bars
-    bars = [None] * (len(FIGURE_LABEL))
+    bars = []
+    ts = 0
+    pos = 0
+    gl = len(y_values[0])
     for i in range(len(y_values)):
-        bars[i] = plt.bar(index + i * width + width / 2,
-                          y_values[i], width,
-                          hatch=PATTERNS[i],
-                          color=LINE_COLORS[i],
-                          label=FIGURE_LABEL[i], edgecolor='black', linewidth=3)
+        pos = pos + 3 * width
+        for j in range(len(y_values[i])):
+            pos = pos + width
+            bar = plt.bar(pos, y_values[i][j], width, hatch=PATTERNS[j], color=LINE_COLORS[j], label=FIGURE_LABEL[j],
+                          edgecolor='black', linewidth=3)
+            bars.append(bar)
+            ts = ts + 1
 
     # sometimes you may not want to draw legends.
     if allow_legend == True:
         plt.legend(bars, FIGURE_LABEL,
                    prop=LEGEND_FP,
-                   ncol=3,
+                   ncol=4,
                    loc='upper center',
                    #                     mode='expand',
                    shadow=False,
-                   bbox_to_anchor=(0.45, 1.7),
+                   bbox_to_anchor=(0.45, 1.6),
                    columnspacing=0.1,
                    handletextpad=0.2,
                    #                     bbox_transform=ax.transAxes,
@@ -111,8 +144,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                    )
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index + 3 * width, x_values, rotation=30)
-
+    plt.xticks(index, x_values)
     # plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     # plt.grid(axis='y', color='gray')
     # figure.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
@@ -121,14 +153,14 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     # plt.yscale('log')
     #
     # plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LinearLocator(10))
+    figure.yaxis.set_major_locator(LinearLocator(5))
     # figure.xaxis.set_major_locator(LinearLocator(5))
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
 
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
-
+    plt.ylim(y_min, y_max)
     plt.savefig(filename + ".pdf", bbox_inches='tight')
 
 
@@ -147,7 +179,7 @@ def ReadFile():
 
     for id in it.chain(range(38, 42)):
         col9.append(0)
-    y.append(col9)  # this is a fake empty line to separate eager and lazy.
+    y.append(col9)  # this is a lz4_pipe2 empty line to separate eager and lazy.
 
     for id in it.chain(range(38, 42)):
         file = exp_dir + '/results/latency/NPJ_{}.txt'.format(id)
@@ -181,7 +213,7 @@ def ReadFile():
         col4.append(x)
     y.append(col4)
 
-    y.append(col9)  # this is a fake empty line to separate eager and lazy.
+    y.append(col9)  # this is a lz4_pipe2 empty line to separate eager and lazy.
 
     for id in it.chain(range(38, 42)):
         file = exp_dir + '/results/latency/SHJ_JM_NP_{}.txt'.format(id)
