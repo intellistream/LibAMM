@@ -4,6 +4,7 @@
 #include <CPPAlgos/ProductQuantizationHash.h>
 
 void AMMBench::ProductQuantizationHash::setConfig(INTELLI::ConfigMapPtr cfg) {
+    C = cfg->tryU64("C", 10, true);
     prototypesLoadPath = cfg->tryString("prototypesLoadPath", "torchscripts/PQ/prototypes.pt", true);
     hashLoadPath = cfg->tryString("hashLoadPath", "torchscripts/PQ/hash.pt", true);
     }
@@ -21,9 +22,8 @@ int compute_hash_bucket(const std::vector<int>& split_indices, const std::vector
 }
 
 torch::Tensor AMMBench::ProductQuantizationHash::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+
     const int D = A.size(1);
-    int C = 1; // TODO as we only have 1 hash training, so only use 1 subspace. need to change in future
-    // if (sketchSize < 50) C = (int) sketchSize;
     sketchSize=0; // no need this parameter
     const int D_c = D / C;
 

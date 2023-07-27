@@ -80,13 +80,12 @@ def train(A):
         buckets = new_buckets
     return j_values, v_values
 # usage:
-# A = torch.randn(100, 100)
-A = torch.load('/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/benchmark/datasets/CCA_MNIST_train_A_minus_mean.pt')
+A = torch.randn(100, 100)
 j_values, v_values = train(A)
 print("Trained split indices: ", j_values)
 print("Trained split thresholds: ", v_values)
 
-# TODO
+# TODO save into this container.pt for pq-hash algo to load
 # my_values = {
 #     'split_indices': torch.tensor([7845, 2, 4003, 5851], dtype=torch.int32),
 #     'v1': torch.tensor([[103.7847]], dtype=torch.float),
