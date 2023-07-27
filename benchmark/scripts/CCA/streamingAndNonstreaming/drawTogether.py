@@ -85,8 +85,7 @@ else:
     scan_dictionary = {
         'scanPara': "threads",
         'paras':{
-            'cppAlgoTag': ['mm', 'crs'],
-            # 'cppAlgoTag': ['pq-hash', 'mm', 'crs', 'countSketch', 'tugOfWar', 'smp-pca'], # streaming
+            'cppAlgoTag': ['pq-hash', 'mm', 'crs', 'countSketch', 'tugOfWar', 'smp-pca'], # streaming
             'sketchDimension': 6000,
             'coreBind': 0,
             'threads': [1],
@@ -135,7 +134,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     df.to_csv(join(resultPath, 'config.csv'), index=False)
 
     # run benchmark to generate result.csv
-    os.system(f"cd {resultPath} && sudo {exePath}/benchmarkCCA config.csv")
+    os.system(f"cd {resultPath} && sudo env OMP_NUM_THREADS=1 {exePath}/benchmarkCCA config.csv")
     
 
 def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"):
