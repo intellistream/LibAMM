@@ -44,7 +44,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   ThreadPerf pef((int) coreBind);
   pef.setPerfList();
   pef.start();
-  auto C =module.forward({A, B, (long) sketchDimension}).toTensor();
+  auto C = module.forward({A, B, (long) sketchDimension}).toTensor();
   pef.end();
   std::string ruName = "default";
 

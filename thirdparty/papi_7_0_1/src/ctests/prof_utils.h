@@ -43,14 +43,14 @@ extern void *profbuf[5];
    so I duplicated it below.
 */
 #if (defined(ITANIUM1) || defined(ITANIUM2))
-   struct fdesc {
-      void *ip;	/* entry point (code address) */
-      void *gp;	/* global-pointer */
-   };
+struct fdesc {
+   void *ip;	/* entry point (code address) */
+   void *gp;	/* global-pointer */
+};
 #elif defined(__powerpc64__)
-	struct fdesc {
-		void * ip;   // function entry point
-		void * toc;
-		void * env;
-	};
+struct fdesc {
+    void * ip;   // function entry point
+    void * toc;
+    void * env;
+};
 #endif
