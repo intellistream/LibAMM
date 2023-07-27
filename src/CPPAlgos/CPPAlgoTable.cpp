@@ -48,7 +48,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["pq-hash"] = newProductQuantizationHashAlgo();
   algoMap["vq"] = newVectorQuantizationAlgo();
 #if AMMBENCH_CL == 1
-  algoMap["cl"]=newCLMMCPPAlgo();
+  algoMap["cl"] = newCLMMCPPAlgo();
 #endif
 }
 } // AMMBench

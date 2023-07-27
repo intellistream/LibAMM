@@ -58,7 +58,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     # clear old files
 
     os.system("cd " + exePath + "&& sudo rm default*.csv config*.csv *result*.csv perf*.csv")
-    os.system("cp perfListEvaluation.csv "+exePath)
+    os.system("cp perfListEvaluation.csv " + exePath)
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
     editConfig(configTemplate, exePath + configFname, scanTag, singleValue)
     # prepare new file
@@ -125,17 +125,21 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
         memStallAll.append(memStall)
         l1dStallAll.append(l1dStall)
         periodAll.append(periodVec)
-        memStallRateAll = np.array(memStallAll) 
+        memStallRateAll = np.array(memStallAll)
         cpuCycleAll.append(cpuCycle)
         l2StallAll.append(l2Stall)
         # periodAll.append(periodVec)
-    return np.array(elapsedTimeAll), np.array(memStallRateAll), np.array(periodAll), np.array(cpuCycleAll), np.array(l1dStallAll),np.array(l2StallAll)
+    return np.array(elapsedTimeAll), np.array(memStallRateAll), np.array(periodAll), np.array(cpuCycleAll), np.array(
+        l1dStallAll), np.array(l2StallAll)
 
-def getCyclesPerMethod(cyclesAll,valueChose):
-    cpuCyclePerMethod=[]
+
+def getCyclesPerMethod(cyclesAll, valueChose):
+    cpuCyclePerMethod = []
     for i in range(len(cyclesAll)):
         cpuCyclePerMethod.append(cyclesAll[int(i)][int(valueChose)])
     return np.array(cpuCyclePerMethod)
+
+
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "_stalls/"
@@ -143,7 +147,7 @@ def main():
     methodTags = ["CRS", "MM"]
     resultPaths = ["crs", "mm"]
     csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv"]
-    valueVec = [200,500,1000,2000,5000]
+    valueVec = [200, 500, 1000, 2000, 5000]
     valueVecDisp = np.array(valueVec)
     # run
     reRun = 0
@@ -155,9 +159,10 @@ def main():
         os.system("sudo mkdir " + commonBase)
         reRun = 1
     # skech
-    elapsedTimeAll, memStallAll, periodAll, cpuCycle, l1dStallAll,l2StallAll = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates,
-                                                                     valueVec,
-                                                                     reRun)
+    elapsedTimeAll, memStallAll, periodAll, cpuCycle, l1dStallAll, l2StallAll = compareMethod(exeSpace, commonBase,
+                                                                                              resultPaths, csvTemplates,
+                                                                                              valueVec,
+                                                                                              reRun)
     groupLine.DrawFigure(periodAll, elapsedTimeAll,
                          methodTags,
                          "#elements in A's row", "elapsed time (ms)", 0, 1,
@@ -169,7 +174,7 @@ def main():
                                 figPath + "/" + scanTag + "_memStall",
                                 True)
     groupLine.DrawFigureYnormal(periodAll,
-                                cpuCycle ,
+                                cpuCycle,
                                 methodTags,
                                 "#A's row", "total cycles", 0, 100, figPath + "/" + scanTag +
                                 "_cpuCycle",
@@ -180,22 +185,24 @@ def main():
                                 "#A's row", "l2 stall cycles", 0, 100, figPath + "/" + scanTag
                                 + "_l2_stall",
                                 True)
-    otherCycle=cpuCycle-memStallAll-l1dStallAll-l2StallAll
+    otherCycle = cpuCycle - memStallAll - l1dStallAll - l2StallAll
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,compVec,"95% Latency (ms)","Completeness","ms","",figPath+"wm_omp")
     # groupLine.DrawFigureYnormal([singleValueVec,singleValueVec],[errVec,aqpErrVec],['w/o aqp',"w/ MeanAqp"],"watermark time (ms)","Error",0,1,figPath+"wm_MeanAqp",True)
-    print(otherCycle[0],len(otherCycle))
-    allowLegend=1
+    print(otherCycle[0], len(otherCycle))
+    allowLegend = 1
     for valueChose in range(len(valueVec)):
-        #cpuCyclePerMethod=getCyclesPerMethod(cpuCycle,valueChose)
-        memStallPerMethod=getCyclesPerMethod(memStallAll,valueChose)
-        l1dStallPerMethod=getCyclesPerMethod(l1dStallAll,valueChose)
-        l2StallPerMethod=getCyclesPerMethod(l2StallAll,valueChose)
-        otherPerMethod=getCyclesPerMethod(otherCycle,valueChose)
-        accuBar.DrawFigure(methodTags,[memStallPerMethod,l1dStallPerMethod,l2StallPerMethod,otherPerMethod],['mem stall','l1d stall','l2 stall','others'],'','cycles', figPath + "/" + scanTag
-                                    + "_stall_accubar"+str(valueVecDisp[valueChose]),allowLegend,scanTag+"="+str(valueVecDisp[valueChose]))
-        allowLegend=0
+        # cpuCyclePerMethod=getCyclesPerMethod(cpuCycle,valueChose)
+        memStallPerMethod = getCyclesPerMethod(memStallAll, valueChose)
+        l1dStallPerMethod = getCyclesPerMethod(l1dStallAll, valueChose)
+        l2StallPerMethod = getCyclesPerMethod(l2StallAll, valueChose)
+        otherPerMethod = getCyclesPerMethod(otherCycle, valueChose)
+        accuBar.DrawFigure(methodTags, [memStallPerMethod, l1dStallPerMethod, l2StallPerMethod, otherPerMethod],
+                           ['mem stall', 'l1d stall', 'l2 stall', 'others'], '', 'cycles', figPath + "/" + scanTag
+                           + "_stall_accubar" + str(valueVecDisp[valueChose]), allowLegend,
+                           scanTag + "=" + str(valueVecDisp[valueChose]))
+        allowLegend = 0
     # print(aqpErrVec)
     # print(elapseTimeVecFD)
     # readResultsingleValue(50,resultPath)

@@ -22,16 +22,16 @@ namespace AMMBench {
  * @ingroup AMMBENCH_MatrixLOADER_Mtx The loader of matrix market mtx matrixes
  * @{
  */
- /**
-  * @brief the stan-alone function to load a matrix from matrix market mitx file
-  * @param filename the name of the mtx file
-  * @return the loaded tensor
-  */
-torch::Tensor loadMatrixFromMatrixMarket(const string& filename);
+/**
+ * @brief the stan-alone function to load a matrix from matrix market mitx file
+ * @param filename the name of the mtx file
+ * @return the loaded tensor
+ */
+torch::Tensor loadMatrixFromMatrixMarket(const string &filename);
 /**
  * @class MtxMatrixLoader MatrixLoader/MtxMatrixLoader.h
- * @brief The matrix loader to load matrixes stored in matrix lib mtx format
- * @ingroup AMMBENCH_MatrixLOADER_Mtx
+ * @brief The matrix loader to load matrixes stored in matrix market mtx format
+ * @ingroup AMMBENCH_MatrixLOADER
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -40,6 +40,7 @@ torch::Tensor loadMatrixFromMatrixMarket(const string& filename);
 * - call @ref getA and @ref getB (assuming we are benchmarking torch.mm(A,B))
  * @note: require config parameters and default values
  * - "srcA" The file source for A matrix, String, "datasets/ZENIOS/zenios.mtx"
+ * - "oneSrcForAB", U64, whether A and B shares the same source file
  * - "srcB" The file source for B matrix, String, "datasets/ZENIOS/zenios.mtx"
  * - "transposeA" Whether or not transpose A matrix, U64, 0
  * -  "transposeB" Whether or not transpose B matrix, U64, 1
@@ -50,7 +51,7 @@ class MtxMatrixLoader : public AbstractMatrixLoader {
  protected:
   torch::Tensor A, B;
   std::string srcA, srcB;
-  uint64_t transposeA, transposeB;
+  uint64_t oneSrcForAB, transposeA, transposeB;
   /**
    * @brief Inline logic of reading a config file
    * @param cfg the config

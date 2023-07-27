@@ -40,7 +40,7 @@ class SingleThreadStreamer {
   AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
   AMMBench::TensorPtr matC = nullptr;
   double throughput = 0.0;
-  uint64_t fullLazy=0;
+  uint64_t fullLazy = 0;
  public:
   SingleThreadStreamer() {}
 
