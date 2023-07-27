@@ -22,6 +22,7 @@ namespace AMMBench {
     protected:
         string prototypesLoadPath;
         string hashLoadPath;
+        int64_t C;
 
     public:
         ProductQuantizationHash() {

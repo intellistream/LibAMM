@@ -7,6 +7,7 @@
 #include <AMMBench.h>
 #include <Utils/UtilityFunctions.h>
 #include <Streaming/Streamer.h>
+#include <cstdlib> // For the exit() function
 
 using namespace std;
 using namespace INTELLI;
@@ -49,83 +50,243 @@ void benchmarkCCA(std::string configName){
     auto B = matLoaderPtr->getB();
     matLoaderPtr->calculate_correlation(); // cleaner code
     // 1.3 sketch dimension
-    uint64_t sketchDimension;
-    sketchDimension = cfg->tryU64("sketchDimension", 1, true);
-    INTELLI_INFO("1.3 sketch dimension: " + to_string(sketchDimension));
+    uint64_t sketchSize;
+    sketchSize = cfg->tryU64("sketchDimension", 1, true);
+    INTELLI_INFO("1.3 sketch dimension: " + to_string(sketchSize));
+
+    uint64_t isStreaming = cfg->tryU64("isStreaming", 0, true);
+    uint64_t streamingTwoMatrices = cfg->tryU64("streamingTwoMatrices", 0, true);
+    if (isStreaming!=streamingTwoMatrices){
+        INTELLI_ERROR("isStreaming, streamingTwoMatrices must be both 0 or 1");
+        exit(EXIT_FAILURE);
+    }
+    uint64_t threads = cfg->tryU64("threads", 1, true);
+    if (threads!=1){
+        INTELLI_ERROR("only single thread");
+        exit(EXIT_FAILURE);
+    }
 
     // Step2. AMM
-    INTELLI_INFO("Runing AMM");
-    Streamer streamer;
+    ConfigMapPtr allMetrics;
+    torch::Tensor Sxx, Sxy, Syy;
+
+    if (isStreaming){
+        INTELLI_INFO("Runing AMM streaming");
+        B=B.t(); // A: 392*60000, B:60000*392
+        
+        AMMBench::SingleThreadStreamer ss;
+        ConfigMapPtr cfgGlobal = cfg;
+        uint64_t aRows = A.size(0);
+        cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
+        uint64_t batchSize = cfg->tryU64("batchSize", 1, true);
+        if (batchSize > aRows) {
+            batchSize = aRows;
+        }
+        AMMBench::TimeStamper tsGen,tsGenB;
+        tsGen.setConfig(cfgGlobal);
+        std::vector<AMMBench::AMMTimeStampPtr> myTs = tsGen.getTimeStamps();
+
+        tsGenB.setSeed(7758258);
+        tsGenB.setConfig(cfgGlobal);
+        std::vector<AMMBench::AMMTimeStampPtr> myTsB = tsGenB.getTimeStamps();
+        INTELLI_INFO("Generate time stamps for two streams done");
+        Sxy = torch::zeros({A.size(0), B.size(1)});
+        Sxx = torch::zeros({A.size(0), A.size(0)});
+        Syy = torch::zeros({B.size(1), B.size(1)});
+        INTELLI_INFO("Shape of matrix Sxy: " + torch::str(Sxy.sizes()));
+        INTELLI_INFO("Shape of matrix Sxx: " + torch::str(Sxx.sizes()));
+        INTELLI_INFO("Shape of matrix Syy: " + torch::str(Syy.sizes()));
+
+        //INTELLI_INFO("I am mm");
+        INTELLI_INFO("Start Streaming A rows and B cols");
+        uint64_t startRow = 0;
+        uint64_t endRow = startRow + batchSize;
+        uint64_t tNow = 0;
+        uint64_t tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
+        if(myTsB[endRow-1]->arrivalTime>tEXpectedArrival)
+        {
+            tEXpectedArrival=myTsB[endRow-1]->arrivalTime;
+        }
+        uint64_t tDone = 0;
+
+        ThreadPerf pef(-1);
+        pef.setPerfList();
+        pef.start();
+
+        auto tstart = std::chrono::high_resolution_clock::now();
+        // struct timeval tstart;
+        // gettimeofday(&tstart, NULL);
+        uint64_t iterationCnt=0;
+        torch::Tensor incomingA,incomingB,oldArrivedB,oldArrivedA;
+        uint64_t aBCols=0,lastABCols=0;
+        while (startRow < aRows) {
+            tNow = chronoElapsedTime(tstart);;
+            //auto subA = A.slice(0, startRow, endRow);
+            incomingA =A.slice(0, startRow, endRow);
+            incomingB=B.slice(1,startRow,endRow);
+            oldArrivedB=B.slice(1,0,endRow);
+            while (tNow < tEXpectedArrival) {
+            tNow = chronoElapsedTime(tstart);;
+            //usleep(1);
+            }
+            INTELLI_INFO("batch of " + to_string(startRow) + " to " + to_string(endRow) + " are ready");
+            /**
+             * @brief do the incomingA*oldArrivedB part to get Sxy[startRow:endRow, 0:aBCols]
+             */
+            auto aB=cppAlgoPtr->amm(incomingA, oldArrivedB, sketchSize);
+            INTELLI_INFO("Shape of matrix aB: " + torch::str(aB.sizes()));
+            INTELLI_INFO("aBCols: " + std::to_string(aBCols));
+            lastABCols=aBCols;
+            aBCols=aB.size(1);
+            INTELLI_INFO("aBCols: " + std::to_string(aBCols));
+            INTELLI_INFO("lastABCols: " + std::to_string(lastABCols));
+            Sxy.slice(0,startRow,endRow).slice(1,0,aBCols).copy_(aB);
+            /**
+            * @brief do the oldArrivedA*incomingB part
+            */
+            if(iterationCnt!=0)
+            {
+            auto aB2=cppAlgoPtr->amm(oldArrivedA, incomingB, sketchSize);
+            INTELLI_INFO("Shape of matrix aB2: " + torch::str(aB2.sizes()));
+            uint64_t aB2Rows=aB2.size(0);
+            uint64_t aB2Cols=aB2.size(1);
+            INTELLI_INFO("aB2Rows: " + std::to_string(aB2Rows));
+            INTELLI_INFO("aB2Cols: " + std::to_string(aB2Cols));
+            Sxy.slice(0,0,aB2Rows).slice(1,lastABCols,lastABCols+aB2Cols).copy_(aB2);
+            }
+            oldArrivedA=A.slice(0, 0, endRow);
+            /**
+            * @brief do the incomingA*oldArrivedA part
+            */
+            auto aA=cppAlgoPtr->amm(incomingA, oldArrivedA.t(), sketchSize);
+            Sxx.slice(0,startRow,endRow).slice(1,0,aBCols).copy_(aA);
+            Sxx.slice(0,0,aBCols).slice(1,startRow,endRow).copy_(aA.t()); // every time batch_size*batch_size part will be overwrite
+            auto bB=cppAlgoPtr->amm(oldArrivedB.t(), incomingB, sketchSize);
+            Syy.slice(0,0,aBCols).slice(1,startRow,endRow).copy_(bB);
+            Syy.slice(0,startRow,endRow).slice(1,0,aBCols).copy_(bB.t());
+            
+            /**
+             * @brief update the indexes
+             */
+            startRow += batchSize;
+            endRow += batchSize;
+            if (endRow >= aRows) {
+            endRow = aRows;
+            }
+            tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
+            if(myTsB[endRow-1]->arrivalTime>tEXpectedArrival)
+            {
+            tEXpectedArrival=myTsB[endRow-1]->arrivalTime;
+            }
+            iterationCnt++;
+        }
+        tDone = chronoElapsedTime(tstart);
+        pef.end();
+        /**
+         * @brief The latency calculation is different from one stream case here,
+         * as older A will still be probed by newer B
+         */
+            for (size_t i = 0; i < aRows; i++) {
+            myTs[i]->processedTime = tDone;
+            }
+
+        allMetrics = pef.resultToConfigMap();
+        INTELLI_INFO("Done in " + to_string(tDone) + "us");
+        double throughput = aRows * 1e6 / tDone;
+        double throughputByElements = throughput * A.size(1);
+        double latency95 = ss.getLatencyPercentage(0.95);
+        allMetrics->edit("throughput", throughput);
+        allMetrics->edit("throughputByElements", throughputByElements);
+        allMetrics->edit("95%latency", latency95);
+        allMetrics->addPrefixToKeys("AMM");
+
+        Sxx = Sxx/A.size(1);
+        Syy = Syy/A.size(1);
+        Sxy = Sxy/A.size(1);
+    }
+    else{
+        INTELLI_INFO("Runing AMM nonstreaming");
+        uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
+        UtilityFunctions::bind2Core((int) coreBind);
+        ThreadPerf pef(-1);
+        pef.setPerfList();
+        pef.start();
+        torch::manual_seed(123);
+        Sxx = cppAlgoPtr->amm(A, A.t(), sketchSize)/A.size(1);
+        torch::manual_seed(123);
+        Syy = cppAlgoPtr->amm(B, B.t(), sketchSize)/A.size(1);
+        torch::manual_seed(123);
+        Sxy = cppAlgoPtr->amm(A, B.t(), sketchSize)/A.size(1);
+        pef.end();
+        allMetrics = pef.resultToConfigMap();
+        allMetrics->addPrefixToKeys("AMM");
+        double throughput = (A.size(0) * 1e6) / allMetrics->getU64("AMMPerfElapsedTime");
+        allMetrics->edit("AMMThroughput", throughput);
+    }
+    allMetrics->edit("SxxFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxx(), Sxx));
+    allMetrics->edit("SxyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxy(), Sxy));
+    allMetrics->edit("SyyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSyy(), Syy));
+
+    // Streamer streamer;
     // 2.1 AMM Sxx
-    INTELLI_INFO("Sxx");
-    torch::manual_seed(123);
-    torch::Tensor Sxx = streamer.run(cfg, A, A.t(), sketchDimension, "Sxx")/A.size(1);
-    ConfigMapPtr resultCsv = streamer.getMetrics();
-    // 2.2 AMM Syy
-    INTELLI_INFO("Syy");
-    torch::manual_seed(123);
-    torch::Tensor Syy = streamer.run(cfg, B, B.t(), sketchDimension, "Syy")/A.size(1);
-    ConfigMapPtr resultCsvTmp = streamer.getMetrics();
-    resultCsvTmp->cloneInto(*resultCsv);
-    // 2.3 AMM: Sxy
-    INTELLI_INFO("Sxy");
-    torch::manual_seed(123);
-    torch::Tensor Sxy = streamer.run(cfg, A, B.t(), sketchDimension, "Sxy")/A.size(1);
-    resultCsvTmp = streamer.getMetrics();
-    resultCsvTmp->cloneInto(*resultCsv);
+    
+    // INTELLI_INFO("Sxx");
+    // torch::manual_seed(123);
+    // 
+    // ConfigMapPtr allMetrics = streamer.getMetrics();
+    // // 2.2 AMM Syy
+    // INTELLI_INFO("Syy");
+    // torch::manual_seed(123);
+    // 
+    // ConfigMapPtr SyyMetrics = streamer.getMetrics();
+    // SyyMetrics->cloneInto(*allMetrics);
+    // // 2.3 AMM: Sxy
+    // INTELLI_INFO("Sxy");
+    // torch::manual_seed(123);
+    // 
+    // ConfigMapPtr SxyMetrics = streamer.getMetrics();
+    // SxyMetrics->cloneInto(*allMetrics);
     
     // Step3. The rest of the CCA task
-    struct timeval tstart, tend;
-    double relativeFroError;
+    ThreadPerf pef(-1);
+    pef.setPerfList();
+    pef.start();
     // 3.1 Sxx^(-1/2)
     INTELLI_INFO("Sxx^(-1/2)");
-    gettimeofday(&tstart, NULL);
     torch::Tensor eigenvaluesSxx, eigenvectorsSxx;
 	std::tie(eigenvaluesSxx, eigenvectorsSxx) = torch::linalg::eig(Sxx); // diagonization
 	torch::Tensor diagonalMatrixSxx = torch::diag(1.0 / torch::sqrt(eigenvaluesSxx+torch::full({}, 1e-12))); // 1/sqrt(eigenvalue+epsilon) +epsilon to avoid nan
 	torch::Tensor SxxNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSxx, diagonalMatrixSxx), eigenvectorsSxx.t());
     SxxNegativeHalf = at::real(SxxNegativeHalf); // ignore complex part, it comes from numerical computations
-    gettimeofday(&tend, NULL);
-	resultCsv->edit("SxxNegativeHalfElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
-    relativeFroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxxNegativeHalf(), SxxNegativeHalf);
-    resultCsv->edit("SxxNegativeHalfFroError", (double) relativeFroError);
     // 3.2 Syy^(-1/2)
     INTELLI_INFO("Syy^(-1/2)");
-    gettimeofday(&tstart, NULL);
 	torch::Tensor eigenvaluesSyy, eigenvectorsSyy;
 	std::tie(eigenvaluesSyy, eigenvectorsSyy) = torch::linalg::eig(Syy);
 	torch::Tensor diagonalMatrixSyy = torch::diag(1.0 / torch::sqrt(eigenvaluesSyy+torch::full({}, 1e-12)));
 	torch::Tensor SyyNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSyy, diagonalMatrixSyy), eigenvectorsSyy.t());
 	SyyNegativeHalf = at::real(SyyNegativeHalf);
-    gettimeofday(&tend, NULL);
-    resultCsv->edit("SyyNegativeHalfElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
-    relativeFroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSyyNegativeHalf(), SyyNegativeHalf);
-    resultCsv->edit("SyyNegativeHalfFroError", (double) relativeFroError);
     // 3.3 M
     INTELLI_INFO("M");
-    gettimeofday(&tstart, NULL);
     torch::Tensor M = torch::matmul(torch::matmul(SxxNegativeHalf, Sxy), SyyNegativeHalf);
-    gettimeofday(&tend, NULL);
-    resultCsv->edit("MElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
-    relativeFroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getM(), M);
-    resultCsv->edit("MFroError", (double) relativeFroError);
-
-    // Step4. Final output of CCA task: Correlation
-    gettimeofday(&tstart, NULL);
+    // 3.4 Correlation
     INTELLI_INFO("Correlation");
     torch::Tensor U, S, Vh;
     std::tie(U, S, Vh) = torch::linalg::svd(M, false, c10::nullopt);
     torch::Tensor correlation = torch::clamp(S, -1.0, 1.0);
-    gettimeofday(&tend, NULL);
-    resultCsv->edit("CorrelationElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
+    pef.end();
+    ConfigMapPtr elseMetrics = pef.resultToConfigMap();
+    elseMetrics->addPrefixToKeys("else");
+    elseMetrics->cloneInto(*allMetrics);
+
+    // Step4. End to End error
     double CorrelationError = (correlation - matLoaderPtr->getCorrelation()).abs().max().item<double>();
-    resultCsv->edit("CorrelationError", (double) CorrelationError);
+    allMetrics->edit("CorrelationError", (double) CorrelationError);
 
     // Save results
     std::string ruName = "CCA";
-    resultCsv->toFile(ruName + ".csv");
+    allMetrics->toFile(ruName + ".csv");
     INTELLI_INFO("Done. here is overall result");
-    std::cout << resultCsv->toString() << endl;
+    std::cout << allMetrics->toString() << endl;
 }
 
 int main(int argc, char **argv) {
@@ -150,7 +311,7 @@ int main(int argc, char **argv) {
     // std::cout << "\033[1;34m 2.1 Sxx \033[0m" << std::endl;
     // gettimeofday(&tstart, NULL);
     // torch::manual_seed(123);
-    // torch::Tensor Sxx = cppAlgoPtr->amm(A, A.t(), sketchDimension);
+    // torch::Tensor Sxx = cppAlgoPtr->amm(A, A.t(), sketchSize);
     // gettimeofday(&tend, NULL);
     // Sxx = Sxx/A.size(1);
     // resultCsv->edit("AMMSxxElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
@@ -165,7 +326,7 @@ int main(int argc, char **argv) {
     // std::cout << "\033[1;34m 2.2 Syy \033[0m" << std::endl;
     // gettimeofday(&tstart, NULL);
     // torch::manual_seed(123);
-    // torch::Tensor Syy = cppAlgoPtr->amm(B, B.t(), sketchDimension);
+    // torch::Tensor Syy = cppAlgoPtr->amm(B, B.t(), sketchSize);
     // gettimeofday(&tend, NULL);
     // Syy = Syy/A.size(1);
     // resultCsv->edit("AMMSyyElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
@@ -180,7 +341,7 @@ int main(int argc, char **argv) {
     // std::cout << "\033[1;34m 2.3 Sxy \033[0m" << std::endl;
     // gettimeofday(&tstart, NULL);
     // torch::manual_seed(123);
-    // torch::Tensor Sxy = cppAlgoPtr->amm(A, B.t(), sketchDimension);
+    // torch::Tensor Sxy = cppAlgoPtr->amm(A, B.t(), sketchSize);
     // gettimeofday(&tend, NULL);
     // Sxy = Sxy/A.size(1);
     // resultCsv->edit("AMMSxyElapsedTime", (uint64_t) INTELLI::UtilityFunctions::timeLast(tstart, tend));
