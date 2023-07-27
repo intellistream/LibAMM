@@ -49,7 +49,7 @@ void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t 
   }
   AMMBench::SingleThreadStreamer ss;
   ss.setConfig(cfg);
-  ss.prepareRun(A,B);
+  ss.prepareRun(A, B);
   torch::Tensor ssC;
   ThreadPerfPtr pef;
 #if AMMBENCH_PAPI == 1
@@ -190,7 +190,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
       INTELLI_WARNING("this is pure c++");
       C = cppAlgoPtr->amm(A, B, sketchDimension);
     } else {
-      C =module.forward({A, B, (long) sketchDimension}).toTensor();
+      C = module.forward({A, B, (long) sketchDimension}).toTensor();
     }
     pef->end();
     if (eMeter != nullptr) {

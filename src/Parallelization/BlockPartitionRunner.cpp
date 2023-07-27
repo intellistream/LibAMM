@@ -65,7 +65,7 @@ void AMMBench::BlockPartitionWorker::inlineMain() {
     INTELLI_WARNING("USE CPP ALGO");
     matC->slice(0, startRow, endRow) = cppAlgoPtr->amm(subA, *matB, sketchDimension);
   } else {
-    matC->slice(0, startRow, endRow) =module.forward({subA, *matB, (long) sketchDimension}).toTensor();
+    matC->slice(0, startRow, endRow) = module.forward({subA, *matB, (long) sketchDimension}).toTensor();
   }
 
   gettimeofday(&tend, NULL);

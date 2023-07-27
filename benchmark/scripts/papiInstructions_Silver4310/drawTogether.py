@@ -58,7 +58,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     # clear old files
 
     os.system("cd " + exePath + "&& sudo rm default*.csv config*.csv *result*.csv perf*.csv")
-    os.system("cp perfListEvaluation.csv "+exePath)
+    os.system("cp perfListEvaluation.csv " + exePath)
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
     editConfig(configTemplate, exePath + configFname, scanTag, singleValue)
     # prepare new file
@@ -82,9 +82,9 @@ def readResultSingle(singleValue, resultPath):
     memStore = readConfig(resultFname, "memStore")
     instructions = readConfig(resultFname, "instructions")
     fpVector = readConfig(resultFname, "fpVector")
-    fpScalar=readConfig(resultFname, "fpScalar")
-    branchIns=readConfig(resultFname, "branchIns")
-    return elapsedTime, memLoad, memStore, instructions, fpVector,fpScalar,branchIns
+    fpScalar = readConfig(resultFname, "fpScalar")
+    branchIns = readConfig(resultFname, "branchIns")
+    return elapsedTime, memLoad, memStore, instructions, fpVector, fpScalar, branchIns
 
 
 def cleanPath(path):
@@ -98,19 +98,19 @@ def readResultVector(singleValueVec, resultPath):
     memStoreVec = []
     instructionsVec = []
     fpVectorVec = []
-    fpScalarVec=[]
-    branchVec=[]
+    fpScalarVec = []
+    branchVec = []
     for i in singleValueVec:
-        elapsedTime, memLoad, memStore, instructions, fpVector,fpScalar,branchIns = readResultSingle(i, resultPath)
+        elapsedTime, memLoad, memStore, instructions, fpVector, fpScalar, branchIns = readResultSingle(i, resultPath)
         elapseTimeVec.append(float(elapsedTime) / 1000.0)
         memLoadVec.append(float(memLoad))
         memStoreVec.append(float(memStore))
         instructionsVec.append(float(instructions))
-        fpVectorVec.append(float(fpVector)/2)
-        fpScalarVec.append(float(fpScalar)/2)
+        fpVectorVec.append(float(fpVector) / 2)
+        fpScalarVec.append(float(fpScalar) / 2)
         branchVec.append(float(branchIns))
     return np.array(elapseTimeVec), np.array(memLoadVec), np.array(memStoreVec), np.array(instructionsVec), np.array(
-        fpVectorVec), np.array(fpScalarVec),np.array(branchVec)
+        fpVectorVec), np.array(fpScalarVec), np.array(branchVec)
 
 
 def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec, reRun=1):
@@ -120,15 +120,16 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
     periodAll = []
     instructionsAll = []
     fpVectorAll = []
-    fpScalarAll=[]
-    branchAll=[]
+    fpScalarAll = []
+    branchAll = []
     for i in range(len(csvTemplates)):
         resultPath = commonPathBase + resultPaths[i]
         if (reRun == 1):
             os.system("sudo rm -rf " + resultPath)
             os.system("sudo mkdir " + resultPath)
             runScanVector(exeSpace, periodVec, resultPath, csvTemplates[i])
-        elapsedTime, memLoad, memStore, instructions, fpVector,fpScalar,branchIns = readResultVector(periodVec, resultPath)
+        elapsedTime, memLoad, memStore, instructions, fpVector, fpScalar, branchIns = readResultVector(periodVec,
+                                                                                                       resultPath)
         elapsedTimeAll.append(elapsedTime)
         memLoadAll.append(memLoad)
         memStoreAll.append(memStore)
@@ -138,13 +139,17 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
         fpScalarAll.append(fpScalar)
         branchAll.append(branchIns)
         # periodAll.append(periodVec)
-    return np.array(elapsedTimeAll), np.array(memLoadAll), np.array(periodAll), np.array(instructionsAll), np.array(memStoreAll),np.array(fpVectorAll),np.array(fpScalarAll),np.array(branchAll)
+    return np.array(elapsedTimeAll), np.array(memLoadAll), np.array(periodAll), np.array(instructionsAll), np.array(
+        memStoreAll), np.array(fpVectorAll), np.array(fpScalarAll), np.array(branchAll)
 
-def getCyclesPerMethod(cyclesAll,valueChose):
-    instructionsPerMethod=[]
+
+def getCyclesPerMethod(cyclesAll, valueChose):
+    instructionsPerMethod = []
     for i in range(len(cyclesAll)):
         instructionsPerMethod.append(cyclesAll[int(i)][int(valueChose)])
     return np.array(instructionsPerMethod)
+
+
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "_instructions/"
@@ -152,7 +157,7 @@ def main():
     methodTags = ["CRS", "MM"]
     resultPaths = ["crs", "mm"]
     csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv"]
-    valueVec = [200,500,1000,2000,5000]
+    valueVec = [200, 500, 1000, 2000, 5000]
     valueVecDisp = np.array(valueVec)
     # run
     reRun = 0
@@ -164,30 +169,35 @@ def main():
         os.system("sudo mkdir " + commonBase)
         reRun = 1
     # skech
-    elapsedTimeAll, memLoadAll, periodAll, instructions, memStoreAll,fpVectorAll,fpScalarAll,branchAll = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates,
-                                                                     valueVec,
-                                                                     reRun)
-    print(instructions,memLoadAll)
-    otherIns=instructions-memLoadAll-memStoreAll-fpVectorAll-fpScalarAll-branchAll
+    elapsedTimeAll, memLoadAll, periodAll, instructions, memStoreAll, fpVectorAll, fpScalarAll, branchAll = compareMethod(
+        exeSpace, commonBase, resultPaths, csvTemplates,
+        valueVec,
+        reRun)
+    print(instructions, memLoadAll)
+    otherIns = instructions - memLoadAll - memStoreAll - fpVectorAll - fpScalarAll - branchAll
     print(otherIns)
-    #exit(-1)
+    # exit(-1)
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
     # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,compVec,"95% Latency (ms)","Completeness","ms","",figPath+"wm_omp")
     # groupLine.DrawFigureYnormal([singleValueVec,singleValueVec],[errVec,aqpErrVec],['w/o aqp',"w/ MeanAqp"],"watermark time (ms)","Error",0,1,figPath+"wm_MeanAqp",True)
-    print(otherIns[0],len(otherIns))
-    allowLegend=1
+    print(otherIns[0], len(otherIns))
+    allowLegend = 1
     for valueChose in range(len(valueVec)):
-        #instructionsPerMethod=getCyclesPerMethod(instructions,valueChose)
-        memLoadPerMethod=getCyclesPerMethod(memLoadAll,valueChose)
-        memStorePerMethod=getCyclesPerMethod(memStoreAll,valueChose)
-        fpVectorPerMethod=getCyclesPerMethod(fpVectorAll,valueChose)
-        fpScalarPerMethod=getCyclesPerMethod(fpScalarAll,valueChose)
-        branchPerMethod=getCyclesPerMethod(branchAll,valueChose)
-        otherPerMethod=getCyclesPerMethod(otherIns,valueChose)
-        accuBar.DrawFigure(methodTags,[memLoadPerMethod,memStorePerMethod,fpVectorPerMethod,fpScalarPerMethod,branchPerMethod,otherPerMethod],['load','store','fp-vector','fp-scalar','branch','others'],'','instructions', figPath + "/" + scanTag
-                                    + "_ins_accubar"+str(valueVecDisp[valueChose]),allowLegend,scanTag+"="+str(valueVecDisp[valueChose]))
-        allowLegend=0
+        # instructionsPerMethod=getCyclesPerMethod(instructions,valueChose)
+        memLoadPerMethod = getCyclesPerMethod(memLoadAll, valueChose)
+        memStorePerMethod = getCyclesPerMethod(memStoreAll, valueChose)
+        fpVectorPerMethod = getCyclesPerMethod(fpVectorAll, valueChose)
+        fpScalarPerMethod = getCyclesPerMethod(fpScalarAll, valueChose)
+        branchPerMethod = getCyclesPerMethod(branchAll, valueChose)
+        otherPerMethod = getCyclesPerMethod(otherIns, valueChose)
+        accuBar.DrawFigure(methodTags,
+                           [memLoadPerMethod, memStorePerMethod, fpVectorPerMethod, fpScalarPerMethod, branchPerMethod,
+                            otherPerMethod], ['load', 'store', 'fp-vector', 'fp-scalar', 'branch', 'others'], '',
+                           'instructions', figPath + "/" + scanTag
+                           + "_ins_accubar" + str(valueVecDisp[valueChose]), allowLegend,
+                           scanTag + "=" + str(valueVecDisp[valueChose]))
+        allowLegend = 0
     # print(aqpErrVec)
     # print(elapseTimeVecFD)
     # readResultsingleValue(50,resultPath)

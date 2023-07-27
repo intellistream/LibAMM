@@ -371,8 +371,7 @@ class ConfigMap {
    * @brief return the map of string
    * @return the strMap variable
    */
-  std::map<std::string, std::string> getStrMap()
-  {
+  std::map<std::string, std::string> getStrMap() {
     return strMap;
   }
 };

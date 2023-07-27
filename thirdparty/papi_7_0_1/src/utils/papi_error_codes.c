@@ -33,40 +33,39 @@
 #include "papi.h"
 
 int
-main( int argc, char **argv )
-{
-	int i=0;
-	int retval;
+main(int argc, char **argv) {
+  int i = 0;
+  int retval;
 
-	(void)argc;
-	(void)argv;
+  (void) argc;
+  (void) argv;
 
- 	retval = PAPI_library_init( PAPI_VER_CURRENT );
-	if (retval != PAPI_VER_CURRENT ) {
-		fprintf(stderr,"Error with PAPI_library_init!\n");
-		return retval;
-	}
+  retval = PAPI_library_init(PAPI_VER_CURRENT);
+  if (retval != PAPI_VER_CURRENT) {
+    fprintf(stderr, "Error with PAPI_library_init!\n");
+    return retval;
+  }
 
-	printf( "\n----------------------------------\n" );
-	printf( "For PAPI Version: %d.%d.%d.%d\n",
-			PAPI_VERSION_MAJOR( PAPI_VERSION ),
-			PAPI_VERSION_MINOR( PAPI_VERSION ),
-			PAPI_VERSION_REVISION( PAPI_VERSION ),
-			PAPI_VERSION_INCREMENT( PAPI_VERSION ) );
-	printf( "----------------------------------\n" );
-	while ( 1 ) {
-		char *errstr;
-		errstr = PAPI_strerror( -i );
+  printf("\n----------------------------------\n");
+  printf("For PAPI Version: %d.%d.%d.%d\n",
+         PAPI_VERSION_MAJOR(PAPI_VERSION),
+         PAPI_VERSION_MINOR(PAPI_VERSION),
+         PAPI_VERSION_REVISION(PAPI_VERSION),
+         PAPI_VERSION_INCREMENT(PAPI_VERSION));
+  printf("----------------------------------\n");
+  while (1) {
+    char *errstr;
+    errstr = PAPI_strerror(-i);
 
-		if ( NULL == errstr ) {
-		    break;
-		}
+    if (NULL == errstr) {
+      break;
+    }
 
-		printf( "Error code %4d: %s\n", -i, errstr );
-		i++;
-	}
-	printf( "There are %d error codes defined\n", i );
-	printf( "----------------------------------\n\n" );
+    printf("Error code %4d: %s\n", -i, errstr);
+    i++;
+  }
+  printf("There are %d error codes defined\n", i);
+  printf("----------------------------------\n\n");
 
-	return 0;
+  return 0;
 }

@@ -213,9 +213,9 @@ def main():
         xvalues=periodAll,
         yvalues=(metrics_kwargs['SxxElapsedTime (1 per ms)'] + metrics_kwargs['SyyElapsedTime (1 per ms)'] +
                  metrics_kwargs['SxyElapsedTime (1 per ms)']) / (
-                            metrics_kwargs['CorrelationElapsedTime (1 per ms)'] + metrics_kwargs[
-                        'MElapsedTime (1 per ms)'] + metrics_kwargs['SxxNegativeHalfElapsedTime (1 per ms)'] +
-                            metrics_kwargs['SyyNegativeHalfElapsedTime (1 per ms)']),
+                        metrics_kwargs['CorrelationElapsedTime (1 per ms)'] + metrics_kwargs[
+                    'MElapsedTime (1 per ms)'] + metrics_kwargs['SxxNegativeHalfElapsedTime (1 per ms)'] +
+                        metrics_kwargs['SyyNegativeHalfElapsedTime (1 per ms)']),
         legend_labels=evaTypes,
         x_label=scan_dictionary['scanPara'],
         y_label='AMM time over Else time',

@@ -96,11 +96,11 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
             handles, labels = figure.get_legend_handles_labels()
         if allow_legend == True:
             leg = plt.legend(handles[::-1], labels[::-1],
-                             #loc='upper left',
+                             # loc='upper left',
                              prop=LEGEND_FP,
                              ncol=1,
                              bbox_to_anchor=(-0.2, 0.7),
-                            shadow=True,frameon=True,edgecolor='black',borderaxespad=1,
+                             shadow=True, frameon=True, edgecolor='black', borderaxespad=1,
                              # bbox_to_anchor=(1.17, 0.5),
                              # handletextpad=0.1,
                              # borderaxespad=0.0,
