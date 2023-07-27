@@ -9,5 +9,6 @@ add_sources(
         BetaMatrixLoader.cpp
         SIFTMatrixLoader.cpp
         MNISTMatrixLoader.cpp
+        MtxMatrixLoader.cpp
         MatrixLoaderTable.cpp
 )
