@@ -1,1 +1,1 @@
-1. add scripts to draw stall cycles and instructions under papi.
+1. fix the perf bugs of streaming, generating time stamps will not be counted in perf

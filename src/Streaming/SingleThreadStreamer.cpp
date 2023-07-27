@@ -17,21 +17,29 @@ bool AMMBench::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
    * @brief 2. set the batch size
    */
   batchSize = cfg->tryU64("batchSize", 1, true);
+  fullLazy=cfg->tryU64("fullLazy", 0, true);
   return true;
 }
-
-torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
-  assert(sketchSize);
+bool AMMBench::SingleThreadStreamer::prepareRun(torch::Tensor A,torch::Tensor B) {
   uint64_t aRows = A.size(0);
   cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
-  if (batchSize > aRows) {
+  if ((batchSize > aRows)||fullLazy) {
     batchSize = aRows;
   }
-  AMMBench::TimeStamper tsGen;
+  AMMBench::TimeStamper tsGen, tsGenB;
   tsGen.setConfig(cfgGlobal);
   myTs = tsGen.getTimeStamps();
+  tsGenB.setSeed(7758258);
+  tsGenB.setConfig(cfgGlobal);
+  myTsB = tsGenB.getTimeStamps();
   INTELLI_INFO("Generate time stamp done");
   matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
+  return true;
+}
+torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+  assert(sketchSize);
+
+
   struct timeval tstart;
   //INTELLI_INFO("I am mm");
   INTELLI_INFO("Start Streaming A rows");
@@ -39,16 +47,19 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
   uint64_t endRow = startRow + batchSize;
   uint64_t tNow = 0;
   uint64_t tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
+  if(fullLazy)
+  {tEXpectedArrival=0;}
+
   uint64_t tp = 0;
   uint64_t tDone = 0;
-
+  uint64_t aRows = A.size(0);
   //pre-partition
-  std::vector<torch::Tensor> partitions;
-  for (uint64_t i = 0; i < aRows; i += batchSize) {
+
+ /* for (uint64_t i = 0; i < aRows; i += batchSize) {
     uint64_t end = std::min(i + batchSize, aRows);
     auto subA = A.slice(0, i, end);
     partitions.push_back(subA);
-  }
+  }*/
   uint64_t index = -1;
   gettimeofday(&tstart, NULL);
 
@@ -61,8 +72,8 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
     /**
      * @brief now, the whole batch has arrived, compute
      */
-    //auto subA = A.slice(0, startRow, endRow);
-    auto subA = partitions[index];
+   auto subA = A.slice(0, startRow, endRow);
+
     matC->slice(0, startRow, endRow) = cppAlgoPtr->amm(subA, B, sketchSize);
     tp = INTELLI::UtilityFunctions::timeLastUs(tstart);
     /**
@@ -91,19 +102,6 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
 torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   uint64_t aRows = A.size(0);
-  cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
-  if (batchSize > aRows) {
-    batchSize = aRows;
-  }
-  AMMBench::TimeStamper tsGen, tsGenB;
-  tsGen.setConfig(cfgGlobal);
-  myTs = tsGen.getTimeStamps();
-
-  tsGenB.setSeed(7758258);
-  tsGenB.setConfig(cfgGlobal);
-  myTsB = tsGenB.getTimeStamps();
-  INTELLI_INFO("Generate time stamps for two streams done");
-  matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
   struct timeval tstart;
   //INTELLI_INFO("I am mm");
   INTELLI_INFO("Start Streaming A rows and B cols");
@@ -114,6 +112,9 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
   if (myTsB[endRow - 1]->arrivalTime > tEXpectedArrival) {
     tEXpectedArrival = myTsB[endRow - 1]->arrivalTime;
   }
+  if(fullLazy)
+  {tEXpectedArrival=0;}
+
   uint64_t tDone = 0;
   gettimeofday(&tstart, NULL);
   uint64_t iterationCnt = 0;

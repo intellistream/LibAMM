@@ -8,6 +8,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/torchscripts
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/scripts
         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/datasets
+        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${PROJECT_SOURCE_DIR}/src/CL
         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
 macro(add_catch_test appName SOURCE_FILES SOURCE_LIBS)
@@ -34,8 +36,8 @@ add_catch_test(int8_test SystemTest/INT8Test.cpp IntelliStream)
 
 add_catch_test(pq_test SystemTest/PQTest.cpp IntelliStream)
 add_catch_test(streaming_test SystemTest/StreamingTest.cpp IntelliStream)
-
-if (DEFINED ENV{AMMBENCH_CL})
+add_catch_test(mtxMatrixLoader_test SystemTest/MtxMatrixLoaderTest.cpp IntelliStream)
+if (ENABLE_OPENCL)
     add_catch_test(cl_test SystemTest/CLTest.cpp IntelliStream)
 endif ()
 

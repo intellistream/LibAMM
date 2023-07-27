@@ -28,6 +28,9 @@ namespace AMMBench {
     * - call @ref streamingAmm, if only A matrix will be streamed
     * - call @ref streamingAmm2S, if both A and B will be streamed
   * - call @ref getThroughput, and @ref getLatencyPercentage to get the streaming performance
+  * @note configs
+  * fullLazy U64, 0 whether or not make everything conducted under lazy mode, will force batchsize to the whole rows of A
+  * batchSize, U64,1
   */
 class SingleThreadStreamer {
  protected:
@@ -37,6 +40,7 @@ class SingleThreadStreamer {
   AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
   AMMBench::TensorPtr matC = nullptr;
   double throughput = 0.0;
+  uint64_t fullLazy=0;
  public:
   SingleThreadStreamer() {}
 
@@ -57,7 +61,12 @@ class SingleThreadStreamer {
 * @return bool whether the config is successfully set
 */
   virtual bool setConfig(INTELLI::ConfigMapPtr cfg);
-
+  /**
+   * @brief create the time stamps and other datastructures for streaming rn
+   * @param A
+   * @return
+   */
+  virtual bool prepareRun(torch::Tensor A, torch::Tensor B);
   /**
 * @brief To run a streaming Amm, assuming the rows of A coming in a streaming manner and B is fixed
 *  @param A The A matrix

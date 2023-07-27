@@ -12,7 +12,7 @@
 #include <MatrixLoader/BetaMatrixLoader.h>
 #include <MatrixLoader/SIFTMatrixLoader.h>
 #include <MatrixLoader/MNISTMatrixLoader.h>
-
+#include <MatrixLoader/MtxMatrixLoader.h>
 namespace AMMBench {
 /**
  * @note revise me if you need new loader
@@ -27,6 +27,7 @@ AMMBench::MatrixLoaderTable::MatrixLoaderTable() {
   loaderMap["beta"] = newBetaMatrixLoader();
   loaderMap["SIFT"] = newSIFTMatrixLoader();
   loaderMap["MNIST"] = newMNISTMatrixLoader();
+  loaderMap["mtx"] = newMtxMatrixLoader();
 }
 
 } // AMMBench
