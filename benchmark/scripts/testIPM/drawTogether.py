@@ -63,7 +63,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     # prepare new file
     # run
     # os.system('export OMP_NUM_THREADS=1')
-    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmark " + configFname)
+    os.system("cd " + exePath + "&& sudo env OMP_NUM_THREADS=1 ./benchmark " + configFname)
     # copy result
     os.system("sudo rm -rf " + resultPath + "/" + str(singleValue))
     os.system("sudo mkdir " + resultPath + "/" + str(singleValue))
