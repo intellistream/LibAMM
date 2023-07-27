@@ -1,5 +1,5 @@
 
-BRANCH=papi_arm64_bug_fix
+BRANCH=papi_indepth
 
 
 git init
