@@ -1,4 +1,4 @@
-#ifndef _PAPI_AIX_H			 /* _PAPI_AIX */
+#ifndef _PAPI_AIX_H             /* _PAPI_AIX */
 #define _PAPI_AIX_H
 
 /****************************/
@@ -35,7 +35,6 @@
 #include <sys/processor.h>
 #include <sys/atomic_op.h>
 #include <sys/utsname.h>
-
 
 #include "pmapi.h"
 
@@ -84,26 +83,23 @@ typedef pm_events_t hwd_pmevents_t;
 
 #include "ppc64_events.h"
 
-typedef struct ppc64_pmapi_control
-{
-	/* Buffer to pass to the kernel to control the counters */
-	pm_prog_t counter_cmd;
-	int group_id;
-	/* Space to read the counters */
-	pm_data_t state;
+typedef struct ppc64_pmapi_control {
+  /* Buffer to pass to the kernel to control the counters */
+  pm_prog_t counter_cmd;
+  int group_id;
+  /* Space to read the counters */
+  pm_data_t state;
 } ppc64_pmapi_control_t;
 
-typedef struct ppc64_reg_alloc
-{
-	int ra_position;
-	unsigned int ra_group[GROUP_INTS];
-	int ra_counter_cmd[MAX_COUNTERS];
+typedef struct ppc64_reg_alloc {
+  int ra_position;
+  unsigned int ra_group[GROUP_INTS];
+  int ra_counter_cmd[MAX_COUNTERS];
 } ppc64_reg_alloc_t;
 
-typedef struct ppc64_pmapi_context
-{
-	/* this structure is a work in progress */
-	ppc64_pmapi_control_t cntrl;
+typedef struct ppc64_pmapi_context {
+  /* this structure is a work in progress */
+  ppc64_pmapi_control_t cntrl;
 } ppc64_pmapi_context_t;
 
 /* Override void* definitions from PAPI framework layer */
@@ -125,11 +121,11 @@ typedef struct hwd_groups {
 */
 
 /* prototypes */
-extern int _aix_set_granularity( hwd_control_state_t * this_state, int domain );
-extern int _papi_hwd_init_preset_search_map( hwd_pminfo_t * info );
+extern int _aix_set_granularity(hwd_control_state_t *this_state, int domain);
+extern int _papi_hwd_init_preset_search_map(hwd_pminfo_t *info);
 
-extern int _aix_get_memory_info( PAPI_hw_info_t * mem_info, int type );
-extern int _aix_get_dmem_info( PAPI_dmem_info_t * d );
+extern int _aix_get_memory_info(PAPI_hw_info_t *mem_info, int type);
+extern int _aix_get_dmem_info(PAPI_dmem_info_t *d);
 
 /* Machine dependent info structure */
 extern pm_groups_info_t pmgroups;

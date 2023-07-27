@@ -28,33 +28,32 @@
 #include "../testlib/clockcore.h"
 
 int
-main( int argc, char **argv )
-{
-	(void) argc;
-	(void) argv;
+main(int argc, char **argv) {
+  (void) argc;
+  (void) argv;
 
-	int retval;
+  int retval;
 
-	retval = PAPI_library_init( PAPI_VER_CURRENT );
-	if (retval != PAPI_VER_CURRENT ) {
-		fprintf(stderr,"Error with PAPI init!\n");
-		return 1;
-	}
+  retval = PAPI_library_init(PAPI_VER_CURRENT);
+  if (retval != PAPI_VER_CURRENT) {
+    fprintf(stderr, "Error with PAPI init!\n");
+    return 1;
+  }
 
-	retval = PAPI_set_debug( PAPI_VERB_ECONT );
-	if (retval != PAPI_OK ) {
-		fprintf(stderr,"Error with PAPI_set_debug!\n");
-		return 1;
-	}
+  retval = PAPI_set_debug(PAPI_VERB_ECONT);
+  if (retval != PAPI_OK) {
+    fprintf(stderr, "Error with PAPI_set_debug!\n");
+    return 1;
+  }
 
-	printf( "Printing Clock latency and resolution.\n" );
-	printf( "-----------------------------------------------\n" );
+  printf("Printing Clock latency and resolution.\n");
+  printf("-----------------------------------------------\n");
 
-	retval=clockcore( 0 );
-	if (retval<0) {
-		fprintf(stderr,"Error reading clock!\n");
-		return retval;
-	}
+  retval = clockcore(0);
+  if (retval < 0) {
+    fprintf(stderr, "Error reading clock!\n");
+    return retval;
+  }
 
-	return 0;
+  return 0;
 }

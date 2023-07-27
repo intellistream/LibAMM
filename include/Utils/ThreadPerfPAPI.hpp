@@ -116,7 +116,7 @@ class ThreadPerfPAPI : public ThreadPerf {
     int ecode = 0;
     if ((retval = PAPI_event_name_to_code(papiTag.data(), &ecode)) != PAPI_OK) {
       fprintf(stderr, "PAPI event code error %d: %s\n", retval, PAPI_strerror(retval));
-    //  exit(-1);
+      //  exit(-1);
       return;
     }
     papiStrVec.push_back(displayTag);
@@ -206,12 +206,11 @@ class ThreadPerfPAPI : public ThreadPerf {
     return ru;
   }
   void initEventsByCfg(ConfigMapPtr cfg) {
-    if(cfg->tryU64("perfUseExternalList",0))
-    {
-      std::string perfListSrc=cfg->tryString("perfListSrc","perfLists/perfList.csv",1);
+    if (cfg->tryU64("perfUseExternalList", 0)) {
+      std::string perfListSrc = cfg->tryString("perfListSrc", "perfLists/perfList.csv", 1);
       ConfigMapPtr perfList = newConfigMap();
       perfList->fromFile(perfListSrc);
-      auto strMap=perfList->getStrMap();
+      auto strMap = perfList->getStrMap();
       for (auto &iter : strMap) {
         addPapiTag(iter.first, iter.second);
         //return;
@@ -232,7 +231,7 @@ class ThreadPerfPAPI : public ThreadPerf {
     if (cfg->tryU64("perfX64InstructionStall", 0)) {
       addPapiTag("instructionStall", "ILD_STALL:IQ_FULL");
     }*/
-   // addPapiTag("llcMiss", ":IQ_FULL");
+    // addPapiTag("llcMiss", ":IQ_FULL");
   }
 };
 

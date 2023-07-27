@@ -4,7 +4,7 @@
 
 #include <Streaming/SingleThreadStreamer.h>
 #include <Utils/UtilityFunctions.h>
-
+#include <chrono>
 bool AMMBench::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
   cfgGlobal = cfg;
   /**
@@ -17,13 +17,13 @@ bool AMMBench::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
    * @brief 2. set the batch size
    */
   batchSize = cfg->tryU64("batchSize", 1, true);
-  fullLazy=cfg->tryU64("fullLazy", 0, true);
+  fullLazy = cfg->tryU64("fullLazy", 0, true);
   return true;
 }
-bool AMMBench::SingleThreadStreamer::prepareRun(torch::Tensor A,torch::Tensor B) {
+bool AMMBench::SingleThreadStreamer::prepareRun(torch::Tensor A, torch::Tensor B) {
   uint64_t aRows = A.size(0);
   cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
-  if ((batchSize > aRows)||fullLazy) {
+  if ((batchSize > aRows) || fullLazy) {
     batchSize = aRows;
   }
   AMMBench::TimeStamper tsGen, tsGenB;
@@ -38,44 +38,40 @@ bool AMMBench::SingleThreadStreamer::prepareRun(torch::Tensor A,torch::Tensor B)
 }
 torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
-
-
-  struct timeval tstart;
   //INTELLI_INFO("I am mm");
   INTELLI_INFO("Start Streaming A rows");
   uint64_t startRow = 0;
   uint64_t endRow = startRow + batchSize;
   uint64_t tNow = 0;
   uint64_t tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
-  if(fullLazy)
-  {tEXpectedArrival=0;}
+  if (fullLazy) { tEXpectedArrival = 0; }
 
   uint64_t tp = 0;
   uint64_t tDone = 0;
   uint64_t aRows = A.size(0);
   //pre-partition
 
- /* for (uint64_t i = 0; i < aRows; i += batchSize) {
-    uint64_t end = std::min(i + batchSize, aRows);
-    auto subA = A.slice(0, i, end);
-    partitions.push_back(subA);
-  }*/
+  /* for (uint64_t i = 0; i < aRows; i += batchSize) {
+     uint64_t end = std::min(i + batchSize, aRows);
+     auto subA = A.slice(0, i, end);
+     partitions.push_back(subA);
+   }*/
   uint64_t index = -1;
-  gettimeofday(&tstart, NULL);
+  auto start = std::chrono::high_resolution_clock::now();
 
   while (startRow < aRows) {
-    tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    tNow = chronoElapsedTime(start);
     index++;
     while (tNow < tEXpectedArrival) {
-      tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+      tNow = chronoElapsedTime(start);
     }
     /**
      * @brief now, the whole batch has arrived, compute
      */
-   auto subA = A.slice(0, startRow, endRow);
+    auto subA = A.slice(0, startRow, endRow);
 
     matC->slice(0, startRow, endRow) = cppAlgoPtr->amm(subA, B, sketchSize);
-    tp = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    tp = chronoElapsedTime(start);
     /**
      * @brief the new arrived A will be no longer probed, so we can assign the processed time now
      */
@@ -92,7 +88,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
     }
     tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
   }
-  tDone = INTELLI::UtilityFunctions::timeLastUs(tstart);
+  tDone = chronoElapsedTime(start);
   INTELLI_INFO("Done in " + to_string(tDone) + "us");
   throughput = aRows;
   throughput = throughput * 1e6 / tDone;
@@ -102,7 +98,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
 torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   uint64_t aRows = A.size(0);
-  struct timeval tstart;
+
   //INTELLI_INFO("I am mm");
   INTELLI_INFO("Start Streaming A rows and B cols");
   uint64_t startRow = 0;
@@ -112,22 +108,23 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
   if (myTsB[endRow - 1]->arrivalTime > tEXpectedArrival) {
     tEXpectedArrival = myTsB[endRow - 1]->arrivalTime;
   }
-  if(fullLazy)
-  {tEXpectedArrival=0;}
+  if (fullLazy) { tEXpectedArrival = 0; }
 
   uint64_t tDone = 0;
-  gettimeofday(&tstart, NULL);
+
   uint64_t iterationCnt = 0;
   torch::Tensor incomingA, incomingB, newArrivedB, oldArrivedA;
   uint64_t aBCols = 0, lastABCols = 0;
+  auto start = std::chrono::high_resolution_clock::now();
   while (startRow < aRows) {
-    tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+
+    tNow = chronoElapsedTime(start);
     //auto subA = A.slice(0, startRow, endRow);
     incomingA = A.slice(0, startRow, endRow);
     incomingB = B.slice(1, startRow, endRow);
     newArrivedB = B.slice(1, 0, endRow);
     while (tNow < tEXpectedArrival) {
-      tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+      tNow = chronoElapsedTime(start);
       //usleep(1);
     }
     INTELLI_INFO("batch of " + to_string(startRow) + " to " + to_string(endRow) + " are ready");
@@ -165,7 +162,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
     }
     iterationCnt++;
   }
-  tDone = INTELLI::UtilityFunctions::timeLastUs(tstart);
+  tDone = chronoElapsedTime(start);
   /**
    * @brief The latency calculation is different from one stream case here,
    * as older A will still be probed by newer B
