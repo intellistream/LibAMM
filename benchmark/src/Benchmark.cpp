@@ -49,7 +49,20 @@ void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t 
   }
   AMMBench::SingleThreadStreamer ss;
   ss.setConfig(cfg);
+  ss.prepareRun(A,B);
   torch::Tensor ssC;
+  ThreadPerfPtr pef;
+#if AMMBENCH_PAPI == 1
+  if (cfg->tryU64("usePAPI", 1)) {
+    pef = newThreadPerfPAPI(-1);
+  } else {
+    pef = newThreadPerf(-1);
+  }
+#else
+  pef=newThreadPerf(-1);
+#endif
+  pef->initEventsByCfg(cfg);
+  pef->start();
   if (streamingTwoMatrixes) {
     INTELLI_INFO("Both A,B will be streaming");
     ssC = ss.streamingAmm2S(A, B, sketchSize);
@@ -57,7 +70,8 @@ void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t 
     INTELLI_INFO("Only A will be streaming");
     ssC = ss.streamingAmm(A, B, sketchSize);
   }
-  auto resultCsv = newConfigMap();;
+  pef->end();
+  auto resultCsv = pef->resultToConfigMap();
   resultCsv->edit("throughput", (double) ss.getThroughput());
   resultCsv->edit("throughputByElements", (double) (ss.getThroughput() * A.size(1)));
   resultCsv->edit("95%latency", (double) ss.getLatencyPercentage(0.95));
