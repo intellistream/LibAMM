@@ -2,8 +2,8 @@ key,value,type
 sketchDimension,25,U64
 threads,1,U64
 useCPP,1,U64
-forceMP,1,U64
-cppAlgoTag,tugOfWar,String
+forceMP,0,U64
+cppAlgoTag,countSketch,String
 matrixLoaderTag,SIFT,String
 usingMeter,1,U64
 eventRateTps,200,U64
