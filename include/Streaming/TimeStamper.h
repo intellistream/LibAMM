@@ -69,6 +69,7 @@ typedef std::shared_ptr<class AMMTimeStamp> AMMTimeStampPtr;
 *  - streamingTupleCnt U64 The number of "streaming tuples", can be set to the #rows or #cols of a matrix
 *  - timeStamper_zipfEvent, U64, whether or not using the zipf for event rate, default 0
 *  - timeStamper_zipfEventFactor, Double, the zpf factor for event rate, default 0.1, should be 0~1
+*  - staticDataSet, U64, 0 , whether or not treat a dataset as static
 * @note  Default behavior
 * - create
 * - call @ref setSetSeed if you want different seed, default seed is 114514
@@ -87,7 +88,7 @@ class TimeStamper {
   uint64_t eventRateTps = 0;
   uint64_t timeStepUs = 40;
   uint64_t seed = 114514;
-
+  uint64_t staticDataSet=0;
   /**
 *
 *  @brief generate the vector of event
