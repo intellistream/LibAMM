@@ -12,6 +12,7 @@ bool AMMBench::TimeStamper::setConfig(INTELLI::ConfigMapPtr cfg) {
   timeStamper_zipfEvent = cfg->tryU64("timeStamper_zipfEvent", 0, true);
   timeStamper_zipfEventFactor = cfg->tryDouble("timeStamper_zipfEventFactor", 0.1, true);
   testSize = cfg->tryU64("streamingTupleCnt", 0, true);
+  staticDataSet = cfg->tryU64("staticDataSet",0,true);
   md.setSeed(seed);
   generateEvent();
   generateArrival();
@@ -21,7 +22,11 @@ bool AMMBench::TimeStamper::setConfig(INTELLI::ConfigMapPtr cfg) {
 
 void AMMBench::TimeStamper::generateEvent() {
   uint64_t maxTime = testSize * 1000 * 1000 / eventRateTps;
-  if (timeStamper_zipfEvent) {
+  if(staticDataSet)
+  { eventS.resize(testSize);
+    eventS.assign(testSize,0);// Create vector of size 'size' with all elements set to 0
+  }
+  else if (timeStamper_zipfEvent) {
     INTELLI_INFO("Use zipf for event time, factor=" + to_string(timeStamper_zipfEventFactor));
     INTELLI_INFO("maxTime=" + to_string(maxTime) + "us" + "rate=" + to_string(eventRateTps) + "K, cnt=" +
         to_string(testSize));
