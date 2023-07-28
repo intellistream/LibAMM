@@ -12,12 +12,21 @@ bool AMMBench::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
   */
   std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
   cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
-  cppAlgoPtr->setConfig(cfg);
+  if(cppAlgoPtr== nullptr)
+  {
+    INTELLI_ERROR("Invalid algo, abort");
+    exit(-1);
+  }
+  cppAlgoPtr->setConfig(cfgGlobal);
   /**
    * @brief 2. set the batch size
    */
   batchSize = cfg->tryU64("batchSize", 1, true);
+  /**
+   * @brief 3. load other configs
+   */
   fullLazy = cfg->tryU64("fullLazy", 0, true);
+  staticDataSet = cfg->tryU64("staticDataSet",0,true);
   return true;
 }
 bool AMMBench::SingleThreadStreamer::prepareRun(torch::Tensor A, torch::Tensor B) {
@@ -44,8 +53,6 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
   uint64_t endRow = startRow + batchSize;
   uint64_t tNow = 0;
   uint64_t tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
-  if (fullLazy) { tEXpectedArrival = 0; }
-
   uint64_t tp = 0;
   uint64_t tDone = 0;
   uint64_t aRows = A.size(0);
@@ -56,12 +63,12 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
      auto subA = A.slice(0, i, end);
      partitions.push_back(subA);
    }*/
-  uint64_t index = -1;
+  //uint64_t index = -1;
   auto start = std::chrono::high_resolution_clock::now();
 
   while (startRow < aRows) {
     tNow = chronoElapsedTime(start);
-    index++;
+    //index++;
     while (tNow < tEXpectedArrival) {
       tNow = chronoElapsedTime(start);
     }
@@ -108,7 +115,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
   if (myTsB[endRow - 1]->arrivalTime > tEXpectedArrival) {
     tEXpectedArrival = myTsB[endRow - 1]->arrivalTime;
   }
-  if (fullLazy) { tEXpectedArrival = 0; }
+
 
   uint64_t tDone = 0;
 
