@@ -33,7 +33,7 @@ namespace AMMBench {
 class SIFTMatrixLoader : public AbstractMatrixLoader {
  protected:
   torch::Tensor A, B;
-  uint64_t aRow, aCol, bCol;
+  std::string SIFTSize="10K";
 
   /**
    * @brief Inline logic of reading a config file
