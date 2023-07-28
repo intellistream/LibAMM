@@ -16,37 +16,31 @@ using namespace INTELLI;
 using namespace torch;
 using namespace DIVERSE_METER;
 
-void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1) {
-  uint64_t threads = cfg->tryU64("threads", 1, true);
+void streamingTest(std::string configName) {
+  ConfigMapPtr cfg = newConfigMap();
+  cfg->fromFile(configName);
+  AMMBench::MatrixLoaderTable mLoaderTable;
+  uint64_t sketchDimension;
+  ConfigMapPtr breakDownResult = nullptr;
+  sketchDimension = cfg->tryU64("sketchDimension", 50, true);
+  uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
+  //uint64_t usingMeter = cfg->tryU64("usingMeter", 0, true);
+  std::string meterTag = cfg->tryString("meterTag", "intelMsr", true);
+  //uint64_t useCPP = cfg->tryU64("useCPP", 0, true);
+  UtilityFunctions::bind2Core((int) coreBind);
+
+ // uint64_t threads = cfg->tryU64("threads", 1, true);
   uint64_t streamingTwoMatrixes = cfg->tryU64("streamingTwoMatrixes", 0, true);
-  if (threads > 1) {
-    AMMBench::BlockPartitionStreamer ss;
-    ss.setConfig(cfg);
-    torch::Tensor ssC;
-    if (streamingTwoMatrixes) {
-      INTELLI_INFO("Both A,B will be streaming");
-      ssC = ss.streamingAmm2S(A, B, sketchSize);
-      cout << "completed" << endl;
-    } else {
-      INTELLI_INFO("Only A will be streaming");
-      ssC = ss.streamingAmm(A, B, sketchSize);
-    }
-    auto resultCsv = newConfigMap();
-    resultCsv->edit("throughput", (double) ss.getThroughput());
-    resultCsv->edit("throughputByElements", (double) (ss.getThroughput() * A.size(1)));
-    resultCsv->edit("95%latency", (double) ss.getLatencyPercentage(0.95));
-    torch::Tensor rawC = torch::matmul(A, B);
-    double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(rawC, ssC);
-    double froBNormal = B.norm().item<double>();
-    double errorBoundRatio = froError / froBNormal;
-    INTELLI_INFO("B normal is " + to_string(froBNormal));
-    resultCsv->edit("froError", (double) froError);
-    resultCsv->edit("errorBoundRatio", (double) errorBoundRatio);
-    resultCsv->toFile("result_streaming.csv");
-    INTELLI_INFO("Done. here is overall result");
-    std::cout << resultCsv->toString() << endl;
-    return;
-  }
+  INTELLI_INFO("Place me at core" + to_string(coreBind));
+  INTELLI_INFO(
+      "with sketch" + to_string(sketchDimension));
+  std::string matrixLoaderTag = cfg->tryString("matrixLoaderTag", "random", true);
+  auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);
+  assert(matLoaderPtr);
+  matLoaderPtr->setConfig(cfg);
+  auto A = matLoaderPtr->getA();
+  auto B = matLoaderPtr->getB();
+  torch::Tensor C;
   AMMBench::SingleThreadStreamer ss;
   ss.setConfig(cfg);
   ss.prepareRun(A, B);
@@ -65,10 +59,10 @@ void streamingTest(ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t 
   pef->start();
   if (streamingTwoMatrixes) {
     INTELLI_INFO("Both A,B will be streaming");
-    ssC = ss.streamingAmm2S(A, B, sketchSize);
+    ssC = ss.streamingAmm2S(A, B, sketchDimension);
   } else {
     INTELLI_INFO("Only A will be streaming");
-    ssC = ss.streamingAmm(A, B, sketchSize);
+    ssC = ss.streamingAmm(A, B, sketchDimension);
   }
   pef->end();
   auto resultCsv = pef->resultToConfigMap();
@@ -97,6 +91,11 @@ void runSingleThreadTest(std::string configName) {
   AMMBench::MatrixLoaderTable mLoaderTable;
   uint64_t sketchDimension;
   ConfigMapPtr breakDownResult = nullptr;
+  uint64_t isStreaming = cfg->tryU64("isStreaming", 0, true);
+  if (isStreaming) {
+    streamingTest(configName);
+    return;
+  }
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
   uint64_t usingMeter = cfg->tryU64("usingMeter", 0, true);
@@ -138,11 +137,7 @@ void runSingleThreadTest(std::string configName) {
   auto A = matLoaderPtr->getA();
   auto B = matLoaderPtr->getB();
   torch::Tensor C;
-  uint64_t isStreaming = cfg->tryU64("isStreaming", 0, true);
-  if (isStreaming) {
-    streamingTest(cfg, A, B, sketchDimension);
-    return;
-  }
+
   //555
   /*torch::manual_seed(114514);
 //555

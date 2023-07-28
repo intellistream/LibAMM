@@ -12,7 +12,12 @@ bool AMMBench::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
   */
   std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
   cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
-  cppAlgoPtr->setConfig(cfg);
+  if(cppAlgoPtr== nullptr)
+  {
+    INTELLI_ERROR("Invalid algo, abort");
+    exit(-1);
+  }
+  cppAlgoPtr->setConfig(cfgGlobal);
   /**
    * @brief 2. set the batch size
    */
