@@ -4,7 +4,29 @@
 
 #include <MatrixLoader/MtxMatrixLoader.h>
 #include <Utils/IntelliLog.h>
+#include <cmath>
+torch::Tensor AMMBench::scaleIntoPN1(torch::Tensor a){
+  torch::Tensor min_value = a.min();
+  torch::Tensor max_value = a.max();
+  torch::Tensor normalized_tensor;
+  if (std::abs(min_value.item<float>()) > std::abs(max_value.item<float>())) {
+    normalized_tensor=a/min_value;
+  }
+  else
+  {
+    normalized_tensor=a/max_value;
+  }
+  return normalized_tensor;
+}
+torch::Tensor AMMBench::normalizeIntoPN1(torch::Tensor a){
+  torch::Tensor min_value = a.min();
+  torch::Tensor max_value = a.max();
 
+  // Normalize the tensor to -1 to 1
+  torch::Tensor normalized_tensor = 2 * (a - min_value) / (max_value - min_value) - 1;
+
+  return normalized_tensor;
+}
 torch::Tensor AMMBench::loadMatrixFromMatrixMarket(const std::string &filename) {
   ifstream file(filename);
   if (!file.is_open()) {
@@ -56,6 +78,8 @@ torch::Tensor AMMBench::loadMatrixFromMatrixMarket(const std::string &filename) 
 void AMMBench::MtxMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   transposeA = cfg->tryU64("transposeA", 0, true);
   transposeB = cfg->tryU64("transposeB", 1, true);
+  normalizeA= cfg->tryU64("normalizeA", 0, true);
+  normalizeB= cfg->tryU64("normalizeB", 0, true);
   oneSrcForAB = cfg->tryU64("oneSrcForAB", 0, true);
   srcA = cfg->tryString("srcA", "datasets/ZENIOS/zenios.mtx", true);
   if (oneSrcForAB) {
@@ -71,11 +95,25 @@ void AMMBench::MtxMatrixLoader::generateAB() {
   if (transposeA) {
     A = A.t();
   }
+  if(normalizeA)
+  {
+    A= normalizeIntoPN1(A);
+  }else if(scaleA)
+  {
+    A= scaleIntoPN1(A);
+  }
+
   B = loadMatrixFromMatrixMarket(srcB);
   if (transposeB) {
     B = B.t();
   }
-
+  if(normalizeB)
+  {
+    B= normalizeIntoPN1(B);
+  }else if(scaleB)
+  {
+    B= scaleIntoPN1(B);
+  }
 }
 
 //do nothing in abstract class
