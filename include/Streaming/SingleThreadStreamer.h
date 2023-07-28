@@ -31,6 +31,7 @@ namespace AMMBench {
   * @note configs
   * fullLazy U64, 0 whether or not make everything conducted under lazy mode, will force batchsize to the whole rows of A
   * batchSize, U64,1
+  * staticDataSet, U64, 0 , whether or not treat a dataset as static
   */
 class SingleThreadStreamer {
  protected:
@@ -41,6 +42,7 @@ class SingleThreadStreamer {
   AMMBench::TensorPtr matC = nullptr;
   double throughput = 0.0;
   uint64_t fullLazy = 0;
+  uint64_t  staticDataSet=0;
  public:
   SingleThreadStreamer() {}
 
