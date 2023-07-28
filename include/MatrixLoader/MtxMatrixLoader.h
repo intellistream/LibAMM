@@ -29,6 +29,18 @@ namespace AMMBench {
  */
 torch::Tensor loadMatrixFromMatrixMarket(const string &filename);
 /**
+ * @brief to normalize a tensor into +-1: will be biased by the min value
+ * @param a the input
+ * @return the normalized tensor
+ */
+torch::Tensor normalizeIntoPN1(torch::Tensor a);
+/**
+ * @brief to scale a tensor into +-1: will NOT change the bias
+ * @param a the input
+ * @return the normalized tensor
+ */
+torch::Tensor scaleIntoPN1(torch::Tensor a);
+/**
  * @class MtxMatrixLoader MatrixLoader/MtxMatrixLoader.h
  * @brief The matrix loader to load matrixes stored in matrix market mtx format
  * @ingroup AMMBENCH_MatrixLOADER
@@ -44,6 +56,11 @@ torch::Tensor loadMatrixFromMatrixMarket(const string &filename);
  * - "srcB" The file source for B matrix, String, "datasets/ZENIOS/zenios.mtx"
  * - "transposeA" Whether or not transpose A matrix, U64, 0
  * -  "transposeB" Whether or not transpose B matrix, U64, 1
+ * -  "normalizeA" Whether or not normalize A matrix (Normalization will force the minimum value to be -1) , U64, 0
+ * -  "normalizeB" Whether or not transpose B matrix, U64, 0
+ * -  "scaleA" Whether or not scale A matrix (scale will force the maximum value to be 1) , U64, 0
+ *      -@note: do not normalize and scale at the same time
+ * -  "scaleB" Whether or not scale B matrix (scale will force the maximum value to be 1) , U64, 0
  * @note: default name tags
  * "mtx": @ref MtxMatrixLoader
  */
@@ -52,6 +69,7 @@ class MtxMatrixLoader : public AbstractMatrixLoader {
   torch::Tensor A, B;
   std::string srcA, srcB;
   uint64_t oneSrcForAB, transposeA, transposeB;
+  uint64_t normalizeA,normalizeB,scaleA,scaleB;
   /**
    * @brief Inline logic of reading a config file
    * @param cfg the config
