@@ -2,17 +2,21 @@
 // Created by haolan on 22/6/23.
 //
 #include <CPPAlgos/ProductQuantizationRaw.h>
+
+void AMMBench::ProductQuantizationRaw::setConfig(INTELLI::ConfigMapPtr cfg) {
+    C = cfg->tryU64("C", 10, true);
+    prototypesLoadPath = cfg->tryString("prototypesLoadPath", "torchscripts/prototypes.pt", true);
+    }
+
 torch::Tensor AMMBench::ProductQuantizationRaw::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   const int D = A.size(1);
-  int C;
   if (sketchSize < 50) C = (int) sketchSize;
-  C = 10;
   const int D_c = D / C;
 
   torch::Tensor prototypes;
 
   torch::serialize::InputArchive archive;
-  archive.load_from("torchscripts/prototypes.pt");
+  archive.load_from(prototypesLoadPath);
   archive.read("prototypes", prototypes);
 
   std::vector<torch::Tensor> A_encoded;

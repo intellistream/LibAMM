@@ -14,27 +14,12 @@ int findClosestDivisor(int A, int B) {
   return 1;
 }
 
-class PQMM {
- public:
-  torch::Tensor X, Y; // raw input matrixs  MxN, NxK
-  int l;  // size of the sub-codebook
-  int m;  // number of sub-codebook
-
-  std::vector<torch::Tensor> columnCodeBookX, rowCodeBookY;  // codebooks mxlxM, mxlxK
-  vector<vector<int>> columnCodeIndexX, rowCodeIndexY; // code indexs mxl
-  torch::Tensor res;
-
-  PQMM(torch::Tensor x, torch::Tensor y, int l, int m) : X(std::move(x)), Y(std::move(y)), l(l), m(m) {}
-  ~PQMM() = default;
-  void constructCodeBooks();
-  static torch::Tensor matrixOuterProduct(torch::Tensor A, torch::Tensor B);
-  //void matrixAdd(torch::Tensor &A, torch::Tensor adds);
-  torch::Tensor runAMM(bool training = false);
-  static void save3DVectorDoubleToFile(string filename, vector<vector<vector<double>>> &vec);
-  static void save2DVectorIntToFile(string filename, vector<vector<int>> &vec);
-  static void load3DVectorDoubleFromFile(string filename, vector<vector<vector<double>>> &vec);
-  static void load2DVectorIntFromFile(string filename, vector<vector<int>> &vec);
-};
+void AMMBench::VectorQuantization::setConfig(INTELLI::ConfigMapPtr cfg) {
+    string columnCodeIndexXPath = cfg->tryString("columnCodeIndexXPath", "torchscripts/columnCodeIndexX.txt", true);
+    string rowCodeIndexYPath = cfg->tryString("rowCodeIndexYPath", "torchscripts/rowCodeIndexY.txt", true);
+    string columnCodeBookXvecPath = cfg->tryString("columnCodeBookXvecPath", "torchscripts/columnCodeBookXvec.txt", true);
+    string rowCodeBookYvecPath = cfg->tryString("rowCodeBookYvecPath", "torchscripts/rowCodeBookYvec.txt", true);
+    }
 
 torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const torch::Tensor B, uint64_t l) {
 
@@ -43,10 +28,18 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
 
   int m = A1.size(1) / findClosestDivisor(A1.size(1), l);
   PQMM pqmm(A1, B1, l, m);
+  pqmm.setFilePath(columnCodeIndexXPath, rowCodeIndexYPath, columnCodeBookXvecPath, rowCodeBookYvecPath);
   return pqmm.runAMM(false);
 }
 
-torch::Tensor PQMM::runAMM(bool training) {
+void AMMBench::PQMM::setFilePath(string columnCodeIndexXPathPassedIn, string rowCodeIndexYPathPassedIn, string columnCodeBookXvecPathPassedIn, string rowCodeBookYvecPathPassedIn){
+  columnCodeIndexXPath = columnCodeIndexXPathPassedIn;
+  rowCodeIndexYPath = rowCodeIndexYPathPassedIn;
+  columnCodeBookXvecPath = columnCodeBookXvecPathPassedIn;
+  rowCodeBookYvecPath = rowCodeBookYvecPathPassedIn;
+}
+
+torch::Tensor AMMBench::PQMM::runAMM(bool training) {
   // 1. initialize result matrix
   res = torch::empty({X.size(0), Y.size(1)});
 
@@ -54,14 +47,14 @@ torch::Tensor PQMM::runAMM(bool training) {
   if (training) constructCodeBooks();
   else {
     vector<vector<vector<double>>> columnCodeBookXvec, rowCodeBookYvec;  // codebooks mxlxM, mxlxK
-    load2DVectorIntFromFile("torchscripts/VQ/columnCodeIndexX.txt", columnCodeIndexX);
-    load2DVectorIntFromFile("torchscripts/VQ/rowCodeIndexY.txt", rowCodeIndexY);
+    load2DVectorIntFromFile(columnCodeIndexXPath, columnCodeIndexX);
+    load2DVectorIntFromFile(rowCodeIndexYPath, rowCodeIndexY);
     this->m = columnCodeIndexX.size();
     this->l = columnCodeIndexX[0].size();
 
     // For columnCodeBookX, rowCodeBookY
-    load3DVectorDoubleFromFile("torchscripts/VQ/columnCodeBookX.txt", columnCodeBookXvec);
-    load3DVectorDoubleFromFile("torchscripts/VQ/rowCodeBookY.txt", rowCodeBookYvec);
+    load3DVectorDoubleFromFile(columnCodeBookXvecPath, columnCodeBookXvec);
+    load3DVectorDoubleFromFile(rowCodeBookYvecPath, rowCodeBookYvec);
 
     for (vector<vector<double>> vec : columnCodeBookXvec) {
       std::vector<double> flat_vec;
@@ -108,11 +101,11 @@ torch::Tensor PQMM::runAMM(bool training) {
   return res;
 }
 
-torch::Tensor PQMM::matrixOuterProduct(torch::Tensor A, torch::Tensor B) {
+torch::Tensor AMMBench::PQMM::matrixOuterProduct(torch::Tensor A, torch::Tensor B) {
   return torch::ger(A, B); // compute the outer product
 }
 
-void PQMM::save2DVectorIntToFile(string filename, vector<vector<int>> &vec) {
+void AMMBench::PQMM::save2DVectorIntToFile(string filename, vector<vector<int>> &vec) {
   ofstream file(filename);
   if (file.is_open()) {
     for (const auto &subVec : vec) {
@@ -127,7 +120,7 @@ void PQMM::save2DVectorIntToFile(string filename, vector<vector<int>> &vec) {
   }
 }
 
-void PQMM::save3DVectorDoubleToFile(string filename, vector<vector<vector<double>>> &vec) {
+void AMMBench::PQMM::save3DVectorDoubleToFile(string filename, vector<vector<vector<double>>> &vec) {
   ofstream file(filename);
   if (file.is_open()) {
     for (const auto &matrix : vec) {
@@ -145,7 +138,7 @@ void PQMM::save3DVectorDoubleToFile(string filename, vector<vector<vector<double
   }
 }
 
-void PQMM::load2DVectorIntFromFile(string filename, vector<vector<int>> &vec) {
+void AMMBench::PQMM::load2DVectorIntFromFile(string filename, vector<vector<int>> &vec) {
   ifstream file(filename);
   if (file.is_open()) {
     string line;
@@ -164,7 +157,7 @@ void PQMM::load2DVectorIntFromFile(string filename, vector<vector<int>> &vec) {
   }
 }
 
-void PQMM::load3DVectorDoubleFromFile(string filename, vector<vector<vector<double>>> &vec) {
+void AMMBench::PQMM::load3DVectorDoubleFromFile(string filename, vector<vector<vector<double>>> &vec) {
   ifstream file(filename);
   if (file.is_open()) {
     string line;
@@ -397,7 +390,7 @@ class KMeans {
   }
 };
 
-void PQMM::constructCodeBooks() {
+void AMMBench::PQMM::constructCodeBooks() {
   // define max interation times for KMeans using the max value of int
   int maxValue = std::numeric_limits<int>::max();
 
@@ -462,12 +455,12 @@ void PQMM::constructCodeBooks() {
   }
 
   // For columnCodeIndexX, rowCodeIndexY
-  save2DVectorIntToFile("torchscripts/VQ/columnCodeIndexX.txt", columnCodeIndexX);
-  save2DVectorIntToFile("torchscripts/VQ/rowCodeIndexY.txt", rowCodeIndexY);
+  save2DVectorIntToFile(columnCodeIndexXPath, columnCodeIndexX);
+  save2DVectorIntToFile(rowCodeIndexYPath, rowCodeIndexY);
 
   // For columnCodeBookX, rowCodeBookY
-  save3DVectorDoubleToFile("torchscripts/VQ/columnCodeBookX.txt", columnCodeBookXvec);
-  save3DVectorDoubleToFile("torchscripts/VQ/rowCodeBookY.txt", rowCodeBookYvec);
+  save3DVectorDoubleToFile(columnCodeBookXvecPath, columnCodeBookXvec);
+  save3DVectorDoubleToFile(rowCodeBookYvecPath, rowCodeBookYvec);
 
   // reconstruct columnCodeBookX and rowCodeBookY
   for (vector<vector<double>> vec : columnCodeBookXvec) {

@@ -18,6 +18,9 @@ namespace AMMBench {
  *
  */
 class ProductQuantizationRaw : public AMMBench::AbstractCPPAlgo {
+  protected:
+        string prototypesLoadPath;
+        int64_t C;
  public:
   ProductQuantizationRaw() {
 
@@ -35,6 +38,12 @@ class ProductQuantizationRaw : public AMMBench::AbstractCPPAlgo {
    * @return the output c matrix
    */
   virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+
+  /**
+   * @brief set the alo-specfic config related to one algorithm
+   * @param prototypesLoadPath where to load prototypes
+   */
+  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
 
 };
 
