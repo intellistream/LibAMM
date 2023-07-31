@@ -58,10 +58,12 @@ void AMMBench::SIFTMatrixLoader::generateAB() {
   torch::Tensor std = B.std(/*dim=*/0);
 
   // 3.2 Standardize the matrix
-  torch::Tensor standardizedB = (B - mean) / std;
+  // torch::Tensor standardizedB = (B - mean) / std;
+  torch::Tensor centeredB = B - mean;
 
   // 3.3 Check if need to resize
-  B = standardizedB;
+  // B = standardizedB;
+  B = centeredB;
 
   A = B.t();
 
