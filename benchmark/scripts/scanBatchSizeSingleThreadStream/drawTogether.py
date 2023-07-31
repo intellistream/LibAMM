@@ -52,89 +52,15 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 scanTag = "batchSize"
 
 
-def singleRun(exePath, singleValue, resultPath, configTemplate):
-    # resultFolder="singleValueTests"
-    configFname = "config_" + scanTag + str(singleValue) + ".csv"
-    # configTemplate = "config.csv"
-    # clear old files
-    os.system("cd " + exePath + "&& sudo rm *.csv")
-
-    # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
-    editConfig(configTemplate, exePath + configFname, scanTag, singleValue)
-    # prepare new file
-    # run
-    os.system("cd " + exePath + "&& sudo env OMP_NUM_THREADS=1 ./benchmark " + configFname)
-    # copy result
-    os.system("sudo rm -rf " + resultPath + "/" + str(singleValue))
-    os.system("sudo mkdir " + resultPath + "/" + str(singleValue))
-    os.system("cd " + exePath + "&& sudo cp *.csv " + resultPath + "/" + str(singleValue))
-
-
-def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"):
-    for i in singleValueVec:
-        singleRun(exePath, i, resultPath, templateName)
-
-
-def readResultSingle(singleValue, resultPath):
-    resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
-    throughput = readConfig(resultFname, "throughputByElements")
-    lat95 = readConfig(resultFname, "95%latency")
-    froError = readConfig(resultFname, "froError")
-    errorBoundRatio = readConfig(resultFname, "errorBoundRatio")
-    return throughput, lat95, froError, errorBoundRatio
-
-
-def cleanPath(path):
-    os.system("sudo rm -rf " + path)
-    os.system("sudo mkdir " + path)
-
-
-def readResultVector(singleValueVec, resultPath):
-    thrVec = []
-    lat95Vec = []
-    froErrorVec = []
-    errorBoundRatioVec = []
-    for i in singleValueVec:
-        thr, lat95, froError, errorBoundRatio = readResultSingle(i, resultPath)
-        thrVec.append(float(thr))
-        lat95Vec.append(float(lat95) / 1000.0)
-        froErrorVec.append(float(froError))
-        errorBoundRatioVec.append(float(errorBoundRatio))
-    return np.array(thrVec), np.array(lat95Vec), np.array(froErrorVec), np.array(
-        errorBoundRatioVec)
-
-
-def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec, reRun=1):
-    thrAll = []
-    lat95All = []
-    periodAll = []
-    froAll = []
-    errorBoundRatioAll = []
-    for i in range(len(csvTemplates)):
-        resultPath = commonPathBase + resultPaths[i]
-        if (reRun == 1):
-            os.system("sudo rm -rf " + resultPath)
-            os.system("sudo mkdir " + resultPath)
-            runScanVector(exeSpace, periodVec, resultPath, csvTemplates[i])
-        thr, lat95, fro, eb = readResultVector(periodVec, resultPath)
-        thrAll.append(thr)
-        lat95All.append(lat95)
-
-        periodAll.append(periodVec)
-
-        froAll.append(fro)
-        errorBoundRatioAll.append(eb)
-        # periodAll.append(periodVec)
-    return np.array(thrAll), np.array(lat95All), periodAll, np.array(froAll), np.array(errorBoundRatioAll)
-
-
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag + "CPP"
-    methodTags = ["CRS", "MM", "SMP-PCA", "CS"]
-    resultPaths = ["CRS", "MM", "SMP-PCA", "CS"]
-    csvTemplates = ["config_CPPCRS.csv", "config_CPPMM.csv", "config_CPPSMPPCA.csv", "config_CPPCOUNTERSKETCH.csv"]
+
+    algos = [MM_CPP, CRSV2_CPP, SMP_PCA_CPP, COUNT_SKETCH_CPP]
+    methodTags = list(map(lambda algo: algo.name, algos))
+
+    csvTemplate = "config.csv"
     valueVec = [10, 20, 50, 100, 250, 500, 1000]
     valueVecDisp = np.array(valueVec)
     # run
@@ -147,8 +73,8 @@ def main():
         os.system("sudo mkdir " + commonBase)
         reRun = 1
     # skech
-    thrAll, lat95All, periodAll, fro, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
-                                                         reRun)
+    thrAll, lat95All, periodAll, fro, eb = compareMethodStreaming(exeSpace, commonBase, scanTag,
+                                                                  algos, csvTemplate, valueVec, reRun)
     groupLine.DrawFigureYnormal(periodAll, thrAll / 1000.0,
                                 methodTags,
                                 "batch size (#rows)", "throughput (K elements/s)", 0, 1,
