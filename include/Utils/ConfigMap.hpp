@@ -374,6 +374,48 @@ class ConfigMap {
   std::map<std::string, std::string> getStrMap() {
     return strMap;
   }
+  /**
+   * @brief Add prefix to the front of keys, it is useful in downstream task where we need to generate metric config file for each components in the downstream task e.g. instructions -> ${prefix}Instructions
+   * @param prefix The prefix you want to add to the front of keys
+   * @return void
+   */
+  void addPrefixToKeys(std::string prefix){
+      std::map<std::string, uint64_t> uint64ModifiedMap;
+      for (const auto& entry : u64Map) { // Iterate through the original map and add the prefix to the keys
+          std::string modifiedKey = entry.first;
+          modifiedKey[0] = std::toupper(modifiedKey[0]);
+          modifiedKey = prefix + modifiedKey;
+          uint64ModifiedMap[modifiedKey] = entry.second;
+      }
+      u64Map = std::move(uint64ModifiedMap); // Replace the original map with the modified map
+      
+      std::map<std::string, int64_t> i64ModifiedMap;
+      for (const auto& entry : i64Map) {
+          std::string modifiedKey = entry.first;
+          modifiedKey[0] = std::toupper(modifiedKey[0]);
+          modifiedKey = prefix + modifiedKey;
+          i64ModifiedMap[modifiedKey] = entry.second;
+      }
+      i64Map = std::move(i64ModifiedMap);
+
+      std::map<std::string, double> doubleModifiedMap;
+      for (const auto& entry : doubleMap) {
+          std::string modifiedKey = entry.first;
+          modifiedKey[0] = std::toupper(modifiedKey[0]);
+          modifiedKey = prefix + modifiedKey;
+          doubleModifiedMap[modifiedKey] = entry.second;
+      }
+      doubleMap = std::move(doubleModifiedMap);
+
+      std::map<std::string, std::string> stringModifiedMap;
+      for (const auto& entry : strMap) {
+          std::string modifiedKey = entry.first;
+          modifiedKey[0] = std::toupper(modifiedKey[0]);
+          modifiedKey = prefix + modifiedKey;
+          stringModifiedMap[modifiedKey] = entry.second;
+      }
+      strMap = std::move(stringModifiedMap);
+  }
 };
 
 /**

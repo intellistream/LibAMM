@@ -37,7 +37,6 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
   myTs = tsGen.getTimeStamps();
   INTELLI_INFO("Generate time stamp done");
   matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
-  struct timeval tstart;
   INTELLI_INFO("Start Streaming A rows");
   uint64_t startRow = 0;
   uint64_t endRow = startRow + batchSize;
@@ -66,13 +65,13 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
   auto pool = std::make_shared<BS::thread_pool>(threads);
   BS::multi_future<void> tasks(threads);
   int index = -1;
-  gettimeofday(&tstart, NULL);
 
+  auto tstart = std::chrono::high_resolution_clock::now();
   while (startRow < aRows) {
     index++;
-    tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    tNow = chronoElapsedTime(tstart);
     while (tNow < tEXpectedArrival) {
-      tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+      tNow = chronoElapsedTime(tstart);
     }
     for (size_t i = 0; i < threads; ++i) {
       tasks[i] = pool->submit([&, i]() {
@@ -83,7 +82,7 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
       });
     }
     tasks.wait();
-    tp = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    tp = chronoElapsedTime(tstart);
     for (size_t i = startRow; i < endRow; i++) {
       myTs[i]->processedTime = tp;
     }
@@ -97,10 +96,14 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
     }
     tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
   }
-  tDone = INTELLI::UtilityFunctions::timeLastUs(tstart);
+  tDone = chronoElapsedTime(tstart);
   INTELLI_INFO("Done in " + to_string(tDone) + "us");
-  throughput = aRows;
-  throughput = throughput * 1e6 / tDone;
+  throughput = aRows * 1e6 / tDone;
+  double throughputByElements = throughput * A.size(1);
+  double latency95 = getLatencyPercentage(0.95);
+  metrics->edit("throughput", throughput);
+  metrics->edit("throughputByElements", throughputByElements);
+  metrics->edit("95%latency", latency95);
   return *matC;
 }
 
@@ -120,7 +123,6 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
   myTsB = tsGenB.getTimeStamps();
   INTELLI_INFO("Generate time stamps for two streams done");
   matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
-  struct timeval tstart;
   //INTELLI_INFO("I am mm");
   INTELLI_INFO("Start Streaming A rows and B cols");
   uint64_t startRow = 0;
@@ -131,7 +133,6 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
     tEXpectedArrival = myTsB[endRow - 1]->arrivalTime;
   }
   uint64_t tDone = 0;
-  gettimeofday(&tstart, NULL);
   uint64_t iterationCnt = 0;
   torch::Tensor incomingA, incomingB, newArrivedB, oldArrivedA;
   uint64_t aBCols = 0, lastABCols = 0;
@@ -140,12 +141,14 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
   auto pool = std::make_shared<BS::thread_pool>(threads);
   BS::multi_future<void> tasks(threads);
 
+  auto tstart = std::chrono::high_resolution_clock::now();
+
   while (startRow < aRows) {
-    tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+    tNow = chronoElapsedTime(tstart);
     incomingB = B.slice(1, startRow, endRow);
     newArrivedB = B.slice(1, 0, endRow);
     while (tNow < tEXpectedArrival) {
-      tNow = INTELLI::UtilityFunctions::timeLastUs(tstart);
+      tNow = chronoElapsedTime(tstart);
       //usleep(1);
     }
     INTELLI_INFO("batch of " + to_string(startRow) + " to " + to_string(endRow) + " are ready");
@@ -215,7 +218,7 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
     }
     iterationCnt++;
   }
-  tDone = INTELLI::UtilityFunctions::timeLastUs(tstart);
+  tDone = chronoElapsedTime(tstart);
   /**
    * @brief The latency calculation is different from one stream case here,
    * as older A will still be probed by newer B
@@ -224,8 +227,12 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
     myTs[i]->processedTime = tDone;
   }
   INTELLI_INFO("Done in " + to_string(tDone) + "us");
-  throughput = aRows;
-  throughput = throughput * 1e6 / tDone;
+  throughput = aRows * 1e6 / tDone;
+  double throughputByElements = throughput * A.size(1);
+  double latency95 = getLatencyPercentage(0.95);
+  metrics->edit("throughput", throughput);
+  metrics->edit("throughputByElements", throughputByElements);
+  metrics->edit("95%latency", latency95);
   return *matC;
 }
 double AMMBench::BlockPartitionStreamer::getLatencyPercentage(double fraction) {

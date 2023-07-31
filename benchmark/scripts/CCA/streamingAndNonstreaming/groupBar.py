@@ -99,9 +99,10 @@ def DrawBarPlot(x_values, y_values, legend_labels, x_label, y_label, filename):
     plt.tight_layout()
     plt.savefig(filename + ".pdf", bbox_inches='tight')
 
+# draw a bar chart
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(30, 10))
+    fig = plt.figure(figsize=(10, 3))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -110,7 +111,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     index = np.arange(len(x_values))
     # the bar width.
     # you may need to tune it to get the best figure.
-    width = 0.2
+    width = 0.08
     # draw the bars
     bars = []
     ts = 0
@@ -161,6 +162,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     plt.ylabel(y_label, fontproperties=LABEL_FP)
     plt.ylim(y_min, y_max)
     plt.savefig(filename + ".pdf", bbox_inches='tight')
+
 
 # example for reading csv file
 def ReadFile():

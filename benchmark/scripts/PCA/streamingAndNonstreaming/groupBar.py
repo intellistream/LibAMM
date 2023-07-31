@@ -70,8 +70,6 @@ def DrawLegend(legend_labels, filename):
                      )
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
-
-
 def DrawBarPlot(x_values, y_values, legend_labels, x_label, y_label, filename):
     # Example usage:
     # x_values = ['A', 'B', 'C', 'D']
@@ -95,7 +93,7 @@ def DrawBarPlot(x_values, y_values, legend_labels, x_label, y_label, filename):
         color = mcolors.to_hex(cmap(i / len(legend_labels)))  # Convert RGBA to valid color string
         ax.bar(x_val, y_val, width, color=color, label=legend_label, linewidth=3)
 
-    plt.xlabel(x_label, fontsize=16)
+    # plt.xlabel(x_label, fontsize=16)
     plt.ylabel(y_label, fontsize=20)
 
     for bar in ax.containers:  # Loop through all the bars
@@ -108,9 +106,9 @@ def DrawBarPlot(x_values, y_values, legend_labels, x_label, y_label, filename):
                         ha='center', va='bottom', fontweight='bold', fontsize=16)
 
     plt.tight_layout()
-    # plt.legend()
-    # plt.legend(loc='upper left', bbox_to_anchor=(-0.3, 0.6), fontsize=16)
-    plt.savefig(filename + ".pdf", bbox_inches='tight')
+    plt.savefig(filename + "_nolegend.pdf", bbox_inches='tight')
+    plt.legend(loc='upper left', bbox_to_anchor=(-0.3, 0.6), fontsize=16)
+    plt.savefig(filename + "_legend.pdf", bbox_inches='tight')
     plt.show()
 
 

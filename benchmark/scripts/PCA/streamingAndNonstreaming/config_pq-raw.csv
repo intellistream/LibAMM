@@ -9,5 +9,5 @@ usingMeter,1,U64
 eventRateTps,200,U64
 isStreaming,0,U64
 streamingTwoMatrices,0,U64
-prototypesLoadPath,../../../../../../torchscripts/PQ/prototypes_PCA_SIFT_Small_A_minus_mean.pt,String
-C,1,U64
+prototypesLoadPath,../../../../../../torchscripts/PQ/PCA/prototypes_PCA_SIFT_Small_A_minus_mean_C10_K64.pt,String
+C,10,U64
