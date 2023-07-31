@@ -71,10 +71,108 @@ def DrawLegend(legend_labels, filename):
     figlegend.savefig(FIGURE_FOLDER + '/' + filename + '.pdf')
 
 
-# draw a bar chart
+
+def DrawBarPlot(x_values, y_values, legend_labels, x_label, y_label, filename):
+    # Example usage:
+    # x_values = ['A', 'B', 'C', 'D']
+    # y_values = [10, 15, 20, 25]
+    # legend_labels = ['Category 1', 'Category 2', 'Category 3', 'Category 4']
+    # x_label = 'X-axis Label'
+    # y_label = 'Y-axis Label'
+    # filename = 'bar_plot'
+    # DrawBarPlot(x_values, y_values, legend_labels, x_label, y_label, filename)
+
+    import matplotlib.colors as mcolors
+
+    cmap = plt.cm.viridis
+
+    # Draw the bars with different colors from the color map
+    fig, ax = plt.subplots(figsize=(15, 12))
+    width = 0.3
+
+    # Draw the bars with different colors from the color map
+    for i, (x_val, y_val, legend_label) in enumerate(zip(x_values, y_values, legend_labels)):
+        color = mcolors.to_hex(cmap(i / len(legend_labels)))  # Convert RGBA to valid color string
+        ax.bar(x_val, y_val, width, color=color, label=legend_label, linewidth=3)
+
+    plt.xlabel(x_label, fontsize=16)
+    plt.ylabel(y_label, fontsize=20)
+
+    for bar in ax.containers:  # Loop through all the bars
+        for rect in bar:  # Loop through all the rectangles (individual bars) in the container
+            height = rect.get_height()
+            ax.annotate('{:.4f}'.format(height),  # Display y-value with 2 decimal digits
+                        xy=(rect.get_x() + rect.get_width() / 2, height),
+                        xytext=(0, 3),
+                        textcoords="offset points",
+                        ha='center', va='bottom', fontweight='bold', fontsize=16)
+
+    plt.tight_layout()
+    # plt.legend()
+    # plt.legend(loc='upper left', bbox_to_anchor=(-0.3, 0.6), fontsize=16)
+    plt.savefig(filename + ".pdf", bbox_inches='tight')
+    plt.show()
+
+
+def DrawGroupBarPlot(x_values, y_values_list, legend_labels, x_label, y_label, filename):
+
+    # Example usage:
+    # x_values = ['A', 'B', 'C', 'D']
+    # y_values_list = [[10, 15, 20, 25], [12, 18, 22, 28], [8, 12, 16, 20]]  # Each sublist represents a different category
+    # legend_labels = ['Category 1', 'Category 2', 'Category 3']
+    # x_label = 'X-axis Label'
+    # y_label = 'Y-axis Label'
+    # filename = 'group_bar_plot'
+    # DrawGroupBarPlot(x_values, y_values_list, legend_labels, x_label, y_label, filename)
+
+    COLOR_MAP = plt.cm.tab10
+    fig, ax = plt.subplots(figsize=(20, 8))
+
+    # The bar width for each group
+    bar_width = 0.2
+
+    # The spacing between each group of bars
+    bar_spacing = 0.1
+
+    # Calculate the number of bars in each group
+    num_bars = len(y_values_list)
+    num_groups = len(x_values)
+    total_width = num_bars * bar_width + (num_bars - 1) * bar_spacing
+
+    # Calculate the x positions for each group of bars
+    x_positions = np.arange(num_groups) * total_width
+
+    # Draw the bars for each category
+    for i, (y_values, legend_label) in enumerate(zip(y_values_list, legend_labels)):
+        color = COLOR_MAP(i % COLOR_MAP.N)  # Select color from the COLOR_MAP based on the index
+        bars = ax.bar(x_positions + i * bar_width, y_values, bar_width, color=color, label=legend_label)
+
+        # Display the value on top of each bar
+        for bar in bars:
+            height = bar.get_height()
+            ax.annotate('{:.2f}'.format(height),  # Display y-value with 2 decimal digits
+                        xy=(bar.get_x() + bar.get_width() / 2, height),
+                        xytext=(0, 3),
+                        textcoords="offset points",
+                        ha='center', va='bottom', fontsize=12)
+
+    plt.xlabel(x_label, fontsize=16)
+    plt.ylabel(y_label, fontsize=16)
+
+    # Set the x-axis tick positions and labels
+    ax.set_xticks(x_positions + (total_width - bar_width) / 2)
+    ax.set_xticklabels(x_values, fontsize=12)
+
+    plt.legend(fontsize=12)
+    plt.tight_layout()
+    plt.savefig(filename + ".pdf", bbox_inches='tight')
+    plt.show()
+
+
+
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(10, 3))
+    fig = plt.figure(figsize=(30, 10))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -83,7 +181,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     index = np.arange(len(x_values))
     # the bar width.
     # you may need to tune it to get the best figure.
-    width = 0.08
+    width = 0.2
     # draw the bars
     bars = []
     ts = 0
@@ -134,7 +232,6 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     plt.ylabel(y_label, fontproperties=LABEL_FP)
     plt.ylim(y_min, y_max)
     plt.savefig(filename + ".pdf", bbox_inches='tight')
-
 
 # example for reading csv file
 def ReadFile():
