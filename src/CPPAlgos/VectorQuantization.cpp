@@ -15,10 +15,14 @@ int findClosestDivisor(int A, int B) {
 }
 
 void AMMBench::VectorQuantization::setConfig(INTELLI::ConfigMapPtr cfg) {
-    string columnCodeIndexXPath = cfg->tryString("columnCodeIndexXPath", "torchscripts/columnCodeIndexX.txt", true);
-    string rowCodeIndexYPath = cfg->tryString("rowCodeIndexYPath", "torchscripts/rowCodeIndexY.txt", true);
-    string columnCodeBookXvecPath = cfg->tryString("columnCodeBookXvecPath", "torchscripts/columnCodeBookXvec.txt", true);
-    string rowCodeBookYvecPath = cfg->tryString("rowCodeBookYvecPath", "torchscripts/rowCodeBookYvec.txt", true);
+    columnCodeIndexXPath = cfg->tryString("columnCodeIndexXPath", "torchscripts/columnCodeIndexX.txt", true);
+    rowCodeIndexYPath = cfg->tryString("rowCodeIndexYPath", "torchscripts/rowCodeIndexY.txt", true);
+    columnCodeBookXvecPath = cfg->tryString("columnCodeBookXvecPath", "torchscripts/columnCodeBookXvec.txt", true);
+    rowCodeBookYvecPath = cfg->tryString("rowCodeBookYvecPath", "torchscripts/rowCodeBookYvec.txt", true);
+    INTELLI_INFO("columnCodeIndexXPath: " + columnCodeIndexXPath);
+    INTELLI_INFO("rowCodeIndexYPath: " + rowCodeIndexYPath);
+    INTELLI_INFO("columnCodeBookXvecPath: " + columnCodeBookXvecPath);
+    INTELLI_INFO("rowCodeBookYvecPath: " + rowCodeBookYvecPath);
     }
 
 torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const torch::Tensor B, uint64_t l) {

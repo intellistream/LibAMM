@@ -38,6 +38,7 @@ class BlockPartitionStreamer {
   double throughput = 0.0;
   uint64_t threads = 1;
   int coreBind;
+  INTELLI::ConfigMapPtr metrics = newConfigMap();
  public:
   BlockPartitionStreamer() {}
 
@@ -88,6 +89,14 @@ class BlockPartitionStreamer {
    * @return the latency in us
    */
   double getLatencyPercentage(double fraction);
+  /**
+   * @brief get metrics (including the pef result for all threads used in the runner, and elapsed time, throughput..)
+   * @return metrics ConfigMapPtr
+   */
+  INTELLI::ConfigMapPtr getMetrics(){
+    return metrics;
+  }
+
 
 };
 /**

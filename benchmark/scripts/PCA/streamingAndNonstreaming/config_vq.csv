@@ -9,7 +9,7 @@ usingMeter,1,U64
 eventRateTps,200,U64
 isStreaming,0,U64
 streamingTwoMatrices,0,U64
-columnCodeIndexXPath,../../../../../../torchscripts/VQ/PCA/PCAcolumnCodeIndexX.txt,String
-rowCodeIndexYPath,../../../../../../torchscripts/VQ/PCA/PCArowCodeIndexY.txt,String
-columnCodeBookXvecPath,../../../../../../torchscripts/VQ/PCA/PCAcolumnCodeBookX.txt,String
-rowCodeBookYvecPath,../../../../../../torchscripts/VQ/PCA/PCArowCodeBookY.txt,String
+columnCodeBookXvecPath,../../../../../../torchscripts/VQ/PCA/AAcolumnCodeBookX.txt,String
+columnCodeIndexXPath,../../../../../../torchscripts/VQ/PCA/AAcolumnCodeIndexX.txt,String
+rowCodeBookYvecPath,../../../../../../torchscripts/VQ/PCA/AArowCodeBookY.txt,String
+rowCodeIndexYPath,../../../../../../torchscripts/VQ/PCA/AArowCodeIndexY.txt,String

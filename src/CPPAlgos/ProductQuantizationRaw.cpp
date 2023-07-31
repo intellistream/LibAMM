@@ -6,6 +6,7 @@
 void AMMBench::ProductQuantizationRaw::setConfig(INTELLI::ConfigMapPtr cfg) {
     C = cfg->tryU64("C", 10, true);
     prototypesLoadPath = cfg->tryString("prototypesLoadPath", "torchscripts/prototypes.pt", true);
+    INTELLI_INFO("prototypesLoadPath: " + prototypesLoadPath);
     }
 
 torch::Tensor AMMBench::ProductQuantizationRaw::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {

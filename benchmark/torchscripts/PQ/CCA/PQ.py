@@ -53,24 +53,17 @@ def save_model(model, path, X):
 def main():
     learning = True
 
-    N = 200
-    D = 100
-    M = 200
-
-    A = torch.rand(N, D)
-    B = torch.rand(D, M)
-
-    trainingSet = None
-    if learning:
-        num_matrices = 10
-        matrices = [torch.rand(N, D) for _ in range(num_matrices)]
-        trainingSet = torch.cat(matrices, dim=1)
+    A = torch.load('/home/heyuhao/AMMBench/build/benchmark/datasets/CCA_MNIST_train_A_minus_mean.pt')
+    B = A.t()
+    N = A.shape[0]
+    D = A.shape[1]
+    M = B.shape[1]
 
     # Number of subspaces
     C = 10
 
     # Number of prototypes per subspace
-    K = 16
+    K = 64
 
     # Calculate dimension of each subspace
     D_c = D // C
@@ -78,9 +71,9 @@ def main():
     # Initialize a list to hold prototypes for each subspace
     prototypes = []
 
-    if trainingSet != None:
+    if learning:
         print("Starting prototypes learning on training set size of "
-              + str(trainingSet.shape[0]) + ", " + str(trainingSet.shape[1]))
+              + str(A.shape[0]) + ", " + str(A.shape[1]))
         t = time.time()
 
         for c in range(C):
@@ -88,7 +81,7 @@ def main():
             subspace_indices = range(c * D_c, (c + 1) * D_c)
 
             # Slice the matrix A to get the subspace
-            A_subspace = trainingSet[:, subspace_indices]
+            A_subspace = A[:, subspace_indices]
 
             # Convert to numpy for KMeans
             A_subspace_np = A_subspace.detach().numpy()
@@ -109,9 +102,7 @@ def main():
 
         print("\nPrototype Learning: " + str(time.time() - t) + "s")
         model = MyModule(torch.stack(prototypes))
-        save_model(model.to('cpu'), "prototypes.pt", torch.zeros(5, 5))
-        # model.save_model("prototypes.pt")
-        # torch.save(prototypes, 'prototypes.pt')
+        save_model(model.to('cpu'), "/home/heyuhao/AMMBench/benchmark/torchscripts/PQ/CCA/prototypes_CCA_MNIST_train_A_minus_mean_C10_K64.pt", torch.zeros(5, 5))
 
     else:
         print("Loading prototypes from serialized pickle file\n")
@@ -231,7 +222,7 @@ def main():
     eResult = torch.matmul(A, B)
     print("Exact time: " + str(time.time() - t) + "s")
     print(eResult)
-    print("\nerror: " + str(torch.norm(result_tensor - eResult, p='fro').item()))
+    print("\nrelative fro error: " + str((torch.norm(result_tensor - eResult, p='fro')/torch.norm(eResult, p='fro')).item()))
     print(len(prototypes), torch.stack(prototypes).size())
 
 
