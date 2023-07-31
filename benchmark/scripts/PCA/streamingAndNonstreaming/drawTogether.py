@@ -51,28 +51,49 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
-# usage:
-#     1. cppAlgoTag is a list
-#     2. only one except cppAlgoTag in scan_dictionary['paras'] can be list, which is the target to do scanning. The rest in scan_dictionary['paras'] MUST be scalar
 
-scan_dictionary = {
-    'scanPara': "sketchDimension",
-    'paras': {
-        'cppAlgoTag': ["mm", 'smp-pca', 'tugOfWar', 'cooFD'],  # find the correct config_AMM.csv
-        'sketchDimension': [100, 200, 500, 1000, 2000, 3000, 4000, 5000],
-        'coreBind': 7,
-        'threads': 1,  # single thread
-        'matrixLoaderTag': 'SIFT',
-    },
-    'plot': {  # what needs to be plotted from results.csv
-        'AMM Fro Error %': 'AMMfroError',  # key shown in figure, value is from results.csv
-        'PCA Error %': 'PCAError',
-        '1 Per AMM Elapsed Time (1 per ms)': 'AMMElapsedTime',
-        '1 Per Else Elapsed Time (1 per ms)': 'SVDElapsedTime',
-    },
-    'rounds': 1,
-}
-scanTag = f"scan{scan_dictionary['scanPara']}_dataset{scan_dictionary['paras']['matrixLoaderTag']}"
+streaming=0
+
+if streaming==0:
+    scan_dictionary = {
+        'scanPara': "threads",
+        'paras':{
+            'cppAlgoTag': ['mm', 'crs', 'weighted-cr', 'countSketch', 'tugOfWar', 'smp-pca', 'rip', 'fastjlt', 'cooFD', 'blockLRA', 'int8', 'pq-raw', 'vq'],
+            'sketchDimension': 1000,
+            'coreBind': 0,
+            'threads': [1],
+            'matrixLoaderTag': 'SIFT',
+            'isStreaming': 0,
+            'streamingTwoMatrices': 0,
+        },
+        'plot':{ # what needs to be plotted from results.csv
+            'AMM Fro Error': 'AMMFroError', # key shown in figure, value is from results.csv
+            'AMMThroughput (rows per second)': 'AMMThroughput', 
+            'PCA Error': 'PCAError',
+        },
+        'rounds':1,
+    }
+    scanTag = "nonstreaming"
+else:
+    scan_dictionary = {
+        'scanPara': "threads",
+        'paras':{
+            'cppAlgoTag': ['pq-hash', 'mm', 'crs', 'countSketch', 'tugOfWar', 'smp-pca', 'rip'], # streaming
+            'sketchDimension': 1000,
+            'coreBind': 0,
+            'threads': [1],
+            'matrixLoaderTag': 'SIFT',
+            'isStreaming': 1,
+            'streamingTwoMatrices': 1,
+        },
+        'plot':{ # what needs to be plotted from results.csv
+            'AMM Fro Error': 'AMMFroError', # key shown in figure, value is from results.csv
+            'AMMThroughput (rows per second)': 'AMMThroughput', # throughput = aRows * 1e6 / tDone (us);
+            'PCA Error': 'PCAError',
+        },
+        'rounds':1,
+    }
+    scanTag = "streamingAB"
 
 
 def singleRun(exePath, singleValue, resultPath, configTemplate):
@@ -102,8 +123,8 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     df.to_csv(join(resultPath, 'config.csv'), index=False)
 
     # run benchmark to generate result.csv
-    os.system(f"cd {resultPath} && env OMP_NUM_THREADS=1 {exePath}/benchmarkPCA config.csv")
-
+    os.system(f"cd {resultPath} && sudo env OMP_NUM_THREADS=1 {exePath}/benchmarkPCA config.csv")
+    
 
 def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"):
     # (Pdb) exePath, singleValueVec, resultPath, templateName
@@ -114,23 +135,23 @@ def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"
 
 def readResultSingle(singleValue, resultPath):
     resultFname = join(resultPath, str(singleValue), "PCA.csv")
-    return {k: readConfig(resultFname, scan_dictionary['plot'][k]) for k in scan_dictionary['plot']}
+    return {k:readConfig(resultFname, scan_dictionary['plot'][k]) for k in scan_dictionary['plot']}
 
 
 def readResultVector(singleValueVec, resultPath):
-    plot_results = {k: [] for k in scan_dictionary['plot']}
+    plot_results = {k:[] for k in scan_dictionary['plot']}
     for i in singleValueVec:
         results = readResultSingle(i, resultPath)
         for k in plot_results:
             plot_results[k].append(results[k])
-    return {k: np.array(v, dtype=float) for k, v in plot_results.items()}
+    return {k: np.array(v, dtype=float) for k,v in plot_results.items()}
 
 
 def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec, reRun=1):
     # (Pdb) exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
     # ('/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/build/benchmark/scripts/MM/', '/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/build/benchmark/scripts/MM/results/scanAaCol_aRow1000_bCol1000_sketch0.1_datasetrandom', ['mm', 'crs', 'tugOfWar', 'cooFD', 'smp-pca'], ['config_mm.csv', 'config_crs.csv', 'config_tugOfWar.csv', 'config_cooFD.csv', 'config_smp-pca.csv'], [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000])
-
-    plot_results = {k: [] for k in scan_dictionary['plot']}
+    
+    plot_results = {k:[] for k in scan_dictionary['plot']}
 
     for i in range(len(csvTemplates)):
         resultPath = join(commonPathBase, resultPaths[i])
@@ -138,7 +159,7 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
         results = readResultVector(periodVec, resultPath)
         for k in plot_results:
             plot_results[k].append(results[k])
-    return {k: np.array(v) for k, v in plot_results.items()}
+    return {k: np.array(v) for k,v in plot_results.items()}
     # (Pdb) {k: np.array(v) for k,v in plot_results.items()}
     # {'AMM Error': array([['0.000000', '0.000000'],
     #     ['0.286175', '0.199001']], dtype='<U8'), 'AMM Elapsed Time': array([['79760', '70267'],
@@ -149,7 +170,7 @@ def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), ".."))
     resultPath = join(exeSpace, 'results', scanTag)
     figPath = join(exeSpace, 'figures', scanTag)
-
+    
     # clear
     # if os.path.exists(resultPath): shutil.rmtree(resultPath)
     # if os.path.exists(figPath): shutil.rmtree(figPath)
@@ -160,9 +181,9 @@ def main():
     commonBase = resultPath
     resultPaths = scan_dictionary['paras']['cppAlgoTag']
     evaTypes = resultPaths
-    csvTemplates = ["config_" + i + ".csv" for i in resultPaths]
+    csvTemplates = ["config_"+i+".csv" for i in resultPaths]
     valueVec = scan_dictionary['paras'][scan_dictionary['scanPara']]
-    periodAll = [valueVec] * len(csvTemplates)
+    periodAll = [valueVec]*len(csvTemplates)
 
     # metrics need to be collected
     metrics_kwargs = {key: np.zeros((len(resultPaths), len(valueVec))) for key in scan_dictionary['plot'].keys()}
@@ -170,46 +191,29 @@ def main():
         metrics_update = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec)
         for key in metrics_kwargs:
             metrics_kwargs[key] += metrics_update[key]
-    metrics_kwargs = {key: value / scan_dictionary['rounds'] for key, value in metrics_kwargs.items()}
+    metrics_kwargs = {key: value/scan_dictionary['rounds'] for key, value in metrics_kwargs.items()}
 
-    # plot
+    ## plot
+    # draw seperate pdfs
     for key in metrics_kwargs.keys():
-        if 'time' in key.lower():  # calculate inverse
-            groupLine.DrawFigureXYnormal(
-                xvalues=periodAll,
-                yvalues=1000 / metrics_kwargs[key],  # here apply 1/time!!
-                legend_labels=evaTypes,
-                x_label=scan_dictionary['scanPara'],
-                y_label=key,
-                y_min=0,  # not used
-                y_max=1,  # not used
-                filename=figPath + "/" + key,
-                allow_legend=True)
-        else:
-            groupLine.DrawFigureXYnormal(
-                xvalues=periodAll,
-                yvalues=metrics_kwargs[key],
-                legend_labels=evaTypes,
-                x_label=scan_dictionary['scanPara'],
-                y_label=key,
-                y_min=0,  # not used
-                y_max=1,  # not used
-                filename=figPath + "/" + key,
-                allow_legend=True)
+        groupBar.DrawBarPlot(
+            x_values=scan_dictionary['paras']['cppAlgoTag'],
+            y_values=metrics_kwargs[key].flatten(),
+            legend_labels=[f'{i} {v}' for i,v in enumerate(scan_dictionary['paras']['cppAlgoTag'])],
+            x_label=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))], 
+            y_label=key,
+            filename= figPath + "/" + key)
 
-    # other custom plot
-    groupLine.DrawFigureXYnormal(
-        xvalues=periodAll,
-        yvalues=metrics_kwargs['1 Per AMM Elapsed Time (1 per ms)'] / metrics_kwargs[
-            '1 Per Else Elapsed Time (1 per ms)'],
-        legend_labels=evaTypes,
-        x_label=scan_dictionary['scanPara'],
-        y_label='AMM time over Else time',
-        y_min=0,  # not used
-        y_max=1,  # not used
-        filename=figPath + "/" + 'AMM time over Else time',
-        allow_legend=True)
-
+    mm_index = scan_dictionary['paras']['cppAlgoTag'].index('mm')
+    
+    groupBar.DrawBarPlot(
+        x_values=scan_dictionary['paras']['cppAlgoTag'],
+        y_values=1/metrics_kwargs['AMMThroughput (rows per second)'].flatten()*metrics_kwargs['AMMThroughput (rows per second)'][mm_index],
+        legend_labels=[f'{i} {v}' for i,v in enumerate(scan_dictionary['paras']['cppAlgoTag'])],
+        x_label=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))], 
+        y_label=f"AMM Latency (second/{int(metrics_kwargs['AMMThroughput (rows per second)'][mm_index])}rows)",
+        filename= figPath + "/" + "AMM Latency")
+    
 
 if __name__ == "__main__":
     main()
