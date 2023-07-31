@@ -56,6 +56,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     # configTemplate = "config.csv"
     # clear old files
     os.system("cd " + exePath + "&& sudo rm *.csv")
+    os.system("cp perfListEvaluation.csv " + exePath)
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
     editConfig(configTemplate, exePath+"temp1.csv", "srcA", srcA)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
