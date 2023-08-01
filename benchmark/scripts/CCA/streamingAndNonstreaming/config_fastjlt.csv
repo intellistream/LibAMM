@@ -3,7 +3,7 @@ sketchDimension,25,U64
 threads,1,U64
 useCPP,1,U64
 forceMP,0,U64
-cppAlgoTag,rip,String
+cppAlgoTag,fastjlt,String
 matrixLoaderTag,MNIST,String
 usingMeter,1,U64
 eventRateTps,200,U64

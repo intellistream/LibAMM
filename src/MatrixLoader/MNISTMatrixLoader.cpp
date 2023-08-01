@@ -26,7 +26,7 @@ int reverseInt(int i) {
 
 void AMMBench::MNISTMatrixLoader::generateAB() {
 
-  string fileName = "../../datasets/MNIST/train-images.idx3-ubyte";
+  string fileName = "../../../../../../datasets/MNIST/train-images.idx3-ubyte";
   int magic_number = 0;
   int number_of_images = 0;
   int n_rows = 0;
