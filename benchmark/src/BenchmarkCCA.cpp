@@ -28,6 +28,40 @@ void printStatsOfTensor(torch::Tensor M) {
   std::cout << "Min value: " << min_val.item<float>() << std::endl;
 }
 
+ /**
+ * @brief For PQ and VQ, the prototype and index&book need to change if we perform different matrix multiplication, e.g. ATA, BTB. so we need to update the cfg path and call cppAlgoPtr->setConfig(cfg)
+ */
+void adjustConfig(ConfigMapPtr cfg, std::string stage){
+    if (cfg->tryString("cppAlgoTag", "mm", true)=="pq-raw"){
+        if (stage=="AA" || stage=="AB"){
+            cfg->edit("prototypesLoadPath", "../../../../../../torchscripts/PQ/CCA/prototypes_CCA_MNIST_train_A_minus_mean_C10_K64.pt");
+        }
+        else if (stage=="BB"){
+            cfg->edit("prototypesLoadPath", "../../../../../../torchscripts/PQ/CCA/prototypes_CCA_MNIST_train_B_minus_mean_C10_K64.pt");
+        }
+    }
+    else if (cfg->tryString("cppAlgoTag", "mm", true)=="vq"){
+        if (stage=="AA"){
+            cfg->edit("columnCodeBookXvecPath", "../../../../../../torchscripts/VQ/CCA/AAcolumnCodeBookX.txt");
+            cfg->edit("columnCodeIndexXPath", "../../../../../../torchscripts/VQ/CCA/AAcolumnCodeIndexX.txt");
+            cfg->edit("rowCodeBookYvecPath", "../../../../../../torchscripts/VQ/CCA/AArowCodeBookY.txt");
+            cfg->edit("rowCodeIndexYPath", "../../../../../../torchscripts/VQ/CCA/AArowCodeIndexY.txt");
+        }
+        else if (stage=="BB"){
+            cfg->edit("columnCodeBookXvecPath", "../../../../../../torchscripts/VQ/CCA/BBcolumnCodeBookX.txt");
+            cfg->edit("columnCodeIndexXPath", "../../../../../../torchscripts/VQ/CCA/BBcolumnCodeIndexX.txt");
+            cfg->edit("rowCodeBookYvecPath", "../../../../../../torchscripts/VQ/CCA/BBrowCodeBookY.txt");
+            cfg->edit("rowCodeIndexYPath", "../../../../../../torchscripts/VQ/CCA/BBrowCodeIndexY.txt");
+        }
+        else if (stage=="AB"){
+            cfg->edit("columnCodeBookXvecPath", "../../../../../../torchscripts/VQ/CCA/ABcolumnCodeBookX.txt");
+            cfg->edit("columnCodeIndexXPath", "../../../../../../torchscripts/VQ/CCA/ABcolumnCodeIndexX.txt");
+            cfg->edit("rowCodeBookYvecPath", "../../../../../../torchscripts/VQ/CCA/ABrowCodeBookY.txt");
+            cfg->edit("rowCodeIndexYPath", "../../../../../../torchscripts/VQ/CCA/ABrowCodeIndexY.txt");
+        }
+    }
+}
+
 void benchmarkCCA(std::string configName) {
 
     // Step1. Set up environments
@@ -209,12 +243,50 @@ void benchmarkCCA(std::string configName) {
         ThreadPerf pef(-1);
         pef.setPerfList();
         pef.start();
-        torch::manual_seed(123);
+        // vq
+        adjustConfig(cfg, "AA"); // update cfg index book prototype path
+        cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
+        torch::manual_seed(123); // CRS requires same sampling seed
         Sxx = cppAlgoPtr->amm(A, A.t(), sketchSize)/A.size(1);
-        torch::manual_seed(123);
+        std::cout << "A:" << std::endl;
+        std::cout << "Maximum Value: " << A.max().item<float>() << std::endl;
+        std::cout << "Mean Value: " << A.mean().item<float>() << std::endl;
+        std::cout << "Minimum Value: " << A.min().item<float>() << std::endl;
+        std::cout << "Sxx:" << std::endl;
+        std::cout << "Maximum Value: " << Sxx.max().item<float>() << std::endl;
+        std::cout << "Mean Value: " << Sxx.mean().item<float>() << std::endl;
+        std::cout << "Minimum Value: " << Sxx.min().item<float>() << std::endl;
+        std::cout << "matLoaderPtr->getSxx():" << std::endl;
+        std::cout << "Maximum Value: " << matLoaderPtr->getSxx().max().item<float>() << std::endl;
+        std::cout << "Mean Value: " << matLoaderPtr->getSxx().mean().item<float>() << std::endl;
+        std::cout << "Minimum Value: " << matLoaderPtr->getSxx().min().item<float>() << std::endl;
+
+        adjustConfig(cfg, "BB"); // update cfg index book prototype path
+        cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
+        torch::manual_seed(123); // CRS requires same sampling seed
         Syy = cppAlgoPtr->amm(B, B.t(), sketchSize)/A.size(1);
-        torch::manual_seed(123);
+        std::cout << "Syy:" << std::endl;
+        std::cout << "Maximum Value: " << Syy.max().item<float>() << std::endl;
+        std::cout << "Mean Value: " << Syy.mean().item<float>() << std::endl;
+        std::cout << "Minimum Value: " << Syy.min().item<float>() << std::endl;
+        std::cout << "matLoaderPtr->getSyy():" << std::endl;
+        std::cout << "Maximum Value: " << matLoaderPtr->getSyy().max().item<float>() << std::endl;
+        std::cout << "Mean Value: " << matLoaderPtr->getSyy().mean().item<float>() << std::endl;
+        std::cout << "Minimum Value: " << matLoaderPtr->getSyy().min().item<float>() << std::endl;
+
+        adjustConfig(cfg, "AB"); // update cfg index book prototype path
+        cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
+        torch::manual_seed(123); // CRS requires same sampling seed
         Sxy = cppAlgoPtr->amm(A, B.t(), sketchSize)/A.size(1);
+        std::cout << "Sxy:" << std::endl;
+        std::cout << "Maximum Value: " << Sxy.max().item<float>() << std::endl;
+        std::cout << "Mean Value: " << Sxy.mean().item<float>() << std::endl;
+        std::cout << "Minimum Value: " << Sxy.min().item<float>() << std::endl;
+        std::cout << "matLoaderPtr->getSxy():" << std::endl;
+        std::cout << "Maximum Value: " << matLoaderPtr->getSxy().max().item<float>() << std::endl;
+        std::cout << "Mean Value: " << matLoaderPtr->getSxy().mean().item<float>() << std::endl;
+        std::cout << "Minimum Value: " << matLoaderPtr->getSxy().min().item<float>() << std::endl;
+
         pef.end();
         allMetrics = pef.resultToConfigMap();
         allMetrics->addPrefixToKeys("AMM");
@@ -224,6 +296,7 @@ void benchmarkCCA(std::string configName) {
     allMetrics->edit("SxxFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxx(), Sxx));
     allMetrics->edit("SxyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxy(), Sxy));
     allMetrics->edit("SyyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSyy(), Syy));
+    std::cout << allMetrics->toString() << endl;
     
     // Step3. The rest of the CCA task
     ThreadPerf pef(-1);

@@ -52,92 +52,51 @@ matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
 
-<<<<<<<< HEAD:benchmark/scripts/PCA/streamingAndNonstreaming/drawTogether.py
 streaming=0
-========
-streaming=1
->>>>>>>> StreamingTestPef:benchmark/scripts/CCA/streamingAndNonstreaming/drawTogether.py
 
 if streaming==0:
     scan_dictionary = {
         'scanPara': "threads",
         'paras':{
-<<<<<<<< HEAD:benchmark/scripts/PCA/streamingAndNonstreaming/drawTogether.py
-            'cppAlgoTag': ['mm', 'crs', 'weighted-cr', 'countSketch', 'tugOfWar', 'smp-pca', 'rip', 'fastjlt', 'cooFD', 'blockLRA', 'int8', 'pq-raw', 'vq'],
-            'sketchDimension': 1000,
-            'coreBind': 0,
-            'threads': [1],
-            'matrixLoaderTag': 'SIFT',
-========
-            'cppAlgoTag': ['pq-hash', 'mm', 'crs', 'countSketch', 'tugOfWar', 'smp-pca', 'blockLRA', 'rip', 'cooFD'],
+            'cppAlgoTag': ['vq'],
+            # 'cppAlgoTag': ['mm', 'crs', 'weighted-cr', 'countSketch', 'tugOfWar', 'smp-pca', 'rip', 'fastjlt', 'cooFD', 'blockLRA', 'int8', 'pq-raw', 'vq'],
             'sketchDimension': 6000,
             'coreBind': 0,
             'threads': [1],
             'matrixLoaderTag': 'MNIST',
->>>>>>>> StreamingTestPef:benchmark/scripts/CCA/streamingAndNonstreaming/drawTogether.py
             'isStreaming': 0,
             'streamingTwoMatrices': 0,
         },
         'plot':{ # what needs to be plotted from results.csv
-<<<<<<<< HEAD:benchmark/scripts/PCA/streamingAndNonstreaming/drawTogether.py
-            'AMM Fro Error': 'AMMFroError', # key shown in figure, value is from results.csv
-            'AMMThroughput (rows per second)': 'AMMThroughput', 
-            'PCA Error': 'PCAError',
-========
             'Sxx Fro Error %': 'SxxFroError',
             'Sxy Fro Error %': 'SxyFroError',
             'Syy Fro Error %': 'SyyFroError',
-            'AMMInstructions': 'AMMInstructions',
-            'AMMCacheRefs': 'AMMCacheRefs',
             'AMMThroughput (rows per second)': 'AMMThroughput', 
-            'Correlation Error %': 'CorrelationError',
->>>>>>>> StreamingTestPef:benchmark/scripts/CCA/streamingAndNonstreaming/drawTogether.py
+            'Correlation Error': 'CorrelationError',
         },
         'rounds':1,
     }
-    scanTag = "nonstreaming"
-else:
-    scan_dictionary = {
-        'scanPara': "threads",
-        'paras':{
-<<<<<<<< HEAD:benchmark/scripts/PCA/streamingAndNonstreaming/drawTogether.py
-            'cppAlgoTag': ['pq-hash', 'mm', 'crs', 'countSketch', 'tugOfWar', 'smp-pca', 'rip'], # streaming
-            'sketchDimension': 1000,
-            'coreBind': 0,
-            'threads': [1],
-            'matrixLoaderTag': 'SIFT',
-========
-            'cppAlgoTag': ['pq-hash', 'mm', 'crs', 'countSketch', 'tugOfWar', 'smp-pca'], # streaming
-            'sketchDimension': 6000,
-            'coreBind': 0,
-            'threads': [1],
-            'matrixLoaderTag': 'MNIST',
->>>>>>>> StreamingTestPef:benchmark/scripts/CCA/streamingAndNonstreaming/drawTogether.py
-            'isStreaming': 1,
-            'streamingTwoMatrices': 1,
-        },
-        'plot':{ # what needs to be plotted from results.csv
-<<<<<<<< HEAD:benchmark/scripts/PCA/streamingAndNonstreaming/drawTogether.py
-            'AMM Fro Error': 'AMMFroError', # key shown in figure, value is from results.csv
-            'AMMThroughput (rows per second)': 'AMMThroughput', # throughput = aRows * 1e6 / tDone (us);
-            'PCA Error': 'PCAError',
-        },
-        'rounds':1,
-    }
-    scanTag = "streamingAB"
-========
-            'Sxx Fro Error %': 'SxxFroError',
-            'Sxy Fro Error %': 'SxyFroError',
-            'Syy Fro Error %': 'SyyFroError',
-            'AMMInstructions': 'AMMInstructions',
-            'AMMCacheRefs': 'AMMCacheRefs',
-            'AMMThroughput (rows per second)': 'AMMThroughput', # throughput = aRows * 1e6 / tDone (us);
-            'Correlation Error %': 'CorrelationError',
-        },
-        'rounds':1,
-    }
-    scanTag = "streaming"
->>>>>>>> StreamingTestPef:benchmark/scripts/CCA/streamingAndNonstreaming/drawTogether.py
+    scanTag = "cca_nonstreaming"
+# else:
+#     scan_dictionary = {
+#         'scanPara': "threads",
+#         'paras':{
+#             'cppAlgoTag': ['pq-hash', 'mm', 'crs', 'countSketch', 'tugOfWar', 'smp-pca', 'rip'], # streaming
+#             'sketchDimension': 1000,
+#             'coreBind': 0,
+#             'threads': [1],
+#             'matrixLoaderTag': 'MNIST',
+#             'isStreaming': 1,
+#             'streamingTwoMatrices': 1,
+#         },
+#         'plot':{
+#             'AMM Fro Error': 'AMMFroError', # key shown in figure, value is from results.csv
+#             'AMMThroughput (rows per second)': 'AMMThroughput', # throughput = aRows * 1e6 / tDone (us);
+#             'Correlation Error': 'CorrelationError'
+#             },
+#         'rounds':1,
+#     }
+#     scanTag = "cca_streamingAB"
 
 
 def singleRun(exePath, singleValue, resultPath, configTemplate):
@@ -156,7 +115,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     for key, value in config_update_dict.items(): df.loc[df['key'] == key, 'value'] = value
     # (Pdb) df
     #                 key                                              value    type
-    # 3   matrixLoaderTag                                               SIFT  String
+    # 3   matrixLoaderTag                                               MNIST  String
     # 4   sketchDimension                                                100     U64
     # 5          coreBind                                                  1     U64
     # 6           threads                                                  1     U64
@@ -167,11 +126,7 @@ def singleRun(exePath, singleValue, resultPath, configTemplate):
     df.to_csv(join(resultPath, 'config.csv'), index=False)
 
     # run benchmark to generate result.csv
-<<<<<<<< HEAD:benchmark/scripts/PCA/streamingAndNonstreaming/drawTogether.py
-    os.system(f"cd {resultPath} && sudo env OMP_NUM_THREADS=1 {exePath}/benchmarkPCA config.csv")
-========
     os.system(f"cd {resultPath} && sudo env OMP_NUM_THREADS=1 {exePath}/benchmarkCCA config.csv")
->>>>>>>> StreamingTestPef:benchmark/scripts/CCA/streamingAndNonstreaming/drawTogether.py
     
 
 def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"):
@@ -243,60 +198,27 @@ def main():
 
     ## plot
     # draw seperate pdfs
-    for key in metrics_kwargs.keys():
-        groupBar.DrawBarPlot(
-            x_values=scan_dictionary['paras']['cppAlgoTag'],
-            y_values=metrics_kwargs[key].flatten(),
-<<<<<<<< HEAD:benchmark/scripts/PCA/streamingAndNonstreaming/drawTogether.py
-            legend_labels=[f'{i} {v}' for i,v in enumerate(scan_dictionary['paras']['cppAlgoTag'])],
-            x_label=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))], 
-            y_label=key,
-            filename= figPath + "/" + key)
-========
-            legend_labels='',
-            x_label="", 
-            y_label=key,
-            filename= figPath + "/" + key)
+    # for key in metrics_kwargs.keys():
+    #     groupBar.DrawBarPlot(
+    #         x_values=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))],
+    #         y_values=metrics_kwargs[key].flatten(),
+    #         legend_labels=[f'{i} {v}' for i,v in enumerate(scan_dictionary['paras']['cppAlgoTag'])],
+    #         x_label=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))], 
+    #         y_label=key,
+    #         filename= figPath + "/" + key)
 
-    # manually add other metrics
-    # standardize to make mm as 1 
+    # # manually add other metrics
+    # # standardize to make mm as 1
 
-    mm_index = scan_dictionary['paras']['cppAlgoTag'].index('mm')
-
-    groupBar.DrawBarPlot(
-        x_values=scan_dictionary['paras']['cppAlgoTag'],
-        y_values=metrics_kwargs['AMMInstructions'].flatten()/metrics_kwargs['AMMInstructions'][mm_index],
-        legend_labels='',
-        x_label="", 
-        y_label=f"AMMInstructions ({int(metrics_kwargs['AMMInstructions'][mm_index])} instructions)",
-        filename= figPath + "/" + "AMMInstructions")
+    # mm_index = scan_dictionary['paras']['cppAlgoTag'].index('mm')
     
-    groupBar.DrawBarPlot(
-        x_values=scan_dictionary['paras']['cppAlgoTag'],
-        y_values=metrics_kwargs['AMMCacheRefs'].flatten()/metrics_kwargs['AMMCacheRefs'][mm_index],
-        legend_labels='',
-        x_label="", 
-        y_label=f"AMMCacheRefs ({int(metrics_kwargs['AMMCacheRefs'][mm_index])} references)",
-        filename= figPath + "/" + "AMMCacheRefs")
-    
-    groupBar.DrawBarPlot(
-        x_values=scan_dictionary['paras']['cppAlgoTag'],
-        y_values=1/metrics_kwargs['AMMThroughput (rows per second)'].flatten()*metrics_kwargs['AMMThroughput (rows per second)'][mm_index],
-        legend_labels='',
-        x_label="", 
-        y_label=f"Latency (second/{int(metrics_kwargs['AMMThroughput (rows per second)'][mm_index])}rows)",
-        filename= figPath + "/" + "Latency")
->>>>>>>> StreamingTestPef:benchmark/scripts/CCA/streamingAndNonstreaming/drawTogether.py
-
-    mm_index = scan_dictionary['paras']['cppAlgoTag'].index('mm')
-    
-    groupBar.DrawBarPlot(
-        x_values=scan_dictionary['paras']['cppAlgoTag'],
-        y_values=1/metrics_kwargs['AMMThroughput (rows per second)'].flatten()*metrics_kwargs['AMMThroughput (rows per second)'][mm_index],
-        legend_labels=[f'{i} {v}' for i,v in enumerate(scan_dictionary['paras']['cppAlgoTag'])],
-        x_label=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))], 
-        y_label=f"AMM Latency (second/{int(metrics_kwargs['AMMThroughput (rows per second)'][mm_index])}rows)",
-        filename= figPath + "/" + "AMM Latency")
+    # groupBar.DrawBarPlot(
+    #     x_values=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))],
+    #     y_values=1/metrics_kwargs['AMMThroughput (rows per second)'].flatten()*metrics_kwargs['AMMThroughput (rows per second)'][mm_index],
+    #     legend_labels=[f'{i} {v}' for i,v in enumerate(scan_dictionary['paras']['cppAlgoTag'])],
+    #     x_label=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))], 
+    #     y_label=f"AMM Latency (second/{int(metrics_kwargs['AMMThroughput (rows per second)'][mm_index])}rows)",
+    #     filename= figPath + "/" + "AMM Latency")
     
 
 if __name__ == "__main__":
