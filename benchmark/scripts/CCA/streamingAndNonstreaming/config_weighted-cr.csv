@@ -1,0 +1,11 @@
+key,value,type
+sketchDimension,25,U64
+threads,1,U64
+useCPP,1,U64
+forceMP,0,U64
+cppAlgoTag,weighted-cr,String
+matrixLoaderTag,MNIST,String
+usingMeter,1,U64
+eventRateTps,200,U64
+isStreaming,0,U64
+streamingTwoMatrices,0,U64
