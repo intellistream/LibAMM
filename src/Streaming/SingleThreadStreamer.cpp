@@ -96,9 +96,14 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
     tEXpectedArrival = myTs[endRow - 1]->arrivalTime;
   }
   tDone = chronoElapsedTime(start);
-  INTELLI_INFO("Done in " + to_string(tDone) + "us");
-  throughput = aRows;
-  throughput = throughput * 1e6 / tDone;
+
+  throughput = aRows * 1e6 / tDone;
+  double throughputByElements = throughput * A.size(1);
+  double latency95 = getLatencyPercentage(0.95);
+  metrics->edit("throughput", throughput);
+  metrics->edit("throughputByElements", throughputByElements);
+  metrics->edit("95%latency", latency95);
+
   return *matC;
 }
 
@@ -178,8 +183,12 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
     myTs[i]->processedTime = tDone;
   }
   INTELLI_INFO("Done in " + to_string(tDone) + "us");
-  throughput = aRows;
-  throughput = throughput * 1e6 / tDone;
+  throughput = aRows * 1e6 / tDone;
+  double throughputByElements = throughput * A.size(1);
+  double latency95 = getLatencyPercentage(0.95);
+  metrics->edit("throughput", throughput);
+  metrics->edit("throughputByElements", throughputByElements);
+  metrics->edit("95%latency", latency95);
   return *matC;
 }
 

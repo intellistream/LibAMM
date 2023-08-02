@@ -88,15 +88,12 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
   // foutB.write(pickledB.data(), pickledB.size());
   // foutB.close();
 
-  // torch::save(A, "A.pt");
-  // torch::save(B, "B.pt");
-
-  // std::cout << A.mean(/*dim=*/0) << endl;
-  // std::cout << B.mean(/*dim=*/0) << endl;
 
   // normalization and transpose
-  // A = A - A.mean(/*dim=*/0); // mean along feature (column)
-  // B = B - B.mean(/*dim=*/0); // mean along feature (column)
+  A = (A - A.mean(/*dim=*/0)); // centered along feature (column)
+  B = (B - B.mean(/*dim=*/0)); // centered along feature (column)
+  // A = (A - A.mean(/*dim=*/0)) / A.std(); // standardize along feature (column)
+  // B = (B - B.mean(/*dim=*/0)) / B.std(); // standardize along feature (column)
   // std::cout << A.mean(/*dim=*/0) << endl;
   // std::cout << B.mean(/*dim=*/0) << endl;
   // std::cout << A.std(/*dim=*/0) << endl;

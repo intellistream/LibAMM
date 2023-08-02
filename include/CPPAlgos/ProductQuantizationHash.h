@@ -17,15 +17,28 @@ namespace AMMBench {
  * @brief The Product Quantization AMM class of c++ algos, using hash function to find matching prototypes
  *
  */
-class ProductQuantizationHash : public AMMBench::AbstractCPPAlgo {
- public:
-  ProductQuantizationHash() {
+  class ProductQuantizationHash : public AMMBench::AbstractCPPAlgo {
+
+  protected:
+      string prototypesLoadPath;
+      string hashLoadPath;
+      int64_t C;
+
+  public:
+      ProductQuantizationHash() {
 
   }
 
   ~ProductQuantizationHash() {
 
   }
+
+  /**
+   * @brief set the alo-specfic config related to one algorithm
+   * @param prototypesLoadPath where to load prototypes
+   * @param hashLoadPath where to load hash
+   */
+  virtual void setConfig(INTELLI::ConfigMapPtr cfg);
 
   /**
    * @brief the virtual function provided for outside callers, rewrite in children classes

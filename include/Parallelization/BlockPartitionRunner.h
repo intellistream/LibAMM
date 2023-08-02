@@ -54,7 +54,9 @@ class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
   torch::jit::script::Module module;
   uint64_t sketchDimension = 0;
   int coreBind;
- public:
+  INTELLI::ConfigMapPtr pefResult; // to save pef results
+
+public:
   torch::Tensor irC, subA;
   uint64_t startRow = 0;  // Start row index for the assigned range
   uint64_t endRow = 0;  // End row index (exclusive) for the assigned range
@@ -92,9 +94,11 @@ class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
 
   uint64_t getElapsedTime();
 
+  INTELLI::ConfigMapPtr getPefResult();
+
   /**
   * @brief to export the algorithm breakdown
-   * @note only valid for c++ algo
+    * @note only valid for c++ algo
   * @return the key-value table breakdown in ConfigMapPtr;
   */
   virtual INTELLI::ConfigMapPtr getBreakDown();
@@ -121,31 +125,35 @@ typedef std::shared_ptr<AMMBench::BlockPartitionWorker> BlockPartitionWorkerPtr;
  * - call @ref setConfig
  * - call @ref runAMM and return result
  * - call @ref getElapsedTime
+ * - call @ref getMetrics
  */
 class BlockPartitionRunner {
 
- protected:
-  INTELLI::ConfigMapPtr cfg;
-  uint64_t threads = 0;
-  /**
-   * @brief Input matrix A
-   */
-  TensorPtr matA = nullptr;  // Input matrix A
-  /**
-    * @brief Input matrix B
+  protected:
+    INTELLI::ConfigMapPtr cfg;
+    uint64_t threads = 0;
+    /**
+     * @brief Input matrix A
+     */
+    TensorPtr matA = nullptr;  // Input matrix A
+    /**
+      * @brief Input matrix B
+      */
+    TensorPtr matB = nullptr;  // Input matrix B
+    /**
+    * @brief OUTput matrix C
     */
-  TensorPtr matB = nullptr;  // Input matrix B
-  /**
-  * @brief OUTput matrix C
-  */
-  TensorPtr matC = nullptr;  // Output matrix C
-  std::vector<BlockPartitionWorkerPtr> workers;
-  /**
-   * @brief special bind of first core, if need
-   */
-  uint64_t firstCoreBind = 0;
- public:
-  BlockPartitionRunner() {}
+    TensorPtr matC = nullptr;  // Output matrix C
+    std::vector<BlockPartitionWorkerPtr> workers;
+    /**
+     * @brief special bind of first core, if need
+     */
+    uint64_t firstCoreBind = 0;
+
+    INTELLI::ConfigMapPtr metrics = newConfigMap();
+
+  public:
+    BlockPartitionRunner() {}
 
   ~BlockPartitionRunner() {}
 
@@ -193,12 +201,23 @@ class BlockPartitionRunner {
   void appendThreadInfo(INTELLI::ConfigMapPtr ru);
 
   /**
+   * @brief calculate metrics including the pef result for all threads used in the runner, and elapsed time, throughput..
+   */
+  void calculateMetrics();
+
+  /**
+   * @brief get metrics
+   * @return metrics ConfigMapPtr
+   */
+  INTELLI::ConfigMapPtr getMetrics();
+
+  /**
   * @brief to export the algorithm breakdown
-   * @note only valid for c++ algo
+    * @note only valid for c++ algo
   * @return the key-value table breakdown in ConfigMapPtr;
   */
   virtual INTELLI::ConfigMapPtr getBreakDown();
-};
+    };
 
 } // AMMBench
 /**

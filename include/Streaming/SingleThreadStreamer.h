@@ -41,6 +41,8 @@ class SingleThreadStreamer {
   AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
   AMMBench::TensorPtr matC = nullptr;
   double throughput = 0.0;
+  int coreBind;
+  INTELLI::ConfigMapPtr metrics = newConfigMap();
   uint64_t fullLazy = 0;
   uint64_t  staticDataSet=0;
  public:
@@ -98,6 +100,14 @@ class SingleThreadStreamer {
    * @return the latency in us
    */
   double getLatencyPercentage(double fraction);
+
+  /**
+   * @brief get metrics (including the pef result for all threads used in the runner, and elapsed time, throughput..)
+   * @return metrics ConfigMapPtr
+   */
+  INTELLI::ConfigMapPtr getMetrics(){
+    return metrics;
+  }
 
 };
 /**
