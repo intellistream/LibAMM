@@ -45,7 +45,7 @@ void AMMBench::PQMM::setFilePath(string columnCodeIndexXPathPassedIn, string row
 
 torch::Tensor AMMBench::PQMM::runAMM(bool training) {
   // 1. initialize result matrix
-  res = torch::empty({X.size(0), Y.size(1)});
+  res = torch::zeros({X.size(0), Y.size(1)});
 
   // 2. construct codebooks
   if (training) constructCodeBooks();

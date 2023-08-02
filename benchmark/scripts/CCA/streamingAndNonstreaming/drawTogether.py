@@ -58,8 +58,7 @@ if streaming==0:
     scan_dictionary = {
         'scanPara': "threads",
         'paras':{
-            'cppAlgoTag': ['vq'],
-            # 'cppAlgoTag': ['mm', 'crs', 'weighted-cr', 'countSketch', 'tugOfWar', 'smp-pca', 'rip', 'fastjlt', 'cooFD', 'blockLRA', 'int8', 'pq-raw', 'vq'],
+            'cppAlgoTag': ['mm', 'crs', 'weighted-cr', 'countSketch', 'tugOfWar', 'smp-pca', 'rip', 'fastjlt', 'cooFD', 'blockLRA', 'int8', 'pq-raw', 'vq'],
             'sketchDimension': 6000,
             'coreBind': 0,
             'threads': [1],
@@ -68,9 +67,9 @@ if streaming==0:
             'streamingTwoMatrices': 0,
         },
         'plot':{ # what needs to be plotted from results.csv
-            'Sxx Fro Error %': 'SxxFroError',
-            'Sxy Fro Error %': 'SxyFroError',
-            'Syy Fro Error %': 'SyyFroError',
+            'Sxx Fro Error': 'SxxFroError',
+            'Sxy Fro Error': 'SxyFroError',
+            'Syy Fro Error': 'SyyFroError',
             'AMMThroughput (rows per second)': 'AMMThroughput', 
             'Correlation Error': 'CorrelationError',
         },
@@ -198,27 +197,27 @@ def main():
 
     ## plot
     # draw seperate pdfs
-    # for key in metrics_kwargs.keys():
-    #     groupBar.DrawBarPlot(
-    #         x_values=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))],
-    #         y_values=metrics_kwargs[key].flatten(),
-    #         legend_labels=[f'{i} {v}' for i,v in enumerate(scan_dictionary['paras']['cppAlgoTag'])],
-    #         x_label=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))], 
-    #         y_label=key,
-    #         filename= figPath + "/" + key)
+    for key in metrics_kwargs.keys():
+        groupBar.DrawBarPlot(
+            x_values=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))],
+            y_values=metrics_kwargs[key].flatten(),
+            legend_labels=[f'{i} {v}' for i,v in enumerate(scan_dictionary['paras']['cppAlgoTag'])],
+            x_label=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))], 
+            y_label=key,
+            filename= figPath + "/" + key)
 
-    # # manually add other metrics
-    # # standardize to make mm as 1
+    # manually add other metrics
+    # standardize to make mm as 1
 
-    # mm_index = scan_dictionary['paras']['cppAlgoTag'].index('mm')
+    mm_index = scan_dictionary['paras']['cppAlgoTag'].index('mm')
     
-    # groupBar.DrawBarPlot(
-    #     x_values=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))],
-    #     y_values=1/metrics_kwargs['AMMThroughput (rows per second)'].flatten()*metrics_kwargs['AMMThroughput (rows per second)'][mm_index],
-    #     legend_labels=[f'{i} {v}' for i,v in enumerate(scan_dictionary['paras']['cppAlgoTag'])],
-    #     x_label=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))], 
-    #     y_label=f"AMM Latency (second/{int(metrics_kwargs['AMMThroughput (rows per second)'][mm_index])}rows)",
-    #     filename= figPath + "/" + "AMM Latency")
+    groupBar.DrawBarPlot(
+        x_values=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))],
+        y_values=1/metrics_kwargs['AMMThroughput (rows per second)'].flatten()*metrics_kwargs['AMMThroughput (rows per second)'][mm_index],
+        legend_labels=[f'{i} {v}' for i,v in enumerate(scan_dictionary['paras']['cppAlgoTag'])],
+        x_label=[i for i in range(len(scan_dictionary['paras']['cppAlgoTag']))], 
+        y_label=f"AMM Latency (second/{int(metrics_kwargs['AMMThroughput (rows per second)'][mm_index])}rows)",
+        filename= figPath + "/" + "AMM Latency")
     
 
 if __name__ == "__main__":
