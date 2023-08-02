@@ -51,6 +51,82 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 scanTag = "threads"
 
 
+def singleRun(exePath, scanTag, singleValue, resultPath, configTemplate, algo):
+    # resultFolder="singleValueTests"
+    configFname = "config_" + scanTag + str(singleValue) + ".csv"
+    # configTemplate = "config.csv"
+    # clear old files
+    os.system("cd " + exePath + "&& sudo rm *.csv")
+
+    df = algo.config.copy()
+    df.loc[scanTag] = [singleValue, 'U64']
+    # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
+    editConfig(configTemplate, exePath + configFname, df)
+    # prepare new file
+    # run
+    os.system("cd " + exePath + "&& sudo env OMP_NUM_THREADS=1 ./benchmark " + configFname)
+    # copy result
+    cleanPath(resultPath + "/" + str(singleValue))
+    cleanPath(resultPath + "/" + str(singleValue))
+    os.system("cd " + exePath + "&& sudo cp *.csv " + resultPath + "/" + str(singleValue))
+
+
+def runScanVector(exePath, scanTag, singleValueVec, resultPath, templateName, algo):
+    for i in singleValueVec:
+        singleRun(exePath, scanTag, i, resultPath, templateName, algo)
+
+
+def readResultSingle(singleValue, resultPath):
+    resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
+    elapsedTime = readConfig(resultFname, "perfElapsedTime")
+    cacheMiss = readConfig(resultFname, "cacheMiss")
+    cacheRefs = readConfig(resultFname, "cacheRefs")
+    froError = readConfig(resultFname, "froError")
+    errorBoundRatio = readConfig(resultFname, "errorBoundRatio")
+    return elapsedTime, cacheMiss, cacheRefs, froError, errorBoundRatio
+
+
+def readResultVector(singleValueVec, resultPath):
+    elapseTimeVec = []
+    cacheMissVec = []
+    cacheRefVec = []
+    froErrorVec = []
+    errorBoundRatioVec = []
+    for i in singleValueVec:
+        elapsedTime, cacheMiss, cacheRefs, froError, errorBoundRatio = readResultSingle(i, resultPath)
+        elapseTimeVec.append(float(elapsedTime) / 1000.0)
+        cacheMissVec.append(float(cacheMiss))
+        cacheRefVec.append(float(cacheRefs))
+        froErrorVec.append(float(froError))
+        errorBoundRatioVec.append(float(errorBoundRatio))
+    return np.array(elapseTimeVec), np.array(cacheMissVec), np.array(cacheRefVec), np.array(froErrorVec), np.array(
+        errorBoundRatioVec)
+
+
+def compareMethod(exeSpace, commonPathBase, scanTag, algos, csvTemplate, periodVec, reRun=1):
+    elapsedTimeAll = []
+    cacheMissAll = []
+    cacheRefAll = []
+    periodAll = []
+    froAll = []
+    errorBoundRatioAll = []
+    for algo in algos:
+        resultPath = commonPathBase + algo.resultPath
+        if (reRun == 1):
+            cleanPath(resultPath)
+            runScanVector(exeSpace, scanTag, periodVec, resultPath, csvTemplate, algo)
+        elapsedTime, cacheMiss, cacheRef, fro, eb = readResultVector(periodVec, resultPath)
+        elapsedTimeAll.append(elapsedTime)
+        cacheMissAll.append(cacheMiss)
+        cacheRefAll.append(cacheRef)
+        periodAll.append(periodVec)
+        cacheMissRateAll = np.array(cacheMissAll) / np.array(cacheRefAll) * 100.0
+        froAll.append(fro)
+        errorBoundRatioAll.append(eb)
+        # periodAll.append(periodVec)
+    return np.array(elapsedTimeAll), cacheMissRateAll, periodAll, np.array(froAll), np.array(errorBoundRatioAll)
+
+
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
