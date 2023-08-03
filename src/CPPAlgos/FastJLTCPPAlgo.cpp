@@ -39,15 +39,16 @@ torch::Tensor FastJLTCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t d_)
 
   // Apply Fast Hadamard Transform
   torch::Tensor H = hadamard_transform_matrix(D_pad);
-  A_pad = torch::matmul(A_pad, H);
+  A_pad = torch::matmul(A_pad, H.t());
   B_pad = torch::matmul(H, B_pad);
 
   // Dimensionality reduction
-  float keep_prob = static_cast<float>(log2_D * log2_D) / static_cast<float>(D_pad);
-  torch::Tensor P = (torch::rand({D_pad, d}) > keep_prob).to(torch::kFloat32);
-  P *= torch::randn({d}).expand({D_pad, d}) * ((float) d / keep_prob);
-  P *= 1.0 / torch::norm(P, 0);
+  float q = 0.5;
+  auto mask = torch::rand({d, D_pad});
+  mask = (mask < q).to(torch::kFloat32); // 1 with probability q, 0 with probability 1-q
+  auto normal_dist_tensor = torch::randn({d, D_pad}) * std::sqrt(1.0 / q);
+  auto P = mask * normal_dist_tensor / std::sqrt(static_cast<float>(d));
 
-  return torch::matmul(torch::matmul(A_pad, P), torch::matmul(P.t(), B_pad));
+  return torch::matmul(torch::matmul(A_pad, P.t()), torch::matmul(P, B_pad));
 }
 } // AMMBench
