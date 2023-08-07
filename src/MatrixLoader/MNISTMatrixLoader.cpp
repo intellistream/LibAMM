@@ -90,19 +90,14 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
 
 
   // normalization and transpose
-  A = (A - A.mean(/*dim=*/0)); // centered along feature (column)
-  B = (B - B.mean(/*dim=*/0)); // centered along feature (column)
+  A = (A - A.mean(/*dim=*/0)); // centered along feature (column) 60000*392
+  B = (B - B.mean(/*dim=*/0)); // centered along feature (column) 60000*392
   // A = (A - A.mean(/*dim=*/0)) / A.std(); // standardize along feature (column)
   // B = (B - B.mean(/*dim=*/0)) / B.std(); // standardize along feature (column)
   // std::cout << A.mean(/*dim=*/0) << endl;
   // std::cout << B.mean(/*dim=*/0) << endl;
   // std::cout << A.std(/*dim=*/0) << endl;
   // std::cout << B.std(/*dim=*/0) << endl;
-
-  A = A.t(); // 392*60000
-  B = B.t(); // 392*60000
-  // std::cout << A.sizes() << endl;
-  // std::cout << B.sizes() << endl;
 
   INTELLI_INFO(
       "Generating [" + to_string(A.size(0)) + " x " + to_string(A.size(1)) + "]*[" + to_string(B.size(0)) + " x "
@@ -117,12 +112,10 @@ bool AMMBench::MNISTMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 torch::Tensor AMMBench::MNISTMatrixLoader::getA() {
-  std::cout << A.sizes() << endl;
   return A;
 }
 
 torch::Tensor AMMBench::MNISTMatrixLoader::getB() {
-  std::cout << B.sizes() << endl;
   return B;
 }
 
