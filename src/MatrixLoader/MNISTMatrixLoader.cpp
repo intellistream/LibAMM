@@ -148,11 +148,11 @@ torch::Tensor AMMBench::MNISTMatrixLoader::getCorrelation() {
 }
 
 void AMMBench::MNISTMatrixLoader::calculate_correlation() {
-
+  
   // Sxx, Syy, Sxy: covariance matrix
-  Sxx = torch::matmul(A, A.t()) / A.size(1); // 392x60000 * 60000x392 max 12752.4 min -3912.51
-  Syy = torch::matmul(B, B.t()) / A.size(1); // 392x60000 * 60000x392 max 12953.4 min -5121.09
-  Sxy = torch::matmul(A, B.t()) / A.size(1); // 392x60000 * 60000x392 max 10653.1 min -5307.15
+  Sxx = torch::matmul(A.t(), A) / A.size(0); // 392x60000 * 60000x392 max 12752.4 min -3912.51
+  Syy = torch::matmul(B.t(), B) / A.size(0); // 392x60000 * 60000x392 max 12953.4 min -5121.09
+  Sxy = torch::matmul(A.t(), B) / A.size(0); // 392x60000 * 60000x392 max 10653.1 min -5307.15
 
   // Sxx^(-1/2), Syy^(-1/2), M
   // Sxx^(-1/2)
@@ -169,7 +169,7 @@ void AMMBench::MNISTMatrixLoader::calculate_correlation() {
   SyyNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSyy, diagonalMatrixSyy), eigenvectorsSyy.t());
   SyyNegativeHalf = at::real(SyyNegativeHalf);
   // M
-  M = torch::matmul(torch::matmul(SxxNegativeHalf, Sxy), SyyNegativeHalf);
+  M = torch::matmul(torch::matmul(SxxNegativeHalf.t(), Sxy), SyyNegativeHalf);
 
   // correlation
   torch::Tensor U, S, Vh;

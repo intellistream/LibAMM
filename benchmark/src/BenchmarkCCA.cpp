@@ -82,13 +82,13 @@ void benchmarkCCA(std::string configName) {
     matLoaderPtr->setConfig(cfg);
     auto A = matLoaderPtr->getA(); // 60000*392
     auto B = matLoaderPtr->getB(); // 60000*392
-    torch::Tensor At = torch::zeros({(int) A.size(1), (int) A.size(0)}, A.options()); // 392*60000int8 fix
+    torch::Tensor At = torch::zeros({(int) A.size(1), (int) A.size(0)}, A.options()); // 392*60000 int8 fix
     for (int64_t i = 0; i < A.size(0); ++i) {
         for (int64_t j = 0; j < A.size(1); ++j) {
             At[j][i] = A[i][j].clone();
         }
     }
-    torch::Tensor Bt = torch::zeros({(int) B.size(1), (int) B.size(0)}, B.options()); // 392*60000int8 fix
+    torch::Tensor Bt = torch::zeros({(int) B.size(1), (int) B.size(0)}, B.options()); // 392*60000 int8 fix
     for (int64_t i = 0; i < B.size(0); ++i) {
         for (int64_t j = 0; j < B.size(1); ++j) {
             Bt[j][i] = B[i][j].clone();
@@ -325,7 +325,7 @@ void benchmarkCCA(std::string configName) {
 	SyyNegativeHalf = at::real(SyyNegativeHalf);
     // 3.3 M
     INTELLI_INFO("M");
-    torch::Tensor M = torch::matmul(torch::matmul(SxxNegativeHalf, Sxy), SyyNegativeHalf);
+    torch::Tensor M = torch::matmul(torch::matmul(SxxNegativeHalf.t(), Sxy), SyyNegativeHalf);
     // 3.4 Correlation
     INTELLI_INFO("Correlation");
     torch::Tensor U, S, Vh;
