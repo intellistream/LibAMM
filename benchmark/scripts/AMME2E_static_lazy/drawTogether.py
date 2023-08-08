@@ -49,6 +49,15 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
+dataset_acols_mapping={
+    'AST':765,
+    'DWAVE':512,
+    'ECO':260,
+    'QCD':3072,
+    'RDB':2048,
+    'UTM':1700,
+    'ZENIOS':2873,
+}
 
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
     # resultFolder="periodTests"
@@ -60,7 +69,8 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
     editConfig(configTemplate, exePath+"temp1.csv", "srcA", srcA)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
-    editConfig(exePath+"temp2.csv",exePath+configFname, "cppAlgoTag", algoTag)
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
+    editConfig(exePath+"temp1.csv",exePath+configFname, "cppAlgoTag", algoTag)
     # prepare new file
     # run
     os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmark " + configFname)
