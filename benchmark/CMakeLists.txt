@@ -22,8 +22,8 @@ if (BUILD_BENCHMARKS)
     target_link_libraries(benchmarkPCA IntelliStream)
     add_executable(benchmarkCCA "src/BenchmarkCCA.cpp")
     target_link_libraries(benchmarkCCA IntelliStream)
-    add_executable(VQTrain2 "torchscripts/VQ/CCA/VQTrain2.cpp")
-    target_link_libraries(VQTrain2 IntelliStream)
+    add_executable(VQTrainSIFT "torchscripts/VQ/PCA/VQTrainSIFT.cpp")
+    target_link_libraries(VQTrainSIFT IntelliStream)
 
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/scripts
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -39,7 +39,7 @@ if (BUILD_BENCHMARKS)
     #set_target_properties(benchmarkMM PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/MM)
     set_target_properties(benchmarkPCA PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/PCA)
     set_target_properties(benchmarkCCA PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/CCA)
-    set_target_properties(VQTrain2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/torchscripts/VQ/CCA)
+    set_target_properties(VQTrainSIFT PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}//scripts/PCA/results/pca_nonstreaming/blockLRA/1)
 
 
     file(COPY ${PROJECT_SOURCE_DIR}/src/CL

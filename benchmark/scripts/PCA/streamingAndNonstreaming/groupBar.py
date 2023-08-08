@@ -85,7 +85,7 @@ def DrawBarPlot(x_values, y_values, legend_labels, x_label, y_label, filename):
     cmap = plt.cm.viridis
 
     # Draw the bars with different colors from the color map
-    fig, ax = plt.subplots(figsize=(15, 12))
+    fig, ax = plt.subplots(figsize=(12, 12))
     width = 0.3
 
     # Draw the bars with different colors from the color map
@@ -103,11 +103,11 @@ def DrawBarPlot(x_values, y_values, legend_labels, x_label, y_label, filename):
                         xy=(rect.get_x() + rect.get_width() / 2, height),
                         xytext=(0, 3),
                         textcoords="offset points",
-                        ha='center', va='bottom', fontweight='bold', fontsize=16)
+                        ha='center', va='bottom', fontsize=17)
 
     plt.tight_layout()
     plt.savefig(filename + "_nolegend.pdf", bbox_inches='tight')
-    plt.legend(loc='upper left', bbox_to_anchor=(-0.3, 0.6), fontsize=16)
+    plt.legend(loc='upper left', bbox_to_anchor=(-0.4, 0.6), fontsize=20)
     plt.savefig(filename + "_legend.pdf", bbox_inches='tight')
     plt.show()
 
