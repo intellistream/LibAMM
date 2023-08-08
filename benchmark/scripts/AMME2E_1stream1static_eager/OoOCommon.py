@@ -46,7 +46,7 @@ def editConfig(src, dest, key, value):
             rowIdx = idxt
             break
         idxt = idxt + 1
-    df[1][rowIdx] = str(value)
+    df[1][rowIdx] = value
     df.to_csv(dest, index=False, header=False)
 
 
