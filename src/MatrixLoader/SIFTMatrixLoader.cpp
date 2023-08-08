@@ -65,7 +65,13 @@ void AMMBench::SIFTMatrixLoader::generateAB() {
   // B = standardizedB;
   B = centeredB;
 
-  A = B.t();
+  // A = B.t getting bug in int8 algorithm, as it traverse vertically in transpose
+  A = torch::zeros({(int) dim, (int) num}, B.options());
+  for (int64_t i = 0; i < num; ++i) {
+      for (int64_t j = 0; j < dim; ++j) {
+          A[j][i] = B[i][j].clone();
+      }
+  }
 
   int ACol = A.size(0);
   int ARow = A.size(1);

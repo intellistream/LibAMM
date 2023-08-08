@@ -157,7 +157,7 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec
 
     for i in range(len(csvTemplates)):
         resultPath = join(commonPathBase, resultPaths[i])
-        runScanVector(exeSpace, periodVec, resultPath, csvTemplates[i])
+        # runScanVector(exeSpace, periodVec, resultPath, csvTemplates[i])
         results = readResultVector(periodVec, resultPath)
         for k in plot_results:
             plot_results[k].append(results[k])
