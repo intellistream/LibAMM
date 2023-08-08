@@ -62,15 +62,15 @@ dataset_acols_mapping={
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
     # resultFolder="periodTests"
     configFname = "config_period_"+prefixTag + ".csv"
-    # configTemplate = "config.csv"
+    configTemplate = "config_e2e_1stream1static_eager.csv"
     # clear old files
     os.system("cd " + exePath + "&& sudo rm *.csv")
     os.system("cp perfListEvaluation.csv " + exePath)
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
     editConfig(configTemplate, exePath+"temp1.csv", "srcA", srcA)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
-    editConfig(exePath+"temp1.csv",exePath+configFname, "cppAlgoTag", algoTag)
+    editConfig(exePath+"temp2.csv", exePath+"temp3.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
+    editConfig(exePath+"temp3.csv", exePath+configFname, "cppAlgoTag", algoTag)
     # prepare new file
     # run
     os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmark " + configFname)

@@ -62,7 +62,7 @@ dataset_acols_mapping={
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
     # resultFolder="periodTests"
     configFname = "config_period_"+prefixTag + ".csv"
-    # configTemplate = "config.csv"
+    configTemplate = "config_e2e_1stream1static_lazy.csv"
     # clear old files
     os.system("cd " + exePath + "&& sudo rm *.csv")
     os.system("cp perfListEvaluation.csv " + exePath)
