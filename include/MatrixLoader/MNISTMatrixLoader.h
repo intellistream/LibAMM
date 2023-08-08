@@ -32,7 +32,7 @@ namespace AMMBench {
  */
 class MNISTMatrixLoader : public AbstractMatrixLoader {
  protected:
-  torch::Tensor A, B;
+  torch::Tensor A, B, At, Bt;
   torch::Tensor Sxx, Syy, Sxy;
   torch::Tensor SxxNegativeHalf, SyyNegativeHalf, M;
   torch::Tensor correlation;
@@ -77,6 +77,18 @@ class MNISTMatrixLoader : public AbstractMatrixLoader {
   * @return the generated B matrix
   */
   virtual torch::Tensor getB();
+
+  /**
+   * @brief get the transpose of A matrix
+   * @return the A.t().contiguous() matrix, which is not a view but has its own memory space
+   */
+  virtual torch::Tensor getAt();
+
+  /**
+  * @brief get the transpose of B matrix
+  * @return the B.t().contiguous() matrix, which is not a view but has its own memory space
+  */
+  virtual torch::Tensor getBt();
 
   /**
   * @brief get the Sxx matrix
