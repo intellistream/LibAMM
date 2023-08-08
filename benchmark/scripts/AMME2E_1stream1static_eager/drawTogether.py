@@ -177,18 +177,18 @@ def draw2yBar(NAME,R1,R2,l1,l2,fname):
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
-    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/AMME2E_Static_lazy/"
+    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/AMME2E_1stream1static_eager/"
 
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/AMME2E_Static_lazy/"
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/AMME2E_1stream1static_eager/"
     
     # add the datasets here
     srcAVec=["datasets/AST/mcfe.mtx","datasets/DWAVE/dwa512.mtx",'datasets/ECO/wm2.mtx','datasets/QCD/qcda_small.mtx','datasets/RDB/rdb2048.mtx','datasets/UTM/utm1700a.mtx','datasets/ZENIOS/zenios.mtx']
     srcBVec=["datasets/AST/mcfe.mtx","datasets/DWAVE/dwb512.mtx",'datasets/ECO/wm3.mtx','datasets/QCD/qcdb_small.mtx','datasets/RDB/rdb2048l.mtx','datasets/UTM/utm1700b.mtx','datasets/ZENIOS/zenios.mtx']
     dataSetNames=['AST','DWAVE','ECO','QCD','RDB','UTM','ZENIOS']
     # add the algo tag here
-    algosVec=['mm','crs']
-    # this template configs all algos as lazy mode, all datasets are static and normalized    
-    csvTemplate = 'config_e2e_sl.csv'
+    algosVec=['mm', 'crs', 'weighted-cr', 'countSketch', 'tugOfWar', 'smp-pca', 'rip', 'fastjlt', 'cooFD', 'blockLRA', 'int8']
+    # this template configs all algos as eager mode, all datasets are static and normalized
+    csvTemplate = 'config_e2e_1stream1static_eager.csv'
     # do not change the following
     resultPaths = algosVec
 
@@ -207,11 +207,11 @@ def main():
     errAll=np.array(errAll)*100.0
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     groupBar2.DrawFigure(dataSetNames, np.array(errAll), methodTags, "Datasets", "Error (%)",
-                         5, 15, figPath + "sec4_1_e2e_sl_fro", True)
+                         5, 15, figPath + "sec4_1_e2e_1stream1static_eager_fro", True)
     groupBar2.DrawFigure(dataSetNames, np.array(lat95All), methodTags, "Datasets", "95% latency (ms)",
-                         5, 15, figPath + "sec4_1_e2e_sl_latency", False)
+                         5, 15, figPath + "sec4_1_e2e_1stream1static_eager_latency", False)
     groupBar2.DrawFigure(dataSetNames, np.array(thrAll)/1000.0, methodTags, "Datasets", "elements/ms",
-                         5, 15, figPath + "sec4_1_e2e_sl_throughput", False)
+                         5, 15, figPath + "sec4_1_e2e_1stream1static_eager_throughput", False)
     print(lat95All,errAll)
 if __name__ == "__main__":
     main()
