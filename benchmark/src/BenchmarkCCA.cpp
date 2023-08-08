@@ -80,20 +80,10 @@ void benchmarkCCA(std::string configName) {
     INTELLI_INFO("1.2 matrixLoaderTag: MNIST");
     assert(matLoaderPtr);
     matLoaderPtr->setConfig(cfg);
-    auto A = matLoaderPtr->getA(); // 60000*392
-    auto B = matLoaderPtr->getB(); // 60000*392
-    torch::Tensor At = torch::zeros({(int) A.size(1), (int) A.size(0)}, A.options()); // 392*60000 int8 fix
-    for (int64_t i = 0; i < A.size(0); ++i) {
-        for (int64_t j = 0; j < A.size(1); ++j) {
-            At[j][i] = A[i][j].clone();
-        }
-    }
-    torch::Tensor Bt = torch::zeros({(int) B.size(1), (int) B.size(0)}, B.options()); // 392*60000 int8 fix
-    for (int64_t i = 0; i < B.size(0); ++i) {
-        for (int64_t j = 0; j < B.size(1); ++j) {
-            Bt[j][i] = B[i][j].clone();
-        }
-    }
+    auto A = matLoaderPtr->getA(); // 392*60000
+    auto B = matLoaderPtr->getB(); // 392*60000
+    auto At = matLoaderPtr->getAt(); // 60000*392
+    auto Bt = matLoaderPtr->getBt(); // 60000*392
     matLoaderPtr->calculate_correlation(); // cleaner code
     // 1.3 sketch dimension
     uint64_t sketchSize;
@@ -118,10 +108,11 @@ void benchmarkCCA(std::string configName) {
 
     if (isStreaming){
         INTELLI_INFO("Runing AMM streaming");
+        B=Bt; // A: 392*60000, B:60000*392
         
         AMMBench::SingleThreadStreamer ss;
         ConfigMapPtr cfgGlobal = cfg;
-        uint64_t aRows = A.size(1);
+        uint64_t aRows = A.size(0);
         cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
         uint64_t batchSize = cfg->tryU64("batchSize", 1, true);
         if (batchSize > aRows) {
@@ -135,8 +126,8 @@ void benchmarkCCA(std::string configName) {
         tsGenB.setConfig(cfgGlobal);
         std::vector<AMMBench::AMMTimeStampPtr> myTsB = tsGenB.getTimeStamps();
         INTELLI_INFO("Generate time stamps for two streams done");
-        Sxy = torch::zeros({A.size(1), B.size(1)});
-        Sxx = torch::zeros({A.size(1), A.size(1)});
+        Sxy = torch::zeros({A.size(0), B.size(1)});
+        Sxx = torch::zeros({A.size(0), A.size(0)});
         Syy = torch::zeros({B.size(1), B.size(1)});
         // INTELLI_INFO("Shape of matrix Sxy: " + torch::str(Sxy.sizes()));
         // INTELLI_INFO("Shape of matrix Sxx: " + torch::str(Sxx.sizes()));
@@ -167,7 +158,7 @@ void benchmarkCCA(std::string configName) {
         while (startRow < aRows) {
             tNow = chronoElapsedTime(tstart);;
             //auto subA = A.slice(0, startRow, endRow);
-            incomingA =At.slice(0, startRow, endRow);
+            incomingA =A.slice(0, startRow, endRow);
             incomingB=B.slice(1,startRow,endRow);
             oldArrivedB=B.slice(1,0,endRow);
             while (tNow < tEXpectedArrival) {
@@ -194,7 +185,7 @@ void benchmarkCCA(std::string configName) {
                 uint64_t aB2Cols=aB2.size(1);
                 Sxy.slice(0,0,aB2Rows).slice(1,lastABCols,lastABCols+aB2Cols).copy_(aB2);
             }
-            oldArrivedA=At.slice(0, 0, endRow);
+            oldArrivedA=A.slice(0, 0, endRow);
             /**
             * @brief do the incomingA*oldArrivedA part
             */
@@ -243,9 +234,9 @@ void benchmarkCCA(std::string configName) {
         allMetrics->edit("95%latency", latency95);
         allMetrics->addPrefixToKeys("AMM");
 
-        Sxx = Sxx/A.size(0);
-        Syy = Syy/A.size(0);
-        Sxy = Sxy/A.size(0);
+        Sxx = Sxx/A.size(1);
+        Syy = Syy/A.size(1);
+        Sxy = Sxy/A.size(1);
     }
     else{
         INTELLI_INFO("Runing AMM nonstreaming");
@@ -258,7 +249,7 @@ void benchmarkCCA(std::string configName) {
         adjustConfig(cfg, "AA"); // update cfg index book prototype path
         cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
         torch::manual_seed(123); // CRS requires same sampling seed
-        Sxx = cppAlgoPtr->amm(At, A, sketchSize)/A.size(0);
+        Sxx = cppAlgoPtr->amm(A, At, sketchSize)/A.size(1);
         std::cout << "Sxx:" << std::endl;
         std::cout << "Maximum Value: " << Sxx.max().item<float>() << std::endl;
         std::cout << "Mean Value: " << Sxx.mean().item<float>() << std::endl;
@@ -271,7 +262,7 @@ void benchmarkCCA(std::string configName) {
         adjustConfig(cfg, "BB"); // update cfg index book prototype path
         cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
         torch::manual_seed(123); // CRS requires same sampling seed
-        Syy = cppAlgoPtr->amm(Bt, B, sketchSize)/A.size(0);
+        Syy = cppAlgoPtr->amm(B, Bt, sketchSize)/A.size(1);
         std::cout << "Syy:" << std::endl;
         std::cout << "Maximum Value: " << Syy.max().item<float>() << std::endl;
         std::cout << "Mean Value: " << Syy.mean().item<float>() << std::endl;
@@ -284,7 +275,7 @@ void benchmarkCCA(std::string configName) {
         adjustConfig(cfg, "AB"); // update cfg index book prototype path
         cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
         torch::manual_seed(123); // CRS requires same sampling seed
-        Sxy = cppAlgoPtr->amm(At, B, sketchSize)/A.size(0);
+        Sxy = cppAlgoPtr->amm(A, Bt, sketchSize)/A.size(1);
         std::cout << "Sxy:" << std::endl;
         std::cout << "Maximum Value: " << Sxy.max().item<float>() << std::endl;
         std::cout << "Mean Value: " << Sxy.mean().item<float>() << std::endl;
@@ -297,7 +288,7 @@ void benchmarkCCA(std::string configName) {
         pef.end();
         allMetrics = pef.resultToConfigMap();
         allMetrics->addPrefixToKeys("AMM");
-        double throughput = (A.size(1) * 1e6) / allMetrics->getU64("AMMPerfElapsedTime");
+        double throughput = (A.size(0) * 1e6) / allMetrics->getU64("AMMPerfElapsedTime");
         allMetrics->edit("AMMThroughput", throughput);
     }
     allMetrics->edit("SxxFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxx(), Sxx));

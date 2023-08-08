@@ -33,8 +33,8 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
   int n_cols = 0;
 
   // Dynamically allocate memory for left half and right half
-  A = torch::empty({60000, 28 * 14});
-  B = torch::empty({60000, 28 * 14});
+  At = torch::zeros({60000, 28 * 14});
+  Bt = torch::zeros({60000, 28 * 14});
 
   // Read in file
   ifstream file(fileName, ios::binary);
@@ -67,9 +67,9 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
           std::cout << pixel_value << " " << endl;
         }
         if ((j % 28) < 14) {
-          A[i][int(floor(static_cast<double>(j) / 28) * 14 + (j % 28))] = pixel_value; // 60000*392
+          At[i][int(floor(static_cast<double>(j) / 28) * 14 + (j % 28))] = pixel_value; // 60000*392
         } else {
-          B[i][int(floor(static_cast<double>(j) / 28) * 14 + (j % 28) - 14)] = pixel_value; // 60000*392
+          Bt[i][int(floor(static_cast<double>(j) / 28) * 14 + (j % 28) - 14)] = pixel_value; // 60000*392
         }
       }
     }
@@ -90,14 +90,11 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
 
 
   // normalization and transpose
-  A = (A - A.mean(/*dim=*/0)); // centered along feature (column) 60000*392
-  B = (B - B.mean(/*dim=*/0)); // centered along feature (column) 60000*392
-  // A = (A - A.mean(/*dim=*/0)) / A.std(); // standardize along feature (column)
-  // B = (B - B.mean(/*dim=*/0)) / B.std(); // standardize along feature (column)
-  // std::cout << A.mean(/*dim=*/0) << endl;
-  // std::cout << B.mean(/*dim=*/0) << endl;
-  // std::cout << A.std(/*dim=*/0) << endl;
-  // std::cout << B.std(/*dim=*/0) << endl;
+  At = (At - At.mean(/*dim=*/0)); // centered along feature (column) 60000*392
+  Bt = (Bt - Bt.mean(/*dim=*/0)); // centered along feature (column) 60000*392
+
+  A = At.t().contiguous(); // 392*60000
+  B = Bt.t().contiguous(); // 392*60000
 
   INTELLI_INFO(
       "Generating [" + to_string(A.size(0)) + " x " + to_string(A.size(1)) + "]*[" + to_string(B.size(0)) + " x "
@@ -117,6 +114,14 @@ torch::Tensor AMMBench::MNISTMatrixLoader::getA() {
 
 torch::Tensor AMMBench::MNISTMatrixLoader::getB() {
   return B;
+}
+
+torch::Tensor AMMBench::MNISTMatrixLoader::getAt() {
+  return At;
+}
+
+torch::Tensor AMMBench::MNISTMatrixLoader::getBt() {
+  return Bt;
 }
 
 torch::Tensor AMMBench::MNISTMatrixLoader::getSxx() {
@@ -150,9 +155,9 @@ torch::Tensor AMMBench::MNISTMatrixLoader::getCorrelation() {
 void AMMBench::MNISTMatrixLoader::calculate_correlation() {
   
   // Sxx, Syy, Sxy: covariance matrix
-  Sxx = torch::matmul(A.t(), A) / A.size(0); // 392x60000 * 60000x392 max 12752.4 min -3912.51
-  Syy = torch::matmul(B.t(), B) / A.size(0); // 392x60000 * 60000x392 max 12953.4 min -5121.09
-  Sxy = torch::matmul(A.t(), B) / A.size(0); // 392x60000 * 60000x392 max 10653.1 min -5307.15
+  Sxx = torch::matmul(A, At) / A.size(1); // 392x60000 * 60000x392 max 12752.4 min -3912.51
+  Syy = torch::matmul(B, Bt) / A.size(1); // 392x60000 * 60000x392 max 12953.4 min -5121.09
+  Sxy = torch::matmul(A, Bt) / A.size(1); // 392x60000 * 60000x392 max 10653.1 min -5307.15
 
   // Sxx^(-1/2), Syy^(-1/2), M
   // Sxx^(-1/2)
@@ -176,27 +181,3 @@ void AMMBench::MNISTMatrixLoader::calculate_correlation() {
   std::tie(U, S, Vh) = torch::linalg::svd(M, false, c10::nullopt);
   correlation = torch::clamp(S, -1.0, 1.0);
 }
-
-
-// int main() {
-//     AMMBench::MatrixLoaderTable mLoaderTable;
-//     std::shared_ptr<AMMBench::AbstractMatrixLoader> basePtr = mLoaderTable.findMatrixLoader("MNIST");
-// 	std::shared_ptr<AMMBench::MNISTMatrixLoader> matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MNISTMatrixLoader>(basePtr);
-//     assert(matLoaderPtr);
-
-//     INTELLI::ConfigMapPtr cfg = newConfigMap();
-//     matLoaderPtr->setConfig(cfg);
-
-//     auto A = matLoaderPtr->getA();
-//     auto B = matLoaderPtr->getB();
-//     std::cout << A.sizes() << endl;
-//     std::cout << B.sizes() << endl;
-
-// 	// if you want to visualize the image, pls comment out normalization and transpose step in generateAB()
-// 	// auto A0 = A[0].view({28, 14});
-// 	// auto B0 = B[0].view({28, 14});
-// 	// std::cout << A0 << endl;
-//     // std::cout << B0 << endl;
-
-// 	matLoaderPtr->calculate_correlation();
-// }
