@@ -6,22 +6,34 @@
 #include <ATen/ATen.h>
 #include <vector>
 #include <AMMBench.h>
+#include <cassert>
+using namespace std;
 
 namespace AMMBench {
 void AMMBench::BlockLRACPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
-  ARankRatio = cfg->tryDouble("algoARankRatio", 0.1, true);
-  BRankRatio = cfg->tryDouble("algoBRankRatio", 0.1, true);
+  ARankRatio = cfg->tryDouble("algoARankRatio", 0.1, true); // 0.1 is kinda same as sketch_size=0.1
+  BRankRatio = cfg->tryDouble("algoBRankRatio", 0.1, true); // 0.1 is kinda same as sketch_size=0.1
 }
 
-torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize) {
+torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t l) {
+
+  l=0; // l is meaningless, as "sketch_size" is already set in rank, and blockSize is not about sketch size also.
 
   // Input size and block size
   uint64_t m = A.size(0);
   uint64_t k = A.size(1);
   uint64_t n = B.size(1);
+  int blockSizeLimit = 50; // blockSize can not be large, as svd is very time consuming
+  uint64_t blockSize = 1;
 
   uint64_t gcdOfmkn = std::gcd(std::gcd(m, k), n);
-  blockSize = std::min(gcdOfmkn, blockSize);
+  for (int divisor = gcdOfmkn; divisor >= 1; divisor--) {
+        if (m % divisor == 0 && k % divisor == 0 && n % divisor == 0 && divisor<=blockSizeLimit) {
+          blockSize = divisor;
+          break;
+        }
+    }
+
   if (blockSize == 1) {
     INTELLI_ERROR("m=" + to_string(m) + ", k=" + to_string(k) + ", n=" + to_string(n)
                       + ", gcd(m, k, n)=1, BlockLRA is not usable anymore");
