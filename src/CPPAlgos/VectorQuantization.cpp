@@ -30,10 +30,14 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
   torch::Tensor A1 = A.to(torch::kDouble);
   torch::Tensor B1 = B.to(torch::kDouble);
 
-  int m = A1.size(1) / findClosestDivisor(A1.size(1), l);
+  // int m = A1.size(1) / findClosestDivisor(A1.size(1), l);
+  // int m=1;
+  // l=765;
+  int m=1;
+  l=1700;
   PQMM pqmm(A1, B1, l, m);
   pqmm.setFilePath(columnCodeIndexXPath, rowCodeIndexYPath, columnCodeBookXvecPath, rowCodeBookYvecPath);
-  return pqmm.runAMM(false);
+  return pqmm.runAMM(true);
 }
 
 void AMMBench::PQMM::setFilePath(string columnCodeIndexXPathPassedIn, string rowCodeIndexYPathPassedIn, string columnCodeBookXvecPathPassedIn, string rowCodeBookYvecPathPassedIn){
@@ -395,6 +399,7 @@ class KMeans {
 };
 
 void AMMBench::PQMM::constructCodeBooks() {
+  INTELLI_WARNING("constructCodeBooks..");
   // define max interation times for KMeans using the max value of int
   int maxValue = std::numeric_limits<int>::max();
 
