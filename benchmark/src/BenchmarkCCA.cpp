@@ -316,7 +316,33 @@ void benchmarkCCA(std::string configName) {
 	SyyNegativeHalf = at::real(SyyNegativeHalf);
     // 3.3 M
     INTELLI_INFO("M");
-    torch::Tensor M = torch::matmul(torch::matmul(SxxNegativeHalf.t(), Sxy), SyyNegativeHalf);
+    torch::manual_seed(123);
+    torch::Tensor M1 = cppAlgoPtr->amm(SxxNegativeHalf.t(), Sxy, 39);
+    std::cout << "M1:" << std::endl;
+    std::cout << "Maximum Value: " << M1.max().item<float>() << std::endl;
+    std::cout << "Mean Value: " << M1.mean().item<float>() << std::endl;
+    std::cout << "Minimum Value: " << M1.min().item<float>() << std::endl;
+    std::cout << "matLoaderPtr->getM():" << std::endl;
+    std::cout << "Maximum Value: " << matLoaderPtr->getM1().max().item<float>() << std::endl;
+    std::cout << "Mean Value: " << matLoaderPtr->getM1().mean().item<float>() << std::endl;
+    std::cout << "Minimum Value: " << matLoaderPtr->getM1().min().item<float>() << std::endl;
+    double M1FroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(M1, matLoaderPtr->getM1());
+    allMetrics->edit("M1FroError", (double) M1FroError);
+
+    torch::manual_seed(123);
+    torch::Tensor M = cppAlgoPtr->amm(M1, SyyNegativeHalf, 39);
+    std::cout << "M:" << std::endl;
+    std::cout << "Maximum Value: " << M.max().item<float>() << std::endl;
+    std::cout << "Mean Value: " << M.mean().item<float>() << std::endl;
+    std::cout << "Minimum Value: " << M.min().item<float>() << std::endl;
+    std::cout << "matLoaderPtr->getM():" << std::endl;
+    std::cout << "Maximum Value: " << matLoaderPtr->getM().max().item<float>() << std::endl;
+    std::cout << "Mean Value: " << matLoaderPtr->getM().mean().item<float>() << std::endl;
+    std::cout << "Minimum Value: " << matLoaderPtr->getM().min().item<float>() << std::endl;
+    double MFroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(M, matLoaderPtr->getM());
+    allMetrics->edit("MFroError", (double) MFroError);
+
+    // torch::Tensor M = torch::matmul(torch::matmul(SxxNegativeHalf.t(), Sxy), SyyNegativeHalf);
     // 3.4 Correlation
     INTELLI_INFO("Correlation");
     torch::Tensor U, S, Vh;

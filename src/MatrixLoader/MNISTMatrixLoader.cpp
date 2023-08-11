@@ -148,6 +148,10 @@ torch::Tensor AMMBench::MNISTMatrixLoader::getM() {
   return M;
 }
 
+torch::Tensor AMMBench::MNISTMatrixLoader::getM1() {
+  return M1;
+}
+
 torch::Tensor AMMBench::MNISTMatrixLoader::getCorrelation() {
   return correlation;
 }
@@ -174,7 +178,8 @@ void AMMBench::MNISTMatrixLoader::calculate_correlation() {
   SyyNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSyy, diagonalMatrixSyy), eigenvectorsSyy.t());
   SyyNegativeHalf = at::real(SyyNegativeHalf);
   // M
-  M = torch::matmul(torch::matmul(SxxNegativeHalf.t(), Sxy), SyyNegativeHalf);
+  M1 = torch::matmul(SxxNegativeHalf.t(), Sxy);
+  M = torch::matmul(M1, SyyNegativeHalf);
 
   // correlation
   torch::Tensor U, S, Vh;
