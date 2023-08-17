@@ -18,10 +18,10 @@ namespace AMMBench {
  */
 class VectorQuantization : public AMMBench::AbstractCPPAlgo {
   protected:
-    string columnCodeIndexXPath;
-    string rowCodeIndexYPath;
-    string columnCodeBookXvecPath;
-    string rowCodeBookYvecPath;
+    string pqvqCodewordLookUpTablePath;
+    torch::Tensor codewordsA;
+    torch::Tensor codewordsB;
+    torch::Tensor lookUpTable;
 
  public:
   VectorQuantization() {
@@ -58,39 +58,6 @@ typedef std::shared_ptr<class AMMBench::VectorQuantization> VectorQuantizationPt
  * @brief (Macro) To creat a new @ref  VectorQuantizationAlgounder shared pointer.
  */
 #define newVectorQuantizationAlgo std::make_shared<AMMBench::VectorQuantization>
-
-class PQMM {
- public:
-
-  torch::Tensor X, Y; // raw input matrixs  MxN, NxK
-  int l;  // size of the sub-codebook
-  int m;  // number of sub-codebook
-
-  string columnCodeIndexXPath;
-  string rowCodeIndexYPath;
-  string columnCodeBookXvecPath;
-  string rowCodeBookYvecPath;
-
-  std::vector<torch::Tensor> columnCodeBookX, rowCodeBookY;  // codebooks mxlxM, mxlxK
-  vector<vector<int>> columnCodeIndexX, rowCodeIndexY; // code indexs mxl
-  torch::Tensor res;
-
-  PQMM(torch::Tensor x, torch::Tensor y, int l, int m) : X(std::move(x)), Y(std::move(y)), l(l), m(m) {}
-  ~PQMM() = default;
-
-  
-  virtual torch::Tensor matrixOuterProduct(torch::Tensor A, torch::Tensor B);
-  
-  virtual torch::Tensor runAMM(bool training = false);
-
-  virtual void setFilePath(string columnCodeIndexXPathPassedIn, string rowCodeIndexYPathPassedIn, string columnCodeBookXvecPathPassedIn, string rowCodeBookYvecPathPassedIn);
-  virtual void save3DVectorDoubleToFile(string filename, vector<vector<vector<double>>> &vec);
-  virtual void save2DVectorIntToFile(string filename, vector<vector<int>> &vec);
-  virtual void load3DVectorDoubleFromFile(string filename, vector<vector<vector<double>>> &vec);
-  virtual void load2DVectorIntFromFile(string filename, vector<vector<int>> &vec);
-
-  virtual void constructCodeBooks();
-};
 }
 /**
  * @}
