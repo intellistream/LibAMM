@@ -51,6 +51,7 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 
 dataset_acols_mapping={
     'AST':765,
+    'BUS':10595,
     'DWAVE':512,
     'ECO':260,
     'QCD':3072,
@@ -70,7 +71,18 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     editConfig(configTemplate, exePath+"temp1.csv", "srcA", srcA)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
     editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
-    editConfig(exePath+"temp1.csv",exePath+configFname, "cppAlgoTag", algoTag)
+    editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
+
+    # load Codeword LookUpTable for vq or pq
+    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/AMME2E/CodewordLookUpTable'
+    pqvqCodewordLookUpTablePath = "dummy"
+    import glob
+    if algoTag == 'vq':
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m1_*')[0]
+    elif algoTag =='pq':
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_*')[0]
+    editConfig(exePath+"temp2.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
+
     # prepare new file
     # run
     os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmark " + configFname)
@@ -195,12 +207,12 @@ def main():
     # srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
     # srcBVec=["datasets/AST/mcfe.mtx"] # 765*756
     # dataSetNames=['AST']
-    srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
-    srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
-    dataSetNames=['UTM']
-    # srcAVec=["datasets/AST/mcfe.mtx","datasets/DWAVE/dwa512.mtx",'datasets/ECO/wm2.mtx','datasets/QCD/qcda_small.mtx','datasets/RDB/rdb2048.mtx','datasets/UTM/utm1700a.mtx','datasets/ZENIOS/zenios.mtx']
-    # srcBVec=["datasets/AST/mcfe.mtx","datasets/DWAVE/dwb512.mtx",'datasets/ECO/wm3.mtx','datasets/QCD/qcdb_small.mtx','datasets/RDB/rdb2048l.mtx','datasets/UTM/utm1700b.mtx','datasets/ZENIOS/zenios.mtx']
-    # dataSetNames=['AST','DWAVE','ECO','QCD','RDB','UTM','ZENIOS']
+    # srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
+    # srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
+    # dataSetNames=['UTM']
+    srcAVec=["datasets/AST/mcfe.mtx","datasets/BUS/gemat1.mtx","datasets/DWAVE/dwa512.mtx",'datasets/ECO/wm2.mtx','datasets/QCD/qcda_small.mtx','datasets/RDB/rdb2048.mtx','datasets/UTM/utm1700a.mtx','datasets/ZENIOS/zenios.mtx']
+    srcBVec=["datasets/AST/mcfe.mtx","datasets/BUS/gemat1.mtx","datasets/DWAVE/dwb512.mtx",'datasets/ECO/wm3.mtx','datasets/QCD/qcdb_small.mtx','datasets/RDB/rdb2048l.mtx','datasets/UTM/utm1700b.mtx','datasets/ZENIOS/zenios.mtx']
+    dataSetNames=['AST','BUS','DWAVE','ECO','QCD','RDB','UTM','ZENIOS']
     # add the algo tag here
     algosVec=['vq']
     # this template configs all algos as lazy mode, all datasets are static and normalized

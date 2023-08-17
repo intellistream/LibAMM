@@ -19,6 +19,7 @@ namespace AMMBench {
 class VectorQuantization : public AMMBench::AbstractCPPAlgo {
   protected:
     string pqvqCodewordLookUpTablePath;
+    int m; // num of subspaces
     torch::Tensor codewordsA;
     torch::Tensor codewordsB;
     torch::Tensor lookUpTable;

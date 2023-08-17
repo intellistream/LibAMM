@@ -2,6 +2,7 @@
 // Created by yuhao on 16/8/23.
 //
 #include <CPPAlgos/VectorQuantization.h>
+#include <regex>
 
 using namespace std;
 
@@ -9,6 +10,22 @@ void AMMBench::VectorQuantization::setConfig(INTELLI::ConfigMapPtr cfg) {
     pqvqCodewordLookUpTablePath = cfg->tryString("pqvqCodewordLookUpTablePath", "", true);
     INTELLI_INFO("pqvqCodewordLookUpTablePath: " + pqvqCodewordLookUpTablePath);
     assert(pqvqCodewordLookUpTablePath!="");
+
+    // Use regex to find the number after '_m', meaning the number of subspace
+    std::regex pattern("_m(\\d+)_");
+    std::smatch match;
+
+    if (std::regex_search(pqvqCodewordLookUpTablePath, match, pattern)) {
+        std::string numberStr = match[1].str();
+        m = std::stoi(numberStr); // Convert string to integer
+        std::cout << "VQ/PQ num of subspaces: " << m << std::endl;
+    } else {
+        std::cout << "Number not found." << std::endl;
+    }
+
+    // make sure vq _m1 and pq _m10 (not restricted to 10, but any number>1, 10 is an example)
+    string algo = cfg->tryString("cppAlgoTag", "vq", true);
+    assert ((algo=="vq" && m==1) || (algo=="pq" && m>1));
     }
 
 torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const torch::Tensor B, uint64_t l) {
@@ -23,7 +40,6 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
     lookUpTable = tensors.attr("lookUpTable").toTensor();
     int CA = codewordsA.sizes()[2];
     int CB = codewordsB.sizes()[2];
-    int m = codewordsA.sizes()[0];
 
     // quantization
     // Initialize vectors to store quantized indices for matrices A and B
