@@ -31,7 +31,9 @@ int main(){
         cfg->edit("normalizeA", uint64_t(1));
         cfg->edit("normalizeB", uint64_t(1));
         cfg->edit("cppAlgoTag", "vq");
-        cfg->edit("pqvqCodewordLookUpTablePath", "/home/heyuhao/AMMBench/benchmark/torchscripts/VQ/AMME2E/CodewordLookUpTableIncludingAB/AST_m10_lA7_lB7.pth");
+        cfg->edit("pqvqCodewordLookUpTablePath", "/home/heyuhao/AMMBench/benchmark/torchscripts/VQ/AMME2E/CodewordLookUpTable/AST_m1_lA76_lB76.pth"); // froError:0.0065759
+        // cfg->edit("cppAlgoTag", "pq");
+        // cfg->edit("pqvqCodewordLookUpTablePath", "/home/heyuhao/AMMBench/benchmark/torchscripts/VQ/AMME2E/CodewordLookUpTableIncludingAB/AST_m10_lA7_lB7.pth"); // froError:0.0065759
 
         AMMBench::CPPAlgoTable cppAlgoTable;
         std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "vq", true);
@@ -49,7 +51,7 @@ int main(){
 
         auto realC = torch::matmul(A, B);
         double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(matrix_products, realC);
-        std::cout << "froError:" << froError << std::endl; // froError:0.0065759
+        std::cout << "froError:" << froError << std::endl;
     }
 
     return 0;
