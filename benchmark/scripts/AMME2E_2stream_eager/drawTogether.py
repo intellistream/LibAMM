@@ -51,6 +51,7 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 
 dataset_acols_mapping={
     'AST':765,
+    'BUS':10595,
     'DWAVE':512,
     'ECO':260,
     'QCD':3072,
@@ -192,11 +193,11 @@ def main():
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/AMME2E_2stream_eager/"
     
     # add the datasets here
-    srcAVec=["datasets/AST/mcfe.mtx","datasets/DWAVE/dwa512.mtx",'datasets/ECO/wm2.mtx','datasets/QCD/qcda_small.mtx','datasets/RDB/rdb2048.mtx','datasets/UTM/utm1700a.mtx','datasets/ZENIOS/zenios.mtx']
-    srcBVec=["datasets/AST/mcfe.mtx","datasets/DWAVE/dwb512.mtx",'datasets/ECO/wm3.mtx','datasets/QCD/qcdb_small.mtx','datasets/RDB/rdb2048l.mtx','datasets/UTM/utm1700b.mtx','datasets/ZENIOS/zenios.mtx']
-    dataSetNames=['AST','DWAVE','ECO','QCD','RDB','UTM','ZENIOS']
+    srcAVec=["datasets/AST/mcfe.mtx","datasets/BUS/gemat1.mtx","datasets/DWAVE/dwa512.mtx",'datasets/ECO/wm2.mtx','datasets/QCD/qcda_small.mtx','datasets/RDB/rdb2048.mtx','datasets/UTM/utm1700a.mtx','datasets/ZENIOS/zenios.mtx']
+    srcBVec=["datasets/AST/mcfe.mtx","datasets/BUS/gemat1.mtx","datasets/DWAVE/dwb512.mtx",'datasets/ECO/wm3.mtx','datasets/QCD/qcdb_small.mtx','datasets/RDB/rdb2048l.mtx','datasets/UTM/utm1700b.mtx','datasets/ZENIOS/zenios.mtx']
+    dataSetNames=['AST','BUS','DWAVE','ECO','QCD','RDB','UTM','ZENIOS']
     # add the algo tag here
-    algosVec=['mm', 'crs', 'weighted-cr', 'countSketch', 'tugOfWar', 'smp-pca', 'rip', 'fastjlt', 'cooFD', 'blockLRA', 'int8']
+    algosVec=['vq', 'pq']
     # this template configs all algos as eager mode, all datasets are static and normalized
     csvTemplate = 'config_e2e_2stream_eager.csv'
     # do not change the following

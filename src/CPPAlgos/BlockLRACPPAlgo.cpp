@@ -23,7 +23,7 @@ torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, u
   uint64_t m = A.size(0);
   uint64_t k = A.size(1);
   uint64_t n = B.size(1);
-  int blockSizeLimit = 50; // blockSize can not be large, as svd is very time consuming
+  int blockSizeLimit = 30; // blockSize can not be large, as svd is very time consuming
   uint64_t blockSize = 1;
 
   uint64_t gcdOfmkn = std::gcd(std::gcd(m, k), n);

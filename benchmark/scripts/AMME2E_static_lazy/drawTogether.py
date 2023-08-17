@@ -214,7 +214,7 @@ def main():
     srcBVec=["datasets/AST/mcfe.mtx","datasets/BUS/gemat1.mtx","datasets/DWAVE/dwb512.mtx",'datasets/ECO/wm3.mtx','datasets/QCD/qcdb_small.mtx','datasets/RDB/rdb2048l.mtx','datasets/UTM/utm1700b.mtx','datasets/ZENIOS/zenios.mtx']
     dataSetNames=['AST','BUS','DWAVE','ECO','QCD','RDB','UTM','ZENIOS']
     # add the algo tag here
-    algosVec=['vq']
+    algosVec=['vq', 'pq']
     # this template configs all algos as lazy mode, all datasets are static and normalized
     csvTemplate = 'config_e2e_static_lazy.csv'
     # do not change the following
