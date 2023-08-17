@@ -11,6 +11,7 @@ staticDataSet,1,U64
 fullLazy,1,U64
 useCPP,1,U64
 cppAlgoTag,crs,String
+pqvqCodewordLookUpTablePath,dummy,String
 threads,1,U64
 forceMP,0,U64
 usePAPI,0,U64
