@@ -1,0 +1,13 @@
+key,value,type
+cacheMiss,139229,U64
+cacheRefs,274231,U64
+cpuClock,49479999,U64
+cpuCycle,132752859,U64
+instructions,33925754,U64
+perfElapsedTime,560429,U64
+taskClock,49482397,U64
+95%latency,559657.000000,Double
+errorBoundRatio,0.001500,Double
+froError,2.194245,Double
+throughput,3659.384230,Double
+throughputByElements,7494418.903007,Double
