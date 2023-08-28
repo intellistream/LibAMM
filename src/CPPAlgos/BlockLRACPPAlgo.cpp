@@ -37,7 +37,8 @@ torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, u
   if (blockSize == 1) {
     INTELLI_ERROR("m=" + to_string(m) + ", k=" + to_string(k) + ", n=" + to_string(n)
                       + ", gcd(m, k, n)=1, BlockLRA is not usable anymore");
-    return torch::zeros({(long) m, (long) n});
+    throw std::runtime_error("m=" + to_string(m) + ", k=" + to_string(k) + ", n=" + to_string(n)
+                      + ", gcd(m, k, n)=1, BlockLRA is not usable anymore");
   }
   INTELLI_INFO("BlockLRA with adjusted blockSize: " + to_string(blockSize));
 

@@ -63,7 +63,7 @@ dataset_acols_mapping={
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
     # resultFolder="periodTests"
     configFname = "config_period_"+prefixTag + ".csv"
-    configTemplate = "config_e2e_1stream1static_eager.csv"
+    configTemplate = "config_e2e_static_lazy_unnormalized.csv"
     # clear old files
     os.system("cd " + exePath + "&& sudo rm *.csv")
     os.system("cp perfListEvaluation.csv " + exePath)
@@ -80,7 +80,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
         editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
 
     # load Codeword LookUpTable for vq or pq
-    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/AMME2E/CodewordLookUpTable'
+    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/AMME2E/CodewordLookUpTable_unnormalized'
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
     if algoTag == 'vq':
@@ -91,26 +91,18 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
 
     # prepare new file
     # run
-    import subprocess
-    command = f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo timeout 2h ./benchmark {configFname} > execution_log.txt 2>&1" 
-    try:
-        subprocess.run(command, shell=True, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error {e}")
-        # exceed time limit, take it as a failed case. copy the default result_streaming.csv
-        os.system(f"cd {exePath} && cp scripts/AMME2E_empty_resultcsv_template/result_streaming.csv .")
-    
+    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmark " + configFname)
     # copy result
     os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
     os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
-    os.system("cd " + exePath + "&& sudo cp *.csv execution_log.txt " + resultPath + "/" + str(prefixTag))
+    os.system("cd " + exePath + "&& sudo cp *.csv " + resultPath + "/" + str(prefixTag))
 
 
 def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTemplate="config.csv"):
     for i in  range(len(periodVec)):
         rf=periodVec[i]
         sf=pS[i]
-        print(algoTag, sf)
+        print(sf)
         runPeriod(exePath, rf,sf,algoTag, resultPath, configTemplate,prefixTag[i])
 
 
@@ -151,7 +143,7 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
             os.system("sudo rm -rf " + resultPath)
             os.system("sudo mkdir " + resultPath)
             runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate)
-        #exit()
+        
         elapsedTime, fro, eb,thr = readResultVector(dataSetName, resultPath)
         elapsedTimeAll.append(elapsedTime)
         periodAll.append(dataSetName)
@@ -213,18 +205,21 @@ def draw2yBar(NAME,R1,R2,l1,l2,fname):
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
-    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/AMME2E_1stream1static_eager/"
+    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/AMME2E_static_lazy_unnormalized/"
 
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/AMME2E_1stream1static_eager/"
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/AMME2E_static_lazy_unnormalized/"
     
-    # add the datasets here=
+    # add the datasets here
     srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
     srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
     dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
     # add the algo tag here
     algosVec=['mm', 'crs', 'countSketch', 'int8', 'weighted-cr', 'rip', 'smp-pca', 'tugOfWar', 'blockLRA', 'vq', 'pq', 'fastjlt', 'cooFD', 'int8_fp32']
-    # this template configs all algos as eager mode, all datasets are static and normalized
-    csvTemplate = 'config_e2e_1stream1static_eager.csv'
+
+    # algosVec=['mm', 'int8_fp32', 'crs', 'weighted-cr', 'countSketch', 'tugOfWar', 'smp-pca', 'rip', 'fastjlt', 'cooFD', 'blockLRA', 'int8']
+
+    # this template configs all algos as lazy mode, all datasets are static and normalized
+    csvTemplate = 'config_e2e_static_lazy_unnormalized.csv'
     # do not change the following
     resultPaths = algosVec
 
@@ -240,16 +235,22 @@ def main():
     methodTags =algosVec
     lat95All, errAll, ebAll,thrAll,periodAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
 
+    errAll=np.array(errAll)*100.0
+    lat95All=np.array(lat95All)
+    thrAll=np.array(thrAll)/1000.0
+
     # int8 = int8 / int8_fp32 * mm
     lat95All[3] = lat95All[3]/lat95All[-1]*lat95All[0]
     thrAll[3] = thrAll[3]/thrAll[-1]*thrAll[0]
 
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
-                         5, 15, figPath + "sec4_1_e2e_1stream1static_eager_fro", True)
+                         5, 15, figPath + "sec4_1_e2e_static_lazy_unnormalized_fro", True)
     groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)",
-                         5, 15, figPath + "sec4_1_e2e_1stream1static_eager_latency_log", True)
+                         5, 15, figPath + "sec4_1_e2e_static_lazy_unnormalized_latency_log", True)
     groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms",
-                         5, 15, figPath + "sec4_1_e2e_1stream1static_eager_throughput_log", True)
+                         5, 15, figPath + "sec4_1_e2e_static_lazy_unnormalized_throughput_log", True)
+    
+    print(lat95All,errAll)
 if __name__ == "__main__":
     main()

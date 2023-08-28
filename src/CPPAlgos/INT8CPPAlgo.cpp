@@ -9,7 +9,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::fp32amm(torch::Tensor tensor1, torch::Tenso
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
-  //INTELLI_INFO("I am mm");
+  INTELLI_INFO("fp32amm");
   gettimeofday(&tstart, NULL);
   int64_t rows1 = A_size[0];
   int64_t cols1 = A_size[1];
@@ -286,6 +286,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::int16amm(torch::Tensor tensor1, torch::Tens
 void AMMBench::INT8CPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   AbstractCPPAlgo::setConfig(cfg);
   fpMode = cfg->tryString("fpMode", "INT8", true);
+  INTELLI_INFO("fpMode: "+fpMode);
 }
 
 torch::Tensor AMMBench::INT8CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {

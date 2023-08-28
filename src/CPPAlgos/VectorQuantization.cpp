@@ -34,11 +34,13 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
     int A_rows = A.sizes()[0];
     int B_cols = B.sizes()[1];
 
-    // Load precomputed codewords & lookup table
+    // INTELLI_INFO("Load start");
     torch::jit::script::Module tensors = torch::jit::load(pqvqCodewordLookUpTablePath);
     codewordsA = tensors.attr("codewordsA").toTensor();
     codewordsB = tensors.attr("codewordsB").toTensor();
     lookUpTable = tensors.attr("lookUpTable").toTensor();
+    // INTELLI_INFO("Load end");
+    
     int CA = codewordsA.sizes()[2];
     int CB = codewordsB.sizes()[2];
 
@@ -47,6 +49,7 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
     std::vector<torch::Tensor> A_quantized;
     std::vector<torch::Tensor> B_quantized;
 
+    // INTELLI_INFO("Quantize A start");
     // Find the nearest codeword indices for matrix A
     for (int i = 0; i < m; ++i) {
         torch::Tensor codewords_a = codewordsA[i]; // codewordsA already computed
@@ -61,7 +64,9 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
     // Convert vectors to tensors for matrices A and B
     torch::Tensor A_quantized_tensor = torch::stack(A_quantized, 1);
     // std::cout << "A_quantized_tensor shape: " << A_quantized_tensor.sizes() << std::endl;
+    // INTELLI_INFO("Quantize A end");
 
+    // INTELLI_INFO("Quantize B start");
     // Find the nearest codeword indices for matrix B
     for (int k = 0; k < m; ++k) {
         torch::Tensor codewords_b = codewordsB[k]; // codewordsB already computed
@@ -76,6 +81,7 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
     // Convert vectors to tensors for matrices A and B
     torch::Tensor B_quantized_tensor = torch::stack(B_quantized, 0);
     // std::cout << "B_quantized_tensor shape: " << B_quantized_tensor.sizes() << std::endl;
+    // INTELLI_INFO("Quantize B end");
 
     // Define the batch size for batch processing
     int batch_size_A = A_rows;
@@ -85,6 +91,7 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
     torch::Tensor matrix_products = torch::zeros({A_rows, B_cols});
 
     // Perform matrix multiplication using batch processing
+    // INTELLI_INFO("Lookup table start");
     for (int i = 0; i < A_rows; i += batch_size_A) {
         for (int j = 0; j < B_cols; j += batch_size_B) {
             torch::Tensor batch_result = torch::zeros({batch_size_A, batch_size_B});
@@ -106,6 +113,6 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
                         .copy_(batch_result);
         }
     }
-
+    // INTELLI_INFO("Lookup table end");
     return matrix_products;
 }

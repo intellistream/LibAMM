@@ -15,6 +15,8 @@ void AMMBench::AbstractCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
 torch::Tensor AMMBench::AbstractCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   auto start = std::chrono::high_resolution_clock::now();
+  // std::cout << "Tensor A size: " << A.sizes() << std::endl;
+  // std::cout << "Tensor B size: " << B.sizes() << std::endl;
   torch::Tensor C;
   if (useCuda) {
     INTELLI_INFO("I am mm, USING CUDA");
