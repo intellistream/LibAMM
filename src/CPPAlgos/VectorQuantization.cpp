@@ -34,12 +34,10 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
     int A_rows = A.sizes()[0];
     int B_cols = B.sizes()[1];
 
-    // INTELLI_INFO("Load start");
     torch::jit::script::Module tensors = torch::jit::load(pqvqCodewordLookUpTablePath);
     codewordsA = tensors.attr("codewordsA").toTensor();
     codewordsB = tensors.attr("codewordsB").toTensor();
     lookUpTable = tensors.attr("lookUpTable").toTensor();
-    // INTELLI_INFO("Load end");
     
     int CA = codewordsA.sizes()[2];
     int CB = codewordsB.sizes()[2];
@@ -48,40 +46,57 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
     // Initialize vectors to store quantized indices for matrices A and B
     std::vector<torch::Tensor> A_quantized;
     std::vector<torch::Tensor> B_quantized;
-
+    int chunk_size = 100; // Initial chunk size
+    
     // INTELLI_INFO("Quantize A start");
     // Find the nearest codeword indices for matrix A
     for (int i = 0; i < m; ++i) {
         torch::Tensor codewords_a = codewordsA[i]; // codewordsA already computed
         torch::Tensor A_subspace = A.slice(1, i * CA, (i + 1) * CA);
+        // torch::Tensor distances = torch::norm(codewords_a.unsqueeze(0) - A_subspace.unsqueeze(1), 2, 2);
+        // torch::Tensor closest_codeword_indices = torch::argmin(distances, 1);
+        // A_quantized.push_back(closest_codeword_indices);
+        std::vector<torch::Tensor> closest_codeword_indices_list; // Store indices for each chunk
 
-        // Compute distances
-        torch::Tensor distances = torch::norm(codewords_a.unsqueeze(0) - A_subspace.unsqueeze(1), 2, 2);
-        torch::Tensor closest_codeword_indices = torch::argmin(distances, 1);
+        for (int j = 0; j < A_subspace.size(0); j += chunk_size) {
+            int chunk_end = std::min(j + chunk_size, static_cast<int>(A_subspace.size(0)));
+            torch::Tensor A_subspace_sub = A_subspace.slice(0, j, chunk_end);
+            
+            torch::Tensor distances_sub = torch::norm(codewords_a.unsqueeze(0) - A_subspace_sub.unsqueeze(1), 2, 2);
+            torch::Tensor closest_codeword_indices_sub = torch::argmin(distances_sub, 1);
+            closest_codeword_indices_list.push_back(closest_codeword_indices_sub);
+        }
+
+        torch::Tensor closest_codeword_indices = torch::cat(closest_codeword_indices_list, 0);
         A_quantized.push_back(closest_codeword_indices);
     }
 
     // Convert vectors to tensors for matrices A and B
     torch::Tensor A_quantized_tensor = torch::stack(A_quantized, 1);
-    // std::cout << "A_quantized_tensor shape: " << A_quantized_tensor.sizes() << std::endl;
-    // INTELLI_INFO("Quantize A end");
-
-    // INTELLI_INFO("Quantize B start");
-    // Find the nearest codeword indices for matrix B
+    
     for (int k = 0; k < m; ++k) {
         torch::Tensor codewords_b = codewordsB[k]; // codewordsB already computed
         torch::Tensor B_subspace = B.slice(0, k * CB, (k + 1) * CB).t(); // Transpose for proper dimensions
+        // torch::Tensor distances = torch::norm(codewords_b.unsqueeze(0) - B_subspace.unsqueeze(1), 2, 2);
+        // torch::Tensor closest_codeword_indices = torch::argmin(distances, 1);
+        // B_quantized.push_back(closest_codeword_indices);
+        std::vector<torch::Tensor> closest_codeword_indices_list;  // Store closest codeword indices for each chunk
 
-        // Compute distances
-        torch::Tensor distances = torch::norm(codewords_b.unsqueeze(0) - B_subspace.unsqueeze(1), 2, 2);
-        torch::Tensor closest_codeword_indices = torch::argmin(distances, 1);
+        for (int j = 0; j < B_subspace.size(0); j += chunk_size) {
+            int chunk_end = std::min(j + chunk_size, static_cast<int>(B_subspace.size(0)));
+            torch::Tensor B_subspace_sub = B_subspace.slice(0, j, chunk_end);
+
+            torch::Tensor distances_sub = torch::norm(codewords_b.unsqueeze(0) - B_subspace_sub.unsqueeze(1), 2, 2);
+            torch::Tensor closest_codeword_indices_sub = torch::argmin(distances_sub, 1);
+            closest_codeword_indices_list.push_back(closest_codeword_indices_sub);
+        }
+
+        torch::Tensor closest_codeword_indices = torch::cat(closest_codeword_indices_list, 0);
         B_quantized.push_back(closest_codeword_indices);
     }
 
     // Convert vectors to tensors for matrices A and B
     torch::Tensor B_quantized_tensor = torch::stack(B_quantized, 0);
-    // std::cout << "B_quantized_tensor shape: " << B_quantized_tensor.sizes() << std::endl;
-    // INTELLI_INFO("Quantize B end");
 
     // Define the batch size for batch processing
     int batch_size_A = A_rows;
@@ -91,7 +106,6 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
     torch::Tensor matrix_products = torch::zeros({A_rows, B_cols});
 
     // Perform matrix multiplication using batch processing
-    // INTELLI_INFO("Lookup table start");
     for (int i = 0; i < A_rows; i += batch_size_A) {
         for (int j = 0; j < B_cols; j += batch_size_B) {
             torch::Tensor batch_result = torch::zeros({batch_size_A, batch_size_B});
@@ -113,6 +127,5 @@ torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const tor
                         .copy_(batch_result);
         }
     }
-    // INTELLI_INFO("Lookup table end");
     return matrix_products;
 }
