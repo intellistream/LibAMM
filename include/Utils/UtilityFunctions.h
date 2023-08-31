@@ -71,7 +71,12 @@ class UtilityFunctions {
   }
 
   static double relativeFrobeniusNorm(torch::Tensor A, torch::Tensor B) {
+
+    A = A.to(torch::kFloat64);
+    B = B.to(torch::kFloat64);
+
     torch::Tensor error = A - B;
+
     double frobeniusNormA = A.norm().item<double>();
     double frobeniusNormError = error.norm().item<double>();
 
