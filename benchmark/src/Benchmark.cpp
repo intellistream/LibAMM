@@ -32,8 +32,7 @@ void streamingTest(std::string configName) {
  // uint64_t threads = cfg->tryU64("threads", 1, true);
   uint64_t streamingTwoMatrixes = cfg->tryU64("streamingTwoMatrixes", 0, true);
   INTELLI_INFO("Place me at core" + to_string(coreBind));
-  INTELLI_INFO(
-      "with sketch" + to_string(sketchDimension));
+  INTELLI_INFO("with sketch" + to_string(sketchDimension));
   std::string matrixLoaderTag = cfg->tryString("matrixLoaderTag", "random", true);
   auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);
   assert(matLoaderPtr);
@@ -91,6 +90,7 @@ void runSingleThreadTest(std::string configName) {
   AMMBench::MatrixLoaderTable mLoaderTable;
   uint64_t sketchDimension;
   ConfigMapPtr breakDownResult = nullptr;
+  INTELLI_INFO("cppAlgoTag: "+cfg->tryString("cppAlgoTag", "mm", true));
   uint64_t isStreaming = cfg->tryU64("isStreaming", 0, true);
   if (isStreaming) {
     streamingTest(configName);
@@ -125,8 +125,7 @@ void runSingleThreadTest(std::string configName) {
 
   //uint64_t customResultName = cfg->tryU64("customResultName", 0, true);
   INTELLI_INFO("Place me at core" + to_string(coreBind));
-  INTELLI_INFO(
-      "with sketch" + to_string(sketchDimension));
+  INTELLI_INFO("with sketch" + to_string(sketchDimension));
   torch::jit::script::Module module;
   INTELLI_INFO("Try pt file " + ptFile);
   module = torch::jit::load(ptFile);
