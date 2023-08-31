@@ -93,7 +93,7 @@ void AMMBench::MtxMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 void AMMBench::MtxMatrixLoader::generateAB() {
   A = loadMatrixFromMatrixMarket(srcA);
   if (transposeA) {
-    A = A.t();
+    A = A.t().contiguous();
   }
   if(normalizeA)
   {
@@ -105,7 +105,7 @@ void AMMBench::MtxMatrixLoader::generateAB() {
 
   B = loadMatrixFromMatrixMarket(srcB);
   if (transposeB) {
-    B = B.t();
+    B = B.t().contiguous();
   }
   if(normalizeB)
   {
