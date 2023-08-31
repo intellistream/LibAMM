@@ -1,5 +1,5 @@
 
-BRANCH=ins_bd_2
+BRANCH=ins_bd_1
 git init
 git checkout -b $BRANCH
 git add .
