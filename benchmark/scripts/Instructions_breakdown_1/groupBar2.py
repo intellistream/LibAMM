@@ -77,20 +77,16 @@ def DrawLegend(legend_labels, filename):
 
 
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
-    fig = plt.figure(figsize=(20, 6))
+    fig = plt.figure(figsize=(10, 4))
+
     figure = fig.add_subplot(111)
 
-    LINE_COLORS = [
-        '#FF8C00', '#FFE4C4', '#00FFFF', '#E0FFFF',
-        '#FF6347', '#98FB98', '#800080', '#FFD700',
-        '#7CFC00', '#8A2BE2', '#FF4500', '#20B2AA',
-        '#B0E0E6', '#DC143C', '#00FF7F'
-    ]
-    HATCH_PATTERNS = ['/', '-', 'o', '///', '\\', '|', 'x', '\\\\', '+', '.', '*', 'oo', '++++', '....', 'xxx']
+    LINE_COLORS = ['#FAF0E6', '#EE82EE', '#B0E0E6', '#F4B400']
+    HATCH_PATTERNS = ['/', '-', 'o', '///']
 
     FIGURE_LABEL = legend_labels
     index = np.arange(len(x_values))
-    width = 0.5 / len(x_values)
+    width = 0.8 / len(x_values)
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
         bars[i] = plt.bar(index + i * width + width / 2,
@@ -98,25 +94,28 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                           hatch=HATCH_PATTERNS[i % len(HATCH_PATTERNS)],
                           color=LINE_COLORS[i % len(LINE_COLORS)],
                           label=FIGURE_LABEL[i], edgecolor='black', linewidth=3)
-        
-    if allow_legend:
+
+    if allow_legend == True:
         plt.legend(bars, FIGURE_LABEL,
-                prop={'size': 16},
-                ncol=len(bars),  # Set the number of columns to match the number of bars
-                loc='upper center',
-                bbox_to_anchor=(0.5, 1.15),  # Adjust the position
-                shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.2,handletextpad=0
-                )
+                   prop={'size': 22},
+                   ncol=2,
+                   loc='upper center',
+                   bbox_to_anchor=(-0.5, 0.7),
+                   frameon=True,shadow=False)
 
     plt.xticks(index + len(x_values) / 2 * width, x_values, rotation=0)
-    figure.yaxis.set_major_locator(LinearLocator(5))
-# figure.xaxis.set_major_locator(LinearLocator(5))
-    figure.get_xaxis().set_tick_params(direction='in', pad=10)
-    figure.get_yaxis().set_tick_params(direction='in', pad=10)
-    figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
+
     plt.xlabel(x_label, fontsize=20)
     plt.ylabel(y_label, fontsize=20)
 
+    figure.yaxis.set_major_locator(LinearLocator(5))
+    figure.get_xaxis().set_tick_params(direction='in', pad=10)
+    figure.get_yaxis().set_tick_params(direction='in', pad=10)
+    figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
+
+    plt.grid(axis='y', color='gray', alpha=0.5, linewidth=0.5)
+
+    #plt.show()
 
     fig.savefig(filename + ".pdf", bbox_inches='tight')
 
