@@ -49,18 +49,46 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
+dataset_acols_mapping={
+    'AST':765,
+    'BUS':10595,
+    'DWAVE':512,
+    'ECO':260,
+    'QCD':3072,
+    'RDB':2048,
+    'UTM':1700,
+    'ZENIOS':2873,
+}
 
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
     # resultFolder="periodTests"
     configFname = "config_period_"+prefixTag + ".csv"
-    # configTemplate = "config.csv"
+    configTemplate = "config_e2e_static_lazy_unnormalized.csv"
     # clear old files
     os.system("cd " + exePath + "&& sudo rm *.csv")
     os.system("cp perfListEvaluation.csv " + exePath)
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
     editConfig(configTemplate, exePath+"temp1.csv", "srcA", srcA)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
-    editConfig(exePath+"temp2.csv",exePath+configFname, "cppAlgoTag", algoTag)
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
+    editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
+
+    # int8 or int8_fp32
+    if algoTag=='int8_fp32':
+        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "fp32")
+    else:
+        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
+
+    # load Codeword LookUpTable for vq or pq
+    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/AMME2E/CodewordLookUpTable_unnormalized'
+    pqvqCodewordLookUpTablePath = "dummy"
+    import glob
+    if algoTag == 'vq':
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m1_*')[0]
+    elif algoTag =='pq':
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_*')[0]
+    editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
+
     # prepare new file
     # run
     os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmark " + configFname)
@@ -115,7 +143,7 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
             os.system("sudo rm -rf " + resultPath)
             os.system("sudo mkdir " + resultPath)
             runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate)
-        #exit()
+        
         elapsedTime, fro, eb,thr = readResultVector(dataSetName, resultPath)
         elapsedTimeAll.append(elapsedTime)
         periodAll.append(dataSetName)
@@ -177,18 +205,21 @@ def draw2yBar(NAME,R1,R2,l1,l2,fname):
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
-    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/AMME2E_Static_lazy/"
+    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/AMME2E_static_lazy_unnormalized/"
 
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/AMME2E_Static_lazy/"
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/AMME2E_static_lazy_unnormalized/"
     
     # add the datasets here
-    srcAVec=["datasets/AST/mcfe.mtx","datasets/DWAVE/dwa512.mtx",'datasets/ECO/wm2.mtx','datasets/QCD/qcda_small.mtx','datasets/RDB/rdb2048.mtx','datasets/UTM/utm1700a.mtx','datasets/ZENIOS/zenios.mtx']
-    srcBVec=["datasets/AST/mcfe.mtx","datasets/DWAVE/dwb512.mtx",'datasets/ECO/wm3.mtx','datasets/QCD/qcdb_small.mtx','datasets/RDB/rdb2048l.mtx','datasets/UTM/utm1700b.mtx','datasets/ZENIOS/zenios.mtx']
-    dataSetNames=['AST','DWAVE','ECO','QCD','RDB','UTM','ZENIOS']
+    srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
+    srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
+    dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
     # add the algo tag here
-    algosVec=['mm','crs']
-    # this template configs all algos as lazy mode, all datasets are static and normalized    
-    csvTemplate = 'config_e2e_sl.csv'
+    algosVec=['mm', 'crs', 'countSketch', 'int8', 'weighted-cr', 'rip', 'smp-pca', 'tugOfWar', 'blockLRA', 'vq', 'pq', 'fastjlt', 'cooFD', 'int8_fp32']
+
+    # algosVec=['mm', 'int8_fp32', 'crs', 'weighted-cr', 'countSketch', 'tugOfWar', 'smp-pca', 'rip', 'fastjlt', 'cooFD', 'blockLRA', 'int8']
+
+    # this template configs all algos as lazy mode, all datasets are static and normalized
+    csvTemplate = 'config_e2e_static_lazy_unnormalized.csv'
     # do not change the following
     resultPaths = algosVec
 
@@ -203,15 +234,23 @@ def main():
         reRun = 1
     methodTags =algosVec
     lat95All, errAll, ebAll,thrAll,periodAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
-    print(lat95All[0][0])
+
     errAll=np.array(errAll)*100.0
+    lat95All=np.array(lat95All)
+    thrAll=np.array(thrAll)/1000.0
+
+    # int8 = int8 / int8_fp32 * mm
+    lat95All[3] = lat95All[3]/lat95All[-1]*lat95All[0]
+    thrAll[3] = thrAll[3]/thrAll[-1]*thrAll[0]
+
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
-    groupBar2.DrawFigure(dataSetNames, np.array(errAll), methodTags, "Datasets", "Error (%)",
-                         5, 15, figPath + "sec4_1_e2e_sl_fro", True)
-    groupBar2.DrawFigure(dataSetNames, np.array(lat95All), methodTags, "Datasets", "95% latency (ms)",
-                         5, 15, figPath + "sec4_1_e2e_sl_latency", False)
-    groupBar2.DrawFigure(dataSetNames, np.array(thrAll)/1000.0, methodTags, "Datasets", "elements/ms",
-                         5, 15, figPath + "sec4_1_e2e_sl_throughput", False)
+    groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
+                         5, 15, figPath + "sec4_1_e2e_static_lazy_unnormalized_fro", True)
+    groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)",
+                         5, 15, figPath + "sec4_1_e2e_static_lazy_unnormalized_latency_log", True)
+    groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms",
+                         5, 15, figPath + "sec4_1_e2e_static_lazy_unnormalized_throughput_log", True)
+    
     print(lat95All,errAll)
 if __name__ == "__main__":
     main()

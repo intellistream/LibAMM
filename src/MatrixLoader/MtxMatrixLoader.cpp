@@ -114,6 +114,11 @@ void AMMBench::MtxMatrixLoader::generateAB() {
   {
     B= scaleIntoPN1(B);
   }
+
+  INTELLI_INFO(
+      "Generating [" + to_string(A.size(0)) + " x " + to_string(A.size(1)) + "]*[" + to_string(B.size(0)) + " x "
+          + to_string(B.size(1)) + "]");
+
 }
 
 //do nothing in abstract class

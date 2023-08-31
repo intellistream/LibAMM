@@ -72,6 +72,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
     while (tNow < tEXpectedArrival) {
       tNow = chronoElapsedTime(start);
     }
+    INTELLI_INFO("batch of " + to_string(startRow) + " to " + to_string(endRow) + " are ready");
     /**
      * @brief now, the whole batch has arrived, compute
      */

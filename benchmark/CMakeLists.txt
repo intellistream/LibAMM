@@ -22,8 +22,12 @@ if (BUILD_BENCHMARKS)
     target_link_libraries(benchmarkPCA IntelliStream)
     add_executable(benchmarkCCA "src/BenchmarkCCA.cpp")
     target_link_libraries(benchmarkCCA IntelliStream)
-    add_executable(VQTrainSIFT "torchscripts/VQ/PCA/VQTrainSIFT.cpp")
-    target_link_libraries(VQTrainSIFT IntelliStream)
+    add_executable(step1SaveMtxToPt "torchscripts/VQ/AMME2E/step1SaveMtxToPt.cpp")
+    target_link_libraries(step1SaveMtxToPt IntelliStream)
+    add_executable(step3TestVQ "torchscripts/VQ/AMME2E/step3TestVQ.cpp")
+    target_link_libraries(step3TestVQ IntelliStream)
+#     add_executable(VQTrainSIFT "torchscripts/VQ/PCA/VQTrainSIFT.cpp")
+#     target_link_libraries(VQTrainSIFT IntelliStream)
 
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/scripts
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -36,11 +40,11 @@ if (BUILD_BENCHMARKS)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.csv
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-    #set_target_properties(benchmarkMM PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/MM)
     set_target_properties(benchmarkPCA PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/PCA)
     set_target_properties(benchmarkCCA PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/CCA)
-    set_target_properties(VQTrainSIFT PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}//scripts/PCA/results/pca_nonstreaming/blockLRA/1)
-
+    set_target_properties(step1SaveMtxToPt PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/torchscripts/VQ/AMME2E)
+    set_target_properties(step3TestVQ PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/torchscripts/VQ/AMME2E)
+#     set_target_properties(VQTrainSIFT PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/PCA/results/pca_nonstreaming/blockLRA/1)
 
     file(COPY ${PROJECT_SOURCE_DIR}/src/CL
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)

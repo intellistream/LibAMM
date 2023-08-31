@@ -37,6 +37,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["cooFD"] = newCoOccurringFDCPPAlgo();
   algoMap["bcooFD"] = newBetaCoOFDCPPAlgo();
   algoMap["int8"] = newINT8CPPAlgo();
+  algoMap["int8_fp32"] = newINT8CPPAlgo();
   algoMap["tugOfWar"] = newTugOfWarCPPAlgo();
   algoMap["weighted-cr"] = newWeightedCRCPPAlgo();
   algoMap["smp-pca"] = newSMPPCACPPAlgo();
@@ -47,6 +48,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["pq-raw"] = newProductQuantizationRawAlgo();
   algoMap["pq-hash"] = newProductQuantizationHashAlgo();
   algoMap["vq"] = newVectorQuantizationAlgo();
+  algoMap["pq"] = newVectorQuantizationAlgo();
 #if AMMBENCH_CL == 1
   algoMap["cl"] = newCLMMCPPAlgo();
 #endif
