@@ -13,11 +13,11 @@ torch::Tensor AMMBench::WeightedCRCPPAlgo::amm(torch::Tensor A, torch::Tensor B,
   // std::cout << "B shape: " << B.sizes() << std::endl;
 
   // Probability distribution
-  // torch::Tensor col_norm_A = torch::norm(A, /*p=*/2, /*dim=*/0); // norm on columns of A
-  // torch::Tensor row_norm_B = torch::norm(B, /*p=*/2, /*dim=*/1); // norm on rows of B
-  // torch::Tensor probability_distribution = torch::mul(col_norm_A, row_norm_B);
-  // probability_distribution /= probability_distribution.sum();
-  torch::Tensor probability_distribution = torch::ones(n) / n;
+  torch::Tensor col_norm_A = torch::norm(A, /*p=*/2, /*dim=*/0); // norm on columns of A
+  torch::Tensor row_norm_B = torch::norm(B, /*p=*/2, /*dim=*/1); // norm on rows of B
+  torch::Tensor probability_distribution = torch::mul(col_norm_A, row_norm_B);
+  probability_distribution /= probability_distribution.sum();
+  // torch::Tensor probability_distribution = torch::ones(n) / n;
 
   // S
   torch::Tensor sample_indices = torch::multinomial(probability_distribution, /*num_samples*/c, /*replacement*/true);
