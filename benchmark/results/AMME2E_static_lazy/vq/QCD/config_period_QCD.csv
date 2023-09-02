@@ -11,6 +11,7 @@ staticDataSet,1,U64
 fullLazy,1,U64
 useCPP,1,U64
 cppAlgoTag,vq,String
+fpMode,INT8,String
 pqvqCodewordLookUpTablePath,/home/shuhao/Downloads/AMMBench/build/benchmark//torchscripts/VQ/AMME2E/CodewordLookUpTable/QCD_m1_lA307_lB307.pth,String
 threads,1,U64
 forceMP,0,U64

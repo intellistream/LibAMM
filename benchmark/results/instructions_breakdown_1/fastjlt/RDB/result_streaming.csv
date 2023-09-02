@@ -1,0 +1,13 @@
+key,value,type
+branchIns,2474043492,U64
+fpScalar,2680848,U64
+fpVector,212806164,U64
+instructions,7642556356,U64
+memLoad,2520207654,U64
+memStore,8387348,U64
+perfElapsedTime,15457213,U64
+95%latency,15456411.000000,Double
+errorBoundRatio,0.000005,Double
+froError,0.006222,Double
+throughput,132.501653,Double
+throughputByElements,271363.384423,Double

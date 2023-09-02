@@ -1,5 +1,5 @@
 key,value,type
-sketchDimension,105,U64
+sketchDimension,1059,U64
 matrixLoaderTag,mtx,String
 srcA,datasets/BUS/gemat1.mtx,String
 srcB,datasets/BUS/gemat1.mtx,String
@@ -11,6 +11,8 @@ staticDataSet,1,U64
 fullLazy,1,U64
 useCPP,1,U64
 cppAlgoTag,blockLRA,String
+fpMode,INT8,String
+pqvqCodewordLookUpTablePath,dummy,String
 threads,1,U64
 forceMP,0,U64
 usePAPI,0,U64
