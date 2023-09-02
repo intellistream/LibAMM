@@ -18,30 +18,26 @@ void AMMBench::BlockLRACPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
 torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t l) {
 
   l=0; // l is meaningless, as "sketch_size" is already set in rank, and blockSize is not about sketch size also.
+  uint64_t blockSize = 30;
 
-  // Input size and block size
-  uint64_t m = A.size(0);
-  uint64_t k = A.size(1);
-  uint64_t n = B.size(1);
-  int blockSizeLimit = 30; // blockSize can not be large, as svd is very time consuming
-  uint64_t blockSize = 1;
+  // Input size and block size, add 0 means before padding
+  uint64_t m0 = A.size(0);
+  uint64_t k0 = A.size(1);
+  uint64_t n0 = B.size(1);
 
-  uint64_t gcdOfmkn = std::gcd(std::gcd(m, k), n);
-  for (int divisor = gcdOfmkn; divisor >= 1; divisor--) {
-        if (m % divisor == 0 && k % divisor == 0 && n % divisor == 0 && divisor<=blockSizeLimit) {
-          blockSize = divisor;
-          break;
-        }
-    }
+  // after padding, m0->m, k0->k, n0->n
+  uint64_t m = (A.size(0)+(blockSize-1))/blockSize*blockSize;
+  uint64_t k = (A.size(1)+(blockSize-1))/blockSize*blockSize;
+  uint64_t n = (B.size(1)+(blockSize-1))/blockSize*blockSize;
 
-  if (blockSize == 1) {
-    INTELLI_ERROR("m=" + to_string(m) + ", k=" + to_string(k) + ", n=" + to_string(n)
-                      + ", gcd(m, k, n)=1, BlockLRA is not usable anymore");
-    throw std::runtime_error("m=" + to_string(m) + ", k=" + to_string(k) + ", n=" + to_string(n)
-                      + ", gcd(m, k, n)=1, BlockLRA is not usable anymore");
-  }
-  INTELLI_INFO("BlockLRA with adjusted blockSize: " + to_string(blockSize));
-
+  // Pad the matrix with zeros
+  torch::Tensor padded_A = torch::zeros({(int)m, (int)k});
+  padded_A.slice(0, 0, m0).slice(1, 0, k0) = A;
+  A = padded_A;
+  torch::Tensor padded_B = torch::zeros({(int)k, (int)n});
+  padded_B.slice(0, 0, k0).slice(1, 0, n0) = B;
+  B = padded_B;
+  
   // for each block, calculate LRA
   torch::Tensor finalLRA = torch::zeros({(long) m, (long) n});
 
@@ -97,5 +93,5 @@ torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, u
       }
   }
 
-  return finalLRA;
+  return finalLRA.slice(0,0,m0).slice(1,0,n0);
 }}
