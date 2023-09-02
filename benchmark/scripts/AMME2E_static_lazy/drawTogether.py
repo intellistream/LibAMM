@@ -220,7 +220,10 @@ def main():
     srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
     dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
     # add the algo tag here
-    algosVec=['mm', 'crs', 'countSketch', 'int8', 'weighted-cr', 'rip', 'smp-pca', 'tugOfWar', 'blockLRA', 'vq', 'pq', 'fastjlt', 'cooFD', 'int8_fp32']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    # add the algo tag here
+    # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
     # this template configs all algos as lazy mode, all datasets are static and normalized
     csvTemplate = 'config_e2e_static_lazy.csv'
     # do not change the following
@@ -235,7 +238,7 @@ def main():
         os.system("sudo rm -rf " + commonBasePath)
         os.system("sudo mkdir " + commonBasePath)
         reRun = 1
-    methodTags =algosVec
+    methodTags =algoDisp
     lat95All, errAll, ebAll,thrAll,periodAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
     
     errAll=np.array(errAll)*100.0
@@ -243,8 +246,8 @@ def main():
     thrAll=np.array(thrAll)/1000.0
 
     # int8 = int8 / int8_fp32 * mm
-    lat95All[3] = lat95All[3]/lat95All[-1]*lat95All[0]
-    thrAll[3] = thrAll[3]/thrAll[-1]*thrAll[0]
+    lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
+    thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
