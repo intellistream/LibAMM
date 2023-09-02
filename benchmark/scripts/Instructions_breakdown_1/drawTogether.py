@@ -220,9 +220,10 @@ def main():
 
     print(instructions, memLoadAll)
     otherIns = instructions - memLoadAll - memStoreAll - fpVectorAll - fpScalarAll - branchAll
+    # adjust int8: int8/int8_fp32*mm
     int8_adjust_ratio = instructions[-1]/instructions[-2]
     for instruc in [instructions, memLoadAll, memStoreAll, fpVectorAll, fpScalarAll, branchAll, otherIns]:
-        instruc = instruc*int8_adjust_ratio
+        instruc[0] = instruc[0]*int8_adjust_ratio
     
     print(otherIns)
     print(otherIns[0], len(otherIns))
@@ -249,13 +250,13 @@ def main():
     fpInsAll= fpVectorAll+fpScalarAll
     ratioFpIns=fpVectorAll/fpInsAll*100.0
     groupBar2.DrawFigureYLog(dataSetNames, instructions/instructions[-1], methodTags, "Datasets", "Ins (times of LTMM)", 5, 15, figPath + "/" + "instructions", True)
-    groupBar2.DrawFigure(dataSetNames, ratioFpIns, methodTags, "Datasets", "SIMD Utilization (%)", 5, 15, figPath + "/" + "SIMD utilization", False)
-    groupBar2.DrawFigure(dataSetNames, instructions/(memLoadAll+memStoreAll), methodTags, "Datasets", "IPM", 5, 15, figPath + "/" + "IPM", False)
-    groupBar2.DrawFigure(dataSetNames, fpInsAll/(memLoadAll+memStoreAll), methodTags, "Datasets", "FP Ins per Unit Mem Access", 5, 15, figPath + "/" + "FPIPM", False)
-    groupBar2.DrawFigure(dataSetNames, (memLoadAll+memStoreAll)/(instructions)*100.0, methodTags, "Datasets", "Ratio of Mem Ins (%)", 5, 15, figPath + "/" + "mem", False)
+    groupBar2.DrawFigure(dataSetNames, ratioFpIns, methodTags, "Datasets", "SIMD Utilization (%)", 5, 15, figPath + "/" + "SIMD utilization", True)
+    groupBar2.DrawFigure(dataSetNames, instructions/(memLoadAll+memStoreAll), methodTags, "Datasets", "IPM", 5, 15, figPath + "/" + "IPM", True)
+    groupBar2.DrawFigure(dataSetNames, fpInsAll/(memLoadAll+memStoreAll), methodTags, "Datasets", "FP Ins per Unit Mem Access", 5, 15, figPath + "/" + "FPIPM", True)
+    groupBar2.DrawFigure(dataSetNames, (memLoadAll+memStoreAll)/(instructions)*100.0, methodTags, "Datasets", "Ratio of Mem Ins (%)", 5, 15, figPath + "/" + "mem", True)
    
-    groupBar2.DrawFigure(dataSetNames, branchAll/instructions*100.0, methodTags, "Datasets", "Ratio of Branch Ins (%)", 5, 15, figPath + "/" + "branches", False)
-    groupBar2.DrawFigure(dataSetNames, otherIns/instructions*100.0, methodTags, "Datasets", "Ratio of Other Ins (%)", 5, 15, figPath + "/" + "others", False)
+    groupBar2.DrawFigure(dataSetNames, branchAll/instructions*100.0, methodTags, "Datasets", "Ratio of Branch Ins (%)", 5, 15, figPath + "/" + "branches", True)
+    groupBar2.DrawFigure(dataSetNames, otherIns/instructions*100.0, methodTags, "Datasets", "Ratio of Other Ins (%)", 5, 15, figPath + "/" + "others", True)
     print(instructions[-1],instructions[2])
     #groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms", 5, 15, figPath + "sec4_1_e2e_static_lazy_throughput_log", True)
 if __name__ == "__main__":
