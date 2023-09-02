@@ -3,7 +3,6 @@ sketchDimension,204,U64
 matrixLoaderTag,mtx,String
 srcA,datasets/RDB/rdb2048.mtx,String
 srcB,datasets/RDB/rdb2048l.mtx,String
-coreBind,10,U64
 normalizeA,1,U64
 normalizeB,1,U64
 isStreaming,1,U64
@@ -12,6 +11,8 @@ staticDataSet,1,U64
 fullLazy,1,U64
 useCPP,1,U64
 cppAlgoTag,weighted-cr,String
+fpMode,INT8,String
+pqvqCodewordLookUpTablePath,dummy,String
 threads,1,U64
 forceMP,0,U64
 usePAPI,0,U64

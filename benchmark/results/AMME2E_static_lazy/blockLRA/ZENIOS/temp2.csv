@@ -1,5 +1,5 @@
 key,value,type
-sketchDimension,25,U64
+sketchDimension,287,U64
 matrixLoaderTag,mtx,String
 srcA,datasets/ZENIOS/zenios.mtx,String
 srcB,datasets/ZENIOS/zenios.mtx,String
@@ -10,7 +10,9 @@ streamingTwoMatrixes,1,U64
 staticDataSet,1,U64
 fullLazy,1,U64
 useCPP,1,U64
-cppAlgoTag,crs,String
+cppAlgoTag,blockLRA,String
+fpMode,fp32,String
+pqvqCodewordLookUpTablePath,dummy,String
 threads,1,U64
 forceMP,0,U64
 usePAPI,0,U64

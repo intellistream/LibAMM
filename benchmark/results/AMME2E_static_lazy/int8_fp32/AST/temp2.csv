@@ -10,7 +10,7 @@ streamingTwoMatrixes,1,U64
 staticDataSet,1,U64
 fullLazy,1,U64
 useCPP,1,U64
-cppAlgoTag,int8,String
+cppAlgoTag,int8_fp32,String
 fpMode,fp32,String
 pqvqCodewordLookUpTablePath,dummy,String
 threads,1,U64

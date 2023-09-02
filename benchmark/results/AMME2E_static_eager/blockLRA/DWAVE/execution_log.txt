@@ -1,0 +1,22 @@
+WARNING:Thu Aug 31 04:33:16 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving coreBind as blank, will use 0 instead[0m
+WARNING:Thu Aug 31 04:33:16 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:364|std::string INTELLI::ConfigMap::tryString(const string&, const string&, bool)|[33mLeaving meterTag as blank, will use intelMsr instead[0m
+INFO:Thu Aug 31 04:33:16 2023:/home/shuhao/Downloads/AMMBench/benchmark/src/Benchmark.cpp:34|void streamingTest(std::string)|[34mPlace me at core0[0m
+INFO:Thu Aug 31 04:33:16 2023:/home/shuhao/Downloads/AMMBench/benchmark/src/Benchmark.cpp:35|void streamingTest(std::string)|[34mwith sketch51[0m
+WARNING:Thu Aug 31 04:33:16 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving transposeA as blank, will use 0 instead[0m
+WARNING:Thu Aug 31 04:33:16 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving transposeB as blank, will use 1 instead[0m
+WARNING:Thu Aug 31 04:33:16 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving oneSrcForAB as blank, will use 0 instead[0m
+INFO:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/src/MatrixLoader/MtxMatrixLoader.cpp:118|void AMMBench::MtxMatrixLoader::generateAB()|[34mGenerating [512 x 512]*[512 x 512][0m
+WARNING:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:343|double INTELLI::ConfigMap::tryDouble(const string&, double, bool)|[33mLeaving algoARankRatio as blank, will use 0.100000 instead[0m
+WARNING:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:343|double INTELLI::ConfigMap::tryDouble(const string&, double, bool)|[33mLeaving algoBRankRatio as blank, will use 0.100000 instead[0m
+WARNING:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving batchSize as blank, will use 1 instead[0m
+WARNING:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving eventRateTps as blank, will use 100 instead[0m
+WARNING:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving timeStepUs as blank, will use 100 instead[0m
+WARNING:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving timeStamper_zipfEvent as blank, will use 0 instead[0m
+WARNING:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:343|double INTELLI::ConfigMap::tryDouble(const string&, double, bool)|[33mLeaving timeStamper_zipfEventFactor as blank, will use 0.100000 instead[0m
+INFO:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/src/Streaming/TimeStamper.cpp:40|void AMMBench::TimeStamper::generateEvent()|[34mFinish the generation of event time[0m
+INFO:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/src/Streaming/TimeStamper.cpp:45|void AMMBench::TimeStamper::generateArrival()|[34mFinish the generation of arrival time[0m
+WARNING:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving eventRateTps as blank, will use 100 instead[0m
+WARNING:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving timeStepUs as blank, will use 100 instead[0m
+WARNING:Thu Aug 31 04:33:18 2023:/home/shuhao/Downloads/AMterminate called after throwing an instance of 'std::runtime_error'
+  what():  m=1, k=512, n=1, gcd(m, k, n)=1, BlockLRA is not usable anymore
+timeout: the monitored command dumped core
