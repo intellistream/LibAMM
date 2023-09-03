@@ -1,0 +1,43 @@
+INFO:Sun Sep  3 07:12:54 2023:/home/miter/projects/AMMBench/benchmark/src/Benchmark.cpp:93|void runSingleThreadTest(std::string)|[34mcppAlgoTag: cooFD[0m
+WARNING:Sun Sep  3 07:12:54 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving coreBind as blank, will use 0 instead[0m
+WARNING:Sun Sep  3 07:12:54 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:364|std::string INTELLI::ConfigMap::tryString(const string&, const string&, bool)|[33mLeaving meterTag as blank, will use intelMsr instead[0m
+INFO:Sun Sep  3 07:12:54 2023:/home/miter/projects/AMMBench/benchmark/src/Benchmark.cpp:34|void streamingTest(std::string)|[34mPlace me at core0[0m
+INFO:Sun Sep  3 07:12:54 2023:/home/miter/projects/AMMBench/benchmark/src/Benchmark.cpp:35|void streamingTest(std::string)|[34mwith sketch76[0m
+WARNING:Sun Sep  3 07:12:54 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving transposeA as blank, will use 0 instead[0m
+WARNING:Sun Sep  3 07:12:54 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving transposeB as blank, will use 1 instead[0m
+WARNING:Sun Sep  3 07:12:54 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving oneSrcForAB as blank, will use 0 instead[0m
+INFO:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/src/MatrixLoader/MtxMatrixLoader.cpp:118|void AMMBench::MtxMatrixLoader::generateAB()|[34mGenerating [765 x 765]*[765 x 765][0m
+WARNING:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving batchSize as blank, will use 1 instead[0m
+WARNING:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving eventRateTps as blank, will use 100 instead[0m
+WARNING:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving timeStepUs as blank, will use 100 instead[0m
+WARNING:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving timeStamper_zipfEvent as blank, will use 0 instead[0m
+WARNING:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:343|double INTELLI::ConfigMap::tryDouble(const string&, double, bool)|[33mLeaving timeStamper_zipfEventFactor as blank, will use 0.100000 instead[0m
+INFO:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/src/Streaming/TimeStamper.cpp:40|void AMMBench::TimeStamper::generateEvent()|[34mFinish the generation of event time[0m
+INFO:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/src/Streaming/TimeStamper.cpp:45|void AMMBench::TimeStamper::generateArrival()|[34mFinish the generation of arrival time[0m
+WARNING:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving eventRateTps as blank, will use 100 instead[0m
+WARNING:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving timeStepUs as blank, will use 100 instead[0m
+WARNING:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:322|uint64_t INTELLI::ConfigMap::tryU64(const string&, uint64_t, bool)|[33mLeaving timeStamper_zipfEvent as blank, will use 0 instead[0m
+WARNING:Sun Sep  3 07:12:56 2023:/home/miter/projects/AMMBench/include/Utils/ConfigMap.hpp:343|double INTELLI::ConfigMap::tryDouble(const string&, double, bool)|[33mLeterminate called after throwing an instance of 'c10::Error'
+  what():  zero-dimensional tensor (at position 1) cannot be concatenated
+Exception raised from cat_check_no_zero_dim at ../aten/src/ATen/native/TensorShape.cpp:38 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x3e (0x7f5d8b69c56e in /home/miter/.local/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::string const&) + 0x5c (0x7f5d8b666f18 in /home/miter/.local/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #2: at::meta::structured_cat::meta(c10::IListRef<at::Tensor> const&, long) + 0x120 (0x7f5d8d6a4c70 in /home/miter/.local/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x29dfbf3 (0x7f5d8e0dabf3 in /home/miter/.local/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x29dfc60 (0x7f5d8e0dac60 in /home/miter/.local/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: at::_ops::cat::redispatch(c10::DispatchKeySet, c10::IListRef<at::Tensor> const&, long) + 0x78 (0x7f5d8dac1e78 in /home/miter/.local/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: <unknown function> + 0x3d76b21 (0x7f5d8f471b21 in /home/miter/.local/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0x3d77753 (0x7f5d8f472753 in /home/miter/.local/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+frame #8: at::_ops::cat::call(c10::IListRef<at::Tensor> const&, long) + 0x1a9 (0x7f5d8db055a9 in /home/miter/.local/lib/python3.10/site-packages/torch/lib/libtorch_cpu.so)
+frame #9: at::cat(c10::IListRef<at::Tensor> const&, long) + 0x3e (0x7f5da5c6d66e in /home/miter/projects/AMMBench/build/libIntelliStream.so)
+frame #10: AMMBench::CoOccurringFDCPPAlgo::amm(at::Tensor, at::Tensor, unsigned long) + 0xf48 (0x7f5da5c9d660 in /home/miter/projects/AMMBench/build/libIntelliStream.so)
+frame #11: AMMBench::SingleThreadStreamer::streamingAmm(at::Tensor, at::Tensor, unsigned long) + 0x49c (0x7f5da5c617de in /home/miter/projects/AMMBench/build/libIntelliStream.so)
+frame #12: <unknown function> + 0x13894b (0x56437bf2994b in ./benchmark)
+frame #13: <unknown function> + 0x139ef8 (0x56437bf2aef8 in ./benchmark)
+frame #14: <unknown function> + 0x13d72a (0x56437bf2e72a in ./benchmark)
+frame #15: <unknown function> + 0x29d90 (0x7f5d8b1efd90 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #16: __libc_start_main + 0x80 (0x7f5d8b1efe40 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #17: <unknown function> + 0x137a35 (0x56437bf28a35 in ./benchmark)
+
+timeout: the monitored command dumped core
+Aborted (core dumped)
