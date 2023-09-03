@@ -28,8 +28,22 @@ int main(){
         cfg->edit("srcA", "../../../"+srcAVec[i]);
         cfg->edit("srcB", "../../../"+srcBVec[i]);
         cfg->edit("transposeB", uint64_t(1)); 
-        cfg->edit("normalizeA", uint64_t(1));
-        cfg->edit("normalizeB", uint64_t(1));
+        cfg->edit("normalizeA", uint64_t(0));
+        cfg->edit("normalizeB", uint64_t(0));
+
+        std::string directoryName = "MtxPt"; // pls create this directory by yourself
+
+        // Check if the directory already exists
+        // if (!std::experimental::filesystem::v1::exists(directoryName)) {
+        //     // If not, create the directory
+        //     if (std::experimental::filesystem::v1::create_directory(directoryName)) {
+        //         std::cout << "Directory created: " << directoryName << std::endl;
+        //     } else {
+        //         std::cerr << "Failed to create directory: " << directoryName << std::endl;
+        //     }
+        // } else {
+        //     std::cout << "Directory already exists: " << directoryName << std::endl;
+        // }
 
         AMMBench::MatrixLoaderTable mLoaderTable;
         auto matLoaderPtr = mLoaderTable.findMatrixLoader("mtx");
@@ -39,12 +53,12 @@ int main(){
         auto B = matLoaderPtr->getB();
         
         auto pickledA = torch::pickle_save(A);
-        std::ofstream foutA("MtxPt/"+dataSetNames[i]+"_A.pt", std::ios::out | std::ios::binary);
+        std::ofstream foutA(directoryName+"/"+dataSetNames[i]+"_A.pt", std::ios::out | std::ios::binary);
         foutA.write(pickledA.data(), pickledA.size());
         foutA.close();
 
         auto pickledB = torch::pickle_save(B);
-        std::ofstream foutB("MtxPt/"+dataSetNames[i]+"_B.pt", std::ios::out | std::ios::binary);
+        std::ofstream foutB(directoryName+"/"+dataSetNames[i]+"_B.pt", std::ios::out | std::ios::binary);
         foutB.write(pickledB.data(), pickledB.size());
         foutB.close();
     }

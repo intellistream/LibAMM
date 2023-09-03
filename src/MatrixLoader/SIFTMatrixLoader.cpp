@@ -6,33 +6,19 @@
 #include <AMMBench.h>
 
 void AMMBench::SIFTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
-  SIFTSize = cfg->tryString("SIFTSize", "10K", true);
+  filePath = cfg->tryString("filePath", "datasets/SIFT/siftsmall_base.fvecs", true);
 }
 
 void AMMBench::SIFTMatrixLoader::generateAB() {
-
-  // Step1. locate file
-  std::string filename;
-  if (SIFTSize == "10K"){
-     filename = "../../../../../../datasets/SIFT/siftsmall_base.fvecs"; //benchmark execute path e.g. /home/heyuhao/AMMBench/build/benchmark/scripts/PCA/results/scansketchDimension_datasetSIFT/crs/100, dataset file path e.g. /home/heyuhao/AMMBench/build/benchmark/datasets/siftsmall_base.fvecs
-  }
-  else if (SIFTSize == "1M"){
-     filename = "../../../../../../datasets/SIFT/sift_base.fvecs"; //benchmark execute path e.g. /home/heyuhao/AMMBench/build/benchmark/scripts/PCA/results/scansketchDimension_datasetSIFT/crs/100, dataset file path e.g. /home/heyuhao/AMMBench/build/benchmark/datasets/siftsmall_base.fvecs
-  }
-  else{
-    INTELLI_ERROR("You can typing in a wrong SIFTSize: " + SIFTSize + ", only 10K or 1M are allowed");
-    exit(-1);
-  }
  
   float *data = NULL;
   unsigned num, dim;
 
   // Step2. read in binary
-  std::ifstream in(filename, std::ios::binary);    //以二进制的方式打开文件
+  std::ifstream in(filePath, std::ios::binary);    //以二进制的方式打开文件
   if (!in.is_open()) {
     INTELLI_ERROR(
-        "Double check your executed path, the dataset file should be relative to your exe path like this: " + filename
-            + " e.g. benchmark execute path: /home/user/AMMBench/build/benchmark/scripts/PCA/results/scansketchDimension_datasetSIFT/crs/100; dataset file path /home/user/AMMBench/build/benchmark/datasets/siftsmall_base.fvecs");
+        "Double check your data path: " + filePath);
     exit(-1);
   }
   in.read((char *) &dim, 4);    //读取向量维度
