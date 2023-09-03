@@ -89,21 +89,22 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
         pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
+    # clean dir
+    os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
+    os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
+
     # prepare new file
     # run
     import subprocess
-    command = "export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo timeout 1h ./benchmark " + configFname
+    command = f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo timeout 2h ./benchmark {configFname} > execution_log.txt 2>&1" 
     try:
         subprocess.run(command, shell=True, check=True)
-    except subprocess.TimeoutExpired:
-        print(f"took too long (more than 1 hour) and was terminated.")
     except subprocess.CalledProcessError as e:
         print(f"Error {e}")
-
+        os.system(f"cd {exePath} && sudo cp scripts/AMME2E_default_results/result_streaming.csv {resultPath}/{prefixTag}/result_streaming.csv")
+        
     # copy result
-    os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
-    os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
-    os.system("cd " + exePath + "&& sudo cp *.csv " + resultPath + "/" + str(prefixTag))
+    os.system("cd " + exePath + "&& sudo cp *.csv execution_log.txt " + resultPath + "/" + str(prefixTag))
 
 
 def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTemplate="config.csv"):
