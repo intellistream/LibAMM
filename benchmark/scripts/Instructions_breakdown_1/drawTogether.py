@@ -80,7 +80,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
         editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
 
     # load Codeword LookUpTable for vq or pq
-    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
+    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/AMME2E/CodewordLookUpTable'
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
     if algoTag == 'vq':
@@ -219,12 +219,12 @@ def main():
     # Add some pre-process logic for int8 here if it is used
 
     print(instructions, memLoadAll)
-    otherIns = instructions - memLoadAll - memStoreAll - fpVectorAll - fpScalarAll - branchAll
+   
     # adjust int8: int8/int8_fp32*mm
-    int8_adjust_ratio = instructions[-1]/instructions[-2]
-    for instruc in [instructions, memLoadAll, memStoreAll, fpVectorAll, fpScalarAll, branchAll, otherIns]:
-        instruc[0] = instruc[0]*int8_adjust_ratio
-    
+    int8_adjust_ratio = instructions[0]/instructions[-2]
+    for instruc in [instructions, memLoadAll, memStoreAll, fpVectorAll, fpScalarAll, branchAll]:
+        instruc[0] = instruc[-1]*int8_adjust_ratio
+    otherIns = instructions - memLoadAll - memStoreAll - fpVectorAll - fpScalarAll - branchAll
     print(otherIns)
     print(otherIns[0], len(otherIns))
     allowLegend = 1
@@ -257,7 +257,8 @@ def main():
    
     groupBar2.DrawFigure(dataSetNames, branchAll/instructions*100.0, methodTags, "Datasets", "Ratio of Branch Ins (%)", 5, 15, figPath + "/" + "branches", True)
     groupBar2.DrawFigure(dataSetNames, otherIns/instructions*100.0, methodTags, "Datasets", "Ratio of Other Ins (%)", 5, 15, figPath + "/" + "others", True)
-    print(instructions[-1],instructions[2])
+    #print(instructions[-1],instructions[2])
+    print(instructions[-1][0],instructions[-2][0])
     #groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms", 5, 15, figPath + "sec4_1_e2e_static_lazy_throughput_log", True)
 if __name__ == "__main__":
     main()
