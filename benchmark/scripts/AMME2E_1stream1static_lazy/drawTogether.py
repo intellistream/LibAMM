@@ -80,7 +80,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
         editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
 
     # load Codeword LookUpTable for vq or pq
-    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
+    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/AMME2E/CodewordLookUpTable'
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
     if algoTag == 'vq':

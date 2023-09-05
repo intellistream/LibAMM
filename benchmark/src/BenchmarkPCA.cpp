@@ -24,6 +24,9 @@ void benchmarkPCA(std::string configName) {
 
   INTELLI_INFO("cppAlgoTag: " + cfg->tryString("cppAlgoTag", "mm", true));
 
+  uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
+  UtilityFunctions::bind2Core((int) coreBind);
+
   AMMBench::MatrixLoaderTable mLoaderTable;
   std::string matrixLoaderTag = "SIFT"; //cfg->tryString("matrixLoaderTag", "SIFT", true);
   INTELLI_INFO("matrixLoaderTag: " + matrixLoaderTag);
