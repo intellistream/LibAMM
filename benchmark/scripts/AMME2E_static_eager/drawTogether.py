@@ -228,16 +228,24 @@ def main():
     srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
     srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
     dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
+    # srcAVec=['datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
+    # srcBVec=['datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
+    # dataSetNames=['UTM','RDB','ZENIOS','QCD','BUS']
     # srcAVec=['datasets/ECO/wm2.mtx']
     # srcBVec=['datasets/ECO/wm3.mtx']
     # dataSetNames=['ECO']
     # algosVec=['int8', 'crs', 'vq', 'pq']
     # algoDisp=['INT8', 'CRS', 'VQ', 'PQ']
-    algosVec=['int8', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'weighted-cr', 'int8_fp32']
-    algoDisp=['INT8', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'WeightedCR', 'NLMM']
+    # algosVec=['pq']
+    # algoDisp=['PQ']
+    # algosVec=['int8_fp32', 'weighted-cr', 'fastjlt', 'vq', 'pq']
+    # algoDisp=['NLMM', 'WeightedCR', 'FastJLT',  'VQ', 'PQ']
     # add the algo tag here
     # algosVec=['int8', 'weighted-cr', 'vq', 'pq', 'fastjlt', 'cooFD', 'int8_fp32']
-    # algosVec=['mm', 'crs', 'countSketch', 'int8', 'weighted-cr', 'rip', 'smp-pca', 'tugOfWar', 'blockLRA', 'vq', 'pq', 'fastjlt', 'cooFD', 'int8_fp32']
+    # algosVec=['int8_fp32', 'mm', 'pq']
+    # algoDisp=['NLMM', 'LTMM', 'PQ']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # this template configs all algos as lazy mode, all datasets are static and normalized
     csvTemplate = 'config_e2e_static_eager.csv'
     # do not change the following
@@ -264,6 +272,7 @@ def main():
     thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
+    breakpoint()
     groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
                          5, 15, figPath + "sec4_1_e2e_static_eager_fro", True)
     groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)",
