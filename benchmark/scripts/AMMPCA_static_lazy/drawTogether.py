@@ -50,14 +50,7 @@ matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
 dataset_acols_mapping={
-    'AST':765,
-    'BUS':10595,
-    'DWAVE':512,
-    'ECO':260,
-    'QCD':3072,
-    'RDB':2048,
-    'UTM':1700,
-    'ZENIOS':2873,
+    'SIFT': 10000,
 }
 
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
@@ -80,7 +73,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
         editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
 
     # load Codeword LookUpTable for vq or pq
-    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/AMME2E/CodewordLookUpTable'
+    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
     if algoTag == 'vq':
@@ -91,7 +84,8 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
 
     # prepare new file
     # run
-    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmark " + configFname)
+    breakpoint()
+    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmarkPCA " + configFname)
     # copy result
     os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
     os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
@@ -107,13 +101,13 @@ def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTe
 
 
 def readResultSingle(singleValue, resultPath):
+    breakpoint()
     resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
     elapsedTime = readConfig(resultFname, "perfElapsedTime")
     froError = readConfig(resultFname, "froError")
     errorBoundRatio = readConfig(resultFname, "errorBoundRatio")
     thr=readConfig(resultFname, "throughputByElements")
     return elapsedTime, froError, errorBoundRatio,thr
-
 
 def readResultVector(singleValueVec, resultPath):
     elapseTimeVec = []
@@ -205,9 +199,9 @@ def draw2yBar(NAME,R1,R2,l1,l2,fname):
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
-    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/AMME2E_static_lazy/"
+    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/AMMPCA_static_lazy/"
 
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/AMME2E_static_lazy/"
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/AMMPCA_static_lazy/"
     
     # add the datasets here
     # srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
@@ -216,9 +210,9 @@ def main():
     # srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
     # srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
     # dataSetNames=['UTM']
-    srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
-    srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
-    dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
+    srcAVec=['datasets/ECO/wm2.mtx']
+    srcBVec=['datasets/ECO/wm3.mtx']
+    dataSetNames=['SIFT']
     # add the algo tag here
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']

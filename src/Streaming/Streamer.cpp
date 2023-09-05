@@ -31,8 +31,10 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
             metrics->addPrefixToKeys(metricsPrefix);
         } else {
             INTELLI_INFO("streaming, singlethread");
+            INTELLI_INFO(cfg->toString());
             AMMBench::SingleThreadStreamer ss;
             ss.setConfig(cfg);
+            ss.prepareRun(A, B);
             if (streamingTwoMatrices) {
                 *matC = ss.streamingAmm2S(A, B, sketchSize);
             } else {
