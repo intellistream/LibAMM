@@ -8,8 +8,7 @@
 #include <iostream>
 
 void AMMBench::MNISTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
-  assert(cfg); // do nothing, as cfg is not needed
-  INTELLI_INFO("For MNIST dataset, parsing config step is skipped");
+  filePath = cfg->tryString("filePath", "datasets/MNIST/train-images.idx3-ubyte", true);
 }
 
 int reverseInt(int i) {
@@ -26,7 +25,6 @@ int reverseInt(int i) {
 
 void AMMBench::MNISTMatrixLoader::generateAB() {
 
-  string fileName = "../../../../../../datasets/MNIST/train-images.idx3-ubyte";
   int magic_number = 0;
   int number_of_images = 0;
   int n_rows = 0;
@@ -37,7 +35,7 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
   Bt = torch::zeros({60000, 28 * 14});
 
   // Read in file
-  ifstream file(fileName, ios::binary);
+  ifstream file(filePath, ios::binary);
   if (file.is_open()) {
 
     // cout << "Reading metadata ..." << endl;
@@ -90,11 +88,18 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
 
 
   // normalization and transpose
-  At = (At - At.mean(/*dim=*/0)); // centered along feature (column) 60000*392
-  Bt = (Bt - Bt.mean(/*dim=*/0)); // centered along feature (column) 60000*392
+  At = (At - At.mean(/*dim=*/0))/(At.std(/*dim=*/0)+1e-7); // standardized along feature (column) 60000*392
+  Bt = (Bt - Bt.mean(/*dim=*/0))/(Bt.std(/*dim=*/0)+1e-7); // standardized along feature (column) 60000*392
 
   A = At.t().contiguous(); // 392*60000
   B = Bt.t().contiguous(); // 392*60000
+
+  std::cout << "Maximum Value: " << A.max().item<float>() << std::endl;
+  std::cout << "Mean Value: " << A.mean().item<float>() << std::endl;
+  std::cout << "Minimum Value: " << A.min().item<float>() << std::endl;
+  std::cout << "Maximum Value: " << B.max().item<float>() << std::endl;
+  std::cout << "Mean Value: " << B.mean().item<float>() << std::endl;
+  std::cout << "Minimum Value: " << B.min().item<float>() << std::endl;
 
   INTELLI_INFO(
       "Generating [" + to_string(A.size(0)) + " x " + to_string(A.size(1)) + "]*[" + to_string(B.size(0)) + " x "

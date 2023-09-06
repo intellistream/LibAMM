@@ -32,6 +32,7 @@ namespace AMMBench {
  */
 class MNISTMatrixLoader : public AbstractMatrixLoader {
  protected:
+  std::string filePath="datasets/SIFT/MNIST/train-images.idx3-ubyte"; 
   torch::Tensor A, B, At, Bt;
   torch::Tensor Sxx, Syy, Sxy;
   torch::Tensor SxxNegativeHalf, SyyNegativeHalf, M, M1;
