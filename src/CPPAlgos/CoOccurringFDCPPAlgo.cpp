@@ -78,8 +78,10 @@ torch::Tensor CoOccurringFDCPPAlgo::amm(const torch::Tensor A, const torch::Tens
 
       // Update indices of zero-valued columns
       torch::Tensor zero_indices = torch::nonzero(SV_shrunk == 0).squeeze();
-      zero_columns = torch::cat({zero_columns, zero_indices});
-
+      try {
+        zero_columns = torch::cat({zero_columns, zero_indices});
+      } catch (const c10::Error& ){
+      }
       // Convert tensor to a std::vector
       std::vector<int64_t>
           vec(zero_columns.data_ptr<int64_t>(), zero_columns.data_ptr<int64_t>() + zero_columns.numel());
