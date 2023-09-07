@@ -84,17 +84,19 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
 
     # prepare new file
     # run
-    os.system(f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkCCA {configFname} > execution_log.txt 2>&1")
+    try:
+        os.system(f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkCCA {configFname} > execution_log.txt 2>&1")
+    except:
+        pass
     os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
     os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
-    os.system("cd " + exePath + "&& sudo cp *.csv " + resultPath + "/" + str(prefixTag))
+    os.system("cd " + exePath + "&& sudo cp *.csv execution_log.txt " + resultPath + "/" + str(prefixTag))
 
 
 def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTemplate="config.csv"):
     for i in  range(len(periodVec)):
         rf=periodVec[i]
         sf=pS[i]
-        print(sf)
         runPeriod(exePath, rf,sf,algoTag, resultPath, configTemplate,prefixTag[i])
 
 
@@ -216,6 +218,8 @@ def main():
     srcBVec=['dummy']
     dataSetNames=['MNIST']
     # add the algo tag here
+    # algosVec=['crs', 'fastjlt']
+    # algoDisp=['CRS', 'FastJLT']
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # add the algo tag here
