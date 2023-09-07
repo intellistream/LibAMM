@@ -61,11 +61,12 @@ void benchmarkCCA(std::string configName) {
     // Step1. Set up environments
     ConfigMapPtr cfg = newConfigMap();
     cfg->fromFile(configName);
+    uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
+    UtilityFunctions::bind2Core((int) coreBind);
     // 1.1 AMM algorithm
     AMMBench::CPPAlgoTable cppAlgoTable;
     std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
     AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
-    cppAlgoPtr->setConfig(cfg);
     INTELLI_INFO("1.1 algo: " + cppAlgoTag);
     // 1.2 matrixLoader uses MNIST dataset
     AMMBench::MatrixLoaderTable mLoaderTable;
@@ -242,8 +243,6 @@ void benchmarkCCA(std::string configName) {
     }
     else{
         INTELLI_INFO("staticDataSet=1 and fullLazy=1");
-        uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
-        UtilityFunctions::bind2Core((int) coreBind);
         ThreadPerf pef(-1);
         pef.setPerfList();
         pef.start();
@@ -296,7 +295,6 @@ void benchmarkCCA(std::string configName) {
     allMetrics->edit("SxxFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxx(), Sxx));
     allMetrics->edit("SxyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxy(), Sxy));
     allMetrics->edit("SyyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSyy(), Syy));
-    std::cout << allMetrics->toString() << endl;
     
     // Step3. The rest of the CCA task
     ThreadPerf pef(-1);
@@ -319,7 +317,8 @@ void benchmarkCCA(std::string configName) {
     // 3.3 M
     INTELLI_INFO("M");
     torch::manual_seed(123);
-    torch::Tensor M1 = cppAlgoPtr->amm(SxxNegativeHalf.t(), Sxy, 39);
+    // torch::Tensor M1 = cppAlgoPtr->amm(SxxNegativeHalf.t(), Sxy, 39);
+    torch::Tensor M1 = torch::matmul(SxxNegativeHalf.t(), Sxy);
     std::cout << "M1:" << std::endl;
     std::cout << "Maximum Value: " << M1.max().item<float>() << std::endl;
     std::cout << "Mean Value: " << M1.mean().item<float>() << std::endl;
@@ -332,7 +331,8 @@ void benchmarkCCA(std::string configName) {
     allMetrics->edit("M1FroError", (double) M1FroError);
 
     torch::manual_seed(123);
-    torch::Tensor M = cppAlgoPtr->amm(M1, SyyNegativeHalf, 39);
+    // torch::Tensor M = cppAlgoPtr->amm(M1, SyyNegativeHalf, 39);
+    torch::Tensor M = torch::matmul(M1, SyyNegativeHalf);
     std::cout << "M:" << std::endl;
     std::cout << "Maximum Value: " << M.max().item<float>() << std::endl;
     std::cout << "Mean Value: " << M.mean().item<float>() << std::endl;
