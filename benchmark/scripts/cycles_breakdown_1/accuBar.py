@@ -12,9 +12,9 @@ from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 24
-LABEL_FONT_SIZE = 24
-LEGEND_FONT_SIZE = 24
-TITLE_FRONT_SIZE = 24
+LABEL_FONT_SIZE = 28
+LEGEND_FONT_SIZE = 26
+TITLE_FRONT_SIZE = 32
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -58,7 +58,7 @@ class ScalarFormatterForceFormat(ScalarFormatter):
 def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, allow_legend, title):
     # you may change the figure size on your own.
 
-    fig = plt.figure(figsize=(20, 6))
+    fig = plt.figure(figsize=(16, 9))
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
@@ -75,7 +75,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     bottom_base = np.zeros(len(y_values[0]))
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
-        bars[i] = plt.bar(index*1.5 + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
+        bars[i] = plt.bar(index + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
                           label=FIGURE_LABEL[i], bottom=bottom_base, edgecolor='black', linewidth=3)
         bottom_base = np.array(y_values[i]) + bottom_base
 
@@ -96,27 +96,27 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
             handles, labels = figure.get_legend_handles_labels()
         if allow_legend == True:
             leg = plt.legend(handles[::-1], labels[::-1],
-                             loc='center',
+                             # loc='upper left',
                              prop=LEGEND_FP,
-                             ncol=6,
-                             bbox_to_anchor=(0.55, 1.15),
+                             ncol=1,
+                             bbox_to_anchor=(-0.2, 0.7),
                              shadow=True, frameon=True, edgecolor='black', borderaxespad=1,
                              # bbox_to_anchor=(1.17, 0.5),
                              # handletextpad=0.1,
                              # borderaxespad=0.0,
                              # handlelength=1.8,
-                             labelspacing=0.1,
-                             columnspacing=0.1,
+                             # labelspacing=0.3,
+                             # columnspacing=0.3,
                              )
             leg.get_frame().set_linewidth(2)
             leg.get_frame().set_edgecolor("black")
 
     # you may need to tune the xticks position to get the best figure.
-    plt.xticks(index*1.5 + 0.6 * width, x_values)
-    plt.xticks(rotation=30,fontsize=TICK_FONT_SIZE)
-    plt.yticks(fontsize=TICK_FONT_SIZE)
-    #plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
-    plt.ylim(0,100)
+    plt.xticks(index + 0.6 * width, x_values)
+    yfmt = ScalarFormatterForceFormat()
+    yfmt.set_powerlimits((0, 0))
+    figure.get_yaxis().set_major_formatter(yfmt)
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
     plt.grid(axis='y', color='gray')
     figure.yaxis.set_major_locator(LinearLocator(3))
     # figure.yaxis.set_major_locator(LogLocator(base=10))
