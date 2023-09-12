@@ -50,7 +50,9 @@ matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
 dataset_acols_mapping={
-    'SIFT': 10000,
+    'SIFT10K': 10000,
+    'SIFT1M': 1000000,
+    'GIST1M': 1000000
 }
 
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
@@ -61,9 +63,18 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     os.system("cd " + exePath + "&& sudo rm *.csv")
     os.system("cp perfListEvaluation.csv " + exePath)
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
-    editConfig(configTemplate, exePath+"temp1.csv", "srcA", srcA)
-    editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
+    if srcA=="SIFT10K":
+        filePath = "datasets/SIFT/siftsmall_base.fvecs"
+    elif srcA=="SIFT1M":
+        filePath = "datasets/SIFT/sift_base.fvecs"
+    elif srcA=="GIST1M":
+        filePath = "datasets/SIFT/gist_base.fvecs"
+    else:
+        raise ValueError("Not valid dataset")
+
+    editConfig(configTemplate, exePath+"temp1.csv", "filePath", filePath)
+    editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB) # not used at all
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.01))
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
 
     # int8 or int8_fp32
@@ -101,7 +112,7 @@ def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTe
 
 def readResultSingle(singleValue, resultPath):
     resultFname = resultPath + "/" + str(singleValue) + "/PCA.csv"
-    elapsedTime = readConfig(resultFname, "AMM95%latency")
+    elapsedTime = readConfig(resultFname, "AMMPerfElapsedTime")
     froError = readConfig(resultFname, "AMMFroError")
     errorBoundRatio = 100
     thr=readConfig(resultFname, "AMMThroughput")
@@ -213,12 +224,22 @@ def main():
     # srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
     # srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
     # dataSetNames=['UTM']
-    srcAVec=['dummy']
+    # srcAVec=['SIFT10K', 'SIFT1M']
+    # srcBVec=['dummy', 'dummy']
+    # dataSetNames=['SIFT10K', 'SIFT1M']
+    # # add the algo tag here
+    # algosVec=['crs', 'mm']
+    # algoDisp=['CRS', 'LTMM']
+    srcAVec=['GIST1M']
     srcBVec=['dummy']
-    dataSetNames=['SIFT']
+    dataSetNames=['GIST1M']
     # add the algo tag here
-    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    algosVec=['crs', 'mm']
+    algoDisp=['CRS', 'LTMM']
+    # algosVec=['int8', 'crs', 'countSketch', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    # algoDisp=['INT8', 'CRS', 'CS', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    # algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    # algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # add the algo tag here
     # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
     # this template configs all algos as lazy mode, all datasets are static and normalized
@@ -236,7 +257,36 @@ def main():
         os.system("sudo mkdir " + commonBasePath)
         reRun = 1
     methodTags =algoDisp
-    lat95All, errAll, ebAll,thrAll,periodAll,endingErrorAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
+
+    # Initialize lists to store the results of each run
+    lat95All = None
+    errAll = None
+    ebAll = None
+    thrAll = None
+    endingErrorAll = None
+
+    num_runs = 1
+    for i in range(num_runs):
+        # Call the compareMethod function and append the results to the respective lists
+        result = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec, srcBVec, algosVec, dataSetNames, reRun)
+        if i==0:
+            lat95All= result[0]
+            errAll= result[1]
+            ebAll= result[2]
+            thrAll= result[3]
+            endingErrorAll= result[5]
+        else:
+            lat95All += result[0]
+            errAll += result[1]
+            ebAll += result[2]
+            thrAll += result[3]
+            endingErrorAll += result[5]
+
+    lat95All /= num_runs
+    errAll /= num_runs
+    ebAll /= num_runs
+    thrAll /= num_runs
+    endingErrorAll /= num_runs
     
     errAll=np.array(errAll)*100.0
     endingErrorAll=np.array(endingErrorAll)*100.0
@@ -244,8 +294,8 @@ def main():
     thrAll=np.array(thrAll)/1000.0
 
     # int8 = int8 / int8_fp32 * mm
-    lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
-    thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
+    # lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
+    # thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",

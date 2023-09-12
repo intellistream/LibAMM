@@ -28,7 +28,7 @@ void benchmarkPCA(std::string configName) {
   UtilityFunctions::bind2Core((int) coreBind);
 
   AMMBench::MatrixLoaderTable mLoaderTable;
-  std::string matrixLoaderTag = "SIFT"; //cfg->tryString("matrixLoaderTag", "SIFT", true);
+  std::string matrixLoaderTag = cfg->tryString("matrixLoaderTag", "SIFT", true);
   INTELLI_INFO("matrixLoaderTag: " + matrixLoaderTag);
   auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);
   assert(matLoaderPtr);
@@ -53,27 +53,31 @@ void benchmarkPCA(std::string configName) {
   pef.start();
   torch::Tensor U, S, Vh;
   std::tie(U, S, Vh) = torch::linalg::svd(torch::div(C, A.size(1)), false, c10::nullopt); // // covirance matrix estimator
-  int k = 5; // use eigenvector 0-49
+  int k = 5; // use eigenvector 0-5
   torch::Tensor Ak = torch::matmul(Vh.narrow(0, 0, k), A); // Ak feature dimension reduced to k
   pef.end();
+  // cout << "A.sizes(): " << A.sizes() << endl; // [128, 10000]
+  // cout << "Vh.narrow(0, 0, k).sizes(): " << Vh.narrow(0, 0, k).sizes() << endl; // [5, 128]
+  // cout << "Ak.sizes(): " << Ak.sizes() << endl; // [5, 10000] dimension of each vector reduces from 128 to 5
   ConfigMapPtr elseMetrics = pef.resultToConfigMap();
   elseMetrics->addPrefixToKeys("else");
   elseMetrics->cloneInto(*allMetrics);
 
   // 4. Calculate end-to-end error
-  Ak =  torch::matmul(U.narrow(1, 0, k), Ak); // back to original feature dimension for error evaluation
+  Ak =  torch::matmul(U.narrow(1, 0, k), Ak); // back to original feature dimension [128, 10000] for error evaluation
 
   torch::Tensor realC = torch::matmul(A, B);
   torch::Tensor realU, realS, realVh;
-  std::tie(realU, realS, realVh) = torch::linalg::svd(torch::div(realC, A.size(1)), false, c10::nullopt);
-  INTELLI_INFO(to_string(realS[k].item<double>()));
+  std::tie(realU, realS, realVh) = torch::linalg::svd(torch::div(realC, A.size(1)), false, c10::nullopt); // || ATB || spectral norm
+  INTELLI_INFO("realS[0]: "+to_string(realS[0].item<double>()));
+  INTELLI_INFO("realS[k]: "+to_string(realS[k].item<double>()));
 
   torch::Tensor UError, SError, VhError;
-  std::tie(UError, SError, VhError) = torch::linalg::svd(torch::div(torch::matmul(A-Ak, (A-Ak).t()), A.size(1)), false, c10::nullopt);
-  INTELLI_INFO(to_string(SError[0].item<double>()));
+  std::tie(UError, SError, VhError) = torch::linalg::svd((torch::div(torch::matmul(A, A.t()), A.size(1)) - torch::div(torch::matmul(Ak, Ak.t()), A.size(1))), false, c10::nullopt); // || ATB - ATBr || spectral norm
+  INTELLI_INFO("SError[0]: "+to_string(SError[0].item<double>()));
 
   // double relativeSpectralNormError = torch::div(SError[0], realS[k]).item<double>()-1; // SError[0] is the spectral norm of (A-Ak), real[k] is the spectral norm of (A-realAk)
-  double relativeSpectralNormError = torch::div(SError[0], realS[0]).item<double>();
+  double relativeSpectralNormError = torch::div(SError[0], realS[0]).item<double>(); // || ATB - ATBr || / || ATB ||
   allMetrics->edit("PCAError", relativeSpectralNormError);
   
   // 5 Save results
