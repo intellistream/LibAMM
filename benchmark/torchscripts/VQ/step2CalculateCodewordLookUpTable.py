@@ -77,8 +77,8 @@ class TensorContainer(nn.Module):
         for key,value in tensor_dict.items():
             setattr(self, key, value)
 
-datasetDir = '/home/shuhao/Downloads/AMMBench/build/benchmark/torchscripts/VQ/MtxPt'
-saveDir = '/home/shuhao/Downloads/AMMBench/build/benchmark/torchscripts/VQ/CodewordLookUpTable'
+datasetDir = '/home/miter/projects/AMMBench/build/benchmark/torchscripts/VQ/MtxPt'
+saveDir = '/home/miter/projects/AMMBench/build/benchmark/torchscripts/VQ/CodewordLookUpTable'
 
 for datasetName in ["GIST1M"]:
     for m in [1, 10]: # Number of subspaces

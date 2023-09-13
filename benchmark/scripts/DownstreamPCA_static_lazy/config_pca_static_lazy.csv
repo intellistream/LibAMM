@@ -15,3 +15,4 @@ forceMP,0,U64
 usePAPI,0,U64
 perfUseExternalList,1,U64
 perfListSrc,perfListEvaluation.csv,String
+filePath,dummy,String
