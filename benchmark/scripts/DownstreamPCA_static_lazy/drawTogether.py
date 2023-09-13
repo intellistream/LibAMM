@@ -74,7 +74,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
 
     editConfig(configTemplate, exePath+"temp1.csv", "filePath", filePath)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB) # not used at all
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.01))
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
 
     # int8 or int8_fp32
@@ -93,13 +93,22 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
         pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
-    # prepare new file
-    # run
-    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmarkPCA " + configFname)
-    # copy result
+    # clean dir
     os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
     os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
-    os.system("cd " + exePath + "&& sudo cp *.csv " + resultPath + "/" + str(prefixTag))
+
+    # prepare new file
+    # run
+    import subprocess
+    command = f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkPCA {configFname} > execution_log.txt 2>&1"
+    try:
+        subprocess.run(command, shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error {e}")
+        os.system(f"cd {exePath} && sudo cp scripts/AMME2E_default_results/PCA.csv {resultPath}/{prefixTag}/PCA.csv")
+        
+    # copy result
+    os.system("cd " + exePath + "&& sudo cp *.csv execution_log.txt " + resultPath + "/" + str(prefixTag))
 
 
 def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTemplate="config.csv"):
@@ -213,9 +222,9 @@ def draw2yBar(NAME,R1,R2,l1,l2,fname):
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
-    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/AMMPCA_static_lazy/"
+    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/DownstreamPCA_static_lazy/"
 
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/AMMPCA_static_lazy/"
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/DownstreamPCA_static_lazy/"
     
     # add the datasets here
     # srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
@@ -230,16 +239,16 @@ def main():
     # # add the algo tag here
     # algosVec=['crs', 'mm']
     # algoDisp=['CRS', 'LTMM']
-    srcAVec=['GIST1M']
-    srcBVec=['dummy']
-    dataSetNames=['GIST1M']
+    srcAVec=['SIFT10K', 'SIFT1M']
+    srcBVec=['dummy', 'dummy']
+    dataSetNames=['SIFT10K', 'SIFT1M']
     # add the algo tag here
-    algosVec=['crs', 'mm']
-    algoDisp=['CRS', 'LTMM']
+    # algosVec=['vq', 'pq']
+    # algoDisp=['VQ', 'PQ']
     # algosVec=['int8', 'crs', 'countSketch', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['INT8', 'CRS', 'CS', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    # algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    # algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # add the algo tag here
     # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
     # this template configs all algos as lazy mode, all datasets are static and normalized
