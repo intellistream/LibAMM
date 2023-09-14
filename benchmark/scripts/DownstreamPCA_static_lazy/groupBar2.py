@@ -76,7 +76,7 @@ def DrawLegend(legend_labels, filename):
 # draw a bar chart
 
 
-def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
+def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend, drawMaxDashedGreyLine=False, markCrossOn0andNegativeInf=False):
     fig = plt.figure(figsize=(20, 6))
     figure = fig.add_subplot(111)
 
@@ -90,7 +90,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     FIGURE_LABEL = legend_labels
     index = np.arange(len(x_values))
-    width = 0.5 / len(x_values)
+    width = 0.1 / len(x_values)
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
         bars[i] = plt.bar(index + i * width + width / 2,
@@ -98,6 +98,11 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                           hatch=HATCH_PATTERNS[i % len(HATCH_PATTERNS)],
                           color=LINE_COLORS[i % len(LINE_COLORS)],
                           label=FIGURE_LABEL[i], edgecolor='black', linewidth=3)
+        
+        if markCrossOn0andNegativeInf:
+            for j, y in enumerate(y_values[i]):
+                if y == 0 or y==-np.inf:
+                    plt.plot(index[j] + i * width + width / 2, 4, marker='x', color='red', markersize=10)
         
     if allow_legend:
         plt.legend(bars, FIGURE_LABEL,
@@ -108,6 +113,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                 shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.2,handletextpad=0
                 )
 
+    if drawMaxDashedGreyLine: # set max y values as upper limit
+        max_y_value = y_values.max()
+        plt.axhline(max_y_value, color='grey', linestyle='--', label='Max Y Value', linewidth=2)
+
     plt.xticks(index + len(x_values) / 2 * width, x_values, rotation=0)
     figure.yaxis.set_major_locator(LinearLocator(5))
 # figure.xaxis.set_major_locator(LinearLocator(5))
@@ -116,8 +125,6 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
     plt.xlabel(x_label, fontsize=20)
     plt.ylabel(y_label, fontsize=20)
-
-
     fig.savefig(filename + ".pdf", bbox_inches='tight')
 
 # def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
