@@ -100,7 +100,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     # prepare new file
     # run
     import subprocess
-    command = f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkPCA {configFname} > execution_log.txt 2>&1"
+    command = f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkPCA {configFname} 2>&1 | tee execution_log.txt"
     try:
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError as e:
@@ -121,7 +121,7 @@ def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTe
 
 def readResultSingle(singleValue, resultPath):
     resultFname = resultPath + "/" + str(singleValue) + "/PCA.csv"
-    elapsedTime = readConfig(resultFname, "AMM95%latency")
+    elapsedTime = readConfig(resultFname, "AMMPerfElapsedTime")
     froError = readConfig(resultFname, "AMMFroError")
     errorBoundRatio = 100
     thr=readConfig(resultFname, "AMMThroughput")
@@ -239,14 +239,16 @@ def main():
     # # add the algo tag here
     # algosVec=['crs', 'mm']
     # algoDisp=['CRS', 'LTMM']
-    srcAVec=['SIFT10K', 'SIFT1M']
-    srcBVec=['dummy', 'dummy']
-    dataSetNames=['SIFT10K', 'SIFT1M']
+    srcAVec=['SIFT10K']
+    srcBVec=['dummy']
+    dataSetNames=['SIFT10K']
     # add the algo tag here
     # algosVec=['crs', 'mm']
     # algoDisp=['CRS', 'LTMM']
     # algosVec=['int8', 'crs', 'countSketch', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['INT8', 'CRS', 'CS', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    # algosVec=['crs', 'blockLRA']
+    # algoDisp=['CRS', 'BlockLRA']
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # add the algo tag here
@@ -305,6 +307,8 @@ def main():
     # int8 = int8 / int8_fp32 * mm
     lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
     thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
+
+    breakpoint()
 
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
