@@ -92,7 +92,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     elif algoTag =='pq':
         pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
-
+    
     # clean dir
     os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
     os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
@@ -121,7 +121,7 @@ def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTe
 
 def readResultSingle(singleValue, resultPath):
     resultFname = resultPath + "/" + str(singleValue) + "/PCA.csv"
-    elapsedTime = readConfig(resultFname, "AMMPerfElapsedTime")
+    elapsedTime = readConfig(resultFname, "AMM95%latency")
     froError = readConfig(resultFname, "AMMFroError")
     errorBoundRatio = 100
     thr=readConfig(resultFname, "AMMThroughput")
@@ -223,9 +223,9 @@ def draw2yBar(NAME,R1,R2,l1,l2,fname):
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/DownstreamPCA_static_lazy/"
-
+    if not os.path.exists(commonBasePath): os.makedirs(commonBasePath)
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/DownstreamPCA_static_lazy/"
-    
+    if not os.path.exists(figPath): os.makedirs(figPath)
     # add the datasets here
     # srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
     # srcBVec=["datasets/AST/mcfe.mtx"] # 765*756
@@ -243,8 +243,8 @@ def main():
     srcBVec=['dummy', 'dummy']
     dataSetNames=['SIFT10K', 'SIFT1M']
     # add the algo tag here
-    # algosVec=['vq', 'pq']
-    # algoDisp=['VQ', 'PQ']
+    # algosVec=['crs', 'mm']
+    # algoDisp=['CRS', 'LTMM']
     # algosVec=['int8', 'crs', 'countSketch', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['INT8', 'CRS', 'CS', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
@@ -303,8 +303,8 @@ def main():
     thrAll=np.array(thrAll)/1000.0
 
     # int8 = int8 / int8_fp32 * mm
-    # lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
-    # thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
+    lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
+    thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
