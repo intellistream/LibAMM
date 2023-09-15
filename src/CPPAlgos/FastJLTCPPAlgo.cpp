@@ -66,12 +66,23 @@ torch::Tensor FastJLTCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t d_)
   B_pad = B_pad_result;
 
   // Dimensionality reduction
-  float q = 0.5;
-  auto mask = torch::rand({d, D_pad});
-  mask = (mask < q).to(torch::kFloat32); // 1 with probability q, 0 with probability 1-q
-  auto normal_dist_tensor = torch::randn({d, D_pad}) * std::sqrt(1.0 / q);
-  auto P = mask * normal_dist_tensor / std::sqrt(static_cast<float>(d));
+  // float q = 0.5;
+  // auto mask = torch::rand({d, D_pad});
+  // mask = (mask < q).to(torch::kFloat32); // 1 with probability q, 0 with probability 1-q
+  // auto normal_dist_tensor = torch::randn({d, D_pad}) * std::sqrt(1.0 / q);
+  // auto P = mask * normal_dist_tensor / std::sqrt(static_cast<float>(d));
+  // return torch::matmul(torch::matmul(A_pad, P.t()), torch::matmul(P, B_pad));
+  torch::Tensor probs = torch::ones(D_pad) / D_pad;  // default: uniform
 
-  return torch::matmul(torch::matmul(A_pad, P.t()), torch::matmul(P, B_pad));
+  // Sample k indices from range 0 to n for given probability distribution
+  torch::Tensor indices = torch::multinomial(probs, d, true);
+
+  // Sample k columns from A
+  torch::Tensor A_sampled = A_pad.t().index_select(0, indices);
+  // int64_t ratio = std::ceil(static_cast<double>(n) / k);
+  // A_sampled = (A_sampled / (int) k).t().div(probs.index_select(0, torch::arange(0, n, ratio)));
+  A_sampled = (A_sampled / (int) d).t().div(torch::ones(1) / D_pad);
+  torch::Tensor B_sampled = B_pad.index_select(0, indices);
+  return torch::matmul(A_sampled, B_sampled);
 }
 } // AMMBench

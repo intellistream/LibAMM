@@ -40,7 +40,7 @@ void adjustConfig(ConfigMapPtr cfg, std::string stage){
     // e.g. torchscripts/VQ/CodewordLookUpTable/MNIST_AA_m10_lA3_lB3.pth, torchscripts/VQ/CodewordLookUpTable/MediaMill_AB_m1_lA12_lB10.pth
 
     std::string search_directory = "./torchscripts/VQ/CodewordLookUpTable/";
-    std::string datasetName = cfg->tryString("matrixLoaderTag", "MNIST", true);
+    std::string datasetName = cfg->tryString("matrixLoaderTag", "MediaMill", true);
     std::string m;
     if (cfg->tryString("cppAlgoTag", "mm", true)=="pq"){m="10";}
     else if (cfg->tryString("cppAlgoTag", "mm", true)=="vq"){m="1";}
@@ -126,6 +126,7 @@ void benchmarkCCA(std::string configName) {
     auto B = matLoaderPtr->getB(); // 101*43907 or 392*60000
     auto At = matLoaderPtr->getAt(); // 43907*120 or 60000*392
     auto Bt = matLoaderPtr->getBt(); // 43907*101 or 60000*392
+    
     matLoaderPtr->calculate_correlation(); // cleaner code
     // 1.3 sketch dimension
     uint64_t sketchSize;
