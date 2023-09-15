@@ -242,18 +242,23 @@ def main():
     # dataSetNames=['AST']
     # srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
     # srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
-    # dataSetNames=['UTM'] 
+    # dataSetNames=['UTM']
+    # srcAVec=['dummy']
+    # srcBVec=['dummy']
+    # dataSetNames=['MediaMill'] 
     srcAVec=['dummy', 'dummy']
     srcBVec=['dummy', 'dummy']
     dataSetNames=['MediaMill', 'MNIST']
-    # dataSetNames=['MNIST', 'MediaMill']
+    dataSetNames=['MNIST', 'MediaMill']
     # add the algo tag here
     # algosVec=['crs', 'fastjlt']
     # algoDisp=['CRS', 'FastJLT']
-    algosVec=['fastjlt', 'vq', 'pq', 'int8_fp32', 'mm']
-    algoDisp=['FastJLT', 'VQ', 'PQ', 'NLMM', 'LTMM']
-    # algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    # algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    # algosVec=['int8_fp32', 'mm']
+    # algoDisp=['NLMM', 'LTMM']
+    # algosVec=['fastjlt', 'int8_fp32', 'mm']
+    # algoDisp=['FastJLT', 'NLMM', 'LTMM']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # add the algo tag here
     # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
     # this template configs all algos as lazy mode, all datasets are static and normalized
