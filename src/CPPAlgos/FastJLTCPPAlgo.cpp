@@ -53,7 +53,7 @@ torch::Tensor FastJLTCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t d_)
   for (int64_t i = 0; i < num_chunks; ++i) {
     int64_t start_idx = i * chunk_size;
     int64_t end_idx = std::min((i + 1) * chunk_size, D_pad);
-    std::cout << i << " s: " << start_idx << " e: " << end_idx << std::endl;
+    // std::cout << i << " s: " << start_idx << " e: " << end_idx << std::endl;
     A_pad_result.narrow(1, start_idx, end_idx - start_idx) = torch::matmul(A_pad, H.slice(0, start_idx, end_idx).t().to(torch::kFloat32));
   }
   A_pad = A_pad_result;

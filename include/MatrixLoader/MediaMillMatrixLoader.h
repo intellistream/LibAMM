@@ -2,8 +2,8 @@
 // Created by yuhao on 6/30/23.
 //
 
-#ifndef INTELLISTREAM_MNISTMATRIXLOADER_H
-#define INTELLISTREAM_MNISTMATRIXLOADER_H
+#ifndef INTELLISTREAM_MediaMillMATRIXLOADER_H
+#define INTELLISTREAM_MediaMillMATRIXLOADER_H
 
 #include <MatrixLoader/CCAMatrixLoader.h>
 
@@ -13,13 +13,13 @@ namespace AMMBench {
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MNIST The MNIST training image dataset generator
+ * @ingroup AMMBENCH_MatrixLOADER_MediaMill The MediaMill 2005-2006 Feature Label Matrix
  * @{
  */
 /**
- * @class MNISTMatrixLoader MatrixLoader/MNISTMatrixLoader.h
- * @brief The MNIST class of matrix loader https://www.kaggle.com/datasets/hojjatk/mnist-dataset
- * @ingroup AMMBENCH_MatrixLOADER_MNIST
+ * @class MediaMillMatrixLoader MatrixLoader/MediaMillMatrixLoader.h
+ * @brief Load MediaMill 2005-2006 data (https://rdrr.io/github/fcharte/mldr.datasets/man/mediamill.html)
+ * @ingroup AMMBENCH_MatrixLOADER_MediaMill
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -28,11 +28,11 @@ namespace AMMBench {
 * - call @ref getA and @ref getB (assuming we are benchmarking torch.mm(A,B))
  * @note: does not need config
  * @note: default name tags
- * "MNIST": @ref MNISTMatrixLoader
+ * "MediaMill": @ref MediaMillMatrixLoader
  */
-class MNISTMatrixLoader : public CCAMatrixLoader {
+class MediaMillMatrixLoader : public CCAMatrixLoader {
  protected:
-  std::string filePath="datasets/SIFT/MNIST/train-images.idx3-ubyte"; 
+  std::string filePath="datasets/MediaMill/MediaMill.pth"; 
   torch::Tensor A, B, At, Bt;
   torch::Tensor Sxx, Syy, Sxy;
   torch::Tensor SxxNegativeHalf, SyyNegativeHalf, M, M1;
@@ -50,9 +50,9 @@ class MNISTMatrixLoader : public CCAMatrixLoader {
   void generateAB();
 
  public:
-  MNISTMatrixLoader() = default;
+  MediaMillMatrixLoader() = default;
 
-  ~MNISTMatrixLoader() = default;
+  ~MediaMillMatrixLoader() = default;
 
   /**
      * @brief Set the GLOBAL config map related to this loader
@@ -141,18 +141,18 @@ class MNISTMatrixLoader : public CCAMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MNIST
- * @typedef MNISTMatrixLoaderPtr
- * @brief The class to describe a shared pointer to @ref MNISTMatrixLoader
+ * @ingroup AMMBENCH_MatrixLOADER_MediaMill
+ * @typedef MediaMillMatrixLoaderPtr
+ * @brief The class to describe a shared pointer to @ref MediaMillMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::MNISTMatrixLoader> MNISTMatrixLoaderPtr;
+typedef std::shared_ptr<class AMMBench::MediaMillMatrixLoader> MediaMillMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MNIST
- * @def newMNISTMatrixLoader
- * @brief (Macro) To creat a new @ref MNISTMatrixLoader under shared pointer.
+ * @ingroup AMMBENCH_MatrixLOADER_MediaMill
+ * @def newMediaMillMatrixLoader
+ * @brief (Macro) To creat a new @ref MediaMillMatrixLoader under shared pointer.
  */
-#define newMNISTMatrixLoader std::make_shared<AMMBench::MNISTMatrixLoader>
+#define newMediaMillMatrixLoader std::make_shared<AMMBench::MediaMillMatrixLoader>
 /**
  * @}
  */
@@ -160,4 +160,4 @@ typedef std::shared_ptr<class AMMBench::MNISTMatrixLoader> MNISTMatrixLoaderPtr;
  * @}
  */
 }
-#endif //INTELLISTREAM_MNISTMATRIXLOADER_H
+#endif //INTELLISTREAM_MediaMillMATRIXLOADER_H

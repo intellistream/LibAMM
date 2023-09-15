@@ -105,6 +105,8 @@
 #include <MatrixLoader/BetaMatrixLoader.h>
 #include <MatrixLoader/SIFTMatrixLoader.h>
 #include <MatrixLoader/MNISTMatrixLoader.h>
+#include <MatrixLoader/MediaMillMatrixLoader.h>
+#include <MatrixLoader/CCAMatrixLoader.h>
 #include <MatrixLoader/MatrixLoaderTable.h>
 /**
  * @}
