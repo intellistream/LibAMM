@@ -106,10 +106,11 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
+    # in CCA, codebook path will be handled in cpp file
     if algoTag == 'vq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_AA_m1_*')[0]
+        pqvqCodewordLookUpTablePath = "dummy"
     elif algoTag =='pq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_AA_m10_*')[0]
+        pqvqCodewordLookUpTablePath = "dummy"
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
     # clean dir

@@ -168,6 +168,15 @@ torch::Tensor AMMBench::INT8CPPAlgo::int4amm(torch::Tensor tensor1, torch::Tenso
 }
 
 torch::Tensor AMMBench::INT8CPPAlgo::int8amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+  
+  // if tensor is double, convert it to float, and remember to convert back to double at the end
+  bool isdouble = false;
+  if (tensor1.dtype() == torch::kDouble){isdouble=true;}
+  if (isdouble){
+    tensor1=tensor1.to(torch::kFloat);
+    tensor2=tensor2.to(torch::kFloat);
+  }
+  
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
@@ -241,6 +250,11 @@ torch::Tensor AMMBench::INT8CPPAlgo::int8amm(torch::Tensor tensor1, torch::Tenso
   //torch::Tensor resultTensor = torch::zeros({rows1,cols2});
   postProcessTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime - fABTime;
 
+  if (isdouble){
+    tensor1=tensor1.to(torch::kDouble);
+    tensor2=tensor2.to(torch::kDouble);
+    return resultTensor.clone().to(torch::kDouble);
+  }
   return resultTensor.clone();
 }
 
