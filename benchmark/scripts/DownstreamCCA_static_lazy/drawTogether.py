@@ -96,9 +96,9 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "algoARankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "algoBRankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
 
-    # int8 or int8_fp32
-    if algoTag=='int8_fp32':
-        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "fp32")
+    # int8 or int8_fp64
+    if algoTag=='int8_fp64':
+        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "fp64")
     else:
         editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
 
@@ -256,22 +256,24 @@ def main():
     # srcAVec=['dummy']
     # srcBVec=['dummy']
     # dataSetNames=['MediaMill'] 
-    srcAVec=['dummy']
-    srcBVec=['dummy']
-    dataSetNames=['MediaMill']
+    srcAVec=['dummy', 'dummy']
+    srcBVec=['dummy', 'dummy']
+    dataSetNames=['MediaMill', 'MNIST']
     # add the algo tag here
     # algosVec=['crs', 'fastjlt']
     # algoDisp=['CRS', 'FastJLT']
-    # algosVec=['int8_fp32', 'mm']
+    # algosVec=['int8_fp64', 'mm']
     # algoDisp=['NLMM', 'LTMM']
-    # algosVec=['fastjlt', 'int8_fp32', 'mm']
+    # algosVec=['fastjlt', 'int8_fp64', 'mm']
     # algoDisp=['FastJLT', 'NLMM', 'LTMM']
-    # algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    # algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp64', 'mm']
     # algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    algosVec=['fastjlt', 'blockLRA', 'int8', 'crs', 'countSketch', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm', 'cooFD']
-    algoDisp=['FastJLT', 'BlockLRA', 'INT8', 'CRS', 'CS', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM', 'CoOFD']
+    # algosVec=['int8_fp64']
+    # algoDisp=['NLMM']
+    algosVec=['int8_fp64', 'fastjlt', 'blockLRA', 'int8', 'crs', 'countSketch', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'mm', 'cooFD']
+    algoDisp=['NLMM', 'FastJLT', 'BlockLRA', 'INT8', 'CRS', 'CS', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar', 'LTMM', 'CoOFD']
     # add the algo tag here
-    # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
+    # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp64']
     # this template configs all algos as lazy mode, all datasets are static and normalized
     csvTemplate = 'config_cca_static_lazy.csv'
     # do not change the following
@@ -294,7 +296,7 @@ def main():
     lat95All=np.array(lat95All)
     thrAll=np.array(thrAll)/1000.0
 
-    # int8 = int8 / int8_fp32 * mm
+    # int8 = int8 / int8_fp64 * mm
     lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
     thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 
