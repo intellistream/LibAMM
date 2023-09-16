@@ -39,6 +39,42 @@ torch::Tensor AMMBench::INT8CPPAlgo::fp32amm(torch::Tensor tensor1, torch::Tenso
   return resultTensor.clone();
 }
 
+torch::Tensor AMMBench::INT8CPPAlgo::fp64amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+  std::cout << "Scalar Type of the tensor1: " << torch::toString(tensor1.scalar_type()) << std::endl;
+  std::cout << "Scalar Type of the tensor2: " << torch::toString(tensor2.scalar_type()) << std::endl;
+  auto A_size = tensor1.sizes();
+  auto B_size = tensor2.sizes();
+  struct timeval tstart;
+  INTELLI_INFO("fp64amm");
+  gettimeofday(&tstart, NULL);
+  int64_t rows1 = A_size[0];
+  int64_t cols1 = A_size[1];
+  int64_t cols2 = B_size[1];
+  /**
+   * @brief build A into std vector
+   */
+  std::vector<double> matrix1(tensor1.data_ptr<double>(), tensor1.data_ptr<double>() + rows1 * cols1);
+  buildATime = INTELLI::UtilityFunctions::timeLastUs(tstart);
+  std::vector<double> matrix2(tensor2.data_ptr<double>(), tensor2.data_ptr<double>() + cols1 * cols2);
+  buildBTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime;
+  // Create the output matrix
+  std::vector<double> result(rows1 * cols2, 0.0);
+  for (int64_t i = 0; i < rows1; ++i) {
+    for (int64_t j = 0; j < cols2; ++j) {
+      for (int64_t k = 0; k < cols1; ++k) {
+        result[i * cols2 + j] += matrix1[i * cols1 + k] * matrix2[k * cols2 + j];
+      }
+    }
+  }
+  // exit(-1);
+  fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime;
+  torch::Tensor resultTensor = torch::from_blob(result.data(), {rows1, cols2}, torch::TensorOptions().dtype(torch::kFloat64));
+  //torch::Tensor resultTensor = torch::zeros({rows1,cols2});
+  postProcessTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime - fABTime;
+
+  return resultTensor.clone();
+}
+
 static float getScaleingFactor(float scalingBase, std::vector<float> matrix1Float) {
   float maxa = *std::max_element(matrix1Float.begin(), matrix1Float.end());
   float minaAbs = abs(*std::min_element(matrix1Float.begin(), matrix1Float.end()));
@@ -298,5 +334,10 @@ torch::Tensor AMMBench::INT8CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint6
   } else if (fpMode == "INT16") {
     return int16amm(A, B);
   }
-  return fp32amm(A, B);
+  else if (fpMode == "fp64") {
+    return fp64amm(A, B);
+  }
+  else {
+    return fp32amm(A, B);
+  }
 }

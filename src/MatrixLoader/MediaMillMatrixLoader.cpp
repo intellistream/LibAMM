@@ -15,8 +15,8 @@ void AMMBench::MediaMillMatrixLoader::generateAB() {
 
   torch::jit::script::Module tensors = torch::jit::load(filePath);
   // A, B already normalized
-  A = tensors.attr("A").toTensor(); // 120*43907
-  B = tensors.attr("B").toTensor(); // 101*43907
+  A = tensors.attr("A").toTensor().contiguous(); // 120*43907
+  B = tensors.attr("B").toTensor().contiguous(); // 101*43907
 
   At = A.t().contiguous(); // 43907*120
   Bt = B.t().contiguous(); // 43907*101
