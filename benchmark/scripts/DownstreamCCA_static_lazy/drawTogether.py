@@ -256,9 +256,9 @@ def main():
     # srcAVec=['dummy']
     # srcBVec=['dummy']
     # dataSetNames=['MediaMill'] 
-    srcAVec=['dummy', 'dummy']
-    srcBVec=['dummy', 'dummy']
-    dataSetNames=['MediaMill', 'MNIST']
+    srcAVec=['dummy']
+    srcBVec=['dummy']
+    dataSetNames=['MediaMill']
     # add the algo tag here
     # algosVec=['crs', 'fastjlt']
     # algoDisp=['CRS', 'FastJLT']
@@ -268,10 +268,8 @@ def main():
     # algoDisp=['FastJLT', 'NLMM', 'LTMM']
     # algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp64', 'mm']
     # algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    # algosVec=['int8_fp64']
-    # algoDisp=['NLMM']
-    algosVec=['int8_fp64', 'fastjlt', 'blockLRA', 'int8', 'crs', 'countSketch', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'mm', 'cooFD']
-    algoDisp=['NLMM', 'FastJLT', 'BlockLRA', 'INT8', 'CRS', 'CS', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar', 'LTMM', 'CoOFD']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp64', 'mm']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # add the algo tag here
     # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp64']
     # this template configs all algos as lazy mode, all datasets are static and normalized
