@@ -58,9 +58,14 @@ l_mnist = 392
 epsilon = 0.5
 delta = 0.2
 
-dataset_acols_mapping={
-    'MediaMill': epsilon**(-2) * (math.sqrt(n_mediamill+l_mediamill)+math.sqrt(math.log(m_mediamill/delta)))**2 * math.log(n_mediamill+l_mediamill)/delta,
-    'MNIST': epsilon**(-2) * (math.sqrt(n_mnist+l_mnist)+math.sqrt(math.log(m_mnist/delta)))**2 * math.log(n_mnist+l_mnist)/delta,
+dataset_sketchAcols_mapping={
+    'MediaMill': min(int(epsilon**(-2) * (math.sqrt(n_mediamill+l_mediamill)+math.sqrt(math.log(m_mediamill/delta)))**2 * math.log(n_mediamill+l_mediamill)/delta), m_mediamill),
+    'MNIST': min(int(epsilon**(-2) * (math.sqrt(n_mnist+l_mnist)+math.sqrt(math.log(m_mnist/delta)))**2 * math.log(n_mnist+l_mnist)/delta), m_mnist)
+}
+
+dataset_Acols_mapping={
+    'MediaMill': m_mediamill,
+    'MNIST': m_mnist
 }
 
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
@@ -84,8 +89,12 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     
     editConfig(configTemplate, exePath+"temp1.csv", "filePath", filePath)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "matrixLoaderTag", prefixTag)
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]))
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", dataset_sketchAcols_mapping[prefixTag])
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
+
+    # blockLRA rank ratio
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "algoARankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
+    editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "algoBRankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
 
     # int8 or int8_fp32
     if algoTag=='int8_fp32':
@@ -113,8 +122,10 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     command = f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkCCA {configFname} 2>&1 | tee execution_log.txt"
     try:
         subprocess.run(command, shell=True, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error {e}")
+    except:
+        pass
+    
+    if not os.path.exists(f"{resultPath}/{prefixTag}/CCA.csv"):
         os.system(f"cd {exePath} && sudo cp scripts/AMME2E_default_results/CCA.csv {resultPath}/{prefixTag}/CCA.csv")
         
     # copy result
@@ -129,14 +140,13 @@ def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTe
 
 
 def readResultSingle(singleValue, resultPath):
-    return 0,0,0,0,0
-    # resultFname = resultPath + "/" + str(singleValue) + "/CCA.csv"
-    # elapsedTime = readConfig(resultFname, "AMMPerfElapsedTime")
-    # froError = readConfig(resultFname, "SxxFroError")
-    # errorBoundRatio = 100
-    # thr=readConfig(resultFname, "AMMThroughput")
-    # endingError=readConfig(resultFname, "CorrelationError")
-    # return elapsedTime, froError, errorBoundRatio,thr,endingError
+    resultFname = resultPath + "/" + str(singleValue) + "/CCA.csv"
+    elapsedTime = readConfig(resultFname, "AMMPerfElapsedTime")
+    froError = readConfig(resultFname, "SxxFroError")
+    errorBoundRatio = 100
+    thr=readConfig(resultFname, "AMMThroughput")
+    endingError=readConfig(resultFname, "CorrelationError")
+    return elapsedTime, froError, errorBoundRatio,thr,endingError
 
 def readResultVector(singleValueVec, resultPath):
     elapseTimeVec = []
@@ -246,9 +256,9 @@ def main():
     # srcAVec=['dummy']
     # srcBVec=['dummy']
     # dataSetNames=['MediaMill'] 
-    srcAVec=['dummy', 'dummy']
-    srcBVec=['dummy', 'dummy']
-    dataSetNames=['MediaMill', 'MNIST']
+    srcAVec=['dummy']
+    srcBVec=['dummy']
+    dataSetNames=['MediaMill']
     # add the algo tag here
     # algosVec=['crs', 'fastjlt']
     # algoDisp=['CRS', 'FastJLT']
@@ -258,8 +268,8 @@ def main():
     # algoDisp=['FastJLT', 'NLMM', 'LTMM']
     # algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    algosVec=['fastjlt', 'int8', 'crs', 'countSketch', 'blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm', 'cooFD']
-    algoDisp=['FastJLT', 'INT8', 'CRS', 'CS', 'BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM', 'CoOFD']
+    algosVec=['fastjlt', 'blockLRA', 'int8', 'crs', 'countSketch', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm', 'cooFD']
+    algoDisp=['FastJLT', 'BlockLRA', 'INT8', 'CRS', 'CS', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM', 'CoOFD']
     # add the algo tag here
     # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
     # this template configs all algos as lazy mode, all datasets are static and normalized
