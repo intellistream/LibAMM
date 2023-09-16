@@ -81,11 +81,10 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
         filePath = "datasets/MNIST/train-images.idx3-ubyte"
     else:
         raise ValueError("Not valid dataset")
-
+    
     editConfig(configTemplate, exePath+"temp1.csv", "filePath", filePath)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "matrixLoaderTag", prefixTag)
-    # editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", 36445)
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]))
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
 
     # int8 or int8_fp32
@@ -130,13 +129,14 @@ def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTe
 
 
 def readResultSingle(singleValue, resultPath):
-    resultFname = resultPath + "/" + str(singleValue) + "/CCA.csv"
-    elapsedTime = readConfig(resultFname, "AMMPerfElapsedTime")
-    froError = readConfig(resultFname, "SxxFroError")
-    errorBoundRatio = 100
-    thr=readConfig(resultFname, "AMMThroughput")
-    endingError=readConfig(resultFname, "CorrelationError")
-    return elapsedTime, froError, errorBoundRatio,thr,endingError
+    return 0,0,0,0,0
+    # resultFname = resultPath + "/" + str(singleValue) + "/CCA.csv"
+    # elapsedTime = readConfig(resultFname, "AMMPerfElapsedTime")
+    # froError = readConfig(resultFname, "SxxFroError")
+    # errorBoundRatio = 100
+    # thr=readConfig(resultFname, "AMMThroughput")
+    # endingError=readConfig(resultFname, "CorrelationError")
+    # return elapsedTime, froError, errorBoundRatio,thr,endingError
 
 def readResultVector(singleValueVec, resultPath):
     elapseTimeVec = []
@@ -249,7 +249,6 @@ def main():
     srcAVec=['dummy', 'dummy']
     srcBVec=['dummy', 'dummy']
     dataSetNames=['MediaMill', 'MNIST']
-    dataSetNames=['MNIST', 'MediaMill']
     # add the algo tag here
     # algosVec=['crs', 'fastjlt']
     # algoDisp=['CRS', 'FastJLT']
@@ -257,8 +256,10 @@ def main():
     # algoDisp=['NLMM', 'LTMM']
     # algosVec=['fastjlt', 'int8_fp32', 'mm']
     # algoDisp=['FastJLT', 'NLMM', 'LTMM']
-    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    # algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    # algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    algosVec=['fastjlt', 'int8', 'crs', 'countSketch', 'blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm', 'cooFD']
+    algoDisp=['FastJLT', 'INT8', 'CRS', 'CS', 'BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM', 'CoOFD']
     # add the algo tag here
     # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
     # this template configs all algos as lazy mode, all datasets are static and normalized
