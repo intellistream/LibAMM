@@ -122,10 +122,10 @@ void benchmarkCCA(std::string configName) {
     // }
     assert(matLoaderPtr);
     matLoaderPtr->setConfig(cfg);
-    auto A = matLoaderPtr->getA(); // 120*43907 or 392*60000
-    auto B = matLoaderPtr->getB(); // 101*43907 or 392*60000
-    auto At = matLoaderPtr->getAt(); // 43907*120 or 60000*392
-    auto Bt = matLoaderPtr->getBt(); // 43907*101 or 60000*392
+    auto A = matLoaderPtr->getA(); // 120*43907 double or 392*60000 float
+    auto B = matLoaderPtr->getB(); // 101*43907 double or 392*60000 float
+    auto At = matLoaderPtr->getAt(); // 43907*120 double or 60000*392 float
+    auto Bt = matLoaderPtr->getBt(); // 43907*101 double or 60000*392 float
     
     matLoaderPtr->calculate_correlation(); // cleaner code
     // 1.3 sketch dimension
