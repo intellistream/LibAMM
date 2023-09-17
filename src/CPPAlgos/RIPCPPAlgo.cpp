@@ -49,6 +49,10 @@ torch::Tensor AMMBench::RIPCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64
   // std::cout << D << std::endl;
 
   // Step 4: Compute AVVTB
+  if (A.dtype() == torch::kDouble){
+    RIP=RIP.to(torch::kFloat);
+    D=D.to(torch::kFloat);
+  }
   torch::Tensor A_prime = torch::matmul(torch::matmul(RIP, D), A); // A' = k*d * d*d * d*n1 = k*n1
   torch::Tensor B_prime = torch::matmul(torch::matmul(RIP, D), B); // B' = k*d * d*d * d*n2 = k*n2
   // std::cout << A_prime.sizes() << std::endl;
