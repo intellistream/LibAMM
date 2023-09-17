@@ -21,8 +21,8 @@ namespace AMMBench {
 class BlockLRACPPAlgo : public AMMBench::AbstractCPPAlgo {
 
  protected:
-  float ARankRatio = 0.5;
-  float BRankRatio = 0.5;
+  double ARankRatio = 0.5;
+  double BRankRatio = 0.5;
 
  public:
   BlockLRACPPAlgo() {

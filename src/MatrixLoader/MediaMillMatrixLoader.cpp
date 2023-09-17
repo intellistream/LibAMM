@@ -8,25 +8,25 @@
 #include <iostream>
 
 void AMMBench::MediaMillMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
-  filePath = cfg->tryString("filePath", "datasets/Mediamill/mediamill.pth", true);
+  filePath = cfg->tryString("filePath", "datasets/Mediamill/MediaMill.pth", true);
 }
 
 void AMMBench::MediaMillMatrixLoader::generateAB() {
 
   torch::jit::script::Module tensors = torch::jit::load(filePath);
   // A, B already normalized
-  A = tensors.attr("A").toTensor().contiguous(); // 120*43907
-  B = tensors.attr("B").toTensor().contiguous(); // 101*43907
+  A = tensors.attr("A").toTensor().contiguous().to(torch::kFloat); // 120*43907
+  B = tensors.attr("B").toTensor().contiguous().to(torch::kFloat); // 101*43907
 
-  At = A.t().contiguous(); // 43907*120
-  Bt = B.t().contiguous(); // 43907*101
+  At = A.t().contiguous().to(torch::kFloat); // 43907*120
+  Bt = B.t().contiguous().to(torch::kFloat); // 43907*101
 
-  std::cout << "Maximum Value: " << A.max().item<float>() << std::endl;
-  std::cout << "Mean Value: " << A.mean().item<float>() << std::endl;
-  std::cout << "Minimum Value: " << A.min().item<float>() << std::endl;
-  std::cout << "Maximum Value: " << B.max().item<float>() << std::endl;
-  std::cout << "Mean Value: " << B.mean().item<float>() << std::endl;
-  std::cout << "Minimum Value: " << B.min().item<float>() << std::endl;
+  // std::cout << "Maximum Value: " << A.max().item<float>() << std::endl;
+  // std::cout << "Mean Value: " << A.mean().item<float>() << std::endl;
+  // std::cout << "Minimum Value: " << A.min().item<float>() << std::endl;
+  // std::cout << "Maximum Value: " << B.max().item<float>() << std::endl;
+  // std::cout << "Mean Value: " << B.mean().item<float>() << std::endl;
+  // std::cout << "Minimum Value: " << B.min().item<float>() << std::endl;
 
   INTELLI_INFO(
       "Generating [" + to_string(A.size(0)) + " x " + to_string(A.size(1)) + "]*[" + to_string(B.size(0)) + " x "

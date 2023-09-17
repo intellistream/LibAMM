@@ -55,29 +55,6 @@ void adjustConfig(ConfigMapPtr cfg, std::string stage){
             }
         }
     }
-    
-    // if (cfg->tryString("cppAlgoTag", "mm", true)=="pq"){
-    //     if (stage=="AA"){
-    //         cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_AA_m10_lA3_lB3.pth");
-    //     }
-    //     else if (stage=="BB"){
-    //         cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_BB_m10_lA3_lB3.pth");
-    //     }
-    //     else if (stage=="AB"){
-    //         cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_AB_m10_lA3_lB3.pth");
-    //     }
-    // }
-    // else if (cfg->tryString("cppAlgoTag", "mm", true)=="vq"){
-    //     if (stage=="AA"){
-    //         cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_AA_m1_lA39_lB39.pth");
-    //     }
-    //     else if (stage=="BB"){
-    //         cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_BB_m1_lA39_lB39.pth");
-    //     }
-    //     else if (stage=="AB"){
-    //         cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_AB_m1_lA39_lB39.pth");
-    //     }
-    // }
 }
 
 void benchmarkCCA(std::string configName) {
@@ -126,7 +103,7 @@ void benchmarkCCA(std::string configName) {
     auto B = matLoaderPtr->getB(); // 101*43907 double or 392*60000 float
     auto At = matLoaderPtr->getAt(); // 43907*120 double or 60000*392 float
     auto Bt = matLoaderPtr->getBt(); // 43907*101 double or 60000*392 float
-    
+
     matLoaderPtr->calculate_correlation(); // cleaner code
     // 1.3 sketch dimension
     uint64_t sketchSize;
