@@ -30,34 +30,27 @@ torch::Tensor AMMBench::RIPCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64
   torch::Tensor RIP = torch::zeros({k, d});
 
   // first row as Rademacher random vector, X=+1 w.p. 1/2, X=-1 w.p. 1/2 1*d
-  torch::Tensor firstRow = 1 / std::sqrt(k) * createRandomTensor(d);
-  // std::cout << RIP.sizes() << std::endl;
-  // std::cout << RIP << std::endl;
+  // torch::Tensor firstRow = 1 / std::sqrt(k) * createRandomTensor(d);
 
   // from paper: each subsequent row is created by rotating one element to the right relative to the preceding row vector d*d, then sample k rows from d*d, get RIP matrix k*d
   // in implementation, we create k*d directly to avoid create such a big matrix d*d
-  torch::Tensor indices = torch::multinomial(torch::ones(d) / d, k, /*replacement*/false);
-  // std::cout << indices << std::endl;
-
-  for (int64_t i = 0; i < k; ++i) {
-    RIP[i] = torch::roll(firstRow, indices[i].item<int>());
-  }
-  // std::cout << RIP << std::endl;
+  // torch::Tensor indices = torch::multinomial(torch::ones(d) / d, k, /*replacement*/false);
+  // for (int64_t i = 0; i < k; ++i) {
+  //   INTELLI_INFO(to_string(i) + "/" + to_string(k));
+  //   RIP[i] = torch::roll(firstRow, indices[i].item<int>());
+  // }
+  // we comment above for flat matrix A, cuz roll operation too expensive
+  RIP = torch::empty({k, d});
+  RIP.uniform_(-1, 1);
+  RIP.sign_();
+  RIP = RIP * 1 / std::sqrt(k);
 
   // Step 3: Randomized column signs
-  torch::Tensor D = torch::diag(createRandomTensor(d));
-  // std::cout << D << std::endl;
-
+  torch::Tensor D = createRandomTensor(d);
+  
   // Step 4: Compute AVVTB
-  if (A.dtype() == torch::kDouble){
-    RIP=RIP.to(torch::kFloat);
-    D=D.to(torch::kFloat);
-  }
-  torch::Tensor A_prime = torch::matmul(torch::matmul(RIP, D), A); // A' = k*d * d*d * d*n1 = k*n1
-  torch::Tensor B_prime = torch::matmul(torch::matmul(RIP, D), B); // B' = k*d * d*d * d*n2 = k*n2
-  // std::cout << A_prime.sizes() << std::endl;
-  // std::cout << B_prime.sizes() << std::endl;
-
+  torch::Tensor A_prime = torch::matmul(RIP, A*D.view({-1, 1})); // A' = k*d * d*n1 = k*n1
+  torch::Tensor B_prime = torch::matmul(RIP, B*D.view({-1, 1})); // B' = k*d * d*n2 = k*n2
   return torch::matmul(A_prime.t(), B_prime);
 }
 } // AMMBench
