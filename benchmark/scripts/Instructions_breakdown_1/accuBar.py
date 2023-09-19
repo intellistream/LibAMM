@@ -62,7 +62,13 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     figure = fig.add_subplot(111)
 
     FIGURE_LABEL = legend_labels
-
+    LINE_COLORS = [
+        '#FF8C00', '#FFE4C4', '#00FFFF', '#E0FFFF',
+        '#FF6347', '#98FB98', '#800080', '#FFD700',
+        '#7CFC00', '#8A2BE2', '#FF4500', '#20B2AA',
+        '#B0E0E6', '#DC143C', '#00FF7F'
+    ]
+    HATCH_PATTERNS = ['/', '-', 'o', '///', '\\', '|', 'x', '\\\\', '+', '.', '*', 'oo', '++++', '....', 'xxx']
     # if not os.path.exists(FIGURE_FOLDER):
     #   os.makedirs(FIGURE_FOLDER)
 
@@ -75,7 +81,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     bottom_base = np.zeros(len(y_values[0]))
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
-        bars[i] = plt.bar(index*1.5 + width / 2, y_values[i], width, hatch=PATTERNS[i], color=LINE_COLORS[i],
+        bars[i] = plt.bar(index*1.5 + width / 2, y_values[i], width, hatch=HATCH_PATTERNS[i], color=LINE_COLORS[i],
                           label=FIGURE_LABEL[i], bottom=bottom_base, edgecolor='black', linewidth=3)
         bottom_base = np.array(y_values[i]) + bottom_base
 
@@ -99,14 +105,14 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
                              loc='center',
                              prop=LEGEND_FP,
                              ncol=6,
-                             bbox_to_anchor=(0.55, 1.15),
-                             shadow=True, frameon=True, edgecolor='black', borderaxespad=1,
+                             bbox_to_anchor=(0.5, 1.15),
+                             shadow=True, frameon=True, edgecolor='black',
                              # bbox_to_anchor=(1.17, 0.5),
-                             # handletextpad=0.1,
+                             handletextpad=0.1,
                              # borderaxespad=0.0,
                              # handlelength=1.8,
-                             labelspacing=0.1,
-                             columnspacing=0.1,
+                             labelspacing=-1.0,
+                             columnspacing=0.5,
                              )
             leg.get_frame().set_linewidth(2)
             leg.get_frame().set_edgecolor("black")
@@ -118,13 +124,13 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     #plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
     plt.ylim(0,100)
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LinearLocator(3))
+    figure.yaxis.set_major_locator(LinearLocator(10))
     # figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.yaxis.set_major_locator(LinearLocator(6))
 
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
-
+    plt.grid(axis='y', color='gray', alpha=0.5, linewidth=0.5)
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
 

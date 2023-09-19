@@ -266,12 +266,18 @@ def main():
     print(instructions, cpuCycleAll)
    
     # adjust int8: int8/int8_fp32*mm
-    int8_adjust_ratio = cpuCycleAll[0]/cpuCycleAll[-2]
+    
     for instruc in [instructions, cpuCycleAll, memStallAll, l1dStallAll, l2StallAll, l3StallAll,totalStallAll]:
+        instruc=np.maximum(instruc,0)
+        int8_adjust_ratio = instruc[0]/instruc[-2]
         instruc[0] = instruc[-1]*int8_adjust_ratio
     otherStallsAll = totalStallAll-memStallAll-l1dStallAll-l2StallAll-l3StallAll
+    otherStallsAll = np.maximum(otherStallsAll,0)
+    totalStallAll = memStallAll+l1dStallAll+l2StallAll+l3StallAll+otherStallsAll
     nonStallAll=cpuCycleAll-totalStallAll
-    allowLegend = 1
+    nonStallAll=np.maximum(nonStallAll,0)
+    cpuCycleAll=totalStallAll+nonStallAll
+    allowLegend = True
     valueVec=dataSetNames
     for valueChose in range(len(valueVec)):
         # instructionsPerMethod=getCyclesPerMethod(instructions,valueChose)
@@ -285,20 +291,21 @@ def main():
         nonStallPerMethod=getCyclesPerMethod(nonStallAll, valueChose)
         accuBar.DrawFigure(methodTags,
                            [memStallPerMethod, l1dStallPerMethod, l2StallPerMethod, l3StallPerMethod,
-                            otherPerMethod,nonStallPerMethod], ['tlb/DDRStall', 'l1dStall', 'l2Stall', 'l3Stall', 'otherStall', 'nonStall'], '',
-                           'cycles', figPath + "/" + "cyclesbreakDown"
+                            otherPerMethod,nonStallPerMethod]/cpuCyclePerMethod*100.0, ['TLB/DDR Stall', 'L1D Stall', 'L2 Stall', 'L3 Stall', 'Other Stall', 'Not Stall'], '',
+                           'Propotion (%)', figPath + "/" + "cyclesbreakDown"
                            + "_cycles_accubar" + str(valueVec[valueChose]), allowLegend,
                            'dataset' + "=" + str(valueVec[valueChose]))
-        allowLegend = 0
+        
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     #groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)", 5, 15, figPath + "sec4_1_e2e_static_lazy_fro", True)
     #groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)", 5, 15, figPath + "sec4_1_e2e_static_lazy_latency_log", True)
     ipcAll=instructions/cpuCycleAll
-    groupBar2.DrawFigure(dataSetNames,ipcAll,methodTags, "Datasets", "IPC", 5, 15, figPath + "ipc", True)
+    groupBar2.DrawFigureYLog(dataSetNames,ipcAll,methodTags, "Datasets", "IPC", 5, 15, figPath + "ipc", True)
     groupBar2.DrawFigure(dataSetNames,totalStallAll/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of Stalls (%)", 5, 15, figPath + "stall_ratio", True)
     groupBar2.DrawFigure(dataSetNames,l1dStallAll/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of l1dStalls (%)", 5, 15, figPath + "l1dstall_ratio", True)
     groupBar2.DrawFigure(dataSetNames,l2StallAll/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of l2Stalls (%)", 5, 15, figPath + "l2stall_ratio", True)
     groupBar2.DrawFigure(dataSetNames,l3StallAll/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of l3Stalls (%)", 5, 15, figPath + "l3stall_ratio", True)
+    print(ipcAll)
     #groupBar2.DrawFigure(dataSetNames,(l1dStallAll+l2StallAll+l3StallAll)/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of cacheStalls (%)", 5, 15, figPath + "cachestall_ratio", True)
 
 
