@@ -38,6 +38,7 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["bcooFD"] = newBetaCoOFDCPPAlgo();
   algoMap["int8"] = newINT8CPPAlgo();
   algoMap["int8_fp32"] = newINT8CPPAlgo();
+  algoMap["int8_fp64"] = newINT8CPPAlgo();
   algoMap["tugOfWar"] = newTugOfWarCPPAlgo();
   algoMap["weighted-cr"] = newWeightedCRCPPAlgo();
   algoMap["smp-pca"] = newSMPPCACPPAlgo();

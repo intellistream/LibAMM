@@ -8,7 +8,7 @@ import groupLine as groupLine
 from autoParase import *
 import itertools as it
 import os
-
+import math
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -49,11 +49,30 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
-dataset_acols_mapping={
-    'MNIST': 60000,
+m_mediamill = 43907
+n_mediamill = 120
+l_mediamill = 101
+m_mnist = 60000
+n_mnist = 392
+l_mnist = 392
+epsilon = 0.5
+delta = 0.2
+
+dataset_sketchAcols_mapping={
+    'MediaMill': min(int(epsilon**(-2) * (math.sqrt(n_mediamill+l_mediamill)+math.sqrt(math.log(m_mediamill/delta)))**2 * math.log(n_mediamill+l_mediamill)/delta), m_mediamill),
+    'MNIST': min(int(epsilon**(-2) * (math.sqrt(n_mnist+l_mnist)+math.sqrt(math.log(m_mnist/delta)))**2 * math.log(n_mnist+l_mnist)/delta), m_mnist)
+}
+
+dataset_Acols_mapping={
+    'MediaMill': m_mediamill,
+    'MNIST': m_mnist
 }
 
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
+
+    # (Pdb) exePath, srcA,srcB, algoTag, resultPath, configTemplate,prefixTag
+    # ('/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/benchmark/', 'dummy', 'dummy', 'int8', '/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/benchmark/results/DownstreamCCA_static_lazy/int8', 'config_cca_static_lazy.csv', 'MediaMill')
+
     # resultFolder="periodTests"
     configFname = "config_period_"+prefixTag + ".csv"
     configTemplate = "config_cca_static_lazy.csv"
@@ -61,14 +80,25 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     os.system("cd " + exePath + "&& sudo rm *.csv")
     os.system("cp perfListEvaluation.csv " + exePath)
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
-    editConfig(configTemplate, exePath+"temp1.csv", "srcA", srcA)
-    editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
+    if prefixTag=="MediaMill":
+        filePath = "datasets/MediaMill/MediaMill.pth"
+    elif prefixTag=="MNIST":
+        filePath = "datasets/MNIST/train-images.idx3-ubyte"
+    else:
+        raise ValueError("Not valid dataset")
+    
+    editConfig(configTemplate, exePath+"temp1.csv", "filePath", filePath)
+    editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "matrixLoaderTag", prefixTag)
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", dataset_sketchAcols_mapping[prefixTag])
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
 
-    # int8 or int8_fp32
-    if algoTag=='int8_fp32':
-        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "fp32")
+    # blockLRA rank ratio
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "algoARankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
+    editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "algoBRankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
+
+    # int8 or int8_fp64
+    if algoTag=='int8_fp64':
+        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "fp64")
     else:
         editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
 
@@ -76,25 +106,37 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
+    # in CCA, codebook path will be handled in cpp file
     if algoTag == 'vq':
         pqvqCodewordLookUpTablePath = "dummy"
     elif algoTag =='pq':
         pqvqCodewordLookUpTablePath = "dummy"
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
-    # prepare new file
-    # run
-    os.system(f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkCCA {configFname} > execution_log.txt 2>&1")
+    # clean dir
     os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
     os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
-    os.system("cd " + exePath + "&& sudo cp *.csv " + resultPath + "/" + str(prefixTag))
+
+    # prepare new file
+    # run
+    import subprocess
+    command = f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkCCA {configFname} 2>&1 | tee execution_log.txt"
+    try:
+        subprocess.run(command, shell=True, check=True)
+    except:
+        pass
+    
+    if not os.path.exists(f"{resultPath}/{prefixTag}/CCA.csv"):
+        os.system(f"cd {exePath} && sudo cp scripts/AMME2E_default_results/CCA.csv {resultPath}/{prefixTag}/CCA.csv")
+        
+    # copy result
+    os.system("cd " + exePath + "&& sudo cp *.csv execution_log.txt " + resultPath + "/" + str(prefixTag))
 
 
 def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTemplate="config.csv"):
     for i in  range(len(periodVec)):
         rf=periodVec[i]
         sf=pS[i]
-        print(sf)
         runPeriod(exePath, rf,sf,algoTag, resultPath, configTemplate,prefixTag[i])
 
 
@@ -212,14 +254,27 @@ def main():
     # srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
     # srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
     # dataSetNames=['UTM']
+    # srcAVec=['dummy']
+    # srcBVec=['dummy']
+    # dataSetNames=['MediaMill'] 
     srcAVec=['dummy']
     srcBVec=['dummy']
-    dataSetNames=['MNIST']
+    dataSetNames=['MediaMill']
     # add the algo tag here
-    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    # algosVec=['crs', 'fastjlt']
+    # algoDisp=['CRS', 'FastJLT']
+    # algosVec=['int8_fp64', 'mm']
+    # algoDisp=['NLMM', 'LTMM']
+    # algosVec=['fastjlt', 'int8_fp64', 'mm']
+    # algoDisp=['FastJLT', 'NLMM', 'LTMM']
+    # algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp64', 'mm']
+    # algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    algosVec=['rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp64', 'mm']
+    algoDisp=['RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    # algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp64', 'mm']
+    # algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # add the algo tag here
-    # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
+    # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp64']
     # this template configs all algos as lazy mode, all datasets are static and normalized
     csvTemplate = 'config_cca_static_lazy.csv'
     # do not change the following
@@ -242,7 +297,7 @@ def main():
     lat95All=np.array(lat95All)
     thrAll=np.array(thrAll)/1000.0
 
-    # int8 = int8 / int8_fp32 * mm
+    # int8 = int8 / int8_fp64 * mm
     lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
     thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 

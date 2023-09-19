@@ -5,7 +5,7 @@
 #ifndef INTELLISTREAM_MNISTMATRIXLOADER_H
 #define INTELLISTREAM_MNISTMATRIXLOADER_H
 
-#include <MatrixLoader/AbstractMatrixLoader.h>
+#include <MatrixLoader/CCAMatrixLoader.h>
 
 namespace AMMBench {
 /**
@@ -30,7 +30,7 @@ namespace AMMBench {
  * @note: default name tags
  * "MNIST": @ref MNISTMatrixLoader
  */
-class MNISTMatrixLoader : public AbstractMatrixLoader {
+class MNISTMatrixLoader : public CCAMatrixLoader {
  protected:
   std::string filePath="datasets/SIFT/MNIST/train-images.idx3-ubyte"; 
   torch::Tensor A, B, At, Bt;

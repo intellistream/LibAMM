@@ -8,12 +8,16 @@
 #include <Utils/UtilityFunctions.h>
 #include <Streaming/Streamer.h>
 #include <cstdlib> // For the exit() function
+#include <iostream>
+#include <filesystem>
+#include <regex>
 
 using namespace std;
 using namespace INTELLI;
 using namespace torch;
 using namespace DIVERSE_METER;
 using namespace AMMBench;
+namespace fs = std::filesystem;
 
 void printStatsOfTensor(torch::Tensor M) {
   torch::Tensor mean = at::mean(M);
@@ -32,26 +36,23 @@ void printStatsOfTensor(torch::Tensor M) {
  * @brief For PQ and VQ, the prototype and index&book need to change if we perform different matrix multiplication, e.g. ATA, BTB. so we need to update the cfg path and call cppAlgoPtr->setConfig(cfg)
  */
 void adjustConfig(ConfigMapPtr cfg, std::string stage){
-    if (cfg->tryString("cppAlgoTag", "mm", true)=="pq"){
-        if (stage=="AA"){
-            cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_AA_m10_lA3_lB3.pth");
-        }
-        else if (stage=="BB"){
-            cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_BB_m10_lA3_lB3.pth");
-        }
-        else if (stage=="AB"){
-            cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_AB_m10_lA3_lB3.pth");
-        }
-    }
-    else if (cfg->tryString("cppAlgoTag", "mm", true)=="vq"){
-        if (stage=="AA"){
-            cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_AA_m1_lA39_lB39.pth");
-        }
-        else if (stage=="BB"){
-            cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_BB_m1_lA39_lB39.pth");
-        }
-        else if (stage=="AB"){
-            cfg->edit("pqvqCodewordLookUpTablePath", "torchscripts/VQ/CodewordLookUpTable/MNIST_AB_m1_lA39_lB39.pth");
+
+    // e.g. torchscripts/VQ/CodewordLookUpTable/MNIST_AA_m10_lA3_lB3.pth, torchscripts/VQ/CodewordLookUpTable/MediaMill_AB_m1_lA12_lB10.pth
+
+    std::string search_directory = "./torchscripts/VQ/CodewordLookUpTable/";
+    std::string datasetName = cfg->tryString("matrixLoaderTag", "MediaMill", true);
+    std::string m;
+    if (cfg->tryString("cppAlgoTag", "mm", true)=="pq"){m="10";}
+    else if (cfg->tryString("cppAlgoTag", "mm", true)=="vq"){m="1";}
+    std::regex pattern(datasetName+"_"+stage+"_m"+m+"_.*pth");
+
+    for (const auto& entry : fs::directory_iterator(search_directory)) {
+        if (fs::is_regular_file(entry.path())) {
+            std::string filename = entry.path().filename().string();
+            if (std::regex_match(filename, pattern)) {
+                std::cout << "Found matching file: " << entry.path() << std::endl;
+                cfg->edit("pqvqCodewordLookUpTablePath", entry.path());
+            }
         }
     }
 }
@@ -61,23 +62,48 @@ void benchmarkCCA(std::string configName) {
     // Step1. Set up environments
     ConfigMapPtr cfg = newConfigMap();
     cfg->fromFile(configName);
+    INTELLI_INFO(cfg->toString());
+    uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
+    UtilityFunctions::bind2Core((int) coreBind);
     // 1.1 AMM algorithm
     AMMBench::CPPAlgoTable cppAlgoTable;
     std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
     AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
-    cppAlgoPtr->setConfig(cfg);
     INTELLI_INFO("1.1 algo: " + cppAlgoTag);
     // 1.2 matrixLoader uses MNIST dataset
+    std::string matrixLoaderTag = cfg->tryString("matrixLoaderTag", "MediaMill", true);
+    INTELLI_INFO("1.2 matrixLoaderTag: " + matrixLoaderTag);
     AMMBench::MatrixLoaderTable mLoaderTable;
-    std::shared_ptr<AMMBench::AbstractMatrixLoader> basePtr = mLoaderTable.findMatrixLoader("MNIST");
-	std::shared_ptr<AMMBench::MNISTMatrixLoader> matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MNISTMatrixLoader>(basePtr);
-    INTELLI_INFO("1.2 matrixLoaderTag: MNIST");
+    std::shared_ptr<AMMBench::CCAMatrixLoader> matLoaderPtr;
+    if (matrixLoaderTag=="MediaMill"){
+        matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MediaMillMatrixLoader>(mLoaderTable.findMatrixLoader("MediaMill"));
+        // std::cout << "1 The type of myVariable is: " << typeid(matLoaderPtr).name() << std::endl;
+    }
+    else if (matrixLoaderTag=="MNIST"){
+        matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MNISTMatrixLoader>(mLoaderTable.findMatrixLoader("MNIST"));
+        // std::cout << "2 The type of myVariable is: " << typeid(matLoaderPtr).name() << std::endl;
+    }
+    else{
+        INTELLI_ERROR(matrixLoaderTag+" not found");
+        std::exit(EXIT_FAILURE);
+    }
+    // if (matrixLoaderTag=="MediaMill"){
+    //     std::shared_ptr<AMMBench::MediaMillMatrixLoader> matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MediaMillMatrixLoader>(mLoaderTable.findMatrixLoader(matrixLoaderTag));
+    // }
+    // else if (matrixLoaderTag=="MNIST"){
+    //     std::shared_ptr<AMMBench::MNISTMatrixLoader> matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MNISTMatrixLoader>(mLoaderTable.findMatrixLoader(matrixLoaderTag));
+    // }
+    // else{
+    //     INTELLI_ERROR(matrixLoaderTag+" not found");
+    //     std::exit(EXIT_FAILURE);
+    // }
     assert(matLoaderPtr);
     matLoaderPtr->setConfig(cfg);
-    auto A = matLoaderPtr->getA(); // 392*60000
-    auto B = matLoaderPtr->getB(); // 392*60000
-    auto At = matLoaderPtr->getAt(); // 60000*392
-    auto Bt = matLoaderPtr->getBt(); // 60000*392
+    auto A = matLoaderPtr->getA(); // 120*43907 double or 392*60000 float
+    auto B = matLoaderPtr->getB(); // 101*43907 double or 392*60000 float
+    auto At = matLoaderPtr->getAt(); // 43907*120 double or 60000*392 float
+    auto Bt = matLoaderPtr->getBt(); // 43907*101 double or 60000*392 float
+
     matLoaderPtr->calculate_correlation(); // cleaner code
     // 1.3 sketch dimension
     uint64_t sketchSize;
@@ -242,8 +268,6 @@ void benchmarkCCA(std::string configName) {
     }
     else{
         INTELLI_INFO("staticDataSet=1 and fullLazy=1");
-        uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
-        UtilityFunctions::bind2Core((int) coreBind);
         ThreadPerf pef(-1);
         pef.setPerfList();
         pef.start();
@@ -296,7 +320,6 @@ void benchmarkCCA(std::string configName) {
     allMetrics->edit("SxxFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxx(), Sxx));
     allMetrics->edit("SxyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxy(), Sxy));
     allMetrics->edit("SyyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSyy(), Syy));
-    std::cout << allMetrics->toString() << endl;
     
     // Step3. The rest of the CCA task
     ThreadPerf pef(-1);
@@ -319,7 +342,8 @@ void benchmarkCCA(std::string configName) {
     // 3.3 M
     INTELLI_INFO("M");
     torch::manual_seed(123);
-    torch::Tensor M1 = cppAlgoPtr->amm(SxxNegativeHalf.t(), Sxy, 39);
+    // torch::Tensor M1 = cppAlgoPtr->amm(SxxNegativeHalf.t(), Sxy, 39);
+    torch::Tensor M1 = torch::matmul(SxxNegativeHalf.t(), Sxy);
     std::cout << "M1:" << std::endl;
     std::cout << "Maximum Value: " << M1.max().item<float>() << std::endl;
     std::cout << "Mean Value: " << M1.mean().item<float>() << std::endl;
@@ -332,7 +356,8 @@ void benchmarkCCA(std::string configName) {
     allMetrics->edit("M1FroError", (double) M1FroError);
 
     torch::manual_seed(123);
-    torch::Tensor M = cppAlgoPtr->amm(M1, SyyNegativeHalf, 39);
+    // torch::Tensor M = cppAlgoPtr->amm(M1, SyyNegativeHalf, 39);
+    torch::Tensor M = torch::matmul(M1, SyyNegativeHalf);
     std::cout << "M:" << std::endl;
     std::cout << "Maximum Value: " << M.max().item<float>() << std::endl;
     std::cout << "Mean Value: " << M.mean().item<float>() << std::endl;
