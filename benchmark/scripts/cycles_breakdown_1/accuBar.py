@@ -101,7 +101,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
         if allow_legend == True:
             handles, labels = figure.get_legend_handles_labels()
         if allow_legend == True:
-            leg = plt.legend(handles[::-1], labels[::-1],
+            leg = plt.legend(handles, labels,
                              loc='center',
                              prop=LEGEND_FP,
                              ncol=6,
@@ -124,13 +124,13 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
     #plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0), useMathText=True)
     plt.ylim(0,100)
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LinearLocator(10))
+    figure.yaxis.set_major_locator(LinearLocator(3))
     # figure.yaxis.set_major_locator(LogLocator(base=10))
     # figure.yaxis.set_major_locator(LinearLocator(6))
 
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
-    plt.grid(axis='y', color='gray', alpha=0.5, linewidth=0.5)
+
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
 

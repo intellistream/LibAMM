@@ -162,7 +162,7 @@ def DrawFigureYLog(x_values, y_values, legend_labels, x_label, y_label, y_min, y
     figure.yaxis.set_major_locator(LogLocator(10))
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
-    #figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
+    figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
 
     plt.grid(axis='y', color='gray', alpha=0.5, linewidth=0.5)
 
