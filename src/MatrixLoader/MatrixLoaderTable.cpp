@@ -12,6 +12,7 @@
 #include <MatrixLoader/BetaMatrixLoader.h>
 #include <MatrixLoader/SIFTMatrixLoader.h>
 #include <MatrixLoader/MNISTMatrixLoader.h>
+#include <MatrixLoader/MediaMillMatrixLoader.h>
 #include <MatrixLoader/MtxMatrixLoader.h>
 namespace AMMBench {
 /**
@@ -27,6 +28,7 @@ AMMBench::MatrixLoaderTable::MatrixLoaderTable() {
   loaderMap["beta"] = newBetaMatrixLoader();
   loaderMap["SIFT"] = newSIFTMatrixLoader();
   loaderMap["MNIST"] = newMNISTMatrixLoader();
+  loaderMap["MediaMill"] = newMediaMillMatrixLoader();
   loaderMap["mtx"] = newMtxMatrixLoader();
 }
 

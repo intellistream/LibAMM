@@ -2,10 +2,10 @@
 // Created by yuhao on 6/30/23.
 //
 
-#ifndef INTELLISTREAM_MNISTMATRIXLOADER_H
-#define INTELLISTREAM_MNISTMATRIXLOADER_H
+#ifndef INTELLISTREAM_CCAMATRIXLOADER_H
+#define INTELLISTREAM_CCAMATRIXLOADER_H
 
-#include <MatrixLoader/CCAMatrixLoader.h>
+#include <MatrixLoader/AbstractMatrixLoader.h>
 
 namespace AMMBench {
 /**
@@ -13,13 +13,13 @@ namespace AMMBench {
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MNIST The MNIST training image dataset generator
+ * @ingroup AMMBENCH_MatrixLOADER_CCA
  * @{
  */
 /**
- * @class MNISTMatrixLoader MatrixLoader/MNISTMatrixLoader.h
- * @brief The MNIST class of matrix loader https://www.kaggle.com/datasets/hojjatk/mnist-dataset
- * @ingroup AMMBENCH_MatrixLOADER_MNIST
+ * @class CCAMatrixLoader MatrixLoader/CCAMatrixLoader.h
+ * @brief For CCA downstream task
+ * @ingroup AMMBENCH_MatrixLOADER_CCA
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -28,11 +28,11 @@ namespace AMMBench {
 * - call @ref getA and @ref getB (assuming we are benchmarking torch.mm(A,B))
  * @note: does not need config
  * @note: default name tags
- * "MNIST": @ref MNISTMatrixLoader
+ * "CCA": @ref CCAMatrixLoader
  */
-class MNISTMatrixLoader : public CCAMatrixLoader {
+class CCAMatrixLoader : public AbstractMatrixLoader {
  protected:
-  std::string filePath="datasets/SIFT/MNIST/train-images.idx3-ubyte"; 
+  std::string filePath; 
   torch::Tensor A, B, At, Bt;
   torch::Tensor Sxx, Syy, Sxy;
   torch::Tensor SxxNegativeHalf, SyyNegativeHalf, M, M1;
@@ -50,9 +50,9 @@ class MNISTMatrixLoader : public CCAMatrixLoader {
   void generateAB();
 
  public:
-  MNISTMatrixLoader() = default;
+  CCAMatrixLoader() = default;
 
-  ~MNISTMatrixLoader() = default;
+  ~CCAMatrixLoader() = default;
 
   /**
      * @brief Set the GLOBAL config map related to this loader
@@ -141,18 +141,18 @@ class MNISTMatrixLoader : public CCAMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MNIST
- * @typedef MNISTMatrixLoaderPtr
- * @brief The class to describe a shared pointer to @ref MNISTMatrixLoader
+ * @ingroup AMMBENCH_MatrixLOADER_CCA
+ * @typedef CCAMatrixLoaderPtr
+ * @brief The class to describe a shared pointer to @ref CCAMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::MNISTMatrixLoader> MNISTMatrixLoaderPtr;
+typedef std::shared_ptr<class AMMBench::CCAMatrixLoader> CCAMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MNIST
- * @def newMNISTMatrixLoader
- * @brief (Macro) To creat a new @ref MNISTMatrixLoader under shared pointer.
+ * @ingroup AMMBENCH_MatrixLOADER_CCA
+ * @def newCCAMatrixLoader
+ * @brief (Macro) To creat a new @ref CCAMatrixLoader under shared pointer.
  */
-#define newMNISTMatrixLoader std::make_shared<AMMBench::MNISTMatrixLoader>
+#define newCCAMatrixLoader std::make_shared<AMMBench::CCAMatrixLoader>
 /**
  * @}
  */
@@ -160,4 +160,4 @@ typedef std::shared_ptr<class AMMBench::MNISTMatrixLoader> MNISTMatrixLoaderPtr;
  * @}
  */
 }
-#endif //INTELLISTREAM_MNISTMATRIXLOADER_H
+#endif //INTELLISTREAM_CCAMATRIXLOADER_H

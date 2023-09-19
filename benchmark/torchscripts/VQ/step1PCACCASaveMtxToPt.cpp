@@ -15,42 +15,62 @@ using namespace AMMBench;
 
 int main(){
 
-    // PCA
+    std::string directoryName = "MtxPt";
     ConfigMapPtr cfg = newConfigMap();
-    cfg->edit("filePath", "../../datasets/SIFT/siftsmall_base.fvecs");
+    // Load the matrix loader and set the config
     AMMBench::MatrixLoaderTable mLoaderTable;
-    auto matLoaderPtr = mLoaderTable.findMatrixLoader("SIFT");
+
+    // PCA
+    // Define the file paths
+    // std::vector<std::string> filePaths = {
+    //     "../../datasets/SIFT/siftsmall_base.fvecs",
+    //     "../../datasets/SIFT/sift_base.fvecs",
+    //     "../../datasets/SIFT/gist_base.fvecs"
+    // };
+
+    // // Define the corresponding output file names
+    // std::vector<std::string> outputNames = {
+    //     "SIFT10K",
+    //     "SIFT1M",
+    //     "GIST1M"
+    // };
+
+    // for (int i = 0; i < int(filePaths.size()); ++i) {
+    //     cfg->edit("filePath", filePaths[i]);
+        // auto matLoaderPtr = mLoaderTable.findMatrixLoader("SIFT");
+        // assert(matLoaderPtr);
+        // matLoaderPtr->setConfig(cfg);
+    //     // Get the matrices A and B
+    //     auto A = matLoaderPtr->getA();
+    //     auto B = matLoaderPtr->getB();
+
+    //     // Save the matrices with the corresponding names
+    //     auto pickledA = torch::pickle_save(A);
+    //     std::ofstream foutA(directoryName + "/" + outputNames[i] + "_A.pt", std::ios::out | std::ios::binary);
+    //     foutA.write(pickledA.data(), pickledA.size());
+    //     foutA.close();
+
+    //     auto pickledB = torch::pickle_save(B);
+    //     std::ofstream foutB(directoryName + "/" + outputNames[i] + "_B.pt", std::ios::out | std::ios::binary);
+    //     foutB.write(pickledB.data(), pickledB.size());
+    //     foutB.close();
+    // }
+
+
+    // CCA
+    cfg->edit("filePath", "../../datasets/MNIST/train-images.idx3-ubyte");
+    auto matLoaderPtr = mLoaderTable.findMatrixLoader("MNIST");
     assert(matLoaderPtr);
     matLoaderPtr->setConfig(cfg);
     auto A = matLoaderPtr->getA();
     auto B = matLoaderPtr->getB();
 
-    std::string directoryName = "MtxPt";
-
     auto pickledA = torch::pickle_save(A);
-    std::ofstream foutA(directoryName+"/"+"SIFT_A.pt", std::ios::out | std::ios::binary);
-    foutA.write(pickledA.data(), pickledA.size());
-    foutA.close();
-
-    auto pickledB = torch::pickle_save(B);
-    std::ofstream foutB(directoryName+"/"+"SIFT_B.pt", std::ios::out | std::ios::binary);
-    foutB.write(pickledB.data(), pickledB.size());
-    foutB.close();
-
-    // CCA
-    cfg->edit("filePath", "../../datasets/MNIST/train-images.idx3-ubyte");
-    matLoaderPtr = mLoaderTable.findMatrixLoader("MNIST");
-    assert(matLoaderPtr);
-    matLoaderPtr->setConfig(cfg);
-    A = matLoaderPtr->getA();
-    B = matLoaderPtr->getB();
-
-    pickledA = torch::pickle_save(A);
     std::ofstream foutA2(directoryName+"/"+"MNIST_A.pt", std::ios::out | std::ios::binary);
     foutA2.write(pickledA.data(), pickledA.size());
     foutA2.close();
 
-    pickledB = torch::pickle_save(B);
+    auto pickledB = torch::pickle_save(B);
     std::ofstream foutB2(directoryName+"/"+"MNIST_B.pt", std::ios::out | std::ios::binary);
     foutB2.write(pickledB.data(), pickledB.size());
     foutB2.close();

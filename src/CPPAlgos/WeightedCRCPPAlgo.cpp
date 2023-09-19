@@ -19,27 +19,18 @@ torch::Tensor AMMBench::WeightedCRCPPAlgo::amm(torch::Tensor A, torch::Tensor B,
   probability_distribution /= probability_distribution.sum();
   // torch::Tensor probability_distribution = torch::ones(n) / n;
 
-  // S
+  // unique indices and occurences
   torch::Tensor sample_indices = torch::multinomial(probability_distribution, /*num_samples*/c, /*replacement*/true);
 
   torch::Tensor unique_indices, _, occurences;
   std::tie(unique_indices, _, occurences) =
       at::_unique2(sample_indices, /*sorted*/false, /*return_inverse*/false, /*return_counts*/true);
 
-  torch::Tensor S = torch::zeros({n, unique_indices.size(0)});
-  torch::Tensor trial = torch::arange(unique_indices.size(0));
-  S.index_put_({unique_indices, trial}, 1);
-
-  // D
-  torch::Tensor D = torch::diag(torch::sqrt(occurences) / torch::sqrt(
-      torch::tensor({static_cast<long>(c)}, torch::kLong) *
-          probability_distribution.index_select(0, unique_indices)));
-
-  // ASD(SD)^TB
-  torch::Tensor SS = torch::matmul(S, D);
-  torch::Tensor C = torch::matmul(A, SS);
-  torch::Tensor R = torch::matmul(SS.t(), B);
-  torch::Tensor weighted_CR = torch::matmul(C, R);
+  // sample with occurences as weight 
+  torch::Tensor At_sampled = A.t().index_select(0, unique_indices);
+  torch::Tensor A_sampled = At_sampled.t() * occurences / (int) c * n;
+  torch::Tensor B_sampled = B.index_select(0, unique_indices);
+  torch::Tensor weighted_CR = torch::matmul(A_sampled, B_sampled);
 
   return weighted_CR;
 }

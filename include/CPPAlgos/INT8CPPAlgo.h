@@ -38,6 +38,14 @@ class INT8CPPAlgo : public AMMBench::AbstractCPPAlgo {
   torch::Tensor fp32amm(torch::Tensor A, torch::Tensor B);
 
   /**
+  * @brief the inline amm under nested loop fp64
+  * @param A the A matrix
+  * @param B the B matrix
+  * @return the output c matrix
+  */
+  torch::Tensor fp64amm(torch::Tensor A, torch::Tensor B);
+
+  /**
   * @brief the inline amm under nested loop int8
   * @param A the A matrix
   * @param B the B matrix
