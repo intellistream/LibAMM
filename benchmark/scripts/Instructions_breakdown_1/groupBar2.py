@@ -200,7 +200,7 @@ def DrawFigureYLog2(x_values, y_values, legend_labels, x_label, y_label, y_min, 
                 ncol=len(bars),  # Set the number of columns to match the number of bars
                 loc='upper center',
                 bbox_to_anchor=(0.5, 1.15),  # Adjust the position
-                shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.4,handletextpad=0,labelspacing=0.3,
+                shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.5,handletextpad=0.1,labelspacing=0.,
                 )
 
     plt.xticks(index + 0.75* width, x_values, rotation=30)
