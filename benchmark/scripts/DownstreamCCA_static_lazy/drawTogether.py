@@ -96,9 +96,9 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "algoARankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "algoBRankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
 
-    # int8 or int8_fp64
-    if algoTag=='int8_fp64':
-        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "fp64")
+    # int8 or int8_fp32
+    if algoTag=='int8_fp32':
+        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "fp32")
     else:
         editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
 
@@ -106,11 +106,10 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
-    # in CCA, codebook path will be handled in cpp file
     if algoTag == 'vq':
-        pqvqCodewordLookUpTablePath = "dummy"
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_AA_m1_*')[0]
     elif algoTag =='pq':
-        pqvqCodewordLookUpTablePath = "dummy"
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_AA_m10_*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
     # clean dir
@@ -263,18 +262,20 @@ def main():
     # add the algo tag here
     # algosVec=['crs', 'fastjlt']
     # algoDisp=['CRS', 'FastJLT']
-    # algosVec=['int8_fp64', 'mm']
+    # algosVec=['int8_fp32', 'mm']
     # algoDisp=['NLMM', 'LTMM']
-    # algosVec=['fastjlt', 'int8_fp64', 'mm']
-    # algoDisp=['FastJLT', 'NLMM', 'LTMM']
-    # algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp64', 'mm']
-    # algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    algosVec=['rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp64', 'mm']
-    algoDisp=['RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    # algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp64', 'mm']
+    # algosVec=['tugOfWar']
+    # algoDisp=['TugOfWar']
+    algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    # algosVec=['rip']#, 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    # algoDisp=['RIP']#, 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    
+    # algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    
     # add the algo tag here
-    # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp64']
+    # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
     # this template configs all algos as lazy mode, all datasets are static and normalized
     csvTemplate = 'config_cca_static_lazy.csv'
     # do not change the following
@@ -297,7 +298,7 @@ def main():
     lat95All=np.array(lat95All)
     thrAll=np.array(thrAll)/1000.0
 
-    # int8 = int8 / int8_fp64 * mm
+    # int8 = int8 / int8_fp32 * mm
     lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
     thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 
@@ -308,7 +309,7 @@ def main():
                          5, 15, figPath + "sec4_1_cca_static_lazy_ending_error", True)
     groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)",
                          5, 15, figPath + "sec4_1_cca_static_lazy_latency_log", True)
-    groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms",
-                         5, 15, figPath + "sec4_1_cca_static_lazy_throughput_log", True)
+    # groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms",
+    #                      5, 15, figPath + "sec4_1_cca_static_lazy_throughput_log", True)
 if __name__ == "__main__":
     main()
