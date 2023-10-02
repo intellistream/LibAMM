@@ -101,6 +101,8 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
   throughput = aRows * 1e6 / tDone;
   double throughputByElements = throughput * A.size(1);
   double latency95 = getLatencyPercentage(0.95);
+  INTELLI_INFO("chronoElapsedTime: " + to_string(tDone) + " micro seconds");
+  metrics->edit("chronoElapsedTime", tDone);
   metrics->edit("throughput", throughput);
   metrics->edit("throughputByElements", throughputByElements);
   metrics->edit("95%latency", latency95);
