@@ -10,9 +10,11 @@ void TugOfWarCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 torch::Tensor TugOfWarCPPAlgo::generateTugOfWarMatrix(int64_t m, int64_t n) {
-  double e = 1.0 / std::sqrt(m);
-  torch::Tensor M = torch::randint(2, {m, n});
-  return e * (2 * M - 1);
+  torch::Tensor matrix = torch::empty({m, n}, torch::kFloat32);
+  torch::randn_out(matrix, {m, n});
+  matrix.sign_();
+  matrix = matrix/float(std::sqrt(m));
+  return matrix;
 }
 
 torch::Tensor TugOfWarCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t l2) {
