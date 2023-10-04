@@ -85,11 +85,10 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
-    # TODO if can not find, then construct it!
     if algoTag == 'vq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_AA_m1_*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_train_m1_*')[0]
     elif algoTag =='pq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_AA_m10_*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_train_m10_*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
     # clean dir
@@ -106,7 +105,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
             --task {prefixTag} \
             --config_load_path {join(exePath, configFname)} \
             --metric_save_path {join(resultPath, prefixTag, 'DNNInferenceMetrics.csv')} \
-        2>&1 | tee execution_log.txt"
+        2>&1 | tee {exePath}/execution_log.txt"
     # command = f"export OMP_NUM_THREADS=1 && \
     #     cd {join(exePath, 'scripts/Downstream_Inference/bolt/experiments')} && \
     #     python3 -m python.amm_main \
@@ -253,12 +252,12 @@ def main():
     srcBVec=['dummy']
     dataSetNames=['cifar10']
     # add the algo tag here
-    # algosVec=['crs', 'fastjlt']
-    # algoDisp=['CRS', 'FastJLT']
+    # algosVec=['crs']
+    # algoDisp=['CRS']
     # algosVec=['int8_fp32', 'mm']
     # algoDisp=['NLMM', 'LTMM']
-    # algosVec=['tugOfWar']
-    # algoDisp=['TugOfWar']
+    # algosVec=['vq', 'pq']
+    # algoDisp=['VQ', 'PQ']
     # algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # algosVec=['rip']#, 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
