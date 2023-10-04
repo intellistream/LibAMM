@@ -51,9 +51,9 @@ torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, u
                                         torch::indexing::Slice(K * blockSize, (K + 1) * blockSize)});
           torch::Tensor UA, SA, VhA;
           std::tie(UA, SA, VhA) = torch::linalg::svd(AIK, false, c10::nullopt);
-          torch::Tensor UATruncated = UA.narrow(1, 0, ARankRatio * blockSize);
-          torch::Tensor SATruncated = torch::diag(SA.narrow(0, 0, ARankRatio * blockSize));
-          torch::Tensor VhATruncated = VhA.narrow(0, 0, ARankRatio * blockSize);
+          torch::Tensor UATruncated = UA.narrow(1, 0, ceil(ARankRatio * blockSize)); // ceil in case ARankRatio * blockSize < 1, then we set it to 1 at least
+          torch::Tensor SATruncated = torch::diag(SA.narrow(0, 0, ceil(ARankRatio * blockSize)));
+          torch::Tensor VhATruncated = VhA.narrow(0, 0, ceil(ARankRatio * blockSize));
           svdA_blocks[I][K] = std::make_tuple(UATruncated, SATruncated, VhATruncated);
       }
   }
@@ -64,9 +64,9 @@ torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, u
                                         torch::indexing::Slice(J * blockSize, (J + 1) * blockSize)});
           torch::Tensor UB, SB, VhB;
           std::tie(UB, SB, VhB) = torch::linalg::svd(BKJ, false, c10::nullopt);
-          torch::Tensor UBTruncated = UB.narrow(1, 0, BRankRatio * blockSize);
-          torch::Tensor SBTruncated = torch::diag(SB.narrow(0, 0, BRankRatio * blockSize));
-          torch::Tensor VhBTruncated = VhB.narrow(0, 0, BRankRatio * blockSize);
+          torch::Tensor UBTruncated = UB.narrow(1, 0, ceil(BRankRatio * blockSize));
+          torch::Tensor SBTruncated = torch::diag(SB.narrow(0, 0, ceil(BRankRatio * blockSize)));
+          torch::Tensor VhBTruncated = VhB.narrow(0, 0, ceil(BRankRatio * blockSize));
           svdB_blocks[K][J] = std::make_tuple(UBTruncated, SBTruncated, VhBTruncated);
       }
   }
