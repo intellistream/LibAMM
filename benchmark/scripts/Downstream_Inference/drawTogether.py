@@ -116,9 +116,6 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
         subprocess.run(command, shell=True, check=True)
     except:
         pass
-    
-    # if not os.path.exists(f"{resultPath}/{prefixTag}/DNNInferenceMetrics.csv"):
-    #     os.system(f"cd {exePath} && cp scripts/AMME2E_default_results/DNNInferenceMetrics.csv {resultPath}/{prefixTag}/DNNInferenceMetrics.csv")
         
     # copy result
     os.system("cd " + exePath + "&& cp *.csv execution_log.txt " + resultPath + "/" + str(prefixTag))
@@ -248,25 +245,25 @@ def main():
     # srcAVec=['dummy']
     # srcBVec=['dummy']
     # dataSetNames=['MediaMill'] 
-    srcAVec=['dummy']
-    srcBVec=['dummy']
-    dataSetNames=['cifar10']
+    srcAVec=['dummy', 'dummy']
+    srcBVec=['dummy', 'dummy']
+    dataSetNames=['cifar10', 'cifar100']
     # add the algo tag here
-    # algosVec=['crs']
-    # algoDisp=['CRS']
-    # algosVec=['int8_fp32', 'mm']
-    # algoDisp=['NLMM', 'LTMM']
+    # algosVec=['fastjlt']
+    # algoDisp=['FastJLT']
+    # algosVec=['int8', 'crs', 'int8_fp32', 'mm']
+    # algoDisp=['INT8', 'CRS', 'NLMM', 'LTMM']
     # algosVec=['vq', 'pq']
     # algoDisp=['VQ', 'PQ']
     # algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # algosVec=['rip']#, 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['RIP']#, 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    # algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    # algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     
-    # algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    # algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     
     # add the algo tag here
     # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
