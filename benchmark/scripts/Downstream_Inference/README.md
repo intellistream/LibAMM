@@ -18,9 +18,8 @@ git submodule update
 
 # Set up kmc2 submodule
 cd third_party/kmc2
-pip install numpy
-pip install kmc2
-pip install . # Compile cython
+pip install numpy==1.23.1 cython numba zstandard seaborn # Some libraries are not for kmc2 but for Madness, just install all of them here. make sure numpy==1.23.1 
+python3 setup.py build_ext --build-lib=. # Compile cython to .so and save to current directory
 
 ```
 
