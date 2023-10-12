@@ -66,7 +66,7 @@ torch::Tensor FastJLTCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t d_)
   B_pad = B_pad_result;
 
   // Dimensionality reduction
-  float q = 0.5;
+  float q = static_cast<float>(log2_D * log2_D) / static_cast<float>(D_pad);
   auto mask = torch::rand({d, D_pad});
   mask = (mask < q).to(torch::kFloat32); // 1 with probability q, 0 with probability 1-q
   auto normal_dist_tensor = torch::randn({d, D_pad}) * std::sqrt(1.0 / q);
