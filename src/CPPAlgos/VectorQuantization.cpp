@@ -8,7 +8,7 @@ using namespace std;
 
 void AMMBench::VectorQuantization::setConfig(INTELLI::ConfigMapPtr cfg) {
     pqvqCodewordLookUpTablePath = cfg->tryString("pqvqCodewordLookUpTablePath", "", true);
-    INTELLI_INFO("pqvqCodewordLookUpTablePath: " + pqvqCodewordLookUpTablePath);
+    //INTELLI_INFO("pqvqCodewordLookUpTablePath: " + pqvqCodewordLookUpTablePath);
     assert(pqvqCodewordLookUpTablePath!="");
 
     // Use regex to find the number after '_m', meaning the number of subspace
