@@ -135,11 +135,26 @@ def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     commonBase = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag + "/"
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag + "CPP"
-    methodTags = ["Co-AMM", "BCo-AMM", "Count-sketch", "Tug-of-War", "SMP-PCA", "MM"]
-    resultPaths = ["co", "co", "cs", "tow", "smp-pca", "mm"]
-    csvTemplates = ["config_CPPCOFD.csv", "config_CPPBCOOFD.csv", "config_CPPCOUNTERSKETCH.csv",
-                    "config_CPPTOW.csv", "config_CPPSMPPCA.csv", "config_CPPMM.csv"]
-    valueVec = [100, 200, 500, 1000, 5000, 10000, 20000, 50000, 100000]
+    resultPaths = ["INT8", "CRS",  "CoOFD", "CS", "BlockLRA", "FastJLT", "VQ", "PQ", "RIP", "SMP-PCA", "WeightedCR", "TugOfWar", "MM"]
+    #csvTemplates = ["config_CPPINT8.csv", "config_CPPCRS.csv", "config_CPPCOFD.csv", "config_CPPCOUNTERSKETCH.csv", "config_CPPBLOCKLRA.csv", "config_tugOfWar.csv", "config_CPPMM.csv"]
+    csvTemplates = [
+        "config_int8.csv",
+        "config_crs.csv",
+        "config_cooFD.csv",
+        "config_countSketch.csv",
+        "config_blockLRA.csv",
+        "config_fastjlt.csv",
+        "config_vq.csv",
+        "config_pq.csv",
+        "config_rip.csv",
+        "config_smp-pca.csv",
+        "config_weighted-cr.csv",
+        "config_tugOfWar.csv",
+        "config_mm.csv"
+    ]
+    evaTypes = ["INT8", "CRS",  "CoOFD", "CS", "BlockLRA", "FastJLT", "VQ", "PQ", "RIP", "SMP-PCA", "WeightedCR", "TugOfWar", "MM"]
+    methodTags = ["INT8", "CRS",  "CoOFD", "CS", "BlockLRA", "FastJLT", "VQ", "PQ", "RIP", "SMP-PCA", "WeightedCR", "TugOfWar", "MM"]
+    valueVec = [100, 200, 500, 1000, 5000, 10000, 20000, 50000]
     valueVecDisp = np.array(valueVec)
     # run
     reRun = 0
