@@ -1,0 +1,11 @@
+key,value,type
+cacheMiss,3902,U64
+cacheRefs,10846,U64
+cpuClock,151675,U64
+cpuCycle,398181,U64
+instructions,221610,U64
+perfElapsedTime,8922491,U64
+taskClock,152428,U64
+thread0RunTime,8922491,U64
+errorBoundRatio,0.000116,Double
+froError,0.211874,Double
