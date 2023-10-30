@@ -13,4 +13,5 @@ add_sources(
         CCAMatrixLoader.cpp
         MtxMatrixLoader.cpp
         MatrixLoaderTable.cpp
+        ZeroMaskedMatrixLoader.cpp
 )

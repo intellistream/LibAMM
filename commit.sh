@@ -1,5 +1,5 @@
 
-BRANCH=cycles_bd_1
+BRANCH=zero_masked
 git init
 git checkout -b $BRANCH
 git add .
