@@ -240,10 +240,10 @@ def main():
 
     # run
     reRun = 0
+    os.system("mkdir ../../results")
+    os.system("mkdir ../../figures")
+    os.system("mkdir " + figPath)
     if (len(sys.argv) < 2):
-        os.system("mkdir ../../results")
-        os.system("mkdir ../../figures")
-        os.system("mkdir " + figPath)
         os.system("sudo rm -rf " + commonBasePath)
         os.system("sudo mkdir " + commonBasePath)
         reRun = 1
