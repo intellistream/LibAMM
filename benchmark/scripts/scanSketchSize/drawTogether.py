@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import csv
 import numpy as np
+import matplotlib.pyplot as plt
 import accuBar as accuBar
-import groupBar as groupBar
 import groupBar2 as groupBar2
 import groupLine as groupLine
 from autoParase import *
@@ -10,21 +10,22 @@ import itertools as it
 import os
 
 import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 import pylab
-import matplotlib.font_manager as fm
 from matplotlib.font_manager import FontProperties
+from matplotlib import ticker
 from matplotlib.ticker import LogLocator, LinearLocator
+
 import os
 import pandas as pd
 import sys
 from OoOCommon import *
-import time
 
-# OPT_FONT_NAME = 'Helvetica'
+OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 22
-LABEL_FONT_SIZE = 28
-LEGEND_FONT_SIZE = 30
+LABEL_FONT_SIZE = 22
+LEGEND_FONT_SIZE = 22
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -48,165 +49,265 @@ matplotlib.rcParams['ytick.labelsize'] = TICK_FONT_SIZE
 matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
-scanTag = "sketchDimension"
+dataset_acols_mapping={
+    'AST':765,
+    'BUS':10595,
+    'DWAVE':512,
+    'ECO':260,
+    'QCD':3072,
+    'RDB':2048,
+    'UTM':1700,
+    'ZENIOS':2873,
+}
 
-
-def singleRun(exePath, singleValue, resultPath, configTemplate):
-    # resultFolder="singleValueTests"
-    configFname = "config_" + scanTag + str(singleValue) + ".csv"
-    # configTemplate = "config.csv"
+def runPeriod(exePath, algoTag, resultPath, configTemplate="config.csv",prefixTagRaw="null"):
+    # resultFolder="periodTests"
+    prefixTag=str(prefixTagRaw)
+    configFname = "config_period_"+str(prefixTag) + ".csv"
+    configTemplate = "config_e2e_static_lazy.csv"
     # clear old files
     os.system("cd " + exePath + "&& sudo rm *.csv")
-
+    os.system("cp perfListEvaluation.csv " + exePath)
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
-    editConfig(configTemplate, exePath + configFname, scanTag, singleValue)
+    editConfig(configTemplate, exePath+"temp1.csv", "sketchDimension",prefixTag)
+    editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
+
+    # int8 or int8_fp32
+    if algoTag=='int8_fp32':
+        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "fp32")
+    else:
+        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
+
+    # load Codeword LookUpTable for vq or pq
+    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
+    pqvqCodewordLookUpTablePath = "dummy"
+    import glob
+    if algoTag == 'vq':
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m1_row*')[0]
+    elif algoTag =='pq':
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_row*')[0]
+    editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
+
     # prepare new file
     # run
-    os.system("cd " + exePath + "&& sudo env OMP_NUM_THREADS=1 ./benchmark " + configFname)
+    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmark " + configFname)
     # copy result
-    os.system("sudo rm -rf " + resultPath + "/" + str(singleValue))
-    os.system("sudo mkdir " + resultPath + "/" + str(singleValue))
-    os.system("cd " + exePath + "&& sudo cp *.csv " + resultPath + "/" + str(singleValue))
+    os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
+    os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
+    os.system("cd " + exePath + "&& sudo cp *.csv " + resultPath + "/" + str(prefixTag))
 
 
-def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"):
-    for i in singleValueVec:
-        singleRun(exePath, i, resultPath, templateName)
+def runPeriodVector (exePath,algoTag,resultPath,prefixTag, configTemplate="config.csv",reRun=1):
+    for i in  range(len(prefixTag)):
+        if reRun==2:
+            if checkResultSingle(prefixTag[i],resultPath)==1:
+                print("skip "+str(prefixTag[i]))
+            else:
+                runPeriod(exePath,algoTag, resultPath, configTemplate,prefixTag[i])
+        else:
+            runPeriod(exePath,algoTag, resultPath, configTemplate,prefixTag[i])
 
 
 def readResultSingle(singleValue, resultPath):
-    resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
+    resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
     elapsedTime = readConfig(resultFname, "perfElapsedTime")
-    cacheMiss = readConfig(resultFname, "cacheMiss")
-    cacheRefs = readConfig(resultFname, "cacheRefs")
-    froError = readConfig(resultFname, "froError")
-    errorBoundRatio = readConfig(resultFname, "errorBoundRatio")
-    return elapsedTime, cacheMiss, cacheRefs, froError, errorBoundRatio
+    memLoad = 0
+    memStore = 0
+    instructions = 0
+    fpVector = 0
+    fpScalar = 0
+    branchIns = 0
+    froErr = readConfig(resultFname, "froError")
+    return elapsedTime, memLoad, memStore, instructions, fpVector, fpScalar, branchIns, froErr
 
-
-def cleanPath(path):
-    os.system("sudo rm -rf " + path)
-    os.system("sudo mkdir " + path)
 
 
 def readResultVector(singleValueVec, resultPath):
     elapseTimeVec = []
-    cacheMissVec = []
-    cacheRefVec = []
-    froErrorVec = []
-    errorBoundRatioVec = []
+    memLoadVec = []
+    memStoreVec = []
+    instructionsVec = []
+    fpVectorVec = []
+    fpScalarVec = []
+    branchVec = []
+    froErrVec = []
     for i in singleValueVec:
-        elapsedTime, cacheMiss, cacheRefs, froError, errorBoundRatio = readResultSingle(i, resultPath)
+        elapsedTime, memLoad, memStore, instructions, fpVector, fpScalar, branchIns,froErr = readResultSingle(i, resultPath)
         elapseTimeVec.append(float(elapsedTime) / 1000.0)
-        cacheMissVec.append(float(cacheMiss))
-        cacheRefVec.append(float(cacheRefs))
-        froErrorVec.append(float(froError))
-        errorBoundRatioVec.append(float(errorBoundRatio))
-    return np.array(elapseTimeVec), np.array(cacheMissVec), np.array(cacheRefVec), np.array(froErrorVec), np.array(
-        errorBoundRatioVec)
-
-
-def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplates, periodVec, reRun=1):
+        memLoadVec.append(float(memLoad))
+        memStoreVec.append(float(memStore))
+        instructionsVec.append(float(instructions))
+        fpVectorVec.append(float(fpVector) / 2)
+        fpScalarVec.append(float(fpScalar) / 2)
+        branchVec.append(float(branchIns))
+        froErrVec.append(float(froErr))
+    return np.array(elapseTimeVec), np.array(memLoadVec), np.array(memStoreVec), np.array(instructionsVec), np.array(
+        fpVectorVec), np.array(fpScalarVec), np.array(branchVec),np.array(froErrVec)
+def checkResultSingle(singleValue, resultPath):
+    resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
+    ruExists=0
+    if os.path.exists(resultFname):
+        ruExists=1
+    else:
+        print("File does not exist:"+resultFname)
+        ruExists=0
+    return ruExists
+def checkResultVector(singleValueVec, resultPath):
+    resultIsComplete=0
+    for i in singleValueVec:
+        resultIsComplete= checkResultSingle(i, resultPath)
+        if resultIsComplete==0:
+            return 0
+    return 1
+def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate,algos,dataSetName,reRun=1):
     elapsedTimeAll = []
-    cacheMissAll = []
-    cacheRefAll = []
+    memLoadAll = []
+    memStoreAll = []
     periodAll = []
-    froAll = []
-    errorBoundRatioAll = []
-    for i in range(len(csvTemplates)):
+    instructionsAll = []
+    fpVectorAll = []
+    fpScalarAll = []
+    branchAll = []
+    froErrAll=[]
+    resultIsComplete=1
+    for i in range(len(algos)):
         resultPath = commonPathBase + resultPaths[i]
+        algoTag=algos[i]
         if (reRun == 1):
             os.system("sudo rm -rf " + resultPath)
             os.system("sudo mkdir " + resultPath)
-            runScanVector(exeSpace, periodVec, resultPath, csvTemplates[i])
-        elapsedTime, cacheMiss, cacheRef, fro, eb = readResultVector(periodVec, resultPath)
-        elapsedTimeAll.append(elapsedTime)
-        cacheMissAll.append(cacheMiss)
-        cacheRefAll.append(cacheRef)
-        periodAll.append(periodVec)
-        cacheMissRateAll = np.array(cacheMissAll) / np.array(cacheRefAll) * 100.0
-        froAll.append(fro)
-        errorBoundRatioAll.append(eb)
+            runPeriodVector(exeSpace,algoTag, resultPath, dataSetName,csvTemplate)
+        else:
+            if(reRun == 2):
+                resultIsComplete=checkResultVector(dataSetName,resultPath)
+                if resultIsComplete==1:
+                    print(algoTag+ " is complete, skip")
+                else:
+                    print(algoTag+ " is incomplete, redo it")
+                    if os.path.exists(resultPath)==False:
+                        os.system("sudo mkdir " + resultPath)
+                    runPeriodVector(exeSpace,algoTag, resultPath, dataSetName,csvTemplate,2)
+                    resultIsComplete=checkResultVector(dataSetName,resultPath)
+        #exit()
+        if resultIsComplete:
+            elapsedTime, memLoad, memStore, instructions, fpVector, fpScalar, branchIns,froErrVec = readResultVector(dataSetName, resultPath)
+            elapsedTimeAll.append(elapsedTime)
+            memLoadAll.append(memLoad)
+            memStoreAll.append(memStore)
+            print(resultPaths)
+            periodAll.append(dataSetName)
+            instructionsAll.append(instructions)
+            fpVectorAll.append(fpVector)
+            fpScalarAll.append(fpScalar)
+            branchAll.append(branchIns)
+            froErrAll.append(froErrVec)
         # periodAll.append(periodVec)
-    return np.array(elapsedTimeAll), cacheMissRateAll, periodAll, np.array(froAll), np.array(errorBoundRatioAll)
-
+    return np.array(elapsedTimeAll), np.array(memLoadAll), np.array(periodAll), np.array(instructionsAll), np.array(
+        memStoreAll), np.array(fpVectorAll), np.array(fpScalarAll), np.array(branchAll),np.array(froErrAll)
+def getCyclesPerMethod(cyclesAll, valueChose):
+    instructionsPerMethod = []
+    for i in range(len(cyclesAll)):
+        instructionsPerMethod.append(cyclesAll[int(i)][int(valueChose)])
+    return np.array(instructionsPerMethod)       
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
-    resultPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/" + scanTag
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/" + scanTag
-    configTemplate = exeSpace + "config.csv"
-    commonBase = resultPath + "/"
-    resultPaths = ["CO-FD", "CS", "ToW", "MM"]
-    csvTemplates = ["config_CoAMM.csv", "config_CounterSketch.csv", "config_tugOfWar.csv", "config_CPPMM.csv"]
-    evaTypes = ['Co-FD', 'CounterS', 'ToW', 'MM']
-    valueVec = [10, 25, 50, 100, 200, 300, 400, 500]
-    valueVecRun = valueVec
-    print(configTemplate)
-    reRun = 0
+    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/sketchDimension/"
+
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/sketchDimension"
+    
+    # add the datasets here
+    # srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
+    # srcBVec=["datasets/AST/mcfe.mtx"] # 765*756
+    # dataSetNames=['AST']
+    # srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
+    # srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
+    # dataSetNames=['UTM']
+    #srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
+    #srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
+    #dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
+    #srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
+    #srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
+    #sketchVec= [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+    sketchVec=[10, 30, 50,75, 100, 200, 300, 400, 500]
+    #sketchVec=[100, 200, 500, 1000]
+    # add the algo tag here
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    #algosVec=[ 'pq']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    #algoDisp=['PQ']
+    # add the algo tag here
+    
+    # this template configs all algos as lazy mode, all datasets are static and normalized
+    csvTemplate = 'config_e2e_static_lazy.csv'
+    # do not change the following
+    resultPaths = algosVec
+    os.system("mkdir ../../results")
+    os.system("mkdir ../../figures")
+    os.system("mkdir " + figPath)
     # run
+    reRun = 0
     if (len(sys.argv) < 2):
-        os.system("mkdir ../../results")
-        os.system("mkdir ../../figures")
-        os.system("mkdir " + figPath)
-        os.system("sudo rm -rf " + resultPath)
-        os.system("sudo mkdir " + resultPath)
-        #
+       
+        os.system("sudo rm -rf " + commonBasePath)
+        os.system("sudo mkdir " + commonBasePath)
         reRun = 1
-        tRows = len(resultPaths)
-        tCols = len(valueVec)
-        elapseTimeAllSum = np.zeros((tRows, tCols))
-        froErroAllSum = np.zeros((tRows, tCols))
-        errorBoundRatioSum = np.zeros((tRows, tCols))
-        cacheMissAll = np.zeros((tRows, tCols))
-    rounds = 10
-    for i in range(rounds):
-        elapseTimeAll, ch, periodAll, fro, eb = compareMethod(exeSpace, commonBase, resultPaths, csvTemplates, valueVec,
-                                                              reRun)
-        elapseTimeAllSum = elapseTimeAllSum + elapseTimeAll
-        froErroAllSum = froErroAllSum + fro
-        errorBoundRatioSum = errorBoundRatioSum + eb
-        cacheMissAll = cacheMissAll + ch
-    elapseTimeAllSum = elapseTimeAllSum / float(rounds)
-    froErroAllSum = froErroAllSum / float(rounds)
-    errorBoundRatioSum = errorBoundRatioSum / float(rounds)
-    cacheMissAll = cacheMissAll / float(rounds)
-    # evaTypes = ['FDAMM', 'MM', 'Co-FD', 'BCO-FD']
+    else:
+        reRun=int(sys.argv[1])
+    print(reRun)
+    methodTags =algoDisp
+    elapsedTimeAll, memLoadAll, periodAll, instructions, memStoreAll, fpVectorAll, fpScalarAll, branchAll,froAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate,algosVec,sketchVec, reRun)
+    # Add some pre-process logic for int8 here if it is used
 
-    # elapseTimeVecFD, cacheMissVecFD, cacheRefVecFD = readResultVector(valueVecRun, resultPathFDAMM)
-    # elapseTimeVecCoFD, cacheMissVecCoFD, cacheRefVecCoFD = readResultVector(valueVecRun, resultPathCoFD)
-    # elapseTimeVeCB, cacheMissVecB, cacheRefVecB = readResultVector(valueVecRun, resultPathBetaCoFD)
-
-    # os.system("mkdir " + figPath)
-    groupLine.DrawFigureXYnormal(periodAll,
-                                 1 / elapseTimeAllSum,
-                                 evaTypes,
-                                 "sketch dimension", "1/elapsed time (1/ms)", 0, 1, figPath + "/" + "_elapsedTime",
-                                 True)
-    groupLine.DrawFigureXYnormal(periodAll,
-                                 froErroAllSum * 100.0,
-                                 evaTypes,
-                                 "sketch dimension", "normalized error %", 0, 1, figPath + "/" + "_froError",
-                                 True)
-    groupLine.DrawFigureXYnormal(periodAll,
-                                 errorBoundRatioSum * 100.0,
-                                 evaTypes,
-                                 "sketch dimension", "error bound ratio %", 0, 1, figPath + "/" + "_ebRatio",
-                                 True)
-    groupLine.DrawFigureXYnormal(periodAll,
-                                 cacheMissAll,
-                                 evaTypes,
-                                 "sketch dimension", "cache miss %", 0, 1, figPath + "/" + "_cachemiss",
-                                 True)
-    # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,errVec,"95% Latency (ms)","Error","ms","",figPath+"wm_lat")
-    # draw2yLine("watermark time (ms)",singleValueVecDisp,thrVec,errVec,"Throughput (KTp/s)","Error","KTp/s","",figPath+"wm_thr")
-    # draw2yLine("watermark time (ms)",singleValueVecDisp,lat95Vec,compVec,"95% Latency (ms)","Completeness","ms","",figPath+"wm_omp")
-    # groupLine.DrawFigureYnormal([singleValueVec,singleValueVec],[errVec,aqpErrVec],['w/o aqp',"w/ MeanAqp"],"watermark time (ms)","Error",0,1,figPath+"wm_MeanAqp",True)
-    # print(errVec)
-    # print(aqpErrVec)
-    # print(elapseTimeVecFD)
-    # readResultsingleValue(50,resultPath)
-
-
+    print(instructions, memLoadAll)
+   
+    # adjust int8: int8/int8_fp32*mm
+    #int8_adjust_ratio = instructions[0]/instructions[-2]
+    int8_adjust_ratio=instructions[0]/instructions[-2]
+    for instruc in [instructions, memLoadAll, memStoreAll, fpVectorAll, fpScalarAll, branchAll]:
+        instruc[0] = instruc[-1]*int8_adjust_ratio
+    int8_adjust_ratio=elapsedTimeAll[0]/elapsedTimeAll[-2]
+    for instruc in [elapsedTimeAll]:
+        instruc[0] = instruc[-1]*int8_adjust_ratio
+    otherIns = instructions - memLoadAll - memStoreAll - fpVectorAll - fpScalarAll
+    print(otherIns)
+    print(otherIns[0], len(otherIns))
+    allowLegend = 1
+    valueVec=sketchVec
+    bandInt=[]
+    #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
+    #groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)", 5, 15, figPath + "sec4_1_e2e_static_lazy_fro", True)
+    #groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)", 5, 15, figPath + "sec4_1_e2e_static_lazy_latency_log", True)
+    fpInsAll= fpVectorAll+fpScalarAll
+    ratioFpIns=fpVectorAll/fpInsAll*100.0
+    memInsAll=memLoadAll+memStoreAll
+    for i in range(len(elapsedTimeAll)):
+        oneRef=elapsedTimeAll[i][4]
+        elapsedTimeAll[i] = elapsedTimeAll[i]/oneRef
+       
+    #groupBar2.DrawFigureYLog(sketchVec, instructions/instructions[-1], methodTags, "Datasets", "Ins (times of LTMM)", 5, 15, figPath + "/" + "instructions", True)
+    #groupBar2.DrawFigureYLog(sketchVec, fpInsAll/fpInsAll[-1], methodTags, "Datasets", "FP Ins (times of LTMM)", 5, 15, figPath + "/" + "FP_instructions", True)
+    #groupBar2.DrawFigureYLog(sketchVec, memInsAll/memInsAll[-1], methodTags, "Datasets", "Mem Ins (times of LTMM)", 5, 15, figPath + "/" + "mem_instructions", True)
+    #groupBar2.DrawFigure(sketchVec, ratioFpIns, methodTags, "Datasets", "SIMD Utilization (%)", 5, 15, figPath + "/" + "SIMD utilization", True)
+    #groupBar2.DrawFigure(sketchVec, instructions/(memLoadAll+memStoreAll), methodTags, "Datasets", "IPM", 5, 15, figPath + "/" + "IPM", True)
+    #groupBar2.DrawFigure(sketchVec, fpInsAll/(memLoadAll+memStoreAll), methodTags, "Datasets", "FP Ins per Unit Mem Access", 5, 15, figPath + "/" + "FPIPM", True)
+    #groupBar2.DrawFigure(sketchVec, (memLoadAll+memStoreAll)/(instructions)*100.0, methodTags, "Datasets", "Ratio of Mem Ins (%)", 5, 15, figPath + "/" + "mem", True)
+   
+    #groupBar2.DrawFigure(sketchVec, branchAll/instructions*100.0, methodTags, "Datasets", "Ratio of Branch Ins (%)", 5, 15, figPath + "/" + "branches", True)
+    #groupBar2.DrawFigure(sketchVec, otherIns/instructions*100.0, methodTags, "Datasets", "Ratio of Other Ins (%)", 5, 15, figPath + "/" + "others", True)
+    #print(instructions[-1],instructions[2])
+    
+    #groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms", 5, 15, figPath + "sec4_1_e2e_static_lazy_throughput_log", True)
+    groupLine.DrawFigureYnormal(periodAll/10, elapsedTimeAll,
+                                methodTags,
+                                "Preserved information (%)", "l (times of 10% preservation)", 0, 1,
+                                figPath + "/"  + "dimen_lat",
+                                True)
+    groupLine.DrawFigureYnormal(periodAll/10, froAll*100.0,
+                                methodTags,
+                                "Preserved information (%)", r'AMM Error $\epsilon$ (%)', 0, 1,
+                                figPath + "/"  + "dimen_err",
+                                True)
+    print(elapsedTimeAll)
 if __name__ == "__main__":
     main()
