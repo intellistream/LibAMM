@@ -75,7 +75,7 @@ def draw2yLine(NAME, Com, R1, R2, l1, l2, m1, m2, fname):
                          #
                          )
 
-    # #plt.show()
+    # plt.show()
     ax1.set_ylabel(m1, fontproperties=LABEL_FP)
     ax1.set_xlabel(NAME, fontproperties=LABEL_FP)
     # ax1.set_xticklabels(ax1.get_xticklabels())  # 设置共用的x轴
