@@ -1,5 +1,5 @@
 
-BRANCH=zero_masked
+BRANCH=new_row_col_scan
 git init
 git checkout -b $BRANCH
 git add .
