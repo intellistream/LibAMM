@@ -239,7 +239,7 @@ def main():
     resultPaths = algosVec
 
     # run
-    reRun = 0
+    reRun = 2
     os.system("mkdir ../../results")
     os.system("mkdir ../../figures")
     os.system("mkdir " + figPath)
