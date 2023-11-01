@@ -26,7 +26,7 @@ OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 22
 LABEL_FONT_SIZE = 22
 LEGEND_FONT_SIZE = 22
-LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
+LABEL_V = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
 
@@ -111,39 +111,18 @@ def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTe
         else:
             runPeriod(exePath, rf,sf,algoTag, resultPath, configTemplate,prefixTag[i])
 
-
 def readResultSingle(singleValue, resultPath):
     resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
     elapsedTime = readConfig(resultFname, "perfElapsedTime")
-    memLoad = readConfig(resultFname, "memLoad")
-    memStore = readConfig(resultFname, "memStore")
+    cpuCycle = readConfig(resultFname, "cpuCycle")
+    memStall = readConfig(resultFname, "memStall")
     instructions = readConfig(resultFname, "instructions")
-    fpVector = readConfig(resultFname, "fpVector")
-    fpScalar = readConfig(resultFname, "fpScalar")
-    branchIns = readConfig(resultFname, "branchIns")
-    return elapsedTime, memLoad, memStore, instructions, fpVector, fpScalar, branchIns
-
-
-
-def readResultVector(singleValueVec, resultPath):
-    elapseTimeVec = []
-    memLoadVec = []
-    memStoreVec = []
-    instructionsVec = []
-    fpVectorVec = []
-    fpScalarVec = []
-    branchVec = []
-    for i in singleValueVec:
-        elapsedTime, memLoad, memStore, instructions, fpVector, fpScalar, branchIns = readResultSingle(i, resultPath)
-        elapseTimeVec.append(float(elapsedTime) / 1000.0)
-        memLoadVec.append(float(memLoad))
-        memStoreVec.append(float(memStore))
-        instructionsVec.append(float(instructions))
-        fpVectorVec.append(float(fpVector) / 2)
-        fpScalarVec.append(float(fpScalar) / 2)
-        branchVec.append(float(branchIns))
-    return np.array(elapseTimeVec), np.array(memLoadVec), np.array(memStoreVec), np.array(instructionsVec), np.array(
-        fpVectorVec), np.array(fpScalarVec), np.array(branchVec)
+    l1dStall = readConfig(resultFname, "l1dStall")
+    l2Stall = readConfig(resultFname, "l2Stall")
+    l3Stall = readConfig(resultFname, "l3Stall")
+    totalStall=readConfig(resultFname, "totalStall")
+    froError = readConfig(resultFname, "froError")
+    return elapsedTime, cpuCycle, memStall, instructions, l1dStall, l2Stall, l3Stall,totalStall,froError
 def checkResultSingle(singleValue, resultPath):
     resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
     ruExists=0
@@ -153,6 +132,31 @@ def checkResultSingle(singleValue, resultPath):
         print("File does not exist:"+resultFname)
         ruExists=0
     return ruExists
+
+def readResultVector(singleValueVec, resultPath):
+    elapseTimeVec = []
+    cpuCycleVec = []
+    memStallVec = []
+    instructionsVec = []
+    l1dStallVec = []
+    l2StallVec = []
+    l3StallVec = []
+    totalStallVec=[]
+    froVec=[]
+    for i in singleValueVec:
+        elapsedTime, cpuCycle, memStall, instructions, l1dStall, l2Stall, l3Stall,totalStall,froErr = readResultSingle(i, resultPath)
+        elapseTimeVec.append(float(elapsedTime) / 1000.0)
+        cpuCycleVec.append(float(cpuCycle))
+        memStallVec.append(float(memStall))
+        instructionsVec.append(float(instructions))
+        l1dStallVec.append(float(l1dStall))
+        l2StallVec.append(float(l2Stall))
+        l3StallVec.append(float(l3Stall))
+        totalStallVec.append(float(totalStall))
+        froVec.append(float(froErr))
+    return np.array(elapseTimeVec), np.array(cpuCycleVec), np.array(memStallVec), np.array(instructionsVec), np.array(
+        l1dStallVec), np.array(l2StallVec), np.array(l3StallVec),np.array(totalStallVec),np.array(froVec)
+
 def checkResultVector(singleValueVec, resultPath):
     resultIsComplete=0
     for i in singleValueVec:
@@ -160,15 +164,18 @@ def checkResultVector(singleValueVec, resultPath):
         if resultIsComplete==0:
             return 0
     return 1
+
 def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,srcBVec,algos,dataSetName,reRun=1):
     elapsedTimeAll = []
-    memLoadAll = []
-    memStoreAll = []
+    cpuCycleAll = []
+    memStallAll = []
     periodAll = []
     instructionsAll = []
-    fpVectorAll = []
-    fpScalarAll = []
-    branchAll = []
+    l1dStallAll = []
+    l2StallAll = []
+    l3StallAll = []
+    totalStallAll = []
+    froAll= []
     resultIsComplete=1
     for i in range(len(algos)):
         resultPath = commonPathBase + resultPaths[i]
@@ -188,20 +195,23 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
                         os.system("sudo mkdir " + resultPath)
                     runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate,2)
                     resultIsComplete=checkResultVector(dataSetName,resultPath)
-        #exit()
+
+     #exit()
         if resultIsComplete:
-            elapsedTime, memLoad, memStore, instructions, fpVector, fpScalar, branchIns = readResultVector(dataSetName, resultPath)
+            elapsedTime, cpuCycle, memStall, instructions, l1dStall, l2Stall, l3Stall,totalStall,fro = readResultVector(dataSetName, resultPath)
             elapsedTimeAll.append(elapsedTime)
-            memLoadAll.append(memLoad)
-            memStoreAll.append(memStore)
+            cpuCycleAll.append(cpuCycle)
+            memStallAll.append(memStall)
             periodAll.append(elapsedTime)
             instructionsAll.append(instructions)
-            fpVectorAll.append(fpVector)
-            fpScalarAll.append(fpScalar)
-            branchAll.append(branchIns)
+            l1dStallAll.append(l1dStall)
+            l2StallAll.append(l2Stall)
+            l3StallAll.append(l3Stall)
+            totalStallAll.append(totalStall)
+            froAll.append(fro)
         # periodAll.append(periodVec)
-    return np.array(elapsedTimeAll), np.array(memLoadAll), np.array(periodAll), np.array(instructionsAll), np.array(
-        memStoreAll), np.array(fpVectorAll), np.array(fpScalarAll), np.array(branchAll)
+    return np.array(elapsedTimeAll), np.array(cpuCycleAll), np.array(periodAll), np.array(instructionsAll), np.array(
+        memStallAll), np.array(l1dStallAll), np.array(l2StallAll), np.array(l3StallAll),np.array(totalStallAll),np.array(froAll)
 def getCyclesPerMethod(cyclesAll, valueChose):
     instructionsPerMethod = []
     for i in range(len(cyclesAll)):
@@ -210,23 +220,27 @@ def getCyclesPerMethod(cyclesAll, valueChose):
 
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
-    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/instructions_breakdown_1/"
+    #share the same result with cycle breakdown evaluation, as it contains everything
+    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/cycles_breakdown_1/"
 
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/instructions_breakdown_1/"
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/end2end/"
     
     # add the datasets here
     # srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
     # srcBVec=["datasets/AST/mcfe.mtx"] # 765*756
     # dataSetNames=['AST']
-    # srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
-    # srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
-    # dataSetNames=['UTM']
-    #srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
-    #srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
-    #dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
+    #srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
+    #srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
+    #dataSetNames=['UTM']
+    #algosVec=['crs', 'mm']
+    #algoDisp=['CRS','LTMM']
+    #algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
     srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
     dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
+    #srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
+    #srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
+    #dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
     # add the algo tag here
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
@@ -239,86 +253,43 @@ def main():
     resultPaths = algosVec
 
     # run
-    reRun = 2
+    reRun=2
+    if (len(sys.argv) < 2):
+        reRun = 2
+    else:
+        reRun = int(sys.argv[1])
     os.system("mkdir ../../results")
     os.system("mkdir ../../figures")
     os.system("mkdir " + figPath)
-    if (len(sys.argv) < 2):
+    if (reRun==1):
         os.system("sudo rm -rf " + commonBasePath)
         os.system("sudo mkdir " + commonBasePath)
         reRun = 1
-    else:
-        reRun=int(sys.argv[1])
+   
     print(reRun)
+    #exit()
     methodTags =algoDisp
-    elapsedTimeAll, memLoadAll, periodAll, instructions, memStoreAll, fpVectorAll, fpScalarAll, branchAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
+    elapsedTimeAll, cpuCycleAll, periodAll, instructions, memStallAll, l1dStallAll, l2StallAll, l3StallAll,totalStallAll,froAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
     # Add some pre-process logic for int8 here if it is used
 
-    print(instructions, memLoadAll)
+    print(instructions, cpuCycleAll)
    
     # adjust int8: int8/int8_fp32*mm
-    int8_adjust_ratio = instructions[0]/instructions[-2]
-    for instruc in [instructions, memLoadAll, memStoreAll, fpVectorAll, fpScalarAll, branchAll]:
+    
+    for instruc in [elapsedTimeAll]:
+        instruc=np.maximum(instruc,0)
+        int8_adjust_ratio = instruc[0]/instruc[-2]
         instruc[0] = instruc[-1]*int8_adjust_ratio
-    otherIns = instructions - memLoadAll - memStoreAll - fpVectorAll - fpScalarAll
-    print(otherIns)
-    print(otherIns[0], len(otherIns))
-    allowLegend = 1
-    valueVec=dataSetNames
-    bandInt=[]
-    for valueChose in range(len(valueVec)):
-        instructionsPerMethod=getCyclesPerMethod(instructions,valueChose)
-        memLoadPerMethod = getCyclesPerMethod(memLoadAll, valueChose)/instructionsPerMethod*100.0
-        memStorePerMethod = getCyclesPerMethod(memStoreAll, valueChose)/instructionsPerMethod*100.0
-        fpVectorPerMethod = getCyclesPerMethod(fpVectorAll, valueChose)/instructionsPerMethod*100.0
-        fpScalarPerMethod = getCyclesPerMethod(fpScalarAll, valueChose)/instructionsPerMethod*100.0
-        branchPerMethod = getCyclesPerMethod(branchAll, valueChose)/instructionsPerMethod*100.0
-        otherPerMethod = getCyclesPerMethod(otherIns, valueChose)/instructionsPerMethod*100.0
-        accuBar.DrawFigure(methodTags,
-                           [memLoadPerMethod, memStorePerMethod, fpVectorPerMethod, fpScalarPerMethod,branchPerMethod,
-                            otherPerMethod], ['Mem-load', 'Mem-store', 'FP-vector', 'FP-scalar', 'Branch', 'X64 Int'], '',
-                           'Propotion  (%)', figPath + "/" + "insbreakDown"
-                           + "_ins_accubar" + str(valueVec[valueChose]), True,
-                           #'dataset' + "=" + str(valueVec[valueChose])
-                           ''
-                           )
-        if(str(valueVec[valueChose])=='BUS'):
-            bandInt=(branchPerMethod+otherPerMethod)
-            instructionsPerMethod=getCyclesPerMethod(instructions,valueChose)
-            memLoadPerMethod = getCyclesPerMethod(memLoadAll, valueChose)
-            memStorePerMethod = getCyclesPerMethod(memStoreAll, valueChose)
-            fpVectorPerMethod = getCyclesPerMethod(fpVectorAll, valueChose)
-            fpScalarPerMethod = getCyclesPerMethod(fpScalarAll, valueChose)
-            prop1=instructionsPerMethod/instructionsPerMethod[-1]
-            fpTemp=fpVectorPerMethod+fpScalarPerMethod
-            prop2=fpTemp/fpTemp[-1]
-            memTemp=memLoadPerMethod+memLoadPerMethod
-            prop3=memTemp/memTemp[-1]
-            prop4Temp=getCyclesPerMethod(branchAll, valueChose)+getCyclesPerMethod(otherIns, valueChose)
-            prop4=prop4Temp/prop4Temp[-1]
-            groupBar2.DrawFigureYLog2(methodTags, [prop1,prop2,prop3,prop4], ['Total','FP','Mem','Other'], "", "Instructions (times of LTMM)", 5, 15, figPath + "/" + "bus_ins_times_ltmm", True)
+    int8_adjust_ratio = elapsedTimeAll[0]/elapsedTimeAll[-2]
+    elapsedTimeAll[0]=elapsedTimeAll[-1]*int8_adjust_ratio
+    groupBar2.DrawFigureYLog(dataSetNames,elapsedTimeAll,methodTags, "Datasets", r'Processing Latency l (ms)', 5, 15, figPath + "e2e_latency", True)
+    groupBar2.DrawFigure(dataSetNames,froAll*100,methodTags, "Datasets",r'AMM Error $\epsilon$ (%)', 5, 15, figPath + "e2e_error", True)
+    #print(ipcAll)
+    #groupBar2.DrawFigure(dataSetNames,(l1dStallAll+l2StallAll+l3StallAll)/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of cacheStalls (%)", 5, 15, figPath + "cachestall_ratio", True)
 
-            
 
-        allowLegend = 0
-    #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
-    #groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)", 5, 15, figPath + "sec4_1_e2e_static_lazy_fro", True)
-    #groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)", 5, 15, figPath + "sec4_1_e2e_static_lazy_latency_log", True)
-    fpInsAll= fpVectorAll+fpScalarAll
-    ratioFpIns=fpVectorAll/fpInsAll*100.0
-    memInsAll=memLoadAll+memStoreAll
-    groupBar2.DrawFigureYLog(dataSetNames, instructions/instructions[-1], methodTags, "Datasets", "Ins (times of LTMM)", 5, 15, figPath + "/" + "instructions", True)
-    groupBar2.DrawFigureYLog(dataSetNames, fpInsAll/fpInsAll[-1], methodTags, "Datasets", "FP Ins (times of LTMM)", 5, 15, figPath + "/" + "FP_instructions", True)
-    groupBar2.DrawFigureYLog(dataSetNames, memInsAll/memInsAll[-1], methodTags, "Datasets", "Mem Ins (times of LTMM)", 5, 15, figPath + "/" + "mem_instructions", True)
-    groupBar2.DrawFigure(dataSetNames, ratioFpIns, methodTags, "Datasets", "SIMD Utilization (%)", 5, 15, figPath + "/" + "SIMD utilization", True)
-    groupBar2.DrawFigure(dataSetNames, instructions/(memLoadAll+memStoreAll), methodTags, "Datasets", "IPM", 5, 15, figPath + "/" + "IPM", True)
-    groupBar2.DrawFigure(dataSetNames, fpInsAll/(memLoadAll+memStoreAll), methodTags, "Datasets", "FP Ins per Unit Mem Access", 5, 15, figPath + "/" + "FPIPM", True)
-    groupBar2.DrawFigure(dataSetNames, (memLoadAll+memStoreAll)/(instructions)*100.0, methodTags, "Datasets", "Ratio of Mem Ins (%)", 5, 15, figPath + "/" + "mem", True)
-   
-    groupBar2.DrawFigure(dataSetNames, branchAll/instructions*100.0, methodTags, "Datasets", "Ratio of Branch Ins (%)", 5, 15, figPath + "/" + "branches", True)
-    groupBar2.DrawFigure(dataSetNames, otherIns/instructions*100.0, methodTags, "Datasets", "Ratio of Other Ins (%)", 5, 15, figPath + "/" + "others", True)
-    #print(instructions[-1],instructions[2])
-    print('bus',bandInt)
+
+    
     #groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms", 5, 15, figPath + "sec4_1_e2e_static_lazy_throughput_log", True)
 if __name__ == "__main__":
     main()

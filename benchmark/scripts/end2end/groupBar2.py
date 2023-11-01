@@ -10,9 +10,9 @@ from matplotlib.ticker import LogLocator, LinearLocator
 import matplotlib.ticker as mtick
 
 OPT_FONT_NAME = 'Helvetica'
-TICK_FONT_SIZE = 24
-LABEL_FONT_SIZE = 24
-LEGEND_FONT_SIZE = 24
+TICK_FONT_SIZE = 32
+LABEL_FONT_SIZE = 32
+LEGEND_FONT_SIZE = 32
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -101,11 +101,11 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
         
     if allow_legend:
         plt.legend(bars, FIGURE_LABEL,
-                prop={'size': 16},
-                ncol=len(bars),  # Set the number of columns to match the number of bars
+                prop={'size': 28},
+                ncol=len(bars)/2,  # Set the number of columns to match the number of bars
                 loc='upper center',
-                bbox_to_anchor=(0.5, 1.15),  # Adjust the position
-                shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.2,handletextpad=0
+                bbox_to_anchor=(0.5, 1.35),  # Adjust the position
+                shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.2,handletextpad=0.2
                 )
 
     plt.xticks(index + len(x_values) / 2 * width, x_values, rotation=0)
@@ -114,9 +114,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
     figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
-    plt.xlabel(x_label, fontsize=20)
-    plt.ylabel(y_label, fontsize=20)
-
+    plt.xlabel(x_label, fontsize=TICK_FONT_SIZE)
+    plt.ylabel(y_label, fontsize=TICK_FONT_SIZE)
+    plt.xticks(fontsize=TICK_FONT_SIZE)
+    plt.yticks(fontsize=TICK_FONT_SIZE)
 
     fig.savefig(filename + ".pdf", bbox_inches='tight')
 
@@ -147,25 +148,27 @@ def DrawFigureYLog(x_values, y_values, legend_labels, x_label, y_label, y_min, y
         
     if allow_legend:
         plt.legend(bars, FIGURE_LABEL,
-                prop={'size': 16},
-                ncol=len(bars),  # Set the number of columns to match the number of bars
+                prop={'size': 28},
+                ncol=len(bars)/2,  # Set the number of columns to match the number of bars
                 loc='upper center',
-                bbox_to_anchor=(0.5, 1.15),  # Adjust the position
-                shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.2,handletextpad=0
+                bbox_to_anchor=(0.5, 1.35),  # Adjust the position
+                shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.2,handletextpad=0.2
                 )
 
     plt.xticks(index + len(x_values) / 2 * width, x_values, rotation=0)
 
-    plt.xlabel(x_label, fontsize=20)
-    plt.ylabel(y_label, fontsize=20)
+    
     plt.yscale('log')
     figure.yaxis.set_major_locator(LogLocator(10))
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
-    #figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
+    
 
+    plt.xticks(fontsize=TICK_FONT_SIZE)
+    plt.yticks(fontsize=TICK_FONT_SIZE)
     plt.grid(axis='y', color='gray', alpha=0.5, linewidth=0.5)
-
+    plt.xlabel(x_label, fontsize=LABEL_FONT_SIZE)
+    plt.ylabel(y_label, fontsize=LABEL_FONT_SIZE)
     #plt.show()
 
     fig.savefig(filename + ".pdf", bbox_inches='tight')
@@ -196,15 +199,16 @@ def DrawFigureYLog2(x_values, y_values, legend_labels, x_label, y_label, y_min, 
         
     if allow_legend:
         plt.legend(bars, FIGURE_LABEL,
-                prop={'size': LEGEND_FONT_SIZE},
-                ncol=len(bars),  # Set the number of columns to match the number of bars
+                prop={'size': 28},
+                ncol=len(bars)/2,  # Set the number of columns to match the number of bars
                 loc='upper center',
-                bbox_to_anchor=(0.5, 1.15),  # Adjust the position
+                bbox_to_anchor=(0.5, 1.3),  # Adjust the position
                 shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.5,handletextpad=0.1,labelspacing=0.,
                 )
 
     plt.xticks(index + 0.75* width, x_values, rotation=30)
-    plt.xticks(fontsize=24)
+    plt.xticks(fontsize=TICK_FONT_SIZE)
+    plt.yticks(fontsize=TICK_FONT_SIZE)
     plt.xlabel(x_label, fontsize=24)
     plt.ylabel(y_label, fontsize=24)
     plt.axhline(y=1.0, color='red', linestyle='--')
@@ -213,7 +217,7 @@ def DrawFigureYLog2(x_values, y_values, legend_labels, x_label, y_label, y_min, 
     figure.yaxis.set_major_locator(LogLocator(10))
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
-    #figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
+    
 
     plt.grid(axis='y', color='gray', alpha=0.5, linewidth=0.5)
 
