@@ -245,10 +245,10 @@ def main():
     os.system("mkdir " + figPath)
     if (len(sys.argv) < 2):
         os.system("sudo rm -rf " + commonBasePath)
-        os.system("sudo mkdir " + commonBasePath)
         reRun = 1
     else:
         reRun=int(sys.argv[1])
+    os.system("sudo mkdir " + commonBasePath)
     print(reRun)
     methodTags =algoDisp
     elapsedTimeAll, memLoadAll, periodAll, instructions, memStoreAll, fpVectorAll, fpScalarAll, branchAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
@@ -276,7 +276,7 @@ def main():
         otherPerMethod = getCyclesPerMethod(otherIns, valueChose)/instructionsPerMethod*100.0
         accuBar.DrawFigure(methodTags,
                            [memLoadPerMethod, memStorePerMethod, fpVectorPerMethod, fpScalarPerMethod,branchPerMethod,
-                            otherPerMethod], ['Mem-load', 'Mem-store', 'FP-vector', 'FP-scalar', 'Branch', 'X64 Int'], '',
+                            otherPerMethod], ['Mem-load', 'Mem-store', 'Math-V', 'Math-S', 'Flow-B', 'Flow-O'], '',
                            'Propotion  (%)', figPath + "/" + "insbreakDown"
                            + "_ins_accubar" + str(valueVec[valueChose]), True,
                            #'dataset' + "=" + str(valueVec[valueChose])
@@ -290,13 +290,19 @@ def main():
             fpVectorPerMethod = getCyclesPerMethod(fpVectorAll, valueChose)
             fpScalarPerMethod = getCyclesPerMethod(fpScalarAll, valueChose)
             prop1=instructionsPerMethod/instructionsPerMethod[-1]
+            #
             fpTemp=fpVectorPerMethod+fpScalarPerMethod
             prop2=fpTemp/fpTemp[-1]
-            memTemp=memLoadPerMethod+memLoadPerMethod
+            #
+            memTemp=memLoadPerMethod
             prop3=memTemp/memTemp[-1]
-            prop4Temp=getCyclesPerMethod(branchAll, valueChose)+getCyclesPerMethod(otherIns, valueChose)
-            prop4=prop4Temp/prop4Temp[-1]
-            groupBar2.DrawFigureYLog2(methodTags, [prop1,prop2,prop3,prop4], ['Total','FP','Mem','Other'], "", "Instructions (times of LTMM)", 5, 15, figPath + "/" + "bus_ins_times_ltmm", True)
+            #
+            memTemp2=memStorePerMethod
+            prop4=memTemp2/memTemp2[-1]
+            #
+            flowTemp=getCyclesPerMethod(branchAll, valueChose)+getCyclesPerMethod(otherIns, valueChose)
+            prop5=flowTemp/flowTemp[-1]
+            groupBar2.DrawFigureYLog2(methodTags, [prop1,prop3,prop2,prop4,prop5], ['Total','Mem-load','Math','Mem-store','Flow'], "", "Instructions (times of LTMM)", 5, 15, figPath + "/" + "bus_ins_times_ltmm", True)
 
             
 

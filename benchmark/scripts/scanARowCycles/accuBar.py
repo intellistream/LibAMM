@@ -11,10 +11,10 @@ from matplotlib.ticker import LinearLocator, LogLocator, MaxNLocator, ScalarForm
 from numpy import double
 
 OPT_FONT_NAME = 'Helvetica'
-TICK_FONT_SIZE = 32
-LABEL_FONT_SIZE = 32
-LEGEND_FONT_SIZE = 32
-TITLE_FRONT_SIZE = 32
+TICK_FONT_SIZE = 24
+LABEL_FONT_SIZE = 24
+LEGEND_FONT_SIZE = 24
+TITLE_FRONT_SIZE = 24
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -105,7 +105,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
                              loc='center',
                              prop=LEGEND_FP,
                              ncol=6,
-                             bbox_to_anchor=(0.5, 1.2),
+                             bbox_to_anchor=(0.5, 1.15),
                              shadow=True, frameon=True, edgecolor='black',
                              # bbox_to_anchor=(1.17, 0.5),
                              handletextpad=0.1,

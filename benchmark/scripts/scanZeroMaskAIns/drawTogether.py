@@ -78,13 +78,13 @@ def runPeriod(exePath, algoTag, resultPath, configTemplate="config.csv",prefixTa
         editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
 
     # load Codeword LookUpTable for vq or pq
-    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/AMME2E/CodewordLookUpTable'
+    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
     if algoTag == 'vq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m1_*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/1000_m1_row*')[0]
     elif algoTag =='pq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/1000_m10_row*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
     # prepare new file
@@ -230,10 +230,10 @@ def main():
     #nnzAValues= [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
     nnzAValues= [0.1,0.2,0.5,0.8,1.0]
     # add the algo tag here
-    #algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algosVec=[ 'crs',  'cooFD','mm']
-    #algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    algoDisp=['CRS', 'CoOFD', 'LTMM']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    #algosVec=[ 'crs',  'cooFD','mm']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    #algoDisp=['CRS', 'CoOFD', 'LTMM']
     # add the algo tag here
     #algosVec=['mm', 'crs', 'countSketch', 'int8', 'weighted-cr', 'rip', 'smp-pca', 'tugOfWar', 'blockLRA', 'vq', 'pq', 'fastjlt', 'cooFD', 'int8_fp32']
     
@@ -279,14 +279,7 @@ def main():
         fpScalarPerMethod = getCyclesPerMethod(fpScalarAll, valueChose)/instructionsPerMethod*100.0
         branchPerMethod = getCyclesPerMethod(branchAll, valueChose)/instructionsPerMethod*100.0
         otherPerMethod = getCyclesPerMethod(otherIns, valueChose)/instructionsPerMethod*100.0
-        accuBar.DrawFigure(methodTags,
-                           [memLoadPerMethod, memStorePerMethod, fpVectorPerMethod, fpScalarPerMethod,branchPerMethod,
-                            otherPerMethod], ['Mem-load', 'Mem-store', 'FP-vector', 'FP-scalar', 'Branch', 'X64 Int'], '',
-                           'Propotion  (%)', figPath + "/" + "insbreakDown"
-                           + "_ins_accubar" + str(valueVec[valueChose]), True,
-                           #'dataset' + "=" + str(valueVec[valueChose])
-                           ''
-                           )
+        
         if(str(valueVec[valueChose])=='BUS'):
             bandInt=(branchPerMethod+otherPerMethod)
             instructionsPerMethod=getCyclesPerMethod(instructions,valueChose)
@@ -306,6 +299,7 @@ def main():
             
 
         allowLegend = 0
+    exit()
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     #groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)", 5, 15, figPath + "sec4_1_e2e_static_lazy_fro", True)
     #groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)", 5, 15, figPath + "sec4_1_e2e_static_lazy_latency_log", True)
