@@ -83,9 +83,9 @@ def runPeriod(exePath, algoTag, resultPath, configTemplate="config.csv",prefixTa
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
     if algoTag == 'vq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m1_row*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/1000_m1_row*')[0]
     elif algoTag =='pq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_row*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/1000_m10_row*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
     # prepare new file
@@ -229,7 +229,7 @@ def main():
     #srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
     #srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
     #aRowVec= [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
-    aRowVec=[100, 200, 500, 1000, 5000, 10000, 20000, 50000]
+    aRowVec=[100, 500,1000, 2500,5000, 10000, 25000, 50000]
     #aRowVec=[100, 200, 500, 1000]
     # add the algo tag here
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
@@ -250,10 +250,11 @@ def main():
     if (len(sys.argv) < 2):
        
         os.system("sudo rm -rf " + commonBasePath)
-        os.system("sudo mkdir " + commonBasePath)
+       
         reRun = 1
     else:
         reRun=int(sys.argv[1])
+    os.system("sudo mkdir " + commonBasePath)
     print(reRun)
     methodTags =algoDisp
     elapsedTimeAll, memLoadAll, periodAll, instructions, memStoreAll, fpVectorAll, fpScalarAll, branchAll,froAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate,algosVec,aRowVec, reRun)
@@ -294,12 +295,12 @@ def main():
     #print(instructions[-1],instructions[2])
     
     #groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms", 5, 15, figPath + "sec4_1_e2e_static_lazy_throughput_log", True)
-    groupLine.DrawFigureYnormal(periodAll, elapsedTimeAll,
+    groupLine.DrawFigureYLog(periodAll, elapsedTimeAll,
                                 methodTags,
                                 "#Rows of A", "95% latency (ms)", 0, 1,
                                 figPath + "/"  + "aRows_lat",
                                 True)
-    groupLine.DrawFigureYnormal(periodAll, froAll*100.0,
+    groupLine.DrawFigureYLog(periodAll, froAll*100.0,
                                 methodTags,
                                 "#Rows of A", "fro error (%)", 0, 1,
                                 figPath + "/"  + "aRows_err",

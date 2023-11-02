@@ -258,6 +258,7 @@ def main():
         reRun = 1
     else:
         reRun=int(sys.argv[1])
+    os.system("sudo mkdir " + commonBasePath)
     print(reRun)
     #exit()
     methodTags =algoDisp
@@ -292,7 +293,7 @@ def main():
         nonStallPerMethod=getCyclesPerMethod(nonStallAll, valueChose)
         accuBar.DrawFigure(methodTags,
                            [memStallPerMethod, l1dStallPerMethod, l2StallPerMethod, l3StallPerMethod,
-                            otherPerMethod,nonStallPerMethod]/cpuCyclePerMethod*100.0, ['TLB/DDR Stall', 'L1D Stall', 'L2 Stall', 'L3 Stall', 'Other Stall', 'Not Stall'], '',
+                            otherPerMethod,nonStallPerMethod]/cpuCyclePerMethod*100.0, ['Mem Stall', 'L1D Stall', 'L2 Stall', 'L3 Stall', 'Other Stall', 'Not Stall'], '',
                            'Propotion (%)', figPath + "/" + "cyclesbreakDown"
                            + "_cycles_accubar" + str(valueVec[valueChose]), allowLegend,
                            'dataset' + "=" + str(valueVec[valueChose]))
@@ -301,7 +302,7 @@ def main():
     #groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)", 5, 15, figPath + "sec4_1_e2e_static_lazy_fro", True)
     #groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)", 5, 15, figPath + "sec4_1_e2e_static_lazy_latency_log", True)
     ipcAll=instructions/cpuCycleAll
-    groupBar2.DrawFigureYLog(dataSetNames,ipcAll,methodTags, "Datasets", "IPC", 5, 15, figPath + "ipc", True)
+    groupBar2.DrawFigure(dataSetNames,ipcAll,methodTags, "Datasets", "IPC", 5, 15, figPath + "ipc", True)
     groupBar2.DrawFigure(dataSetNames,totalStallAll/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of Stalls (%)", 5, 15, figPath + "stall_ratio", True)
     groupBar2.DrawFigure(dataSetNames,l1dStallAll/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of l1dStalls (%)", 5, 15, figPath + "l1dstall_ratio", True)
     groupBar2.DrawFigure(dataSetNames,l2StallAll/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of l2Stalls (%)", 5, 15, figPath + "l2stall_ratio", True)
