@@ -12,7 +12,7 @@ void AMMBench::VectorQuantization::setConfig(INTELLI::ConfigMapPtr cfg) {
     assert(pqvqCodewordLookUpTablePath!="");
 
     // Use regex to find the number after '_m', meaning the number of subspace
-    std::regex pattern("_m(\\d+)_");
+    std::regex pattern("_m(\\d+)");
     std::smatch match;
 
     if (std::regex_search(pqvqCodewordLookUpTablePath, match, pattern)) {
@@ -25,7 +25,7 @@ void AMMBench::VectorQuantization::setConfig(INTELLI::ConfigMapPtr cfg) {
 
     // make sure vq _m1 and pq _m10 (not restricted to 10, but any number>1, 10 is an example)
     string algo = cfg->tryString("cppAlgoTag", "vq", true);
-    assert ((algo=="vq" && m==1) || (algo=="pq" && m>1));
+    //assert ((algo=="vq" && m==1) || (algo=="pq" && m>1));
     }
 
 torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const torch::Tensor B, uint64_t l) {

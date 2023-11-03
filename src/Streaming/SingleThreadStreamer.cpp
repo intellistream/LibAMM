@@ -25,7 +25,7 @@ bool AMMBench::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
   /**
    * @brief 3. load other configs
    */
-  fullLazy = cfg->tryU64("fullLazy", 0, true);
+  fullLazy = cfg->tryU64("fullLazy", 1, true);
   staticDataSet = cfg->tryU64("staticDataSet",0,true);
   return true;
 }
