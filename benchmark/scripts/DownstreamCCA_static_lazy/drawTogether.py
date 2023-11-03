@@ -186,6 +186,7 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
     errorBoundRatioAll = []
     thrAll=[]
     endingErrorAll=[]
+    resultIsComplete=1
     for i in range(len(algos)):
         resultPath = commonPathBase + resultPaths[i]
         algoTag=algos[i]
