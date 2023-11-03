@@ -81,7 +81,7 @@ TEST_CASE("Test the basic streaming batch 1, 2 matrix in streaming, full lazy", 
   auto rawC = torch::matmul(A, B);
   AMMBench::SingleThreadStreamer ss;
   cfg->edit("batchSize", (uint64_t) 2);
-  cfg->edit("fullLazt", (uint64_t) 2);
+  cfg->edit("fullLazy", (uint64_t) 2);
   //cfg->edit("",(uint64_t)100);
   ss.setConfig(cfg);
   ss.prepareRun(A, B);
