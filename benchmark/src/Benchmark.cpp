@@ -39,6 +39,8 @@ void streamingTest(std::string configName) {
   matLoaderPtr->setConfig(cfg);
   auto A = matLoaderPtr->getA();
   auto B = matLoaderPtr->getB();
+  auto ACopy=A.clone();
+  auto BCopy=B.clone();
   torch::Tensor C;
   AMMBench::SingleThreadStreamer ss;
   ss.setConfig(cfg);
@@ -69,7 +71,7 @@ void streamingTest(std::string configName) {
   resultCsv->edit("throughputByElements", (double) (ss.getThroughput() * A.size(1)));
   resultCsv->edit("95%latency", (double) ss.getLatencyPercentage(0.95));
   INTELLI_WARNING("evaluating the error, may takes some time");
-  torch::Tensor rawC = torch::matmul(A, B);
+  torch::Tensor rawC = torch::matmul(ACopy, BCopy);
   double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(rawC, ssC);
   double froBNormal = B.norm().item<double>();
   double errorBoundRatio = froError / froBNormal;
