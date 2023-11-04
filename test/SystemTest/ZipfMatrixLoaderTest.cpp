@@ -16,8 +16,8 @@ TEST_CASE("Test the zipf loader", "[short]")
   cfg->edit("aRow", (uint64_t)10);
   cfg->edit("aCol", (uint64_t)10);
   cfg->edit("bCol", (uint64_t)10);
-  cfg->edit("zipfAlphaA", (double)0.2);
-  cfg->edit("zipfAlphaA", (double)0.1);
+  cfg->edit("zipfAlphaA", (double)1.0);
+  cfg->edit("zipfAlphaB", (double)1.5);
   auto matLoaderPtr = mLoaderTable.findMatrixLoader("zipf");
   assert(matLoaderPtr);
   matLoaderPtr->setConfig(cfg);
