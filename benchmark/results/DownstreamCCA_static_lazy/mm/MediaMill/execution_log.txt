@@ -1,0 +1,32 @@
+INFO:Fri Nov  3 19:45:41 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:19|void benchmarkPCA(std::string)|[34mRunning Benchmark PCA[0m
+INFO:Fri Nov  3 19:45:41 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:25|void benchmarkPCA(std::string)|[34mcppAlgoTag: crs[0m
+INFO:Fri Nov  3 19:45:41 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:32|void benchmarkPCA(std::string)|[34mmatrixLoaderTag: SIFT[0m
+INFO:Fri Nov  3 19:45:43 2023:/home/xianzhi/AMMBench/src/MatrixLoader/SIFTMatrixLoader.cpp:60|void AMMBench::SIFTMatrixLoader::generateAB()|[34mGenerating [128x10000]*[10000x128][0m
+INFO:Fri Nov  3 19:45:43 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:41|void benchmarkPCA(std::string)|[34msketchDimension: 1000[0m
+INFO:Fri Nov  3 19:45:43 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:44|void benchmarkPCA(std::string)|[34mRun AMM[0m
+INFO:Fri Nov  3 19:45:43 2023:/home/xianzhi/AMMBench/src/Streaming/Streamer.cpp:75|at::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr, at::Tensor, at::Tensor, uint64_t, std::string)|[34mAMM non-streaming, singlethread[0m
+INFO:Fri Nov  3 19:45:46 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:50|void benchmarkPCA(std::string)|[34mStart SVD task..[0m
+INFO:Fri Nov  3 19:45:54 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:72|void benchmarkPCA(std::string)|[34mrealS[0]: 27.202303[0m
+INFO:Fri Nov  3 19:45:54 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:73|void benchmarkPCA(std::string)|[34mrealS[k]: 3.597999[0m
+INFO:Fri Nov  3 19:45:58 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:77|void benchmarkPCA(std::string)|[34mSError[0]: 3.637454[0m
+INFO:Fri Nov  3 19:45:58 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:86|void benchmarkPCA(std::string)|[34mDone. here is overall result[0m
+INFO:Fri Nov  3 19:45:58 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkPCA.cpp:87|void benchmarkPCA(std::string)|[34mkey	value	type
+AMMCacheMiss	24424	U64
+AMMCacheRefs	95550	U64
+AMMCpuClock	38113731	U64
+AMMCpuCycle	129341788	U64
+AMMInstructions	58253096	U64
+AMMPerfElapsedTime	1898488	U64
+AMMTaskClock	38116766	U64
+elseCacheMiss	39587	U64
+elseCacheRefs	70079	U64
+elseCpuClock	75914964	U64
+elseCpuCycle	255247254	U64
+elseInstructions	44385317	U64
+elsePerfElapsedTime	3693965	U64
+elseTaskClock	75918965	U64
+AMMFroError	0.122118	Double
+AMMThroughput	67.422075	Double
+AMMThroughputByElements	674220.748301	Double
+PCAError	0.133719	Double
+[0m

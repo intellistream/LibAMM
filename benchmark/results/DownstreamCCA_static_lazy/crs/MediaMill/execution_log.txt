@@ -1,0 +1,94 @@
+INFO:Fri Nov  3 19:28:28 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkCCA.cpp:65|void benchmarkCCA(std::string)|[34mkey	value	type
+coreBind	15	U64
+forceMP	0	U64
+fullLazy	1	U64
+isStreaming	1	U64
+perfUseExternalList	1	U64
+sketchDimension	36445	U64
+staticDataSet	1	U64
+streamingTwoMatrixes	1	U64
+threads	1	U64
+useCPP	1	U64
+usePAPI	0	U64
+algoARankRatio	0.830050	Double
+algoBRankRatio	0.830050	Double
+cppAlgoTag	crs	String
+filePath	datasets/MediaMill/MediaMill.pth	String
+fpMode	INT8	String
+matrixLoaderTag	MediaMill	String
+perfListSrc	perfListEvaluation.csv	String
+pqvqCodewordLookUpTablePath	dummy	String
+[0m
+INFO:Fri Nov  3 19:28:28 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkCCA.cpp:72|void benchmarkCCA(std::string)|[34m1.1 algo: crs[0m
+INFO:Fri Nov  3 19:28:28 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkCCA.cpp:75|void benchmarkCCA(std::string)|[34m1.2 matrixLoaderTag: MediaMill[0m
+INFO:Fri Nov  3 19:28:29 2023:/home/xianzhi/AMMBench/src/MatrixLoader/MediaMillMatrixLoader.cpp:31|void AMMBench::MediaMillMatrixLoader::generateAB()|[34mGenerating [120 x 43907]*[101 x 43907][0m
+INFO:Fri Nov  3 19:28:45 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkCCA.cpp:111|void benchmarkCCA(std::string)|[34m1.3 sketch dimension: 36445[0m
+INFO:Fri Nov  3 19:28:45 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkCCA.cpp:270|void benchmarkCCA(std::string)|[34mstaticDataSet=1 and fullLazy=1[0m
+Sxx:
+Maximum Value: 0.444988
+Mean Value: 0.155204
+Minimum Value: 0.00661244
+matLoaderPtr->getSxx():
+Maximum Value: 0.44472
+Mean Value: 0.155026
+Minimum Value: 0.00655851
+Syy:
+Maximum Value: 0.772505
+Mean Value: 0.00243536
+Minimum Value: 0
+matLoaderPtr->getSyy():
+Maximum Value: 0.77138
+Mean Value: 0.00241076
+Minimum Value: 0
+Sxy:
+Maximum Value: 0.520048
+Mean Value: 0.0172198
+Minimum Value: 2.6175e-05
+matLoaderPtr->getSxy():
+Maximum Value: 0.519021
+Mean Value: 0.0171109
+Minimum Value: 3.90496e-05
+INFO:Fri Nov  3 19:28:53 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkCCA.cpp:329|void benchmarkCCA(std::string)|[34mSxx^(-1/2)[0m
+INFO:Fri Nov  3 19:29:00 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkCCA.cpp:336|void benchmarkCCA(std::string)|[34mSyy^(-1/2)[0m
+INFO:Fri Nov  3 19:29:04 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkCCA.cpp:343|void benchmarkCCA(std::string)|[34mM[0m
+M1:
+Maximum Value: 0.171136
+Mean Value: 0.00372216
+Minimum Value: -0.0254872
+matLoaderPtr->getM():
+Maximum Value: 0.170391
+Mean Value: 0.00369907
+Minimum Value: -0.0355884
+M:
+Maximum Value: 0.244725
+Mean Value: 0.0033253
+Minimum Value: -0.0821408
+matLoaderPtr->getM():
+Maximum Value: 0.242928
+Mean Value: 0.00325587
+Minimum Value: -0.0879362
+INFO:Fri Nov  3 19:29:05 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkCCA.cpp:374|void benchmarkCCA(std::string)|[34mCorrelation[0m
+INFO:Fri Nov  3 19:29:07 2023:/home/xianzhi/AMMBench/benchmark/src/BenchmarkCCA.cpp:390|void benchmarkCCA(std::string)|[34mDone. here is overall result[0m
+key	value	type
+AMMCacheMiss	587204	U64
+AMMCacheRefs	749306	U64
+AMMCpuClock	167188344	U64
+AMMCpuCycle	565044280	U64
+AMMInstructions	137646044	U64
+AMMPerfElapsedTime	8148090	U64
+AMMTaskClock	167253565	U64
+elseCacheMiss	155399	U64
+elseCacheRefs	290499	U64
+elseCpuClock	389249129	U64
+elseCpuCycle	1316208973	U64
+elseInstructions	242958133	U64
+elsePerfElapsedTime	14142433	U64
+elseTaskClock	389260994	U64
+AMMThroughput	14.727378	Double
+CorrelationError	0.033642	Double
+M1FroError	0.117365	Double
+MFroError	0.400243	Double
+SxxFroError	0.001289	Double
+SxyFroError	0.006476	Double
+SyyFroError	0.010949	Double
+
