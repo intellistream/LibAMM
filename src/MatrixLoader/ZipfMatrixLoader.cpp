@@ -28,9 +28,12 @@ torch::Tensor AMMBench::ZipfMatrixLoader::generateZipfDistribution(int64_t n, in
 
   // Generate Zipf-distributed samples
   torch::Tensor zipfSamples = torch::multinomial(normalizedProbabilities, n * m, true);
+  torch::Tensor zipfMatrix = zipfSamples.view({n, m}).clone();
 
+  // Normalize the values to the range [0, 1]
+  auto ru = zipfMatrix / (zipfMatrix.max());
   // Reshape the 1D tensor to an nxm tensor
-  return zipfSamples.view({n, m}).clone();
+  return ru;
 }
 void AMMBench::ZipfMatrixLoader::generateAB() {
   torch::manual_seed(seed);
@@ -40,14 +43,14 @@ void AMMBench::ZipfMatrixLoader::generateAB() {
   }
   else
   {
-    A=generateZipfDistribution(aRow,aCol,zipfAlphaA);
+    A=generateZipfDistribution((int64_t)aRow,(int64_t)aCol,zipfAlphaA);
   }
   if(randB)
   {
     B = torch::rand({(long) aCol, (long) bCol});
   }
   else{
-    B=generateZipfDistribution(aCol,bCol,zipfAlphaB);
+    B=generateZipfDistribution((int64_t)aCol,(int64_t)bCol,zipfAlphaB);
   }
 
 
