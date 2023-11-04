@@ -3,7 +3,7 @@ sketchDimension,250,U64
 aRow,2500,U64
 aCol,2500,U64
 bCol,2500,U64
-isStreaming,1,U64
+isStreaming,0,U64
 streamingTwoMatrixes,1,U64
 staticDataSet,1,U64
 fullLazy,1,U64

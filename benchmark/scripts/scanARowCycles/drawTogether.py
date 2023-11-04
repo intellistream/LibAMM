@@ -110,7 +110,7 @@ def runPeriodVector (exePath,algoTag,resultPath,prefixTag, configTemplate="confi
             runPeriod(exePath,algoTag, resultPath, configTemplate,prefixTag[i])
 
 def readResultSingle(singleValue, resultPath):
-    resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
+    resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
     elapsedTime = readConfig(resultFname, "perfElapsedTime")
     cpuCycle = readConfig(resultFname, "cpuCycle")
     memStall = readConfig(resultFname, "memStall")
@@ -148,7 +148,7 @@ def readResultVector(singleValueVec, resultPath):
     return np.array(elapseTimeVec), np.array(cpuCycleVec), np.array(memStallVec), np.array(instructionsVec), np.array(
         l1dStallVec), np.array(l2StallVec), np.array(l3StallVec),np.array(totalStallVec),np.array(froVec)
 def checkResultSingle(singleValue, resultPath):
-    resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
+    resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
     ruExists=0
     if os.path.exists(resultFname):
         ruExists=1
@@ -268,9 +268,6 @@ def main():
     methodTags =algoDisp
     elapsedTimeAll, cpuCycleAll, periodAll, instructions, memStallAll, l1dStallAll, l2StallAll, l3StallAll,totalStallAll,froAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate,algosVec,aRowVec, reRun)
     # Add some pre-process logic for int8 here if it is used
-
-    print(instructions, memLoadAll)
-    
     for instruc in [instructions, cpuCycleAll, memStallAll, l1dStallAll, l2StallAll, l3StallAll,totalStallAll]:
         instruc=np.maximum(instruc,0)
         int8_adjust_ratio = instruc[0]/instruc[-2]
@@ -283,7 +280,7 @@ def main():
     cpuCycleAll=totalStallAll+nonStallAll
    
     allowLegend = 1
-    valueVec=sketchVec
+    valueVec=aRowVec
     bandInt=[]
     #groupBar2.DrawFigureYLog(aRowVec, instructions/instructions[-1], methodTags, "Datasets", "Ins (times of LTMM)", 5, 15, figPath + "/" + "instructions", True)
     #groupBar2.DrawFigureYLog(aRowVec, fpInsAll/fpInsAll[-1], methodTags, "Datasets", "FP Ins (times of LTMM)", 5, 15, figPath + "/" + "FP_instructions", True)
@@ -303,7 +300,7 @@ def main():
                                 "#Rows of A", r'Processing Latency l (ms)', 0, 1,
                                 figPath + "/"  + "aRows_lat",
                                 True)
-    groupLine.DrawFigureYLog(periodAll, froAll*100.0,
+    groupLine.DrawFigureYnormal(periodAll, froAll*100.0,
                                 methodTags,
                                 "#Rows of A", r'AMM Error $\epsilon$ (%)', 0, 1,
                                 figPath + "/"  + "aRows_err",
