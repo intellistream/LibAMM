@@ -113,30 +113,27 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
     # clean dir
-    os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
-    os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
 
     # prepare new file
     # run
-    import subprocess
-    command = f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkCCA {configFname} 2>&1 | tee execution_log.txt"
-    try:
-        subprocess.run(command, shell=True, check=True)
-    except:
-        pass
-    
-    if not os.path.exists(f"{resultPath}/{prefixTag}/CCA.csv"):
-        os.system(f"cd {exePath} && sudo cp scripts/AMME2E_default_results/CCA.csv {resultPath}/{prefixTag}/CCA.csv")
-        
+    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmarkCCA " + configFname)
+    os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
+    os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
     # copy result
     os.system("cd " + exePath + "&& sudo cp *.csv execution_log.txt " + resultPath + "/" + str(prefixTag))
 
-
-def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTemplate="config.csv"):
+def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTemplate="config.csv",reRun=1):
     for i in  range(len(periodVec)):
         rf=periodVec[i]
         sf=pS[i]
-        runPeriod(exePath, rf,sf,algoTag, resultPath, configTemplate,prefixTag[i])
+        print(sf)
+        if reRun==2:
+            if checkResultSingle(prefixTag[i],resultPath)==1:
+                print("skip "+prefixTag[i])
+            else:
+                runPeriod(exePath, rf,sf,algoTag, resultPath, configTemplate,prefixTag[i])
+        else:
+            runPeriod(exePath, rf,sf,algoTag, resultPath, configTemplate,prefixTag[i])
 
 
 def readResultSingle(singleValue, resultPath):
@@ -147,6 +144,22 @@ def readResultSingle(singleValue, resultPath):
     thr=readConfig(resultFname, "AMMThroughput")
     endingError=readConfig(resultFname, "CorrelationError")
     return elapsedTime, froError, errorBoundRatio,thr,endingError
+def checkResultSingle(singleValue, resultPath):
+    resultFname = resultPath + "/" + str(singleValue) + "/CCA.csv"
+    ruExists=0
+    if os.path.exists(resultFname):
+        ruExists=1
+    else:
+        print("File does not exist:"+resultFname)
+        ruExists=0
+    return ruExists
+def checkResultVector(singleValueVec, resultPath):
+    resultIsComplete=0
+    for i in singleValueVec:
+        resultIsComplete= checkResultSingle(i, resultPath)
+        if resultIsComplete==0:
+            return 0
+    return 1
 
 def readResultVector(singleValueVec, resultPath):
     elapseTimeVec = []
@@ -172,21 +185,33 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
     errorBoundRatioAll = []
     thrAll=[]
     endingErrorAll=[]
+    resultIsComplete=1
     for i in range(len(algos)):
         resultPath = commonPathBase + resultPaths[i]
         algoTag=algos[i]
         if (reRun == 1):
             os.system("sudo rm -rf " + resultPath)
-            os.system("sudo mkdir " + resultPath)
+            
             runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate)
+        else:
+            if(reRun == 2):
+                resultIsComplete=checkResultVector(dataSetName,resultPath)
+                if resultIsComplete==1:
+                    print(algoTag+ " is complete, skip")
+                else:
+                    print(algoTag+ " is incomplete, redo it")
+                    runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate,2)
+                    resultIsComplete=checkResultVector(dataSetName,resultPath)
+        os.system("sudo mkdir " + resultPath)
+        if resultIsComplete:
         #exit()
-        elapsedTime, fro, eb,thr,endingError = readResultVector(dataSetName, resultPath)
-        elapsedTimeAll.append(elapsedTime)
-        periodAll.append(dataSetName)
-        froAll.append(fro)
-        errorBoundRatioAll.append(eb)
-        thrAll.append(thr)
-        endingErrorAll.append(endingError)
+            elapsedTime, fro, eb,thr,endingError = readResultVector(dataSetName, resultPath)
+            elapsedTimeAll.append(elapsedTime)
+            periodAll.append(dataSetName)
+            froAll.append(fro)
+            errorBoundRatioAll.append(eb)
+            thrAll.append(thr)
+            endingErrorAll.append(endingError)
     return np.array(elapsedTimeAll), np.array(froAll), np.array(errorBoundRatioAll),np.array(thrAll),periodAll,np.array(endingErrorAll)
         
 def draw2yBar(NAME,R1,R2,l1,l2,fname):
@@ -266,8 +291,10 @@ def main():
     # algoDisp=['NLMM', 'LTMM']
     # algosVec=['tugOfWar']
     # algoDisp=['TugOfWar']
-    algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    #algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    #algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # algosVec=['rip']#, 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['RIP']#, 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     
@@ -280,35 +307,38 @@ def main():
     csvTemplate = 'config_cca_static_lazy.csv'
     # do not change the following
     resultPaths = algosVec
-
+    os.system("mkdir ../../results")
+    os.system("mkdir ../../figures")
+    os.system("mkdir " + figPath)
     # run
-    reRun = 0
+    reRun = 2
+    os.system("sudo mkdir " + commonBasePath)
     if (len(sys.argv) < 2):
-        os.system("mkdir ../../results")
-        os.system("mkdir ../../figures")
-        os.system("mkdir " + figPath)
+      
         os.system("sudo rm -rf " + commonBasePath)
-        os.system("sudo mkdir " + commonBasePath)
+        
         reRun = 1
     methodTags =algoDisp
-    lat95All, errAll, ebAll,thrAll,periodAll,endingErrorAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
+    elapsedTimeAll, errAll, ebAll,thrAll,periodAll,endingErrorAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
     
     errAll=np.array(errAll)*100.0
     endingErrorAll=np.array(endingErrorAll)*100.0
-    lat95All=np.array(lat95All)
+    elapsedTimeAll=np.array(elapsedTimeAll)
     thrAll=np.array(thrAll)/1000.0
 
     # int8 = int8 / int8_fp32 * mm
-    lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
-    thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
+    #elapsedTimeAll[0] = elapsedTimeAll[0]/elapsedTimeAll[-2]*elapsedTimeAll[-1]
+    #thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 
-    #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
+    #draw2yBar(methodTags,[elapsedTimeAll[0][0],elapsedTimeAll[1][0],elapsedTimeAll[2][0],elapsedTimeAll[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
                          5, 15, figPath + "sec4_1_cca_static_lazy_fro", True)
     groupBar2.DrawFigure(dataSetNames, endingErrorAll, methodTags, "Datasets", "Error (%)",
                          5, 15, figPath + "sec4_1_cca_static_lazy_ending_error", True)
-    groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)",
+    groupBar2.DrawFigure(dataSetNames, np.log(elapsedTimeAll), methodTags, "Datasets", "95% latency (ms)",
                          5, 15, figPath + "sec4_1_cca_static_lazy_latency_log", True)
+    print((errAll))
+    return elapsedTimeAll,errAll,endingErrorAll
     # groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms",
     #                      5, 15, figPath + "sec4_1_cca_static_lazy_throughput_log", True)
 if __name__ == "__main__":
