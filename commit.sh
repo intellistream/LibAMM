@@ -1,5 +1,5 @@
 
-BRANCH=zipf
+BRANCH=zipf_fixed
 git init
 git checkout -b $BRANCH
 git add .
