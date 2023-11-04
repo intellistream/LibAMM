@@ -116,8 +116,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
 
     # prepare new file
     # run
-    command = f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkCCA {configFname} 2>&1 | tee execution_log.txt"
-    os.system(command)
+    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmarkCCA " + configFname)
     os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
     os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
     # copy result
@@ -293,8 +292,6 @@ def main():
     # algosVec=['tugOfWar']
     # algoDisp=['TugOfWar']
     #algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    #algosVec=['crs']
-    #algoDisp=['CRS']
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     #algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
@@ -322,24 +319,26 @@ def main():
         
         reRun = 1
     methodTags =algoDisp
-    lat95All, errAll, ebAll,thrAll,periodAll,endingErrorAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
+    elapsedTimeAll, errAll, ebAll,thrAll,periodAll,endingErrorAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
     
     errAll=np.array(errAll)*100.0
     endingErrorAll=np.array(endingErrorAll)*100.0
-    lat95All=np.array(lat95All)
+    elapsedTimeAll=np.array(elapsedTimeAll)
     thrAll=np.array(thrAll)/1000.0
 
     # int8 = int8 / int8_fp32 * mm
-    #lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
+    #elapsedTimeAll[0] = elapsedTimeAll[0]/elapsedTimeAll[-2]*elapsedTimeAll[-1]
     #thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 
-    #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
+    #draw2yBar(methodTags,[elapsedTimeAll[0][0],elapsedTimeAll[1][0],elapsedTimeAll[2][0],elapsedTimeAll[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
                          5, 15, figPath + "sec4_1_cca_static_lazy_fro", True)
     groupBar2.DrawFigure(dataSetNames, endingErrorAll, methodTags, "Datasets", "Error (%)",
                          5, 15, figPath + "sec4_1_cca_static_lazy_ending_error", True)
-    groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)",
+    groupBar2.DrawFigure(dataSetNames, np.log(elapsedTimeAll), methodTags, "Datasets", "95% latency (ms)",
                          5, 15, figPath + "sec4_1_cca_static_lazy_latency_log", True)
+    print((errAll))
+    return elapsedTimeAll,errAll,endingErrorAll
     # groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms",
     #                      5, 15, figPath + "sec4_1_cca_static_lazy_throughput_log", True)
 if __name__ == "__main__":

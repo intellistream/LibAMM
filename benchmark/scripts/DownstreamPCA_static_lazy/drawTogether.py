@@ -94,30 +94,44 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
     
     # clean dir
-    os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
-    os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
-
     # prepare new file
     # run
-    import subprocess
-    command = f"export OMP_NUM_THREADS=1 && cd {exePath} && sudo ./benchmarkPCA {configFname} 2>&1 | tee execution_log.txt"
-    try:
-        subprocess.run(command, shell=True, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error {e}")
-        os.system(f"cd {exePath} && sudo cp scripts/AMME2E_default_results/PCA.csv {resultPath}/{prefixTag}/PCA.csv")
-        
+    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmarkPCA " + configFname)
+    os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
+    os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
     # copy result
     os.system("cd " + exePath + "&& sudo cp *.csv execution_log.txt " + resultPath + "/" + str(prefixTag))
 
 
-def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTemplate="config.csv"):
+def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTemplate="config.csv",reRun=1):
     for i in  range(len(periodVec)):
         rf=periodVec[i]
         sf=pS[i]
         print(sf)
-        runPeriod(exePath, rf,sf,algoTag, resultPath, configTemplate,prefixTag[i])
+        if reRun==2:
+            if checkResultSingle(prefixTag[i],resultPath)==1:
+                print("skip "+prefixTag[i])
+            else:
+                runPeriod(exePath, rf,sf,algoTag, resultPath, configTemplate,prefixTag[i])
+        else:
+            runPeriod(exePath, rf,sf,algoTag, resultPath, configTemplate,prefixTag[i])
 
+def checkResultSingle(singleValue, resultPath):
+    resultFname = resultPath + "/" + str(singleValue) + "/PCA.csv"
+    ruExists=0
+    if os.path.exists(resultFname):
+        ruExists=1
+    else:
+        print("File does not exist:"+resultFname)
+        ruExists=0
+    return ruExists
+def checkResultVector(singleValueVec, resultPath):
+    resultIsComplete=0
+    for i in singleValueVec:
+        resultIsComplete= checkResultSingle(i, resultPath)
+        if resultIsComplete==0:
+            return 0
+    return 1
 
 def readResultSingle(singleValue, resultPath):
     resultFname = resultPath + "/" + str(singleValue) + "/PCA.csv"
@@ -152,21 +166,33 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
     errorBoundRatioAll = []
     thrAll=[]
     endingErrorAll=[]
+    resultIsComplete=1
     for i in range(len(algos)):
         resultPath = commonPathBase + resultPaths[i]
         algoTag=algos[i]
         if (reRun == 1):
             os.system("sudo rm -rf " + resultPath)
-            os.system("sudo mkdir " + resultPath)
+            
             runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate)
+        else:
+            if(reRun == 2):
+                resultIsComplete=checkResultVector(dataSetName,resultPath)
+                if resultIsComplete==1:
+                    print(algoTag+ " is complete, skip")
+                else:
+                    print(algoTag+ " is incomplete, redo it")
+                    runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate,2)
+                    resultIsComplete=checkResultVector(dataSetName,resultPath)
+        os.system("sudo mkdir " + resultPath)
+        if resultIsComplete:
         #exit()
-        elapsedTime, fro, eb,thr,endingError = readResultVector(dataSetName, resultPath)
-        elapsedTimeAll.append(elapsedTime)
-        periodAll.append(dataSetName)
-        froAll.append(fro)
-        errorBoundRatioAll.append(eb)
-        thrAll.append(thr)
-        endingErrorAll.append(endingError)
+            elapsedTime, fro, eb,thr,endingError = readResultVector(dataSetName, resultPath)
+            elapsedTimeAll.append(elapsedTime)
+            periodAll.append(dataSetName)
+            froAll.append(fro)
+            errorBoundRatioAll.append(eb)
+            thrAll.append(thr)
+            endingErrorAll.append(endingError)
     return np.array(elapsedTimeAll), np.array(froAll), np.array(errorBoundRatioAll),np.array(thrAll),periodAll,np.array(endingErrorAll)
         
 def draw2yBar(NAME,R1,R2,l1,l2,fname):
@@ -247,25 +273,24 @@ def main():
     # algoDisp=['CRS', 'LTMM']
     # algosVec=['int8', 'crs', 'countSketch', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['INT8', 'CRS', 'CS', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    # algosVec=['crs', 'blockLRA']
-    # algoDisp=['CRS', 'BlockLRA']
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    #algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    #algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # add the algo tag here
     # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
     # this template configs all algos as lazy mode, all datasets are static and normalized
     csvTemplate = 'config_pca_static_lazy.csv'
     # do not change the following
     resultPaths = algosVec
-
+    os.system("mkdir ../../results")
+    os.system("mkdir ../../figures")
+    os.system("mkdir " + figPath)
+    os.system("sudo mkdir " + commonBasePath)
     # run
-    reRun = 0
+    reRun = 2
     if (len(sys.argv) < 2):
-        os.system("mkdir ../../results")
-        os.system("mkdir ../../figures")
-        os.system("mkdir " + figPath)
         os.system("sudo rm -rf " + commonBasePath)
-        os.system("sudo mkdir " + commonBasePath)
         reRun = 1
     methodTags =algoDisp
 
@@ -305,10 +330,8 @@ def main():
     thrAll=np.array(thrAll)/1000.0
 
     # int8 = int8 / int8_fp32 * mm
-    lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
-    thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
-
-    breakpoint()
+    #lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
+    #thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
