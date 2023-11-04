@@ -14,4 +14,5 @@ add_sources(
         MtxMatrixLoader.cpp
         MatrixLoaderTable.cpp
         ZeroMaskedMatrixLoader.cpp
+        ZipfMatrixLoader.cpp
 )

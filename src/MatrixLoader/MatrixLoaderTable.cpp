@@ -15,6 +15,7 @@
 #include <MatrixLoader/MediaMillMatrixLoader.h>
 #include <MatrixLoader/MtxMatrixLoader.h>
 #include <MatrixLoader/ZeroMaskedMatrixLoader.h>
+#include <MatrixLoader/ZipfMatrixLoader.h>
 namespace AMMBench {
 /**
  * @note revise me if you need new loader
@@ -32,6 +33,7 @@ AMMBench::MatrixLoaderTable::MatrixLoaderTable() {
   loaderMap["MediaMill"] = newMediaMillMatrixLoader();
   loaderMap["mtx"] = newMtxMatrixLoader();
   loaderMap["zeroMasked"]=newZeroMaskedMatrixLoader();
+  loaderMap["zipf"]=newZipfMatrixLoader();
 }
 
 } // AMMBench
