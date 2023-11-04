@@ -184,7 +184,7 @@ def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, 
         '#FF8C00', '#FFE4C4', '#00FFFF', '#E0FFFF',
         '#FF6347', '#98FB98', '#800080', '#FFD700',
         '#7CFC00', '#8A2BE2', '#FF4500', '#20B2AA',
-        '#B0E0E6', '#DC143C', '#00FF7F'
+        '#B0E0E6', '#00000F', '#00FF7F'
     ]  
     FIGURE_LABEL = legend_labels
 
