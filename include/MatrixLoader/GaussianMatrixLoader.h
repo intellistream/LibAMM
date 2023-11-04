@@ -18,7 +18,7 @@ namespace AMMBench {
  */
 /**
  * @class GaussianMatrixLoader MatrixLoader/GaussianMatrixLoader.h
- * @brief The Gaussian Random class of matrix loader
+ * @brief The Gaussian  class of matrix loader
  * @ingroup AMMBENCH_MatrixLOADER_Gaussian
  * @note:
  * - Must have a global config by @ref setConfig
@@ -31,14 +31,20 @@ namespace AMMBench {
  * - "aCol" The cols in matrix B, U64, 1000
  * - "bCol" The rows in matrix B, U64, 500
  * - "seed" The seed of inline random generator,U64,114514
+ * - "randA" To generate matrix A under random distribution instead (will disable all guassian-related settings), U64, 0
+ * - "randB" To generate matrix B under random distribution instead (will disable all guassian-related settings), U64, 0
+ * - "sigmaA" The standard divation of A, Double, 1
+ * - "avgA" The average value of A, Double, 0
+ * - "sigmaB" The standard divation of B, Double, 1
+ * - "avgB" The average value of A, Double, 0
  * @note: default name tags
  * "random": @ref GaussianMatrixLoader
  */
 class GaussianMatrixLoader : public AbstractMatrixLoader {
  protected:
   torch::Tensor A, B;
-  uint64_t aRow, aCol, bCol, seed;
-
+  uint64_t aRow, aCol, bCol, seed,randA, randB;
+  double sigmaA, avgA,sigmaB,avgB;
   /**
    * @brief Inline logic of reading a config file
    * @param cfg the config
