@@ -224,30 +224,14 @@ def main():
     commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/scanAZipfCycles/"
 
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/scanAZipfCycles"
-    import drawLarge
-    drawLarge.main()
-    import drawSmall
-    drawSmall.main()
-    # add the datasets here
-    # srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
-    # srcBVec=["datasets/AST/mcfe.mtx"] # 765*756
-    # dataSetNames=['AST']
-    # srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
-    # srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
-    # dataSetNames=['UTM']
-    #srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
-    #srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
-    #dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
-    #srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
-    #srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
-    #aGuassianVec= [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
-    aGuassianVec=[1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0]
+    
+    aGuassianVec=[1.9,2.0]
     #aGuassianVec=[100, 200, 500, 1000]
     # add the algo tag here
     #algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algosVec=[ 'crs', 'countSketch',  'fastjlt', 'rip', 'smp-pca', 'tugOfWar']
     #algosVec=[ 'crs']
-    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    algoDisp=['CRS', 'CS',   'FastJLT', 'RIP', 'SMP-PCA', 'TugOfWar']
     #algoDisp=['CRS']
     # add the algo tag here
     
@@ -259,14 +243,7 @@ def main():
     os.system("mkdir ../../figures")
     os.system("mkdir " + figPath)
     # run
-    reRun = 0
-    if (len(sys.argv) < 2):
-       
-        os.system("sudo rm -rf " + commonBasePath)
-       
-        reRun = 1
-    else:
-        reRun=int(sys.argv[1])
+    reRun = 2
     os.system("sudo mkdir " + commonBasePath)
     print(reRun)
     methodTags =algoDisp
@@ -274,31 +251,18 @@ def main():
     # Add some pre-process logic for int8 here if it is used
     valueVec=aGuassianVec
     bandInt=[]
-    #groupBar2.DrawFigureYLog(aGuassianVec, instructions/instructions[-1], methodTags, "Datasets", "Ins (times of LTMM)", 5, 15, figPath + "/" + "instructions", True)
-    #groupBar2.DrawFigureYLog(aGuassianVec, fpInsAll/fpInsAll[-1], methodTags, "Datasets", "FP Ins (times of LTMM)", 5, 15, figPath + "/" + "FP_instructions", True)
-    #groupBar2.DrawFigureYLog(aGuassianVec, memInsAll/memInsAll[-1], methodTags, "Datasets", "Mem Ins (times of LTMM)", 5, 15, figPath + "/" + "mem_instructions", True)
-    #groupBar2.DrawFigure(aGuassianVec, ratioFpIns, methodTags, "Datasets", "SIMD Utilization (%)", 5, 15, figPath + "/" + "SIMD utilization", True)
-    #groupBar2.DrawFigure(aGuassianVec, instructions/(memLoadAll+memStoreAll), methodTags, "Datasets", "IPM", 5, 15, figPath + "/" + "IPM", True)
-    #groupBar2.DrawFigure(aGuassianVec, fpInsAll/(memLoadAll+memStoreAll), methodTags, "Datasets", "FP Ins per Unit Mem Access", 5, 15, figPath + "/" + "FPIPM", True)
-    #groupBar2.DrawFigure(aGuassianVec, (memLoadAll+memStoreAll)/(instructions)*100.0, methodTags, "Datasets", "Ratio of Mem Ins (%)", 5, 15, figPath + "/" + "mem", True)
-   
-    #groupBar2.DrawFigure(aGuassianVec, branchAll/instructions*100.0, methodTags, "Datasets", "Ratio of Branch Ins (%)", 5, 15, figPath + "/" + "branches", True)
-    #groupBar2.DrawFigure(aGuassianVec, otherIns/instructions*100.0, methodTags, "Datasets", "Ratio of Other Ins (%)", 5, 15, figPath + "/" + "others", True)
-    #print(instructions[-1],instructions[2])
-    
-    #groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms", 5, 15, figPath + "sec4_1_e2e_static_lazy_throughput_log", True)
    
     groupLine.DrawFigureYnormal(periodAll, elapsedTimeAll,
                                 methodTags,
                                 "Zipf factor", r'Processing Latency l (ms)', 0, 1,
-                                figPath + "/"  + "aZipf_lat",
+                                figPath + "/"  + "aZipf_lat_large",
                                 True)
-    groupLine.DrawFigureYnormalEmbed(periodAll, froAll*100.0,
+    groupLine.DrawFigureYSub(periodAll, froAll*100.0,
                                 methodTags,
-                                "Zipf factor", r'AMM Error $\epsilon$ (%)', 0, 1,
-                                figPath + "/"  + "aZipf_err",
-                                True)
-    
+                                "", "", 0, 1,
+                                figPath + "/"  + "aZipf_err_large",
+                                False)
+   
 
     # Add some pre-process logic for int8 here if it is used
 if __name__ == "__main__":
