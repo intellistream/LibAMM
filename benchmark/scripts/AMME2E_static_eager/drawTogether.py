@@ -101,7 +101,7 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError as e:
         print(f"Error {e}")
-        os.system(f"cd {exePath} && sudo cp scripts/AMME2E_default_results/result_streaming.csv {resultPath}/{prefixTag}/result_streaming.csv")
+        os.system(f"cd {exePath} && sudo cp scripts/AMME2E_default_results/default.csv {resultPath}/{prefixTag}/default.csv")
         
     # copy result
     os.system("cd " + exePath + "&& sudo cp *.csv execution_log.txt " + resultPath + "/" + str(prefixTag))
@@ -116,7 +116,7 @@ def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTe
 
 
 def readResultSingle(singleValue, resultPath):
-    resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
+    resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
     elapsedTime = readConfig(resultFname, "perfElapsedTime")
     froError = readConfig(resultFname, "froError")
     errorBoundRatio = readConfig(resultFname, "errorBoundRatio")

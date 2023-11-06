@@ -10,5 +10,5 @@ threads,1,U64
 forceMP,1,U64
 algoDelta,0.02,Double
 eventRateTps,200,U64
-isStreaming,1,U64
+isStreaming,0,U64
 batchSize,1,U64

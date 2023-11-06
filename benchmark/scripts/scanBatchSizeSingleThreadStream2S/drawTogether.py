@@ -76,7 +76,7 @@ def runScanVector(exePath, singleValueVec, resultPath, templateName="config.csv"
 
 
 def readResultSingle(singleValue, resultPath):
-    resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
+    resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
     throughput = readConfig(resultFname, "throughputByElements")
     lat95 = readConfig(resultFname, "95%latency")
     froError = readConfig(resultFname, "froError")
