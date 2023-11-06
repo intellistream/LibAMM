@@ -5,7 +5,7 @@ srcA,datasets/QCD/qcda_small.mtx,String
 srcB,datasets/QCD/qcdb_small.mtx,String
 normalizeA,1,U64
 normalizeB,1,U64
-isStreaming,1,U64
+isStreaming,0,U64
 streamingTwoMatrixes,0,U64
 staticDataSet,0,U64
 fullLazy,1,U64
