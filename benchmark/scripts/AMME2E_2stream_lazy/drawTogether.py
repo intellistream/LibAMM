@@ -107,7 +107,7 @@ def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTe
 
 
 def readResultSingle(singleValue, resultPath):
-    resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
+    resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
     elapsedTime = readConfig(resultFname, "perfElapsedTime")
     froError = readConfig(resultFname, "froError")
     errorBoundRatio = readConfig(resultFname, "errorBoundRatio")

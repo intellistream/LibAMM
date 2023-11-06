@@ -19,7 +19,7 @@ LEGEND_FONT_SIZE = 32
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
-MARKERS= ['s', 'o', '^', 'v', '+', '*', ',', 'x', 'p', '1', '2', 'o','+','|']
+MARKERS= ['s', 'o', '^', 'v', '+', '*', 'h', 'x', 'p', '1', '2', 'o','+','|']
 COLOR_MAP = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22',
               '#17becf', '#1f77b4']
 # you may want to change the patterns for different figures
