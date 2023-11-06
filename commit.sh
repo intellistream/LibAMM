@@ -1,5 +1,5 @@
 
-BRANCH=zipf_fixed_scripts
+BRANCH=zipf_fixed_scripts_2
 git init
 git checkout -b $BRANCH
 git add .
