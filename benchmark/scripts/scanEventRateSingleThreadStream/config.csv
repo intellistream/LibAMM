@@ -6,5 +6,5 @@ sketchDimension,100,U64
 threads,1,U64
 forceMP,1,U64
 eventRateTps,200,U64
-isStreaming,1,U64
+isStreaming,0,U64
 batchSize,50,U64

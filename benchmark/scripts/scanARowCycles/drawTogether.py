@@ -84,10 +84,10 @@ def runPeriod(exePath, algoTag, resultPath, configTemplate="config.csv",prefixTa
     import glob
     if algoTag == 'vq':
         #pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m1_row*')[0]
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/1000_m1_row*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/rows_{prefixTag}_m1*')[0]
     elif algoTag =='pq':
         #pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_row*')[0]
-         pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/1000_m10_row*')[0]
+         pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/rows_{prefixTag}_m1*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
     # prepare new file
@@ -282,6 +282,10 @@ def main():
     allowLegend = 1
     valueVec=aRowVec
     bandInt=[]
+    int8_adjust_ratio=elapsedTimeAll[0]/elapsedTimeAll[-2]
+    elapsedTimeAll[0]= elapsedTimeAll[-1]*int8_adjust_ratio
+    int8_adjust_ratio=memStallAll[0]/memStallAll[-2]
+    memStallAll[0]= memStallAll[-1]*int8_adjust_ratio
     #groupBar2.DrawFigureYLog(aRowVec, instructions/instructions[-1], methodTags, "Datasets", "Ins (times of LTMM)", 5, 15, figPath + "/" + "instructions", True)
     #groupBar2.DrawFigureYLog(aRowVec, fpInsAll/fpInsAll[-1], methodTags, "Datasets", "FP Ins (times of LTMM)", 5, 15, figPath + "/" + "FP_instructions", True)
     #groupBar2.DrawFigureYLog(aRowVec, memInsAll/memInsAll[-1], methodTags, "Datasets", "Mem Ins (times of LTMM)", 5, 15, figPath + "/" + "mem_instructions", True)
@@ -299,6 +303,11 @@ def main():
                                 methodTags,
                                 "#Rows of A", r'Processing Latency l (ms)', 0, 1,
                                 figPath + "/"  + "aRows_lat",
+                                True)
+    groupLine.DrawFigureYLog(periodAll, memStallAll,
+                                methodTags,
+                                "#Rows of A", r'Memot Stall Cycles', 0, 1,
+                                figPath + "/"  + "aRows_memStall",
                                 True)
     groupLine.DrawFigureYnormal(periodAll, froAll*100.0,
                                 methodTags,

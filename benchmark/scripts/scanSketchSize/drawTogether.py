@@ -111,7 +111,7 @@ def runPeriodVector (exePath,algoTag,resultPath,prefixTag, configTemplate="confi
 
 
 def readResultSingle(singleValue, resultPath):
-    resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
+    resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
     elapsedTime = readConfig(resultFname, "perfElapsedTime")
     cpuCycle = readConfig(resultFname, "cpuCycle")
     memStall = readConfig(resultFname, "memStall")
@@ -149,7 +149,7 @@ def readResultVector(singleValueVec, resultPath):
     return np.array(elapseTimeVec), np.array(cpuCycleVec), np.array(memStallVec), np.array(instructionsVec), np.array(
         l1dStallVec), np.array(l2StallVec), np.array(l3StallVec),np.array(totalStallVec),np.array(froVec)
 def checkResultSingle(singleValue, resultPath):
-    resultFname = resultPath + "/" + str(singleValue) + "/result_streaming.csv"
+    resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
     ruExists=0
     if os.path.exists(resultFname):
         ruExists=1

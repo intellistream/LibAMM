@@ -1,7 +1,7 @@
 key,value,type
 sketchDimension,25,U64
 matrixLoaderTag,MNIST,String
-isStreaming,1,U64
+isStreaming,0,U64
 streamingTwoMatrixes,1,U64
 staticDataSet,1,U64
 fullLazy,1,U64
