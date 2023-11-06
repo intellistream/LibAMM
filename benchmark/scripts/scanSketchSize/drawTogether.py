@@ -304,6 +304,9 @@ def main():
     #groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms", 5, 15, figPath + "sec4_1_e2e_static_lazy_throughput_log", True)
     int8_adjust_ratio=elapsedTimeAll[0]/elapsedTimeAll[-2]
     elapsedTimeAll[0]= elapsedTimeAll[-1]*int8_adjust_ratio
+    int8_adjust_ratio=memStallAll[0]/memStallAll[-2]
+    memStallAll[0]= memStallAll[-1]*int8_adjust_ratio
+
     groupLine.DrawFigureYLog(periodAll/2500*100.0, elapsedTimeAll,
                                 methodTags,
                                 "Preserved information (%)", r'Processing Latency l (ms)', 0, 1,
@@ -317,10 +320,20 @@ def main():
                                 "Preserved information (%)", "l (times of 10% presevation)", 0, 1,
                                 figPath + "/"  + "dimen_lat_relative",
                                 True)
-    groupLine.DrawFigureYnormal(periodAll/2500*100.0, froAll,
+    groupLine.DrawFigureYnormal(periodAll/2500*100.0, froAll*100.0,
                                 methodTags,
                                 "Preserved information (%)", r'AMM Error $\epsilon$ (%)', 0, 1,
                                 figPath + "/"  + "dimen_err",
+                                True)
+    groupLine.DrawFigureYLog(periodAll/2500*100.0, memStallAll,
+                                methodTags,
+                                "Preserved information (%)", r'Mem Stall Cycles', 0, 1,
+                                figPath + "/"  + "dimen_memStall",
+                                True)
+    groupLine.DrawFigureYnormal(elapsedTimeAll,froAll*100.0,
+                                methodTags,
+                               r'Processing Latency l (ms)',r'AMM Error $\epsilon$ (%)' ,  0, 1,
+                                figPath + "/"  + "dimen_tradeoff",
                                 True)
     print((periodAll))
 if __name__ == "__main__":
