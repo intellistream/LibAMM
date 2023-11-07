@@ -232,9 +232,9 @@ def main():
     #algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     nnzAValues= [0.1,0.2,0.5,0.8,1.0]
     # add the algo tag here
-    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     #algosVec=[ 'crs',  'cooFD','mm']
-    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     #algoDisp=['CRS', 'CoOFD', 'LTMM']
     # add the algo tag here
     #algosVec=['mm', 'crs', 'countSketch', 'int8', 'weighted-cr', 'rip', 'smp-pca', 'tugOfWar', 'blockLRA', 'vq', 'pq', 'fastjlt', 'cooFD', 'int8_fp32']
@@ -263,7 +263,7 @@ def main():
     # Add some pre-process logic for int8 here if it is used
 
     print(instructions, cpuCycleAll)
-   
+    froAll[-2]=froAll[-2]-froAll[-2]
     allowLegend = True
     valueVec=nnzAValues
     groupLine.DrawFigureYLog(periodAll*100.0, elapsedTimeAll,
