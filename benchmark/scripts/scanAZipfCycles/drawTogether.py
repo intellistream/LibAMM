@@ -293,9 +293,9 @@ def main():
                                 "Zipf factor", r'Processing Latency l (ms)', 0, 1,
                                 figPath + "/"  + "aZipf_lat",
                                 True)
-    groupLine.DrawFigureYnormalEmbed(periodAll, froAll*100.0,
+    groupLine.DrawFigureYnormalEmbed(periodAll, froAll,
                                 methodTags,
-                                "Zipf factor", r'AMM Error $\epsilon$ (%)', 0, 1,
+                                "Zipf factor", r'AMM Error $\epsilon$ ', 0, 1,
                                 figPath + "/"  + "aZipf_err",
                                 True)
     

@@ -304,9 +304,9 @@ def main():
                                 "#Rows of A", r'Processing Latency l (ms)', 0, 1,
                                 figPath + "/"  + "aCols_lat",
                                 True)
-    groupLine.DrawFigureYLog(periodAll, froAll*100.0,
+    groupLine.DrawFigureYLog(periodAll, froAll,
                                 methodTags,
-                                "#Rows of A", r'AMM Error $\epsilon$ (%)', 0, 1,
+                                "#Rows of A", r'AMM Error $\epsilon$ ', 0, 1,
                                 figPath + "/"  + "aCols_err",
                                 True)
     print(elapsedTimeAll)

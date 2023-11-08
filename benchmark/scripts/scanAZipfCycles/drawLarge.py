@@ -257,7 +257,7 @@ def main():
                                 "Zipf factor", r'Processing Latency l (ms)', 0, 1,
                                 figPath + "/"  + "aZipf_lat_large",
                                 True)
-    groupLine.DrawFigureYSub(periodAll, froAll*100.0,
+    groupLine.DrawFigureYSub(periodAll, froAll,
                                 methodTags,
                                 "", "", 0, 1,
                                 figPath + "/"  + "aZipf_err_large",
