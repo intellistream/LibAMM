@@ -83,11 +83,10 @@ def runPeriod(exePath, algoTag, resultPath, configTemplate="config.csv",prefixTa
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
     if algoTag == 'vq':
-        #pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m1_row*')[0]
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/1000_m1_row*')[0]
+        #print(prefixTag)
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/sketch_new_250_m1*')[0]
     elif algoTag =='pq':
-        #pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_row*')[0]
-         pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/1000_m10_row*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/sketch_new_250_m10*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
     # prepare new file
@@ -245,9 +244,9 @@ def main():
     #aGuassianVec=[100, 200, 500, 1000]
     # add the algo tag here
     #algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt','vq','pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     #algosVec=[ 'crs']
-    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT','VQ','PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     #algoDisp=['CRS']
     # add the algo tag here
     
