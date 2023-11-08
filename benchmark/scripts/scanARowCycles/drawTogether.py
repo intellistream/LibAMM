@@ -309,9 +309,9 @@ def main():
                                 "#Rows of A", r'Memot Stall Cycles', 0, 1,
                                 figPath + "/"  + "aRows_memStall",
                                 True)
-    groupLine.DrawFigureYnormal(periodAll, froAll*100.0,
+    groupLine.DrawFigureYnormal(periodAll, froAll,
                                 methodTags,
-                                "#Rows of A", r'AMM Error $\epsilon$ (%)', 0, 1,
+                                "#Rows of A", r'AMM Error $\epsilon$ ', 0, 1,
                                 figPath + "/"  + "aRows_err",
                                 True)
     print(elapsedTimeAll)

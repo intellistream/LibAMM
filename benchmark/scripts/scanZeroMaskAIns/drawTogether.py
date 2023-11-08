@@ -324,7 +324,7 @@ def main():
                                 "nnz ratio", "95% latency (ms)", 0, 1,
                                 figPath + "/"  + "nnz_lat",
                                 True)
-    groupLine.DrawFigureYnormal(periodAll, froAll*100.0,
+    groupLine.DrawFigureYnormal(periodAll, froAll,
                                 methodTags,
                                 "nnz ratio", "fro error (%)", 0, 1,
                                 figPath + "/"  + "nnz_err",

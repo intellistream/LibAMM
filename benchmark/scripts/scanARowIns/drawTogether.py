@@ -300,7 +300,7 @@ def main():
                                 "#Rows of A", "95% latency (ms)", 0, 1,
                                 figPath + "/"  + "aRows_lat",
                                 True)
-    groupLine.DrawFigureYLog(periodAll, froAll*100.0,
+    groupLine.DrawFigureYLog(periodAll, froAll,
                                 methodTags,
                                 "#Rows of A", "fro error (%)", 0, 1,
                                 figPath + "/"  + "aRows_err",

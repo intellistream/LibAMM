@@ -257,7 +257,7 @@ def DrawFigureYnormalEmbed(xvalues, yvalues, legend_labels, x_label, y_label, y_
     kvPattern=dict(zip(algoDisp,MARKERS))
     FIGURE_LABEL = legend_labels
     from matplotlib.patches import Rectangle
-    rectangle_extent = [1.7,1.9,45,85]  # Left, Right, Bottom, Top
+    rectangle_extent = [1.7,1.9,0.45,0.85]  # Left, Right, Bottom, Top
     import matplotlib.image as mpimg
 # Create a Rectangle patch
     rectangle = Rectangle((rectangle_extent[0], rectangle_extent[2]), 
@@ -271,7 +271,7 @@ def DrawFigureYnormalEmbed(xvalues, yvalues, legend_labels, x_label, y_label, y_
     figure.imshow(img, extent=rectangle_extent, aspect='auto', zorder=1)  
     #
     image_path = first_part+'/aZipf_err_small.png'
-    rectangle_extent = [1.01,1.21,50,90]  # Left, Right, Bottom, Top
+    rectangle_extent = [1.01,1.21,0.50,0.90]  # Left, Right, Bottom, Top
     rectangle = Rectangle((rectangle_extent[0], rectangle_extent[2]), 
                       rectangle_extent[1] - rectangle_extent[0], 
                       rectangle_extent[3] - rectangle_extent[2], 
