@@ -83,11 +83,10 @@ def runPeriod(exePath, algoTag, resultPath, configTemplate="config.csv",prefixTa
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
     if algoTag == 'vq':
-        #pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m1_row*')[0]
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/1000_m1_row*')[0]
+        #print(prefixTag)
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/sketch_new_250_m1*')[0]
     elif algoTag =='pq':
-        #pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_row*')[0]
-         pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/1000_m10_row*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/sketch_new_250_m10*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
     # prepare new file
