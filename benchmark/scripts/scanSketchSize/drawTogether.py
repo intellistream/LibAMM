@@ -309,7 +309,7 @@ def main():
 
     groupLine.DrawFigureYLog(periodAll/2500*100.0, elapsedTimeAll,
                                 methodTags,
-                                "Preserved information (%)", r'Processing Latency l (ms)', 0, 1,
+                                r'Tuning knob $\omega$ (%)', r'Processing Latency l (ms)', 0, 1,
                                 figPath + "/"  + "dimen_lat_abso",
                                 True)
     for i in range(len(elapsedTimeAll)):
@@ -322,12 +322,12 @@ def main():
                                 True)
     groupLine.DrawFigureYnormal(periodAll/2500*100.0, froAll,
                                 methodTags,
-                                "Preserved information (%)", r'AMM Error $\epsilon$ ', 0, 1,
+                                r'Tuning knob $\omega$ (%)', r'AMM Error $\epsilon$ ', 0, 1,
                                 figPath + "/"  + "dimen_err",
                                 True)
     groupLine.DrawFigureYLog(periodAll/2500*100.0, memStallAll,
                                 methodTags,
-                                "Preserved information (%)", r'Mem Stall Cycles', 0, 1,
+                                r'Tuning knob $\omega$ (%)', r'Mem Stall Cycles', 0, 1,
                                 figPath + "/"  + "dimen_memStall",
                                 True)
     groupLine.DrawFigureYnormal(elapsedTimeAll,froAll,

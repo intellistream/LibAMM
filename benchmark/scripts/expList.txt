@@ -2,10 +2,7 @@ Instructions_breakdown_1
 cycles_breakdown_1
 end2end
 scanARowCycles
-scanARowIns
-scanAColCycles
-scanAColIns
 scanZeroMaskACycles
-scanZeroMaskAIns
 scanSketchSize
+scanAZipfCycles
 
