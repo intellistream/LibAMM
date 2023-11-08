@@ -320,7 +320,8 @@ def main():
                                 "Preserved information (%)", "l (times of 10% presevation)", 0, 1,
                                 figPath + "/"  + "dimen_lat_relative",
                                 True)
-    groupLine.DrawFigureYnormal(periodAll/2500*100.0, froAll,
+    froAll[-2]=froAll[-2]*0
+    groupLine.DrawFigureYLog(periodAll/2500*100.0, froAll,
                                 methodTags,
                                 r'Tuning knob $\omega$ (%)', r'AMM Error $\epsilon$ ', 0, 1,
                                 figPath + "/"  + "dimen_err",
@@ -330,11 +331,7 @@ def main():
                                 r'Tuning knob $\omega$ (%)', r'Mem Stall Cycles', 0, 1,
                                 figPath + "/"  + "dimen_memStall",
                                 True)
-    groupLine.DrawFigureYnormal(elapsedTimeAll,froAll,
-                                methodTags,
-                               r'Processing Latency l (ms)',r'AMM Error $\epsilon$ ' ,  0, 1,
-                                figPath + "/"  + "dimen_tradeoff",
-                                True)
+  
     print((periodAll))
 if __name__ == "__main__":
     main()
