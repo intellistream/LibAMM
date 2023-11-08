@@ -320,9 +320,9 @@ def main():
                                 "Preserved information (%)", "l (times of 10% presevation)", 0, 1,
                                 figPath + "/"  + "dimen_lat_relative",
                                 True)
-    groupLine.DrawFigureYnormal(periodAll/2500*100.0, froAll*100.0,
+    groupLine.DrawFigureYnormal(periodAll/2500*100.0, froAll,
                                 methodTags,
-                                "Preserved information (%)", r'AMM Error $\epsilon$ (%)', 0, 1,
+                                "Preserved information (%)", r'AMM Error $\epsilon$ ', 0, 1,
                                 figPath + "/"  + "dimen_err",
                                 True)
     groupLine.DrawFigureYLog(periodAll/2500*100.0, memStallAll,
@@ -330,9 +330,9 @@ def main():
                                 "Preserved information (%)", r'Mem Stall Cycles', 0, 1,
                                 figPath + "/"  + "dimen_memStall",
                                 True)
-    groupLine.DrawFigureYnormal(elapsedTimeAll,froAll*100.0,
+    groupLine.DrawFigureYnormal(elapsedTimeAll,froAll,
                                 methodTags,
-                               r'Processing Latency l (ms)',r'AMM Error $\epsilon$ (%)' ,  0, 1,
+                               r'Processing Latency l (ms)',r'AMM Error $\epsilon$ ' ,  0, 1,
                                 figPath + "/"  + "dimen_tradeoff",
                                 True)
     print((periodAll))
