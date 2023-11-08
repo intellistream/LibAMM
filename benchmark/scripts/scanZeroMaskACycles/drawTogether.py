@@ -271,9 +271,9 @@ def main():
                                 "Propotion of left-top NNZ rows and columns (%)", "95% latency (ms)", 0, 1,
                                 figPath + "/"  + "nnz_lat",
                                 True)
-    groupLine.DrawFigureYLog(periodAll*100.0, froAll*100.0,
+    groupLine.DrawFigureYLog(periodAll*100.0, froAll,
                                 methodTags,
-                                "Propotion of left-top NNZ rows and columns (%)", r'AMM Error $\epsilon$ (%)', 0, 1,
+                                "Propotion of left-top NNZ rows and columns (%)", r'AMM Error $\epsilon$ ', 0, 1,
                                 figPath + "/"  + "nnz_err",
                                 True)
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
