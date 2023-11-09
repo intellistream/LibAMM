@@ -37,5 +37,5 @@ doc/
 /cmake-build-debug/_deps/
 /cmake-build-release/
 /cmake-build-release/_deps/
-
+benchmark/scripts/Downstream_Inference/bolt*
 /.vscode
