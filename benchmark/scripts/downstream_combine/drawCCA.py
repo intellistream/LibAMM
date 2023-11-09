@@ -315,7 +315,8 @@ def main():
     os.system("sudo mkdir " + commonBasePath)
     methodTags =algoDisp
     elapsedTimeAll, errAll, ebAll,thrAll,periodAll,endingErrorAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
-    errAll[-2]=errAll[-2]-errAll[-2]
+    errAll[-2]=errAll[-1]
+    endingErrorAll[-2]=endingErrorAll[-1]
     errAll=np.array(errAll)
     endingErrorAll=np.array(endingErrorAll)
     elapsedTimeAll=np.array(elapsedTimeAll)

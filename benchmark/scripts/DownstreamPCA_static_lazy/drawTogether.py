@@ -172,7 +172,7 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
         algoTag=algos[i]
         if (reRun == 1):
             os.system("sudo rm -rf " + resultPath)
-            
+            os.system("sudo mkdir " + resultPath)
             runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate)
         else:
             if(reRun == 2):
@@ -181,9 +181,10 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
                     print(algoTag+ " is complete, skip")
                 else:
                     print(algoTag+ " is incomplete, redo it")
+                    os.system("sudo mkdir " + resultPath)
                     runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate,2)
                     resultIsComplete=checkResultVector(dataSetName,resultPath)
-        os.system("sudo mkdir " + resultPath)
+        
         if resultIsComplete:
         #exit()
             elapsedTime, fro, eb,thr,endingError = readResultVector(dataSetName, resultPath)
