@@ -221,8 +221,9 @@ def combinDownStream(l1,l2):
     ru=l1.tolist()
     lt=l2.tolist()
     for i in range(len(l1)):
-       ru[i].append(lt[i][0])
-    return ru
+        for j in range(len(lt[i])):
+            ru[i].append(lt[i][j])
+    return np.array(ru)
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
     #share the same result with cycle breakdown evaluation, as it contains everything
@@ -231,23 +232,26 @@ def main():
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/downstreamCombine/"
     import drawCCA
     import drawPCA
+    import drawInference
     procLat, ammError, endError=drawCCA.main()
     i=0
-    while i<1:
+    while i<2:
         procLat2=[]
         ammError2=[]
         endError2=[]
         if(i==0):
          procLat2, ammError2, endError2=drawPCA.main()
+        if (i==1):
+         procLat2, ammError2, endError2=drawInference.main()
         i=i+1
         procLat=combinDownStream(procLat,procLat2)
         ammError=combinDownStream(ammError,ammError2)
-        endErrorError=combinDownStream(endError,endError2)
-    print(procLat)
+        endError=combinDownStream(endError,endError2)
+    print(endError)
     os.system("mkdir ../../results")
     os.system("mkdir ../../figures")
     os.system("mkdir " + figPath)
-    taskNames=['CCA','PCA']
+    taskNames=['CCA','PCA','Inference\n(CIFAR10)','Inference\n(CIFAR100)']
     methodTags=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     groupBar2.DrawFigureYLog(taskNames,procLat,methodTags, "Task", r'Processing Latency l (ms)', 5, 15, figPath + "ds_latency", True)
     groupBar2.DrawFigureYLog(taskNames,ammError,methodTags, "Task",r'AMM Error $\epsilon$ ', 5, 15, figPath + "ds_amm_error", True)
