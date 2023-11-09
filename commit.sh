@@ -1,5 +1,5 @@
 
-BRANCH=backup_11_08
+BRANCH=fix_inference_scripts
 git init
 git checkout -b $BRANCH
 git add .

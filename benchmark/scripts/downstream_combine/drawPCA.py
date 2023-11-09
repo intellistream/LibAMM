@@ -321,15 +321,16 @@ def main():
     thrAll /= num_runs
     endingErrorAll /= num_runs
     
-    errAll=np.array(errAll)*100.0
-    endingErrorAll=np.array(endingErrorAll)*100.0
+    errAll=np.array(errAll)
+    endingErrorAll=np.array(endingErrorAll)
     lat95All=np.array(lat95All)
     thrAll=np.array(thrAll)/1000.0
 
     # int8 = int8 / int8_fp32 * mm
     #lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
     #thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
-    errAll[-2]=errAll[-2]-errAll[-2]
+    errAll[-2]=errAll[-1]
+    endingErrorAll[-2]=endingErrorAll[-1]
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
                          5, 15, figPath + "sec4_1_pca_static_lazy_fro", True)
