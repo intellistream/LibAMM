@@ -323,7 +323,7 @@ def main():
     thrAll=np.array(thrAll)/1000.0
 
     # int8 = int8 / int8_fp32 * mm
-    #elapsedTimeAll[0] = elapsedTimeAll[0]/elapsedTimeAll[-2]*elapsedTimeAll[-1]
+    elapsedTimeAll[0] = elapsedTimeAll[0]/elapsedTimeAll[-2]*elapsedTimeAll[-1]
     #thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
 
     #draw2yBar(methodTags,[elapsedTimeAll[0][0],elapsedTimeAll[1][0],elapsedTimeAll[2][0],elapsedTimeAll[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")

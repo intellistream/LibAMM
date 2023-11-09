@@ -1,5 +1,5 @@
 
-BRANCH=fix_inference_scripts
+BRANCH=fix_large_vq
 git init
 git checkout -b $BRANCH
 git add .

@@ -22,12 +22,12 @@ if (BUILD_BENCHMARKS)
     target_link_libraries(benchmarkPCA IntelliStream)
     add_executable(benchmarkCCA "src/BenchmarkCCA.cpp")
     target_link_libraries(benchmarkCCA IntelliStream)
-    add_executable(step1AMME2ESaveMtxToPt "torchscripts/VQ/step1AMME2ESaveMtxToPt.cpp")
-    target_link_libraries(step1AMME2ESaveMtxToPt IntelliStream)
-    add_executable(step1PCACCASaveMtxToPt "torchscripts/VQ/step1PCACCASaveMtxToPt.cpp")
-    target_link_libraries(step1PCACCASaveMtxToPt IntelliStream)
-    add_executable(step3TestVQ "torchscripts/VQ/step3TestVQ.cpp")
-    target_link_libraries(step3TestVQ IntelliStream)
+    #add_executable(step1AMME2ESaveMtxToPt "torchscripts/VQ/step1AMME2ESaveMtxToPt.cpp")
+    #target_link_libraries(step1AMME2ESaveMtxToPt IntelliStream)
+    #add_executable(step1PCACCASaveMtxToPt "torchscripts/VQ/step1PCACCASaveMtxToPt.cpp")
+    #target_link_libraries(step1PCACCASaveMtxToPt IntelliStream)
+    #add_executable(step3TestVQ "torchscripts/VQ/step3TestVQ.cpp")
+    #target_link_libraries(step3TestVQ IntelliStream)
 #     add_executable(VQTrainSIFT "torchscripts/VQ/PCA/VQTrainSIFT.cpp")
 #     target_link_libraries(VQTrainSIFT IntelliStream)
 
@@ -35,8 +35,7 @@ if (BUILD_BENCHMARKS)
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/perfLists
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/torchscripts
-            DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    #file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/torchscripts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pythonTest.py
             DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.csv
@@ -44,9 +43,9 @@ if (BUILD_BENCHMARKS)
 
 #     set_target_properties(benchmarkPCA PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/PCA)
 #     set_target_properties(benchmarkCCA PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/CCA)
-    set_target_properties(step1AMME2ESaveMtxToPt PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/torchscripts/VQ)
-    set_target_properties(step1PCACCASaveMtxToPt PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/torchscripts/VQ)
-    set_target_properties(step3TestVQ PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/torchscripts/VQ)
+    #set_target_properties(step1AMME2ESaveMtxToPt PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/torchscripts/VQ)
+    #set_target_properties(step1PCACCASaveMtxToPt PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/torchscripts/VQ)
+    #set_target_properties(step3TestVQ PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/torchscripts/VQ)
 #     set_target_properties(VQTrainSIFT PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts/PCA/results/pca_nonstreaming/blockLRA/1)
 
     file(COPY ${PROJECT_SOURCE_DIR}/src/CL
