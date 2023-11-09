@@ -233,14 +233,14 @@ def main():
     import drawCCA
     import drawPCA
     import drawInference
-    procLat, ammError, endError=drawCCA.main()
+    procLat, ammError, endError=drawPCA.main()
     i=0
     while i<2:
         procLat2=[]
         ammError2=[]
         endError2=[]
         if(i==0):
-         procLat2, ammError2, endError2=drawPCA.main()
+         procLat2, ammError2, endError2=drawCCA.main()
         if (i==1):
          procLat2, ammError2, endError2=drawInference.main()
         i=i+1
@@ -251,7 +251,7 @@ def main():
     os.system("mkdir ../../results")
     os.system("mkdir ../../figures")
     os.system("mkdir " + figPath)
-    taskNames=['CCA','PCA','Inference\n(CIFAR10)','Inference\n(CIFAR100)']
+    taskNames=['PCA','CCA','Inference\n(CIFAR10)','Inference\n(CIFAR100)']
     methodTags=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     groupBar2.DrawFigureYLog(taskNames,procLat,methodTags, "Task", r'Processing Latency l (ms)', 5, 15, figPath + "ds_latency", True)
     groupBar2.DrawFigureYLog(taskNames,ammError,methodTags, "Task",r'AMM Error $\epsilon$ ', 5, 15, figPath + "ds_amm_error", True)
