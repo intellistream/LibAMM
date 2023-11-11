@@ -145,7 +145,7 @@ def tryTorchScripts(exePath):
     tryDownload=0
     tsPath=exePath+'/torchscripts'
     print(tsPath)
-    fileId='https://www.dropbox.com/scl/fi/t9s0o39xhv511fivi9iy7/torchscripts.tar?rlkey=wjs7lvw0vi1ca36pjrdujel4j'
+    fileId='https://www.dropbox.com/scl/fi/77jx2brmikje770juliy5/torchscripts.tar?rlkey=iky555ogxxe4aok5dsonmhv7o'
     downloadCmd="cd "+exePath+"&& wget -O torchscripts.tar "+fileId
     if os.path.exists(tsPath):
         return 1
@@ -301,71 +301,7 @@ def main():
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/Downstream_Inference_static_lazy/"
     checkDependecies(exeSpace)
     exit()
-    #exit()
-    # add the datasets here
-    # srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
-    # srcBVec=["datasets/AST/mcfe.mtx"] # 765*756
-    # dataSetNames=['AST']
-    # srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
-    # srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
-    # dataSetNames=['UTM']
-    # srcAVec=['dummy']
-    # srcBVec=['dummy']
-    # dataSetNames=['MediaMill'] 
-    srcAVec=['dummy', 'dummy']
-    srcBVec=['dummy', 'dummy']
-    dataSetNames=['cifar10', 'cifar100']
-    # add the algo tag here
-    # algosVec=['fastjlt']
-    # algoDisp=['FastJLT']
-    # algosVec=['int8', 'crs', 'int8_fp32', 'mm']
-    # algoDisp=['INT8', 'CRS', 'NLMM', 'LTMM']
-    # algosVec=['vq', 'pq']
-    # algoDisp=['VQ', 'PQ']
-    # algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    # algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    # algosVec=['rip']#, 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    # algoDisp=['RIP']#, 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    # algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    # algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    
-    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    #algosVec=['crs']
-    #algoDisp=['CRS']
-    # add the algo tag here
-    # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
-    # this template configs all algos as lazy mode, all datasets are static and normalized
-    csvTemplate = 'config_dnn_inference.csv'
-    # do not change the following
-    resultPaths = algosVec
-    os.system("mkdir ../../results")
-    os.system("mkdir ../../figures")
-    os.system("mkdir " + figPath)
-    os.system("sudo mkdir " + commonBasePath)
-    os.system("sudo chmod 777 "+commonBasePath)
-    # run
-    reRun = 2
-    methodTags =algoDisp
-    lat95All, errAll, ebAll,thrAll,periodAll,endingAccAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
-    
-    errAll=np.array(errAll)*100.0
-    endingAccAll=np.array(endingAccAll)*100.0
-    lat95All=np.array(lat95All)
-    thrAll=np.array(thrAll)/1000.0
-
-    # int8 = int8 / int8_fp32 * mm
-    lat95All[0] = lat95All[0]/lat95All[-2]*lat95All[-1]
-    #thrAll[0] = thrAll[0]/thrAll[-2]*thrAll[-1]
-
-    #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
-    groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)",
-                         5, 15, figPath + "sec4_1_inference_static_lazy_fro", True)
-    groupBar2.DrawFigure(dataSetNames, endingAccAll, methodTags, "Datasets", "Acc (%)",
-                         5, 15, figPath + "sec4_1_inference_static_lazy_ending_acc", True)
-    groupBar2.DrawFigure(dataSetNames, np.log(lat95All), methodTags, "Datasets", "95% latency (ms)",
-                         5, 15, figPath + "sec4_1_inference_static_lazy_latency_log", True)
-    # groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms",
+  
     #                      5, 15, figPath + "sec4_1_cca_static_lazy_throughput_log", True)
 if __name__ == "__main__":
     main()
