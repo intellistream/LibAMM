@@ -79,14 +79,14 @@ def runPeriod(exePath, algoTag, resultPath, configTemplate="config.csv",prefixTa
         editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
 
     # load Codeword LookUpTable for vq or pq
-    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
+    pqvqCodewordLookUpTableDir = exePath+'/torchscripts/VQ/CodewordLookUpTable'
     pqvqCodewordLookUpTablePath = "dummy"
     import glob
     if algoTag == 'vq':
         #print(prefixTag)
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/sketch_new_250_m1*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/zipf_{prefixTag}_m1*')[0]
     elif algoTag =='pq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/sketch_new_250_m10*')[0]
+        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/zipf_{prefixTag}_m10*')[0]
     editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
 
     # prepare new file
@@ -223,10 +223,7 @@ def main():
     commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/scanAZipfCycles/"
 
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/scanAZipfCycles"
-    import drawLarge
-    drawLarge.main()
-    import drawSmall
-    drawSmall.main()
+    
     # add the datasets here
     # srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
     # srcBVec=["datasets/AST/mcfe.mtx"] # 765*756
@@ -292,6 +289,11 @@ def main():
                                 "Zipf factor", r'Processing Latency l (ms)', 0, 1,
                                 figPath + "/"  + "aZipf_lat",
                                 True)
+    import drawLarge
+    drawLarge.main()
+    import drawSmall
+    drawSmall.main()
+
     groupLine.DrawFigureYnormalEmbed(periodAll, froAll,
                                 methodTags,
                                 "Zipf factor", r'AMM Error $\epsilon$ ', 0, 1,
