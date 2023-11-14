@@ -262,6 +262,7 @@ void benchmarkCCA(std::string configName) {
     //     Syy = Syy/A.size(1);
     //     Sxy = Sxy/A.size(1);
     // }
+     torch::manual_seed(999);
     if ((staticDataSet!=1) || (fullLazy!=1)){
         INTELLI_ERROR("Must be staticDataSet=1 and fullLazy=1");
         exit(EXIT_FAILURE);

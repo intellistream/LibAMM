@@ -50,6 +50,7 @@ void benchmarkPCA(std::string configName) {
   INTELLI_INFO("Start SVD task..");
   ThreadPerf pef(-1);
   pef.setPerfList();
+  torch::manual_seed(999);
   pef.start();
   torch::Tensor U, S, Vh;
   std::tie(U, S, Vh) = torch::linalg::svd(torch::div(C, A.size(1)), false, c10::nullopt); // // covirance matrix estimator
