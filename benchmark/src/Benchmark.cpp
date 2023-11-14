@@ -57,6 +57,7 @@ void streamingTest(std::string configName) {
   pef=newThreadPerf(-1);
 #endif
   pef->initEventsByCfg(cfg);
+  torch::manual_seed(999);
   pef->start();
   if (streamingTwoMatrixes) {
     INTELLI_INFO("Both A,B will be streaming");

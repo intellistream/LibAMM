@@ -9,7 +9,6 @@ torch::Tensor AMMBench::INT8CPPAlgo::fp32amm(torch::Tensor tensor1, torch::Tenso
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
-  INTELLI_INFO("fp32amm");
   gettimeofday(&tstart, NULL);
   int64_t rows1 = A_size[0];
   int64_t cols1 = A_size[1];
