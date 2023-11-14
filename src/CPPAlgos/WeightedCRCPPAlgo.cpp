@@ -20,6 +20,7 @@ torch::Tensor AMMBench::WeightedCRCPPAlgo::amm(torch::Tensor A, torch::Tensor B,
   // torch::Tensor probability_distribution = torch::ones(n) / n;
 
   // unique indices and occurences
+  torch::manual_seed(999);
   torch::Tensor sample_indices = torch::multinomial(probability_distribution, /*num_samples*/c, /*replacement*/true);
 
   torch::Tensor unique_indices, _, occurences;
