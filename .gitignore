@@ -38,4 +38,5 @@ doc/
 /cmake-build-release/
 /cmake-build-release/_deps/
 benchmark/scripts/Downstream_Inference/bolt*
+benchmark/torchscripts/
 /.vscode
