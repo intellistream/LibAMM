@@ -6,7 +6,6 @@
 
 namespace AMMBench {
 torch::Tensor AMMBench::CountSketchCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
-  INTELLI_INFO("I am counter sketch");
   int64_t m1 = A.size(0);
   int64_t n = A.size(1);
   int64_t m2 = B.size(1);

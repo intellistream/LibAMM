@@ -233,16 +233,20 @@ def main():
     import drawCCA
     import drawPCA
     import drawInference
+    import drawTraining
     procLat, ammError, endError=drawPCA.main()
     i=0
-    while i<2:
+    while i<3:
         procLat2=[]
         ammError2=[]
         endError2=[]
         if(i==0):
-         procLat2, ammError2, endError2=drawCCA.main()
+            procLat2, ammError2, endError2=drawCCA.main()
         if (i==1):
-         procLat2, ammError2, endError2=drawInference.main()
+            procLat2, endError2=drawTraining.main()
+            ammError2 = [0]*14
+        if (i==2):
+            procLat2, ammError2, endError2=drawInference.main()
         i=i+1
         procLat=combinDownStream(procLat,procLat2)
         ammError=combinDownStream(ammError,ammError2)
