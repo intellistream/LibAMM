@@ -11,17 +11,21 @@ from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import LinearLocator, LogLocator, MaxNLocator, ScalarFormatter
 from numpy import double
 import matplotlib.patches as patches
-algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT','VQ','PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+
 OPT_FONT_NAME = 'Helvetica'
-TICK_FONT_SIZE = 32
-LABEL_FONT_SIZE = 32
-LEGEND_FONT_SIZE = 32
+TICK_FONT_SIZE = 20
+LABEL_FONT_SIZE = 20
+LEGEND_FONT_SIZE = 20
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
-MARKERS= ['s', 'o', '^', 'v', '+', '*', 'h', 'x', 'p', '1', '2', 'o','+','|']
-COLOR_MAP = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22',
-              '#17becf', '#1f77b4']
+
+MARKERS = (['o', 's', 'v', "^", "h", "v", ">", "x", "d", "<", "|", "p", "+", "_", "%", "|", "|", "|", "|", "|"])
+# you may want to change the color map for different figures
+COLOR_MAP = (
+    '#F15854', '#5DA5DA', '#60BD68', '#B276B2', '#DECF3F', '#F17CB0', '#B2912F', '#FAA43A', '#AFAFAF', '#087878',
+    '#783456',
+    '#560012', '#431256', "#00AABB", "#AA00BB")
 # you may want to change the patterns for different figures
 PATTERNS = (["|", "\\", "/", "+", "-", ".", "*", "x", "o", "O", "////", ".", "|||", "o", "---", "+", "\\\\", "*"])
 LABEL_WEIGHT = 'bold'
@@ -178,235 +182,14 @@ def DrawFigure2(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max,
 # draw a line chart
 def DrawFigureYnormal(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
     # you may change the figure size on your own.
-    fig = plt.figure(figsize=(20, 6))
+    fig = plt.figure(figsize=(10, 3))
     figure = fig.add_subplot(111)
-    LINE_COLORS = [
-        '#FF8C00', '#FFE4C4', '#00FFFF', '#E0FFFF',
-        '#FF6347', '#98FB98', '#800080', '#FFD700',
-        '#7CFC00', '#8A2BE2', '#FF4500', '#20B2AA',
-        '#B0E0E6', '#00000F', 
-    ]  
-    kvColor=dict(zip(algoDisp,LINE_COLORS))
-    kvPattern=dict(zip(algoDisp,MARKERS))
+
     FIGURE_LABEL = legend_labels
 
     x_values = xvalues
     y_values = yvalues
-    print(len(FIGURE_LABEL),len(x_values))
-    lines = [None] * (len(FIGURE_LABEL))
-    for i in range(len(y_values)):
-        lines[i], = figure.plot(x_values[i], y_values[i], color=kvColor.get(FIGURE_LABEL[i]), \
-                                linewidth=LINE_WIDTH, marker=kvPattern.get(FIGURE_LABEL[i]), \
-                                markersize=MARKER_SIZE, label=FIGURE_LABEL[i], markeredgecolor='k')
 
-    # sometimes you may not want to draw legends.
-    if allow_legend == True:
-        plt.legend(lines,
-                   FIGURE_LABEL,
-                   prop=LEGEND_FP,
-                   loc='upper center',
-                   ncol=7,
-                   bbox_to_anchor=(0.55, 1.5), shadow=False,
-                   columnspacing=0.1,
-                   frameon=True, borderaxespad=0, handlelength=1.2,
-                   handletextpad=0.1,
-                   labelspacing=0.1)
-    #plt.xscale('log')
-
-    # plt.yscale('log')
-
-    # you may control the limits on your own.
-
-    # plt.ylim(y_min, y_max)
-
-    plt.grid(axis='y', color='gray')
-    #figure.yaxis.set_major_locator(LogLocator(base=10))
-    #figure.xaxis.set_major_locator(LogLocator(base=10))
-    plt.xticks(fontsize=TICK_FONT_SIZE)
-    figure.get_xaxis().set_tick_params(direction='in', pad=10)
-    figure.get_yaxis().set_tick_params(direction='in', pad=10)
-    # Create a rectangle with bias lines
-    #rectangle = patches.Rectangle((6.0, 0.00), 2.5, 0.2, edgecolor='black', hatch='\\', fill=False)
-    #figure.text(7.0, 0.21, "user demand", fontsize=TICK_FONT_SIZE, ha='center')
-    #figure.add_patch(rectangle)
-    plt.xlabel(x_label, fontproperties=LABEL_FP)
-    plt.ylabel(y_label, fontproperties=LABEL_FP)
-    plt.xticks(fontsize=TICK_FONT_SIZE)
-    plt.yticks(fontsize=TICK_FONT_SIZE)
-    size = fig.get_size_inches()
-    dpi = fig.get_dpi()
-
-    plt.savefig(filename + ".pdf", bbox_inches='tight')
-
-
-# draw a line chart
-def DrawFigureYnormalEmbed(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
-    # you may change the figure size on your own.
-    fig = plt.figure(figsize=(20, 6))
-    figure = fig.add_subplot(111)
-    first_part = filename.rsplit("/", 1)[0]
-    image_path = first_part+'/aZipf_err_large.png'
-    
-    LINE_COLORS = [
-        '#FF8C00', '#FFE4C4', '#00FFFF', '#E0FFFF',
-        '#FF6347', '#98FB98', '#800080', '#FFD700',
-        '#7CFC00', '#8A2BE2', '#FF4500', '#20B2AA',
-        '#B0E0E6', '#00000F', 
-    ]  
-    kvColor=dict(zip(algoDisp,LINE_COLORS))
-    kvPattern=dict(zip(algoDisp,MARKERS))
-    FIGURE_LABEL = legend_labels
-    from matplotlib.patches import Rectangle
-    rectangle_extent = [1.7,1.9,0.45,0.85]  # Left, Right, Bottom, Top
-    import matplotlib.image as mpimg
-# Create a Rectangle patch
-    rectangle = Rectangle((rectangle_extent[0], rectangle_extent[2]), 
-                      rectangle_extent[1] - rectangle_extent[0], 
-                      rectangle_extent[3] - rectangle_extent[2], 
-                      fill=True, color='red')
-
-# Add the Rectangle patch to the plot
-    figure.add_patch(rectangle)
-    img = mpimg.imread(image_path)
-    figure.imshow(img, extent=rectangle_extent, aspect='auto', zorder=1)  
-    #
-    image_path = first_part+'/aZipf_err_small.png'
-    rectangle_extent = [1.01,1.21,0.50,0.90]  # Left, Right, Bottom, Top
-    rectangle = Rectangle((rectangle_extent[0], rectangle_extent[2]), 
-                      rectangle_extent[1] - rectangle_extent[0], 
-                      rectangle_extent[3] - rectangle_extent[2], 
-                      fill=True, color='blue')
-
-# Add the Rectangle patch to the plot
-    figure.add_patch(rectangle)
-    img = mpimg.imread(image_path)
-    figure.imshow(img, extent=rectangle_extent, aspect='auto', zorder=1)  
-
-    x_values = xvalues
-    y_values = yvalues
-    print(len(FIGURE_LABEL),len(x_values))
-    lines = [None] * (len(FIGURE_LABEL))
-    for i in range(len(y_values)):
-        lines[i], = figure.plot(x_values[i], y_values[i], color=kvColor.get(FIGURE_LABEL[i]), \
-                                linewidth=LINE_WIDTH, marker=kvPattern.get(FIGURE_LABEL[i]), \
-                                markersize=MARKER_SIZE, label=FIGURE_LABEL[i], markeredgecolor='k')
-
-    # sometimes you may not want to draw legends.
-    if allow_legend == True:
-        plt.legend(lines,
-                   FIGURE_LABEL,
-                   prop=LEGEND_FP,
-                   loc='upper center',
-                   ncol=7,
-                   bbox_to_anchor=(0.5, 1.3), shadow=False,
-                   columnspacing=0.1,
-                   frameon=True, borderaxespad=0, handlelength=1.2,
-                   handletextpad=0.1,
-                   labelspacing=0.1)
-    #plt.xscale('log')
-
-    # plt.yscale('log')
-
-    # you may control the limits on your own.
-
-    # plt.ylim(y_min, y_max)
-
-    plt.grid(axis='y', color='gray')
-    #figure.yaxis.set_major_locator(LogLocator(base=10))
-    #figure.xaxis.set_major_locator(LogLocator(base=10))
-    plt.xticks(fontsize=TICK_FONT_SIZE)
-    figure.get_xaxis().set_tick_params(direction='in', pad=10)
-    figure.get_yaxis().set_tick_params(direction='in', pad=10)
-    # Create a rectangle with bias lines
-    #rectangle = patches.Rectangle((6.0, 0.00), 2.5, 0.2, edgecolor='black', hatch='\\', fill=False)
-    #figure.text(7.0, 0.21, "user demand", fontsize=TICK_FONT_SIZE, ha='center')
-    #figure.add_patch(rectangle)
-    plt.xlabel(x_label, fontproperties=LABEL_FP)
-    plt.ylabel(y_label, fontproperties=LABEL_FP)
-    plt.xticks(fontsize=TICK_FONT_SIZE)
-    plt.yticks(fontsize=TICK_FONT_SIZE)
-    size = fig.get_size_inches()
-    dpi = fig.get_dpi()
-    
-    
-    plt.savefig(filename + ".pdf", bbox_inches='tight')
-# draw a line chart
-def DrawFigureYSub(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
-    # you may change the figure size on your own.
-    fig = plt.figure(figsize=(10,10))
-    figure = fig.add_subplot(111)
-    LINE_COLORS = [
-        '#FF8C00', '#FFE4C4', '#00FFFF', '#E0FFFF',
-        '#FF6347', '#98FB98', '#800080', '#FFD700',
-        '#7CFC00', '#8A2BE2', '#FF4500', '#20B2AA',
-        '#B0E0E6', '#00000F', 
-    ]  
-    kvColor=dict(zip(algoDisp,LINE_COLORS))
-    kvPattern=dict(zip(algoDisp,MARKERS))
-    FIGURE_LABEL = legend_labels
-
-    x_values = xvalues
-    y_values = yvalues
-    print(len(FIGURE_LABEL),len(x_values))
-    lines = [None] * (len(FIGURE_LABEL))
-    for i in range(len(y_values)):
-        lines[i], = figure.plot(x_values[i], y_values[i], color=kvColor.get(FIGURE_LABEL[i]), \
-                                linewidth=LINE_WIDTH*2, marker=kvPattern.get(FIGURE_LABEL[i]), \
-                                markersize=MARKER_SIZE*2, label=FIGURE_LABEL[i], markeredgecolor='k')
-
-    # sometimes you may not want to draw legends.
-    if allow_legend == True:
-        plt.legend(lines,
-                   FIGURE_LABEL,
-                   prop=LEGEND_FP,
-                   loc='upper center',
-                   ncol=7,
-                   bbox_to_anchor=(0.55, 1.5), shadow=False,
-                   columnspacing=0.1,
-                   frameon=True, borderaxespad=0, handlelength=1.2,
-                   handletextpad=0.1,
-                   labelspacing=0.1)
-    #plt.xscale('log')
-
-    # plt.yscale('log')
-
-    # you may control the limits on your own.
-
-    # plt.ylim(y_min, y_max)
-
-    plt.grid(axis='y', color='gray')
-    #figure.yaxis.set_major_locator(LogLocator(base=10))
-    #figure.xaxis.set_major_locator(LogLocator(base=10))
-    plt.xticks(fontsize=TICK_FONT_SIZE)
-    figure.get_xaxis().set_tick_params(direction='in', pad=10)
-    figure.get_yaxis().set_tick_params(direction='in', pad=10)
-    # Create a rectangle with bias lines
-    #rectangle = patches.Rectangle((6.0, 0.00), 2.5, 0.2, edgecolor='black', hatch='\\', fill=False)
-    #figure.text(7.0, 0.21, "user demand", fontsize=TICK_FONT_SIZE, ha='center')
-    #figure.add_patch(rectangle)
-    plt.xlabel(x_label, fontproperties=LABEL_FP)
-    plt.ylabel(y_label, fontproperties=LABEL_FP)
-    plt.xticks(fontsize=TICK_FONT_SIZE)
-    plt.yticks(fontsize=TICK_FONT_SIZE)
-    size = fig.get_size_inches()
-    dpi = fig.get_dpi()
-
-    plt.savefig(filename + ".png", bbox_inches='tight')
-def DrawFigureYLog(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
-    # you may change the figure size on your own.
-    fig = plt.figure(figsize=(20, 6))
-    figure = fig.add_subplot(111)
-    LINE_COLORS = [
-        '#FF8C00', '#FFE4C4', '#00FFFF', '#E0FFFF',
-        '#FF6347', '#98FB98', '#800080', '#FFD700',
-        '#7CFC00', '#8A2BE2', '#FF4500', '#20B2AA',
-        '#B0E0E6', '#00000F', '#00FF7F'
-    ]  
-    FIGURE_LABEL = legend_labels
-
-    x_values = xvalues
-    y_values = yvalues
-    print(len(FIGURE_LABEL),len(x_values))
     lines = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
         lines[i], = figure.plot(x_values[i], y_values[i], color=LINE_COLORS[i], \
@@ -419,38 +202,38 @@ def DrawFigureYLog(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_m
                    FIGURE_LABEL,
                    prop=LEGEND_FP,
                    loc='upper center',
-                   ncol=7,
+                   ncol=3,
                    bbox_to_anchor=(0.55, 1.5), shadow=False,
                    columnspacing=0.1,
                    frameon=True, borderaxespad=0, handlelength=1.2,
                    handletextpad=0.1,
                    labelspacing=0.1)
-    plt.xscale('log')
-
-    plt.yscale('log')
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # plt.yscale('log')
 
     # you may control the limits on your own.
 
     # plt.ylim(y_min, y_max)
 
     plt.grid(axis='y', color='gray')
-    figure.yaxis.set_major_locator(LogLocator(base=10))
-    figure.xaxis.set_major_locator(LogLocator(base=10))
+    # figure.yaxis.set_major_locator(LogLocator(base=10))
+    # figure.xaxis.set_major_locator(LogLocator(base=10))
     plt.xticks(fontsize=TICK_FONT_SIZE)
     figure.get_xaxis().set_tick_params(direction='in', pad=10)
     figure.get_yaxis().set_tick_params(direction='in', pad=10)
     # Create a rectangle with bias lines
-    #rectangle = patches.Rectangle((6.0, 0.00), 2.5, 0.2, edgecolor='black', hatch='\\', fill=False)
-    #figure.text(7.0, 0.21, "user demand", fontsize=TICK_FONT_SIZE, ha='center')
-    #figure.add_patch(rectangle)
+    rectangle = patches.Rectangle((6.0, 0.00), 2.5, 0.2, edgecolor='black', hatch='\\', fill=False)
+    figure.text(7.0, 0.21, "user demand", fontsize=TICK_FONT_SIZE, ha='center')
+    figure.add_patch(rectangle)
     plt.xlabel(x_label, fontproperties=LABEL_FP)
     plt.ylabel(y_label, fontproperties=LABEL_FP)
-    plt.xticks(fontsize=TICK_FONT_SIZE)
-    plt.yticks(fontsize=TICK_FONT_SIZE)
+
     size = fig.get_size_inches()
     dpi = fig.get_dpi()
 
     plt.savefig(filename + ".pdf", bbox_inches='tight')
+
 
 # example for reading csv file
 def ReadFile():
