@@ -7,3 +7,6 @@ echo $elment
 python3 drawTogether.py 2
 cd ../
 done
+cd downstream_combine
+python3 drawTogether.py
+cd ..
