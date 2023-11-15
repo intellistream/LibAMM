@@ -1,6 +1,6 @@
 
 
-BRANCH=fix_srand_bugs_ds
+BRANCH=fix_row_zip
 
 git init
 git checkout -b $BRANCH

@@ -145,7 +145,7 @@ def tryTorchScripts(exePath):
     tryDownload=0
     tsPath=exePath+'/torchscripts'
     print(tsPath)
-    fileId='https://www.dropbox.com/scl/fi/77jx2brmikje770juliy5/torchscripts.tar?rlkey=iky555ogxxe4aok5dsonmhv7o'
+    fileId=' https://www.dropbox.com/scl/fi/obfvtxrdcrjksfqbqegsz/torchscripts.tar?rlkey=bb27zgxuzgwg8vechir0k4f64'
     downloadCmd="cd "+exePath+"&& wget -O torchscripts.tar "+fileId
     if os.path.exists(tsPath):
         return 1
