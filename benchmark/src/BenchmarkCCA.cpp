@@ -321,12 +321,16 @@ void benchmarkCCA(std::string configName) {
         INTELLI_INFO("staticDataSet=1 and fullLazy=1");
         ThreadPerf pef(-1);
         pef.setPerfList();
-        pef.start();
+        uint64_t ammTime=0;
         // vq
         adjustConfig(cfg, "AA"); // update cfg index book prototype path
         cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
         torch::manual_seed(123); // CRS requires same sampling seed
-        Sxx = cppAlgoPtr->amm(A, At, sketchSize)/A.size(1);
+        pef.start();
+        Sxx = cppAlgoPtr->amm(A, At, sketchSize);
+        pef.end();
+        Sxx=Sxx/A.size(1);
+        ammTime+=pef.resultToConfigMap()->getU64("perfElapsedTime");
         std::cout << "Sxx:" << std::endl;
         std::cout << "Maximum Value: " << Sxx.max().item<float>() << std::endl;
         std::cout << "Mean Value: " << Sxx.mean().item<float>() << std::endl;
@@ -339,7 +343,11 @@ void benchmarkCCA(std::string configName) {
         adjustConfig(cfg, "BB"); // update cfg index book prototype path
         cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
         torch::manual_seed(123); // CRS requires same sampling seed
-        Syy = cppAlgoPtr->amm(B, Bt, sketchSize)/A.size(1);
+        pef.start();
+        Syy = cppAlgoPtr->amm(B, Bt, sketchSize);
+        pef.end();
+        Syy=Syy/A.size(1);
+        ammTime+=pef.resultToConfigMap()->getU64("perfElapsedTime");
         std::cout << "Syy:" << std::endl;
         std::cout << "Maximum Value: " << Syy.max().item<float>() << std::endl;
         std::cout << "Mean Value: " << Syy.mean().item<float>() << std::endl;
@@ -352,7 +360,11 @@ void benchmarkCCA(std::string configName) {
         adjustConfig(cfg, "AB"); // update cfg index book prototype path
         cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
         torch::manual_seed(123); // CRS requires same sampling seed
-        Sxy = cppAlgoPtr->amm(A, Bt, sketchSize)/A.size(1);
+        pef.start();
+        Sxy = cppAlgoPtr->amm(A, Bt, sketchSize);
+        pef.end();
+        Sxy=Sxy/A.size(1);
+        ammTime+=pef.resultToConfigMap()->getU64("perfElapsedTime");
         std::cout << "Sxy:" << std::endl;
         std::cout << "Maximum Value: " << Sxy.max().item<float>() << std::endl;
         std::cout << "Mean Value: " << Sxy.mean().item<float>() << std::endl;
@@ -362,11 +374,12 @@ void benchmarkCCA(std::string configName) {
         std::cout << "Mean Value: " << checker.Sxy.mean().item<float>() << std::endl;
         std::cout << "Minimum Value: " << checker.Sxy.min().item<float>() << std::endl;
 
-        pef.end();
+       // pef.end();
         allMetrics = pef.resultToConfigMap();
         allMetrics->addPrefixToKeys("AMM");
-        double throughput = (A.size(0) * 1e6) / allMetrics->getU64("AMMPerfElapsedTime");
+        double throughput = (A.size(0) * 1e6) /ammTime;
         allMetrics->edit("AMMThroughput", throughput);
+        allMetrics->edit("AMMPerfElapsedTime",(uint64_t)ammTime);
     }
     allMetrics->edit("SxxFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(checker.Sxx, Sxx));
     allMetrics->edit("SxyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(checker.Sxy, Sxy));
