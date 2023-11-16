@@ -23,13 +23,13 @@ def modify_file(file_path, new_string):
             file.write(line)
 
 
-def runAll():
+def runAll(commonBasePath):
     original_stdout = sys.stdout
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     filePath = os.path.abspath(os.path.join(os.getcwd(), "approx_mul_pytorch/functional")) + "/approx_linear.py"
     for i in range(len(algosVec)):
         algo = algosVec[i]
-        resultPath = os.path.abspath(os.path.join(os.getcwd(), "results/")) + "/" + algo
+        resultPath = commonBasePath+"/" + algo
         if os.path.exists(resultPath):
             continue
         #modify_file(filePath, algo)
@@ -55,12 +55,12 @@ def extract_info(file_path):
 
     return time_19, test_accuracy
 
-def parseResult():
+def parseResult(commonBasePath):
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     accuracy = []
     time = []
     for algo in algosVec:
-        resultPath = os.path.abspath(os.path.join(os.getcwd(), "results/")) + "/" + algo
+        resultPath = commonBasePath+"/" + algo
         if os.path.exists(resultPath):
             time_19, test_accuracy = extract_info(resultPath)
             accuracy.append(float(test_accuracy))
@@ -73,8 +73,12 @@ def parseResult():
 def main():
     soSpace = os.path.abspath(os.path.join(os.getcwd(), "../../..")) + "/"
     torch.ops.load_library(soSpace+"libIntelliStream.so")
-    runAll()
-    time, accuracy = parseResult()
+    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/downstream_trainning"
+    os.system("mkdir ../../results")
+    os.system("mkdir ../../figures")
+    os.system("mkdir " + commonBasePath)
+    runAll(commonBasePath)
+    time, accuracy = parseResult(commonBasePath)
     return time,accuracy
 
 
