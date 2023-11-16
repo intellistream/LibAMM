@@ -56,7 +56,53 @@ void adjustConfig(ConfigMapPtr cfg, std::string stage){
         }
     }
 }
+class CCAChecker{
+public:
+  CCAChecker() = default;
 
+  ~CCAChecker() = default;
+public:
+  // torch::Tensor A, B, At, Bt;
+  torch::Tensor Sxx, Syy, Sxy;
+  torch::Tensor SxxNegativeHalf, SyyNegativeHalf, M, M1;
+  torch::Tensor correlation;
+  void calculate_correlation(torch::Tensor A, torch::Tensor B,torch::Tensor At,torch::Tensor Bt)
+  {
+
+  // Sxx, Syy, Sxy: covariance matrix
+  Sxx = torch::matmul(A, At) / A.size(1); // 120*120
+  Syy = torch::matmul(B, Bt) / A.size(1); // 101*101
+  Sxy = torch::matmul(A, Bt) / A.size(1); // 120*101
+  INTELLI_INFO("sxx, sxy,syy done ");
+  // Sxx^(-1/2), Syy^(-1/2), M
+  // Sxx^(-1/2) 120*120
+  torch::Tensor eigenvaluesSxx, eigenvectorsSxx;
+  std::tie(eigenvaluesSxx, eigenvectorsSxx) = torch::linalg::eig(Sxx); // diagonization
+  INTELLI_INFO("eigen x done ");
+  torch::Tensor diagonalMatrixSxx = torch::diag(
+      1.0 / torch::sqrt(eigenvaluesSxx + torch::full({}, 1e-12))); // 1/sqrt(eigenvalue+epsilon) +epsilon to avoid nan
+  SxxNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSxx, diagonalMatrixSxx), eigenvectorsSxx.t());
+  SxxNegativeHalf = at::real(SxxNegativeHalf); // ignore complex part, it comes from numerical computations
+  // Syy^(-1/2) 101*101
+  torch::Tensor eigenvaluesSyy, eigenvectorsSyy;
+  INTELLI_INFO("neg half x done ");
+  std::tie(eigenvaluesSyy, eigenvectorsSyy) = torch::linalg::eig(Syy);
+  INTELLI_INFO("eig y done ");
+  torch::Tensor diagonalMatrixSyy = torch::diag(1.0 / torch::sqrt(eigenvaluesSyy + torch::full({}, 1e-12)));
+  SyyNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSyy, diagonalMatrixSyy), eigenvectorsSyy.t());
+  SyyNegativeHalf = at::real(SyyNegativeHalf);
+  INTELLI_INFO("neg half y done ");
+  // M 120*101
+  M1 = torch::matmul(SxxNegativeHalf.t(), Sxy);
+  M = torch::matmul(M1, SyyNegativeHalf);
+
+  // correlation
+  torch::Tensor U, S, Vh;
+  std::tie(U, S, Vh) = torch::linalg::svd(M, false, c10::nullopt);
+  correlation = torch::clamp(S, -1.0, 1.0);
+  }
+};
+ 
 void benchmarkCCA(std::string configName) {
 
     // Step1. Set up environments
@@ -74,8 +120,9 @@ void benchmarkCCA(std::string configName) {
     std::string matrixLoaderTag = cfg->tryString("matrixLoaderTag", "MediaMill", true);
     INTELLI_INFO("1.2 matrixLoaderTag: " + matrixLoaderTag);
     AMMBench::MatrixLoaderTable mLoaderTable;
-    std::shared_ptr<AMMBench::CCAMatrixLoader> matLoaderPtr;
-    if (matrixLoaderTag=="MediaMill"){
+    //std::shared_ptr<AMMBench::AbstractMatrixLoader> matLoaderPtr;
+    auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);
+   /* if (matrixLoaderTag=="MediaMill"){
         matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MediaMillMatrixLoader>(mLoaderTable.findMatrixLoader("MediaMill"));
         // std::cout << "1 The type of myVariable is: " << typeid(matLoaderPtr).name() << std::endl;
     }
@@ -86,7 +133,8 @@ void benchmarkCCA(std::string configName) {
     else{
         INTELLI_ERROR(matrixLoaderTag+" not found");
         std::exit(EXIT_FAILURE);
-    }
+    }*/
+
     // if (matrixLoaderTag=="MediaMill"){
     //     std::shared_ptr<AMMBench::MediaMillMatrixLoader> matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MediaMillMatrixLoader>(mLoaderTable.findMatrixLoader(matrixLoaderTag));
     // }
@@ -101,10 +149,12 @@ void benchmarkCCA(std::string configName) {
     matLoaderPtr->setConfig(cfg);
     auto A = matLoaderPtr->getA(); // 120*43907 double or 392*60000 float
     auto B = matLoaderPtr->getB(); // 101*43907 double or 392*60000 float
-    auto At = matLoaderPtr->getAt(); // 43907*120 double or 60000*392 float
-    auto Bt = matLoaderPtr->getBt(); // 43907*101 double or 60000*392 float
-
-    matLoaderPtr->calculate_correlation(); // cleaner code
+    auto At = A.t();
+    auto Bt = B.t();
+    CCAChecker checker;
+    INTELLI_INFO("1.2 run checker ");
+    checker.calculate_correlation(A,B,At,Bt); // cleaner code
+     INTELLI_INFO("1.2 done checker " );
     // 1.3 sketch dimension
     uint64_t sketchSize;
     sketchSize = cfg->tryU64("sketchDimension", 1, true);
@@ -281,10 +331,10 @@ void benchmarkCCA(std::string configName) {
         std::cout << "Maximum Value: " << Sxx.max().item<float>() << std::endl;
         std::cout << "Mean Value: " << Sxx.mean().item<float>() << std::endl;
         std::cout << "Minimum Value: " << Sxx.min().item<float>() << std::endl;
-        std::cout << "matLoaderPtr->getSxx():" << std::endl;
-        std::cout << "Maximum Value: " << matLoaderPtr->getSxx().max().item<float>() << std::endl;
-        std::cout << "Mean Value: " << matLoaderPtr->getSxx().mean().item<float>() << std::endl;
-        std::cout << "Minimum Value: " << matLoaderPtr->getSxx().min().item<float>() << std::endl;
+        std::cout << "checker.Sxx:" << std::endl;
+        std::cout << "Maximum Value: " << checker.Sxx.max().item<float>() << std::endl;
+        std::cout << "Mean Value: " << checker.Sxx.mean().item<float>() << std::endl;
+        std::cout << "Minimum Value: " << checker.Sxx.min().item<float>() << std::endl;
 
         adjustConfig(cfg, "BB"); // update cfg index book prototype path
         cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
@@ -294,10 +344,10 @@ void benchmarkCCA(std::string configName) {
         std::cout << "Maximum Value: " << Syy.max().item<float>() << std::endl;
         std::cout << "Mean Value: " << Syy.mean().item<float>() << std::endl;
         std::cout << "Minimum Value: " << Syy.min().item<float>() << std::endl;
-        std::cout << "matLoaderPtr->getSyy():" << std::endl;
-        std::cout << "Maximum Value: " << matLoaderPtr->getSyy().max().item<float>() << std::endl;
-        std::cout << "Mean Value: " << matLoaderPtr->getSyy().mean().item<float>() << std::endl;
-        std::cout << "Minimum Value: " << matLoaderPtr->getSyy().min().item<float>() << std::endl;
+        std::cout << "checker.Syy:" << std::endl;
+        std::cout << "Maximum Value: " << checker.Syy.max().item<float>() << std::endl;
+        std::cout << "Mean Value: " << checker.Syy.mean().item<float>() << std::endl;
+        std::cout << "Minimum Value: " << checker.Syy.min().item<float>() << std::endl;
 
         adjustConfig(cfg, "AB"); // update cfg index book prototype path
         cppAlgoPtr->setConfig(cfg); // update cfg index book prototype path
@@ -307,10 +357,10 @@ void benchmarkCCA(std::string configName) {
         std::cout << "Maximum Value: " << Sxy.max().item<float>() << std::endl;
         std::cout << "Mean Value: " << Sxy.mean().item<float>() << std::endl;
         std::cout << "Minimum Value: " << Sxy.min().item<float>() << std::endl;
-        std::cout << "matLoaderPtr->getSxy():" << std::endl;
-        std::cout << "Maximum Value: " << matLoaderPtr->getSxy().max().item<float>() << std::endl;
-        std::cout << "Mean Value: " << matLoaderPtr->getSxy().mean().item<float>() << std::endl;
-        std::cout << "Minimum Value: " << matLoaderPtr->getSxy().min().item<float>() << std::endl;
+        std::cout << "checker.Sxy:" << std::endl;
+        std::cout << "Maximum Value: " << checker.Sxy.max().item<float>() << std::endl;
+        std::cout << "Mean Value: " << checker.Sxy.mean().item<float>() << std::endl;
+        std::cout << "Minimum Value: " << checker.Sxy.min().item<float>() << std::endl;
 
         pef.end();
         allMetrics = pef.resultToConfigMap();
@@ -318,9 +368,9 @@ void benchmarkCCA(std::string configName) {
         double throughput = (A.size(0) * 1e6) / allMetrics->getU64("AMMPerfElapsedTime");
         allMetrics->edit("AMMThroughput", throughput);
     }
-    allMetrics->edit("SxxFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxx(), Sxx));
-    allMetrics->edit("SxyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSxy(), Sxy));
-    allMetrics->edit("SyyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(matLoaderPtr->getSyy(), Syy));
+    allMetrics->edit("SxxFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(checker.Sxx, Sxx));
+    allMetrics->edit("SxyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(checker.Sxy, Sxy));
+    allMetrics->edit("SyyFroError", (double) INTELLI::UtilityFunctions::relativeFrobeniusNorm(checker.Syy, Syy));
     
     // Step3. The rest of the CCA task
     ThreadPerf pef(-1);
@@ -349,11 +399,11 @@ void benchmarkCCA(std::string configName) {
     std::cout << "Maximum Value: " << M1.max().item<float>() << std::endl;
     std::cout << "Mean Value: " << M1.mean().item<float>() << std::endl;
     std::cout << "Minimum Value: " << M1.min().item<float>() << std::endl;
-    std::cout << "matLoaderPtr->getM():" << std::endl;
-    std::cout << "Maximum Value: " << matLoaderPtr->getM1().max().item<float>() << std::endl;
-    std::cout << "Mean Value: " << matLoaderPtr->getM1().mean().item<float>() << std::endl;
-    std::cout << "Minimum Value: " << matLoaderPtr->getM1().min().item<float>() << std::endl;
-    double M1FroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(M1, matLoaderPtr->getM1());
+    std::cout << "checker.M:" << std::endl;
+    std::cout << "Maximum Value: " << checker.M1.max().item<float>() << std::endl;
+    std::cout << "Mean Value: " << checker.M1.mean().item<float>() << std::endl;
+    std::cout << "Minimum Value: " << checker.M1.min().item<float>() << std::endl;
+    double M1FroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(M1, checker.M1);
     allMetrics->edit("M1FroError", (double) M1FroError);
 
     torch::manual_seed(123);
@@ -363,11 +413,11 @@ void benchmarkCCA(std::string configName) {
     std::cout << "Maximum Value: " << M.max().item<float>() << std::endl;
     std::cout << "Mean Value: " << M.mean().item<float>() << std::endl;
     std::cout << "Minimum Value: " << M.min().item<float>() << std::endl;
-    std::cout << "matLoaderPtr->getM():" << std::endl;
-    std::cout << "Maximum Value: " << matLoaderPtr->getM().max().item<float>() << std::endl;
-    std::cout << "Mean Value: " << matLoaderPtr->getM().mean().item<float>() << std::endl;
-    std::cout << "Minimum Value: " << matLoaderPtr->getM().min().item<float>() << std::endl;
-    double MFroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(M, matLoaderPtr->getM());
+    std::cout << "checker.M:" << std::endl;
+    std::cout << "Maximum Value: " << checker.M.max().item<float>() << std::endl;
+    std::cout << "Mean Value: " << checker.M.mean().item<float>() << std::endl;
+    std::cout << "Minimum Value: " << checker.M.min().item<float>() << std::endl;
+    double MFroError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(M, checker.M);
     allMetrics->edit("MFroError", (double) MFroError);
 
     // torch::Tensor M = torch::matmul(torch::matmul(SxxNegativeHalf.t(), Sxy), SyyNegativeHalf);
@@ -382,7 +432,7 @@ void benchmarkCCA(std::string configName) {
     elseMetrics->cloneInto(*allMetrics);
 
     // Step4. End to End error
-    double CorrelationError = (correlation - matLoaderPtr->getCorrelation()).abs().max().item<double>();
+    double CorrelationError = (correlation - checker.correlation).abs().max().item<double>();
     allMetrics->edit("CorrelationError", (double) CorrelationError);
 
     // Save results
