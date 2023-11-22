@@ -242,21 +242,28 @@ def main():
     import drawTraining
     procLat, ammError, endError=drawPCA.main()
     i=0
-    while i<3:
+    while i<4:
         procLat2=[]
         ammError2=[]
         endError2=[]
         if(i==0):
             procLat2, ammError2, endError2=drawCCA.main()
         if (i==1):
-            procLat2, endError2=drawTraining.main()
+            procLat2, endError2, temp, temp2=drawTraining.main()
             ammError2 = [0]*14
             print(procLat2)
             #print(procLat2)
             #exit()
+        # D= 2000
         if (i==2):
+            temp, temp2,procLat2, endError2=drawTraining.main()
+            ammError2 = [0]*14
+            print(procLat2)
+            #print(procLat2)
+            #exit()
+        if (i==3):
             procLat2, ammError2, endError2=drawInference.main()
-        if not (i==1):
+        if not (i==1 or i == 2):
             ammError=combinDownStream(ammError,ammError2)
             procLat=combinDownStream(procLat,procLat2)
             endError=combinDownStream(endError,endError2)
@@ -269,7 +276,7 @@ def main():
     os.system("mkdir ../../results")
     os.system("mkdir ../../figures")
     os.system("mkdir " + figPath)
-    taskNames=['PCA','CCA','Training','Inference\n(CIFAR10)','Inference\n(CIFAR100)']
+    taskNames=['PCA','CCA','Training\n(D=500)','Training\n(D=2000)','Inference\n(CIFAR10)','Inference\n(CIFAR100)']
     taskNamesShort=['PCA','CCA','Inference\n(CIFAR10)','Inference\n(CIFAR100)']
     methodTags=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     groupBar2.DrawFigureYLog(taskNames,procLat,methodTags, "Task", r'Processing Latency l (ms)', 5, 15, figPath + "ds_latency", True)
