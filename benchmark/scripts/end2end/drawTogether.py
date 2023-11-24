@@ -284,7 +284,7 @@ def main():
     elapsedTimeAll[0]=elapsedTimeAll[-1]*int8_adjust_ratio
     froAll[-2]=froAll[-2]-froAll[-2]
     groupBar2.DrawFigureYLog(dataSetNames,elapsedTimeAll,methodTags, "Datasets", r'Processing Latency l (ms)', 5, 15, figPath + "e2e_latency", True)
-    groupBar2.DrawFigureYLog(dataSetNames,froAll,methodTags, "Datasets",r'AMM Error $\epsilon$ ', 5, 15, figPath + "e2e_error", True)
+    groupBar2.DrawFigureYLog(dataSetNames,froAll,methodTags, "Datasets",r'AMM Error $\epsilon$ ', 5, 15, figPath + "e2e_error", False)
     #print(ipcAll)
     #groupBar2.DrawFigure(dataSetNames,(l1dStallAll+l2StallAll+l3StallAll)/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of cacheStalls (%)", 5, 15, figPath + "cachestall_ratio", True)
 

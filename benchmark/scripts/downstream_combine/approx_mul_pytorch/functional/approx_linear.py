@@ -1,5 +1,8 @@
 import torch
 from ..modules.utils import *
+count = 0
+error = 0
+import os
 
 def approx_linear_forward(input,weight,bias,sample_ratio,minimal_k,sample_ratio_bwd,minimal_k_bwd,sample_ratio_wu,minimal_k_wu, tag):
     r"""
@@ -39,7 +42,16 @@ def amm(A,B,bias, minimal_k, algo):
     if algo not in algorithms:
         algo = "mm"
     torch.ops.AMMBench.setTag(algo)
+    global count
+    count += 1
     C = torch.ops.AMMBench.ammSpecifySs(A, B, minimal_k)
+    CE = torch.mm(A, B)
+    global error
+    error += torch.norm(CE-C, p='fro')
+    if (count == 10):
+        string = algo + ": " + str(error.item()/10)
+        os.system("echo \"" + string+"\"")
+        return 1
     if bias is not None:
         C += bias
     return C
