@@ -14,7 +14,7 @@ import matplotlib.patches as patches
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 32
-LABEL_FONT_SIZE = 32
+LABEL_FONT_SIZE = 30
 LEGEND_FONT_SIZE = 32
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
@@ -262,8 +262,8 @@ def DrawFigureYLog(xvalues, yvalues, legend_labels, x_label, y_label, y_min, y_m
                    FIGURE_LABEL,
                    prop=LEGEND_FP,
                    loc='upper center',
-                   ncol=7,
-                   bbox_to_anchor=(0.55, 1.5), shadow=False,
+                   ncol=2,
+                   bbox_to_anchor=(-0.285,0.7), shadow=False,
                    columnspacing=0.1,
                    frameon=True, borderaxespad=0, handlelength=1.2,
                    handletextpad=0.1,

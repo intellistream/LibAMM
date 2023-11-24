@@ -10,9 +10,9 @@ from matplotlib.ticker import LogLocator, LinearLocator
 import matplotlib.ticker as mtick
 
 OPT_FONT_NAME = 'Helvetica'
-TICK_FONT_SIZE = 32
-LABEL_FONT_SIZE = 28
-LEGEND_FONT_SIZE = 32
+TICK_FONT_SIZE = 24
+LABEL_FONT_SIZE = 24
+LEGEND_FONT_SIZE = 24
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
 TICK_FP = FontProperties(style='normal', size=TICK_FONT_SIZE)
@@ -76,7 +76,7 @@ def DrawLegend(legend_labels, filename):
 # draw a bar chart
 
 
-def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
+def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend, drawMaxDashedGreyLine=False, markCrossOn0andNegativeInf=False):
     fig = plt.figure(figsize=(20, 6))
     figure = fig.add_subplot(111)
 
@@ -90,7 +90,7 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
 
     FIGURE_LABEL = legend_labels
     index = np.arange(len(x_values))
-    width = 0.5 / len(x_values)
+    width = 0.1 / len(x_values)
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
         bars[i] = plt.bar(index + i * width + width / 2,
@@ -98,6 +98,11 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                           hatch=HATCH_PATTERNS[i % len(HATCH_PATTERNS)],
                           color=LINE_COLORS[i % len(LINE_COLORS)],
                           label=FIGURE_LABEL[i], edgecolor='black', linewidth=3)
+        
+        if markCrossOn0andNegativeInf:
+            for j, y in enumerate(y_values[i]):
+                if y == 0 or y==-np.inf:
+                    plt.plot(index[j] + i * width + width / 2, 1, marker='x', color='red', markersize=10)
         
     if allow_legend:
         plt.legend(bars, FIGURE_LABEL,
@@ -107,6 +112,10 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
                 bbox_to_anchor=(0.5, 1.15),  # Adjust the position
                 shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.2,handletextpad=0
                 )
+
+    if drawMaxDashedGreyLine: # set max y values as upper limit
+        max_y_value = y_values.max()
+        plt.axhline(max_y_value, color='grey', linestyle='--', label='Max Y Value', linewidth=2)
 
     plt.xticks(index + len(x_values) / 2 * width, x_values, rotation=0)
     figure.yaxis.set_major_locator(LinearLocator(5))
@@ -116,111 +125,8 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max
     figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
     plt.xlabel(x_label, fontsize=20)
     plt.ylabel(y_label, fontsize=20)
-
-
     fig.savefig(filename + ".pdf", bbox_inches='tight')
 
-
-def DrawFigureYLog(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
-    
-    fig = plt.figure(figsize=(20, 6))
-    figure = fig.add_subplot(111)
-
-    LINE_COLORS = [
-        '#FF8C00', '#FFE4C4', '#00FFFF', '#E0FFFF',
-        '#FF6347', '#98FB98', '#800080', '#FFD700',
-        '#7CFC00', '#8A2BE2', '#FF4500', '#20B2AA',
-        '#B0E0E6', '#DC143C', '#00FF7F'
-    ]
-    HATCH_PATTERNS = ['/', '-', 'o', '///', '\\', '|', 'x', '\\\\', '+', '.', '*', 'oo', '++++', '....', 'xxx']
-
-    FIGURE_LABEL = legend_labels
-    index = np.arange(len(x_values))
-    width = 0.5 / len(x_values)
-    bars = [None] * (len(FIGURE_LABEL))
-    for i in range(len(y_values)):
-        bars[i] = plt.bar(index + i * width + width / 2,
-                          y_values[i], width,
-                          hatch=HATCH_PATTERNS[i % len(HATCH_PATTERNS)],
-                          color=LINE_COLORS[i % len(LINE_COLORS)],
-                          label=FIGURE_LABEL[i], edgecolor='black', linewidth=3)
-        
-    if allow_legend:
-        plt.legend(bars, FIGURE_LABEL,
-                prop={'size': 16},
-                ncol=len(bars),  # Set the number of columns to match the number of bars
-                loc='upper center',
-                bbox_to_anchor=(0.5, 1.15),  # Adjust the position
-                shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.2,handletextpad=0
-                )
-
-    plt.xticks(index + len(x_values) / 2 * width, x_values, rotation=0)
-
-    plt.xlabel(x_label, fontsize=20)
-    plt.ylabel(y_label, fontsize=20)
-    plt.yscale('log')
-    figure.yaxis.set_major_locator(LogLocator(10))
-    figure.get_xaxis().set_tick_params(direction='in', pad=10)
-    figure.get_yaxis().set_tick_params(direction='in', pad=10)
-    #figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
-
-    plt.grid(axis='y', color='gray', alpha=0.5, linewidth=0.5)
-
-    #plt.show()
-
-    fig.savefig(filename + ".pdf", bbox_inches='tight')
-
-def DrawFigureYLog2(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
-    
-    fig = plt.figure(figsize=(20, 6))
-    figure = fig.add_subplot(111)
-
-    LINE_COLORS = [
-        '#FF8C00', '#FFE4C4', '#00FFFF', '#E0FFFF',
-        '#FF6347', '#98FB98', '#800080', '#FFD700',
-        '#7CFC00', '#8A2BE2', '#FF4500', '#20B2AA',
-        '#B0E0E6', '#DC143C', '#00FF7F'
-    ]
-    HATCH_PATTERNS = ['/', '-', 'o', '///', '\\', '|', 'x', '\\\\', '+', '.', '*', 'oo', '++++', '....', 'xxx']
-
-    FIGURE_LABEL = legend_labels
-    index = np.arange(len(x_values))
-    width = 0.6/len(x_values[0])
-    bars = [None] * (len(FIGURE_LABEL))
-    for i in range(len(y_values)):
-        bars[i] = plt.bar(index + i * width + width / 2,
-                          y_values[i], width,
-                          hatch=HATCH_PATTERNS[i % len(HATCH_PATTERNS)],
-                          color=LINE_COLORS[i % len(LINE_COLORS)],
-                          label=FIGURE_LABEL[i], edgecolor='black', linewidth=3)
-        
-    if allow_legend:
-        plt.legend(bars, FIGURE_LABEL,
-                prop={'size': LEGEND_FONT_SIZE},
-                ncol=len(bars),  # Set the number of columns to match the number of bars
-                loc='upper center',
-                bbox_to_anchor=(0.42, 0.95),  # Adjust the position
-                shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.5,handletextpad=0.1,labelspacing=0.,
-                )
-
-    plt.xticks(index + width, x_values, rotation=30)
-    plt.xticks(fontsize=TICK_FONT_SIZE)
-    plt.yticks(fontsize=TICK_FONT_SIZE)
-    plt.xlabel(x_label, fontsize=LABEL_FONT_SIZE)
-    plt.ylabel(y_label, fontsize=LABEL_FONT_SIZE)
-    plt.axhline(y=1.0, color='red', linestyle='--')
-    figure.text(0.9, 3.0, "Instructions=1.0", fontsize=TICK_FONT_SIZE, ha='center')
-    plt.yscale('log')
-    figure.yaxis.set_major_locator(LogLocator(10))
-    figure.get_xaxis().set_tick_params(direction='in', pad=10)
-    figure.get_yaxis().set_tick_params(direction='in', pad=10)
-    #figure.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.1f'))
-
-    plt.grid(axis='y', color='gray', alpha=0.5, linewidth=0.5)
-
-    #plt.show()
-
-    fig.savefig(filename + ".pdf", bbox_inches='tight')
 # def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, y_min, y_max, filename, allow_legend):
 #     # you may change the figure size on your own.
 #     fig = plt.figure(figsize=(10, 3))

@@ -52,7 +52,15 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 dataset_acols_mapping={
     'SIFT10K': 10000,
     'SIFT1M': 1000000,
-    'GIST1M': 1000000
+    'GIST1M': 1000000,
+    'AST':765,
+    'BUS':10595,
+    'DWAVE':512,
+    'ECO':260,
+    'QCD':3072,
+    'RDB':2048,
+    'UTM':1700,
+    'ZENIOS':2873,
 }
 
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
@@ -70,11 +78,12 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     elif srcA=="GIST1M":
         filePath = "datasets/SIFT/gist_base.fvecs"
     else:
-        raise ValueError("Not valid dataset")
+       filePath = "datasets/SIFT/siftsmall_base.fvecs"
 
-    editConfig(configTemplate, exePath+"temp1.csv", "filePath", filePath)
-    editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB) # not used at all
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
+    editConfig(configTemplate, exePath+"temp0.csv", "filePath", filePath)
+    editConfig(exePath+"temp0.csv", exePath+"temp1.csv", "srcA", srcA)
+    editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.01))
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
 
     # int8 or int8_fp32
@@ -266,18 +275,18 @@ def main():
     # # add the algo tag here
     # algosVec=['crs', 'mm']
     # algoDisp=['CRS', 'LTMM']
-    srcAVec=['SIFT10K']
-    srcBVec=['dummy']
-    dataSetNames=['SIFT10K']
+    #srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
+    #srcBVec=["datasets/AST/mcfe.mtx"] # 765*756
+    #dataSetNames=['AST']
     # add the algo tag here
-    # algosVec=['crs', 'mm']
-    # algoDisp=['CRS', 'LTMM']
-    # algosVec=['int8', 'crs', 'countSketch', 'blockLRA', 'fastjlt', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    # algoDisp=['INT8', 'CRS', 'CS', 'BlockLRA', 'FastJLT', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    srcAVec=['datasets/RDB/rdb2048.mtx']
+    srcBVec=['datasets/RDB/rdb2048.mtx']
+    dataSetNames=['SIFT10K']
+    #algosVec=['crs', 'mm']
+    #algoDisp=['CRS', 'LTMM']
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    #algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    #algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+ 
     # add the algo tag here
     # algosVec=['int8', 'weighted-cr', 'vq', 'int8_fp32']
     # this template configs all algos as lazy mode, all datasets are static and normalized

@@ -59,7 +59,7 @@ epsilon = 0.5
 delta = 0.2
 
 dataset_sketchAcols_mapping={
-    'MediaMill':100,
+    'MediaMill': min(int(epsilon**(-2) * (math.sqrt(n_mediamill+l_mediamill)+math.sqrt(math.log(m_mediamill/delta)))**2 * math.log(n_mediamill+l_mediamill)/delta), m_mediamill),
     'MNIST': min(int(epsilon**(-2) * (math.sqrt(n_mnist+l_mnist)+math.sqrt(math.log(m_mnist/delta)))**2 * math.log(n_mnist+l_mnist)/delta), m_mnist)
 }
 
@@ -68,6 +68,19 @@ dataset_Acols_mapping={
     'MNIST': m_mnist
 }
 
+dataset_acols_mapping={
+    'SIFT10K': 10000,
+    'SIFT1M': 1000000,
+    'GIST1M': 1000000,
+    'AST':765,
+    'BUS':10595,
+    'DWAVE':512,
+    'ECO':260,
+    'QCD':3072,
+    'RDB':2048,
+    'UTM':1700,
+    'ZENIOS':2873,
+}
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
 
     # (Pdb) exePath, srcA,srcB, algoTag, resultPath, configTemplate,prefixTag
@@ -85,16 +98,17 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     elif prefixTag=="MNIST":
         filePath = "datasets/MNIST/train-images.idx3-ubyte"
     else:
-        raise ValueError("Not valid dataset")
+        filePath = "datasets/MediaMill/MediaMill.pth"
     
-    editConfig(configTemplate, exePath+"temp1.csv", "filePath", filePath)
-    editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "matrixLoaderTag", prefixTag)
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", 439)
+    editConfig(configTemplate, exePath+"temp0.csv", "filePath", filePath)
+    editConfig(exePath+"temp0.csv", exePath+"temp1.csv", "srcA", srcA)
+    editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
 
     # blockLRA rank ratio
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "algoARankRatio", 0.01)
-    editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "algoBRankRatio", 0.01)
+    #editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "algoARankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
+    #editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "algoBRankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
 
     # int8 or int8_fp32
     if algoTag=='int8_fp32':
@@ -282,9 +296,14 @@ def main():
     # srcAVec=['dummy']
     # srcBVec=['dummy']
     # dataSetNames=['MediaMill'] 
-    srcAVec=['dummy']
-    srcBVec=['dummy']
-    dataSetNames=['MediaMill']
+    srcAVec=['datasets/RDB/rdb2048.mtx']
+    srcBVec=['datasets/RDB/rdb2048l.mtx']
+    dataSetNames=['RDB']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    # add the algo tag here
+    #algosVec=['crs', 'mm']
+    #algoDisp=['CRS', 'LTMM']
     # add the algo tag here
     # algosVec=['crs', 'fastjlt']
     # algoDisp=['CRS', 'FastJLT']
@@ -292,11 +311,9 @@ def main():
     # algoDisp=['NLMM', 'LTMM']
     # algosVec=['tugOfWar']
     # algoDisp=['TugOfWar']
-    #algosVec=['crs', 'mm']
-    #algoDisp=['CRS', 'LTMM']
     #algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
-    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    #algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    #algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     #algoDisp=['BlockLRA', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     # algosVec=['rip']#, 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     # algoDisp=['RIP']#, 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
@@ -340,7 +357,7 @@ def main():
                          5, 15, figPath + "sec4_1_cca_static_lazy_ending_error", True)
     groupBar2.DrawFigure(dataSetNames, np.log(elapsedTimeAll), methodTags, "Datasets", "95% latency (ms)",
                          5, 15, figPath + "sec4_1_cca_static_lazy_latency_log", True)
-    print((errAll))
+    print(elapsedTimeAll)
     return elapsedTimeAll,errAll,endingErrorAll
     # groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms",
     #                      5, 15, figPath + "sec4_1_cca_static_lazy_throughput_log", True)
