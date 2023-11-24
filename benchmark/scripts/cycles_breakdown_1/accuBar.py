@@ -104,14 +104,14 @@ def DrawFigure(x_values, y_values, legend_labels, x_label, y_label, filename, al
             leg = plt.legend(handles[::-1], labels[::-1],
                              loc='center',
                              prop=LEGEND_FP,
-                             ncol=6,
-                             bbox_to_anchor=(0.5, 1.2),
+                             ncol=1,
+                             bbox_to_anchor=(-0.23,0.6),
                              shadow=True, frameon=True, edgecolor='black',
                              # bbox_to_anchor=(1.17, 0.5),
                              handletextpad=0.1,
                              # borderaxespad=0.0,
                              # handlelength=1.8,
-                             labelspacing=-1.0,
+                             labelspacing=0.1,
                              columnspacing=0.5,
                              )
             leg.get_frame().set_linewidth(2)
