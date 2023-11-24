@@ -302,7 +302,7 @@ def main():
             #
             flowTemp=getCyclesPerMethod(branchAll, valueChose)+getCyclesPerMethod(otherIns, valueChose)
             prop5=flowTemp/flowTemp[-1]
-            groupBar2.DrawFigureYLog2(methodTags, [prop1,prop3,prop2,prop4,prop5], ['Total','Mem-load','Math','Mem-store','Flow'], "", "Instructions (times of LTMM)", 5, 15, figPath + "/" + "bus_ins_times_ltmm", True)
+            groupBar2.DrawFigureYLog2(methodTags, [prop1,prop3,prop2,prop4,prop5], ['Total','Mem-load','Math','Mem-store','Flow'], "", r'Instructions ($\times LTMM$)', 5, 15, figPath + "/" + "bus_ins_times_ltmm", True)
 
             
 
