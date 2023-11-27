@@ -13,24 +13,6 @@ using namespace INTELLI;
 using namespace torch;
 using namespace DIVERSE_METER;
 
-// Function to generate a 2D Gaussian kernel
-torch::Tensor gaussian_kernel(int size, double sigma) {
-    int center = size / 2;
-    torch::Tensor kernel = torch::empty({size, size});
-
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            int x = i - center;
-            int y = j - center;
-            kernel[i][j] = std::exp(-(x * x + y * y) / (2.0 * sigma * sigma));
-        }
-    }
-
-    // Normalize the kernel
-    kernel /= kernel.sum();
-
-    return kernel;
-}
 float qcdMSE(const torch::Tensor& A, const torch::Tensor& B) {
     // Compute the square difference
     auto A2=torch::pow(A, 2);
@@ -77,7 +59,7 @@ void runSingleThreadTest(std::string configName) {
   uint64_t sketchDimension;
   ConfigMapPtr breakDownResult = nullptr;
   INTELLI_INFO("cppAlgoTag: "+cfg->tryString("cppAlgoTag", "mm", true));
- 
+  
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
   uint64_t usingMeter = cfg->tryU64("usingMeter", 0, true);
@@ -144,7 +126,23 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   AMMBench::CPPAlgoTable cppAlgoTable;
   std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
   AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
+  AMMBench::AbstractCPPAlgoPtr cppAlgoPtr2 = cppAlgoTable.findCppAlgo(cppAlgoTag);
+  if(cppAlgoTag=='pq')
+  {
+    cfg->edit("pqvqCodewordLookUpTablePath","qcdS1_m10.pth");
+  }
+  else{
+    cfg->edit("pqvqCodewordLookUpTablePath","qcdS1_m1.pth");
+  }
   cppAlgoPtr->setConfig(cfg);
+    if(cppAlgoTag=='pq')
+  {
+    cfg->edit("pqvqCodewordLookUpTablePath","qcdS2_m10.pth");
+  }
+  else{
+    cfg->edit("pqvqCodewordLookUpTablePath","qcdS2_m1.pth");
+  }
+  cppAlgoPtr2->setConfig(cfg);
     INTELLI_WARNING("single thread, algo " + cppAlgoTag);
     if (eMeter != nullptr) {
       eMeter->startMeter();
@@ -153,7 +151,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
    
     INTELLI_WARNING("this is pure c++");
     C = cppAlgoPtr->amm(U, A, sketchDimension);
-    C2=cppAlgoPtr->amm(C, Ut, sketchDimension);
+    C2= cppAlgoPtr2->amm(C, Ut, sketchDimension);
     pef->end();
     if (eMeter != nullptr) {
       eMeter->stopMeter();
