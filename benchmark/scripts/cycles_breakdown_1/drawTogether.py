@@ -296,7 +296,8 @@ def main():
                             otherPerMethod,nonStallPerMethod]/cpuCyclePerMethod*100.0, ['Mem Stall', 'L1D Stall', 'L2 Stall', 'L3 Stall', 'Other Stall', 'Not Stall'], '',
                            'Propotion (%)', figPath + "/" + "cyclesbreakDown"
                            + "_cycles_accubar" + str(valueVec[valueChose]), allowLegend,
-                           'dataset' + "=" + str(valueVec[valueChose]))
+                           '')
+        allowLegend = False
         
     #draw2yBar(methodTags,[lat95All[0][0],lat95All[1][0],lat95All[2][0],lat95All[3][0]],[errAll[0][0],errAll[1][0],errAll[2][0],errAll[3][0]],'95% latency (ms)','Error (%)',figPath + "sec6_5_stock_q1_normal")
     #groupBar2.DrawFigure(dataSetNames, errAll, methodTags, "Datasets", "Error (%)", 5, 15, figPath + "sec4_1_e2e_static_lazy_fro", True)

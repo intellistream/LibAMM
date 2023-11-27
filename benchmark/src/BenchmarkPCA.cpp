@@ -34,7 +34,7 @@ void benchmarkPCA(std::string configName) {
   assert(matLoaderPtr);
   matLoaderPtr->setConfig(cfg);
   auto A = matLoaderPtr->getA();
-  auto B = matLoaderPtr->getB();
+  auto B = A.t();
 
   uint64_t sketchDimension;
   sketchDimension = cfg->tryU64("sketchDimension", 1, true);

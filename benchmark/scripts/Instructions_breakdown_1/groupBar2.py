@@ -199,7 +199,7 @@ def DrawFigureYLog2(x_values, y_values, legend_labels, x_label, y_label, y_min, 
                 prop={'size': LEGEND_FONT_SIZE},
                 ncol=len(bars),  # Set the number of columns to match the number of bars
                 loc='upper center',
-                bbox_to_anchor=(0.5, 1.2),  # Adjust the position
+                bbox_to_anchor=(0.42, 0.95),  # Adjust the position
                 shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.5,handletextpad=0.1,labelspacing=0.,
                 )
 

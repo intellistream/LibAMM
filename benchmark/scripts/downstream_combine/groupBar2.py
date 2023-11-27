@@ -11,7 +11,7 @@ import matplotlib.ticker as mtick
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 32
-LABEL_FONT_SIZE = 32
+LABEL_FONT_SIZE = 30
 LEGEND_FONT_SIZE = 32
 LABEL_FP = FontProperties(style='normal', size=LABEL_FONT_SIZE)
 LEGEND_FP = FontProperties(style='normal', size=LEGEND_FONT_SIZE)
@@ -137,7 +137,7 @@ def DrawFigureYLog(x_values, y_values, legend_labels, x_label, y_label, y_min, y
 
     FIGURE_LABEL = legend_labels
     index = np.arange(len(x_values))
-    width = 0.03
+    width = 0.05
     bars = [None] * (len(FIGURE_LABEL))
     for i in range(len(y_values)):
         bars[i] = plt.bar(index + i * width + width / 2,
@@ -149,9 +149,9 @@ def DrawFigureYLog(x_values, y_values, legend_labels, x_label, y_label, y_min, y
     if allow_legend:
         plt.legend(bars, FIGURE_LABEL,
                 prop={'size': 28},
-                ncol=len(bars)/2,  # Set the number of columns to match the number of bars
+                ncol=2,  # Set the number of columns to match the number of bars
                 loc='upper center',
-                bbox_to_anchor=(0.5, 1.35),  # Adjust the position
+                bbox_to_anchor=(-0.285, 0.7),  # Adjust the position
                 shadow=True, frameon=True, edgecolor='black', borderaxespad=0,columnspacing=0.2,handletextpad=0.2
                 )
 
