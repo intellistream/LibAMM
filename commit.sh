@@ -1,7 +1,10 @@
 
 
 
-BRANCH=add_qcd_evaluation_stable
+
+BRANCH=qcd_ds
+
+
 
 
 git init
