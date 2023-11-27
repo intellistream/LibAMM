@@ -325,12 +325,12 @@ def main():
                                 methodTags,
                                 r'Tuning knob $\omega$ (%)', r'AMM Error $\epsilon$ ', 0, 1,
                                 figPath + "/"  + "dimen_err",
-                                True)
+                                False)
     groupLine.DrawFigureYLog(periodAll/2500*100.0, memStallAll,
                                 methodTags,
                                 r'Tuning knob $\omega$ (%)', r'Mem Stall Cycles', 0, 1,
                                 figPath + "/"  + "dimen_memStall",
-                                True)
+                                False)
   
     print((periodAll))
 if __name__ == "__main__":

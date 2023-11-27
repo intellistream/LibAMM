@@ -308,12 +308,12 @@ def main():
                                 methodTags,
                                 "#Rows of A", r'Memot Stall Cycles', 0, 1,
                                 figPath + "/"  + "aRows_memStall",
-                                True)
+                                False)
     groupLine.DrawFigureYnormal(periodAll, froAll,
                                 methodTags,
                                 "#Rows of A", r'AMM Error $\epsilon$ ', 0, 1,
                                 figPath + "/"  + "aRows_err",
-                                True)
+                                False)
     print(elapsedTimeAll)
 if __name__ == "__main__":
     main()

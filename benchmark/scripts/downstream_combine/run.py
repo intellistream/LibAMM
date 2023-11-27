@@ -36,8 +36,9 @@ def get_args():
     return args
 
 
-def main(a):
+def main(a, h=500):
     args = get_args()
+    args.d_hidden = h
     trn, dev, tst = get_mnist()
 
     # change the sys.stdout to a file object to write the results to the file

@@ -1,7 +1,8 @@
 key,value,type
-sketchDimension,25,U64
-srcA,datasets/QCD/qcda_small.mtx,String
-srcB,datasets/QCD/qcda_small.mtx,String
+sketchDimension,76,U64
+matrixLoaderTag,mtx,String
+srcA,datasets/AST/mcfe.mtx,String
+srcB,datasets/AST/mcfe.mtx,String
 normalizeA,1,U64
 normalizeB,1,U64
 isStreaming,0,U64
@@ -19,5 +20,3 @@ usePAPI,0,U64
 perfUseExternalList,1,U64
 perfListSrc,perfListEvaluation.csv,String
 filePath,datasets/SIFT/siftsmall_base.fvecs,String
-algoARankRatio,0.01,Double
-algoBRankRatio,0.01,Double
