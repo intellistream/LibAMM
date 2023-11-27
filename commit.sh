@@ -1,6 +1,6 @@
 
 
-BRANCH=fix_srand_bugs_ds
+BRANCH=add_qcd_evaluation
 
 git init
 git checkout -b $BRANCH
