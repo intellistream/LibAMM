@@ -1,7 +1,7 @@
 
 
-BRANCH=add_qcd_evaluation
 
+BRANCH=add_qcd_evaluation
 git init
 git checkout -b $BRANCH
 git add .

@@ -59,7 +59,7 @@ epsilon = 0.5
 delta = 0.2
 
 dataset_sketchAcols_mapping={
-    'MediaMill': min(int(epsilon**(-2) * (math.sqrt(n_mediamill+l_mediamill)+math.sqrt(math.log(m_mediamill/delta)))**2 * math.log(n_mediamill+l_mediamill)/delta), m_mediamill),
+    'MediaMill':100,
     'MNIST': min(int(epsilon**(-2) * (math.sqrt(n_mnist+l_mnist)+math.sqrt(math.log(m_mnist/delta)))**2 * math.log(n_mnist+l_mnist)/delta), m_mnist)
 }
 
@@ -89,12 +89,12 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     
     editConfig(configTemplate, exePath+"temp1.csv", "filePath", filePath)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "matrixLoaderTag", prefixTag)
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", dataset_sketchAcols_mapping[prefixTag])
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", 439)
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
 
     # blockLRA rank ratio
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "algoARankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
-    editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "algoBRankRatio", dataset_sketchAcols_mapping[prefixTag]/dataset_Acols_mapping[prefixTag])
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "algoARankRatio", 0.01)
+    editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "algoBRankRatio", 0.01)
 
     # int8 or int8_fp32
     if algoTag=='int8_fp32':
@@ -292,6 +292,8 @@ def main():
     # algoDisp=['NLMM', 'LTMM']
     # algosVec=['tugOfWar']
     # algoDisp=['TugOfWar']
+    #algosVec=['crs', 'mm']
+    #algoDisp=['CRS', 'LTMM']
     #algosVec=['blockLRA', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
     algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
