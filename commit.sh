@@ -1,7 +1,7 @@
 
 
 
-BRANCH=add_qcd_evaluation_2
+BRANCH=add_qcd_evaluation_stable
 
 
 git init
