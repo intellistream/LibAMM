@@ -136,7 +136,7 @@ void runSingleThreadTest(std::string configName) {
   auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);
   assert(matLoaderPtr);
   matLoaderPtr->setConfig(cfg);
-  qcdp.genPairs(matLoaderPtr->getA(),8,1.0);
+  qcdp.genPairs(matLoaderPtr->getA(),4,1.0);
   INTELLI_INFO("Pre-amm time for QCD ="+to_string(qcdp.prepareTime));
   auto A = qcdp.qcdA;
   auto B = qcdp.qcdB;
