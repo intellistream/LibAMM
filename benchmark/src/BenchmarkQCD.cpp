@@ -81,8 +81,9 @@ void QCDPairs::genPairs(torch::Tensor qcd_matrix,int kernel_size,double sigma)
 
     // Reshape the convolution kernel for matrix multiplication
     auto reshaped_kernel = conv_kernel.view({-1, 1});
-    qcdA=flattened_matrix;
-    qcdB=reshaped_kernel;
+    qcdA=flattened_matrix.contiguous();
+  
+    qcdB=reshaped_kernel.contiguous();
     prepareTime=UtilityFunctions::timeLastUs(ts);
 }
 torch::Tensor QCDPairs::getResult(torch::Tensor result)
