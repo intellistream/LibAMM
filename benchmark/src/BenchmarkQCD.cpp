@@ -31,13 +31,12 @@ torch::Tensor gaussian_kernel(int size, double sigma) {
 
     return kernel;
 }
-float qcdMSE(const torch::Tensor& A, const torch::Tensor& B,uint64_t *otherTime) {
+float qcdMSE(const torch::Tensor& A, const torch::Tensor& B) {
     // Compute the square difference
     auto A2=torch::pow(A, 2);
-    struct timeval ts;
-   gettimeofday(&ts, NULL);
+   
     auto B2=torch::pow(B, 2);
-    *otherTime=*otherTime+UtilityFunctions::timeLastUs(ts);
+   
     torch::Tensor square_difference = (A2-B2)/A2;
     // Compute the mean
     torch::Tensor mean_square_difference = torch::mean(square_difference);
@@ -241,7 +240,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   auto endCCal=qcdp.getResult(C);
   auto endCReal=qcdp.getResult(realC);
   double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, C);
-  double qcdError= qcdMSE(realC, C,&otherTime);
+  double qcdError= qcdMSE(realC, C);
   double froBNormal = B.norm().item<double>();
   double errorBoundRatio = froError / froBNormal;
   INTELLI_INFO("B normal is " + to_string(froBNormal));
