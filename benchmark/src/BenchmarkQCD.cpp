@@ -127,7 +127,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
   AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
   AMMBench::AbstractCPPAlgoPtr cppAlgoPtr2 = cppAlgoTable.findCppAlgo(cppAlgoTag);
-  if(cppAlgoTag=='pq')
+  if(cppAlgoTag=="pq")
   {
     cfg->edit("pqvqCodewordLookUpTablePath","qcdS1_m10.pth");
   }
@@ -135,7 +135,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     cfg->edit("pqvqCodewordLookUpTablePath","qcdS1_m1.pth");
   }
   cppAlgoPtr->setConfig(cfg);
-    if(cppAlgoTag=='pq')
+    if(cppAlgoTag=="pq")
   {
     cfg->edit("pqvqCodewordLookUpTablePath","qcdS2_m10.pth");
   }
@@ -181,7 +181,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   realC = torch::matmul(U, A);
   realC2=torch::matmul(realC, Ut);
   
-  uint64_t otherTime=qcdp.prepareTime;
+ // uint64_t otherTime=qcdp.prepareTime;
   double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, C);
   double froError2 = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC2, C2);
   double qcdError= qcdMSE(realC2, C2);
@@ -191,7 +191,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   resultCsv->edit("froError", (double) (froError+froError2)/2);
   resultCsv->edit("qcdError", (double) qcdError);
   resultCsv->edit("errorBoundRatio", (double) errorBoundRatio);
-  resultCsv->edit("otherTime", (uint64_t)otherTime);
+  //resultCsv->edit("otherTime", (uint64_t)otherTime);
   resultCsv->toFile(ruName + ".csv");
   INTELLI_INFO("Done. here is overall result");
   std::cout << resultCsv->toString() << endl;
