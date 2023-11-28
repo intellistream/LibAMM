@@ -50,16 +50,10 @@ matplotlib.rcParams['font.family'] = OPT_FONT_NAME
 matplotlib.rcParams['pdf.fonttype'] = 42
 
 dataset_acols_mapping={
-    'AST':765,
-    'BUS':10595,
-    'DWAVE':512,
-    'ECO':260,
-    'QCD':3072,
-    'RDB':2048,
-    'UTM':1700,
-    'ZENIOS':2873,
-}
 
+    'QCD':3072,
+  
+}
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
     # resultFolder="periodTests"
     configFname = "config_period_"+prefixTag + ".csv"
@@ -70,28 +64,21 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
     editConfig(configTemplate, exePath+"temp1.csv", "srcA", srcA)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", 307)
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
 
     # int8 or int8_fp32
     if algoTag=='int8_fp32':
-        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "fp32")
+        editConfig(exePath+"temp2.csv",exePath+configFname, "fpMode", "fp32")
     else:
-        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
+        editConfig(exePath+"temp2.csv",exePath+configFname, "fpMode", "INT8")
 
-    # load Codeword LookUpTable for vq or pq
-    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
-    pqvqCodewordLookUpTablePath = "dummy"
-    import glob
-    if algoTag == 'vq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m1_*')[0]
-    elif algoTag =='pq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_*')[0]
-    editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
-
+ 
+    os.system("cd " + exePath + "&& rm *.pth")
+    os.system("cp *.pth "+exePath)
     # prepare new file
     # run
-    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmark " + configFname)
+    os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmarkQCD " + configFname)
     # copy result
     os.system("sudo rm -rf " + resultPath + "/" + str(prefixTag))
     os.system("sudo mkdir " + resultPath + "/" + str(prefixTag))
@@ -114,15 +101,14 @@ def runPeriodVector (exePath,periodVec,pS,algoTag,resultPath,prefixTag, configTe
 def readResultSingle(singleValue, resultPath):
     resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
     elapsedTime = readConfig(resultFname, "perfElapsedTime")
-    cpuCycle = readConfig(resultFname, "cpuCycle")
-    memStall = readConfig(resultFname, "memStall")
-    instructions = readConfig(resultFname, "instructions")
-    l1dStall = readConfig(resultFname, "l1dStall")
-    l2Stall = readConfig(resultFname, "l2Stall")
-    l3Stall = readConfig(resultFname, "l3Stall")
-    totalStall=readConfig(resultFname, "totalStall")
-    froError = readConfig(resultFname, "froError")
-    return elapsedTime, cpuCycle, memStall, instructions, l1dStall, l2Stall, l3Stall,totalStall,froError
+    cpuCycle = 0
+    memStall =0
+    instructions = 0
+    ammErro = readConfig(resultFname, "froError")
+    endError = readConfig(resultFname, "qcdError")
+    l3Stall = 0
+    totalStall=0
+    return elapsedTime, cpuCycle, memStall, instructions, ammErro, endError, l3Stall,totalStall
 def checkResultSingle(singleValue, resultPath):
     resultFname = resultPath + "/" + str(singleValue) + "/default.csv"
     ruExists=0
@@ -138,25 +124,43 @@ def readResultVector(singleValueVec, resultPath):
     cpuCycleVec = []
     memStallVec = []
     instructionsVec = []
-    l1dStallVec = []
-    l2StallVec = []
+    ammErroVec = []
+    endErrorVec = []
     l3StallVec = []
     totalStallVec=[]
-    froVec=[]
     for i in singleValueVec:
-        elapsedTime, cpuCycle, memStall, instructions, l1dStall, l2Stall, l3Stall,totalStall,froErr = readResultSingle(i, resultPath)
+        elapsedTime, cpuCycle, memStall, instructions, ammErro, endError, l3Stall,totalStall = readResultSingle(i, resultPath)
         elapseTimeVec.append(float(elapsedTime) / 1000.0)
         cpuCycleVec.append(float(cpuCycle))
         memStallVec.append(float(memStall))
         instructionsVec.append(float(instructions))
-        l1dStallVec.append(float(l1dStall))
-        l2StallVec.append(float(l2Stall))
+        ammErroVec.append(float(ammErro))
+        endErrorVec.append(float(endError))
         l3StallVec.append(float(l3Stall))
         totalStallVec.append(float(totalStall))
-        froVec.append(float(froErr))
     return np.array(elapseTimeVec), np.array(cpuCycleVec), np.array(memStallVec), np.array(instructionsVec), np.array(
-        l1dStallVec), np.array(l2StallVec), np.array(l3StallVec),np.array(totalStallVec),np.array(froVec)
-
+        ammErroVec), np.array(endErrorVec), np.array(l3StallVec),np.array(totalStallVec)
+def readResultVectorNull(singleValueVec, resultPath):
+    elapseTimeVec = []
+    cpuCycleVec = []
+    memStallVec = []
+    instructionsVec = []
+    ammErroVec = []
+    endErrorVec = []
+    l3StallVec = []
+    totalStallVec=[]
+    for i in singleValueVec:
+       
+        elapseTimeVec.append(0.0)
+        cpuCycleVec.append(0.0)
+        memStallVec.append(0.0)
+        instructionsVec.append(0.0)
+        ammErroVec.append(0.0)
+        endErrorVec.append(0.0)
+        l3StallVec.append(0.0)
+        totalStallVec.append(0.0)
+    return np.array(elapseTimeVec), np.array(cpuCycleVec), np.array(memStallVec), np.array(instructionsVec), np.array(
+        ammErroVec), np.array(endErrorVec), np.array(l3StallVec),np.array(totalStallVec)
 def checkResultVector(singleValueVec, resultPath):
     resultIsComplete=0
     for i in singleValueVec:
@@ -164,6 +168,12 @@ def checkResultVector(singleValueVec, resultPath):
         if resultIsComplete==0:
             return 0
     return 1
+def isValidAlgoTag(algoTag):
+    invalidTags=['vqq','pqq']
+    for i in invalidTags:
+        if algoTag==i:
+            return False
+    return True
 
 def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,srcBVec,algos,dataSetName,reRun=1):
     elapsedTimeAll = []
@@ -171,11 +181,10 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
     memStallAll = []
     periodAll = []
     instructionsAll = []
-    l1dStallAll = []
-    l2StallAll = []
+    ammErroAll = []
+    endErrorAll = []
     l3StallAll = []
     totalStallAll = []
-    froAll= []
     resultIsComplete=1
     for i in range(len(algos)):
         resultPath = commonPathBase + resultPaths[i]
@@ -183,111 +192,108 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
         if (reRun == 1):
             os.system("sudo rm -rf " + resultPath)
             os.system("sudo mkdir " + resultPath)
-            runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate)
+            if isValidAlgoTag(algoTag):
+                runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate)
         else:
             if(reRun == 2):
                 resultIsComplete=checkResultVector(dataSetName,resultPath)
                 if resultIsComplete==1:
                     print(algoTag+ " is complete, skip")
                 else:
-                    print(algoTag+ " is incomplete, redo it")
-                    if os.path.exists(resultPath)==False:
-                        os.system("sudo mkdir " + resultPath)
-                    runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate,2)
-                    resultIsComplete=checkResultVector(dataSetName,resultPath)
+                    if isValidAlgoTag(algoTag):
+                        print(algoTag+ " is incomplete, redo it")
+                        if os.path.exists(resultPath)==False:
+                            os.system("sudo mkdir " + resultPath)
+                        runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate,2)
+                        resultIsComplete=checkResultVector(dataSetName,resultPath)
+                    else:
+                        print(algoTag+ " is invalid, skip")
+                        resultIsComplete=1
+
 
      #exit()
         if resultIsComplete:
-            elapsedTime, cpuCycle, memStall, instructions, l1dStall, l2Stall, l3Stall,totalStall,fro = readResultVector(dataSetName, resultPath)
+            if (isValidAlgoTag(algoTag)):
+                 elapsedTime, cpuCycle, memStall, instructions, ammErro, endError, l3Stall,totalStall = readResultVector(dataSetName, resultPath)
+            else:
+                elapsedTime, cpuCycle, memStall, instructions, ammErro, endError, l3Stall,totalStall = readResultVectorNull(dataSetName, resultPath)
             elapsedTimeAll.append(elapsedTime)
             cpuCycleAll.append(cpuCycle)
             memStallAll.append(memStall)
             periodAll.append(elapsedTime)
             instructionsAll.append(instructions)
-            l1dStallAll.append(l1dStall)
-            l2StallAll.append(l2Stall)
+            ammErroAll.append(ammErro)
+            endErrorAll.append(endError)
             l3StallAll.append(l3Stall)
             totalStallAll.append(totalStall)
-            froAll.append(fro)
         # periodAll.append(periodVec)
     return np.array(elapsedTimeAll), np.array(cpuCycleAll), np.array(periodAll), np.array(instructionsAll), np.array(
-        memStallAll), np.array(l1dStallAll), np.array(l2StallAll), np.array(l3StallAll),np.array(totalStallAll),np.array(froAll)
+        memStallAll), np.array(ammErroAll), np.array(endErrorAll), np.array(l3StallAll),np.array(totalStallAll)
 def getCyclesPerMethod(cyclesAll, valueChose):
     instructionsPerMethod = []
     for i in range(len(cyclesAll)):
         instructionsPerMethod.append(cyclesAll[int(i)][int(valueChose)])
     return np.array(instructionsPerMethod)       
-def combinDownStream(l1,l2):
-    ru=l1.tolist()
-    lt=l2.tolist()
-    for i in range(len(l1)):
-        for j in range(len(lt[i])):
-            ru[i].append(lt[i][j])
-    return np.array(ru)
-def combinTrainning(l1,l2):
-    ru=l1.tolist()
-    lt=l2.tolist()
-    for i in range(len(l1)):
-        ru[i].append(lt[i])
-    return np.array(ru)
+
 def main():
     exeSpace = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/"
-    #share the same result with cycle breakdown evaluation, as it contains everything
-    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/cycles_breakdown_1/"
+    commonBasePath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/results/Downstream_QCD/"
 
-    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/downstreamCombine/"
-    import drawCCA
-    import drawPCA
-    import drawInference
-    import drawTraining
-    import drawQCD
-    procLat, ammError, endError=drawPCA.main()
-    i=0
-    while i<4:
-        procLat2=[]
-        ammError2=[]
-        endError2=[]
-        if(i==3):
-            procLat2, ammError2, endError2=drawQCD.main()
-            print(len(ammError2))
-        if (i==0):
-            procLat2, endError2, ammError2, temp, temp2, temp3=drawTraining.main()
-            print(ammError2)
-            #print(procLat2)
-            #exit()
-        # D= 2000
-        if (i==1):
-            temp, temp2, temp3,procLat2, endError2, ammError2=drawTraining.main()
-            print(ammError2)
-            #print(procLat2)
-            #exit()
-        if (i==2):
-            procLat2, ammError2, endError2=drawInference.main()
-        if not (i==0 or i == 1):
-            ammError=combinDownStream(ammError,ammError2)
-            procLat=combinDownStream(procLat,procLat2)
-            endError=combinDownStream(endError,endError2)
-        else:
-            procLat=combinTrainning(procLat,procLat2)
-            endError=combinTrainning(endError,endError2)
-            print(len(endError), len(endError2))
-            print(len(ammError), len(ammError2))
-            ammError=combinTrainning(ammError,ammError2)
-        i=i+1
-    print(endError)
+    figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/Downstream_QCD/"
+    
+    # add the datasets here
+    # srcAVec=["datasets/AST/mcfe.mtx"] # 765*756
+    # srcBVec=["datasets/AST/mcfe.mtx"] # 765*756
+    # dataSetNames=['AST']
+    #srcAVec=['datasets/UTM/utm1700a.mtx'] # 1700*1700
+    #srcBVec=['datasets/UTM/utm1700b.mtx'] # 1700*1700
+    #dataSetNames=['UTM']
+    #algosVec=['crs', 'mm']
+    #algoDisp=['CRS','LTMM']
+    #algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    srcAVec=['datasets/QCD/qcda_small.mtx']
+    srcBVec=['datasets/QCD/qcda_small.mtx']
+    dataSetNames=['QCD']
+    algosVec=['int8', 'crs', 'countSketch', 'cooFD', 'blockLRA', 'fastjlt', 'vq', 'pq', 'rip', 'smp-pca', 'weighted-cr', 'tugOfWar', 'int8_fp32', 'mm']
+    algoDisp=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
+    #srcAVec=['datasets/ECO/wm2.mtx',"datasets/DWAVE/dwa512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700a.mtx','datasets/RDB/rdb2048.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcda_small.mtx',"datasets/BUS/gemat1.mtx",]
+    #srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
+    #dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
+    # add the algo tag here
+    #algosVec=[ 'crs']
+    #algoDisp=[ 'CRS']
+    #algosVec=[ 'smp-pca']
+    #algoDisp=[ 'SMP-PCA']
+    # add the algo tag here
+    #algosVec=['mm', 'crs', 'countSketch', 'int8', 'weighted-cr', 'rip', 'smp-pca', 'tugOfWar', 'blockLRA', 'vq', 'pq', 'fastjlt', 'cooFD', 'int8_fp32']
+    
+    # this template configs all algos as lazy mode, all datasets are static and normalized
+    csvTemplate = 'config_e2e_static_lazy.csv'
+    # do not change the following
+    resultPaths = algosVec
+    #tryQCD(exeSpace)
     #exit()
+    # run
+    reRun = 2
     os.system("mkdir ../../results")
     os.system("mkdir ../../figures")
-    os.system("mkdir " + figPath)
-    taskNames=['PCA','Training\n(500-D)','Training\n(2000-D)','Inference\n(CIFAR10)','Inference\n(CIFAR100)','Unitary trans-\nformation']
-    taskNamesShort=['PCA','CCA','Inference\n(CIFAR10)','Inference\n(CIFAR100)']
-    methodTags=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
-    groupBar2.DrawFigureYLog(taskNames,procLat,methodTags, "Task", r'Processing Latency l (ms)', 5, 15, figPath + "ds_latency", True)
-    groupBar2.DrawFigureYLog(taskNames,ammError,methodTags, "Task",r'AMM Error $\epsilon$ ', 5, 15, figPath + "ds_amm_error", False)
-    groupBar2.DrawFigureYLog(taskNames,endError,methodTags, "Task",r'Application Error $e$ ', 5, 15, figPath + "ds_app_error", False)
-    #print(ipcAll)
-    #groupBar2.DrawFigure(dataSetNames,(l1dStallAll+l2StallAll+l3StallAll)/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of cacheStalls (%)", 5, 15, figPath + "cachestall_ratio", True)
+  
+    os.system("sudo mkdir " + commonBasePath)
+    print(reRun)
+    #exit()
+    methodTags =algoDisp
+    elapsedTimeAll, cpuCycleAll, periodAll, instructions, memStallAll, ammErroAll, endErrorAll, l3StallAll,totalStallAll = compareMethod(exeSpace, commonBasePath, resultPaths, csvTemplate, srcAVec,srcBVec,algosVec,dataSetNames, reRun)
+    # Add some pre-process logic for int8 here if it is used
 
+    #groupBar2.DrawFigure(dataSetNames,(ammErroAll+endErrorAll+l3StallAll)/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of cacheStalls (%)", 5, 15, figPath + "cachestall_ratio", True)
+    for instruc in [elapsedTimeAll]:
+        instruc=np.maximum(instruc,0)
+        int8_adjust_ratio = instruc[0]/instruc[-2]
+        instruc[0] = instruc[-1]*int8_adjust_ratio
+    int8_adjust_ratio = elapsedTimeAll[0]/elapsedTimeAll[-2]
+    elapsedTimeAll[0]=elapsedTimeAll[-1]*int8_adjust_ratio
+    ammErroAll[-2]=ammErroAll[-2]-ammErroAll[-2]
+    return elapsedTimeAll,ammErroAll,endErrorAll
 
 
     

@@ -7,6 +7,6 @@ scanZeroMaskACycles
 scanSketchSize
 scanAZipfCycles
 DownstreamCCA_static_lazy
-DownstreamPCA_static_lazy
+Downstream_qcd
 Downstream_Inference
 

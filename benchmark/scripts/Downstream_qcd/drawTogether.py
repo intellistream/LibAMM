@@ -54,21 +54,6 @@ dataset_acols_mapping={
     'QCD':3072,
   
 }
-
-def tryQCD(exeBase):
-    tryDownload=0
-    qcdPath=exeBase+'datasets/QCD'
-    print(qcdPath)
-    if os.path.exists(qcdPath+"/qcd_large.mtx"):
-        return 1
-    while tryDownload<10:
-        os.system('cd '+qcdPath+'&&wget -O qcd_large.mtx https://www.dropbox.com/scl/fi/q4xss56x9ql41lg7rpiyq/qcd_large.mtx?rlkey=yhjcqqz8kri3otrnux0n0sl9u')
-        #os.system('tar -xf bolt.tar?rlkey=vnjhl92rlz7vrnf2jf440dyi4')
-        
-        if os.path.exists(qcdPath):
-            return 1
-        tryDownload=tryDownload+1
-    return 0
 def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.csv",prefixTag="null"):
     # resultFolder="periodTests"
     configFname = "config_period_"+prefixTag + ".csv"
@@ -79,25 +64,18 @@ def runPeriod(exePath, srcA,srcB, algoTag, resultPath, configTemplate="config.cs
     # editConfig(configTemplate, exePath + configFname, "earlierEmitMs", 0)
     editConfig(configTemplate, exePath+"temp1.csv", "srcA", srcA)
     editConfig(exePath+"temp1.csv", exePath+"temp2.csv", "srcB", srcB)
-    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", int(dataset_acols_mapping[prefixTag]*0.1))
+    editConfig(exePath+"temp2.csv", exePath+"temp1.csv", "sketchDimension", 307)
     editConfig(exePath+"temp1.csv",exePath+"temp2.csv", "cppAlgoTag", algoTag)
 
     # int8 or int8_fp32
     if algoTag=='int8_fp32':
-        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "fp32")
+        editConfig(exePath+"temp2.csv",exePath+configFname, "fpMode", "fp32")
     else:
-        editConfig(exePath+"temp2.csv",exePath+"temp1.csv", "fpMode", "INT8")
+        editConfig(exePath+"temp2.csv",exePath+configFname, "fpMode", "INT8")
 
-    # load Codeword LookUpTable for vq or pq
-    pqvqCodewordLookUpTableDir = f'{exePath}/torchscripts/VQ/CodewordLookUpTable'
-    pqvqCodewordLookUpTablePath = "dummy"
-    import glob
-    if algoTag == 'vq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m1_*')[0]
-    elif algoTag =='pq':
-        pqvqCodewordLookUpTablePath = glob.glob(f'{pqvqCodewordLookUpTableDir}/{prefixTag}_m10_*')[0]
-    editConfig(exePath+"temp1.csv",exePath+configFname, "pqvqCodewordLookUpTablePath", pqvqCodewordLookUpTablePath)
-
+ 
+    os.system("cd " + exePath + "&& rm *.pth")
+    os.system("cp *.pth "+exePath)
     # prepare new file
     # run
     os.system("export OMP_NUM_THREADS=1 &&" + "cd " + exePath + "&& sudo ./benchmarkQCD " + configFname)
@@ -162,7 +140,27 @@ def readResultVector(singleValueVec, resultPath):
         totalStallVec.append(float(totalStall))
     return np.array(elapseTimeVec), np.array(cpuCycleVec), np.array(memStallVec), np.array(instructionsVec), np.array(
         ammErroVec), np.array(endErrorVec), np.array(l3StallVec),np.array(totalStallVec)
-
+def readResultVectorNull(singleValueVec, resultPath):
+    elapseTimeVec = []
+    cpuCycleVec = []
+    memStallVec = []
+    instructionsVec = []
+    ammErroVec = []
+    endErrorVec = []
+    l3StallVec = []
+    totalStallVec=[]
+    for i in singleValueVec:
+       
+        elapseTimeVec.append(0.0)
+        cpuCycleVec.append(0.0)
+        memStallVec.append(0.0)
+        instructionsVec.append(0.0)
+        ammErroVec.append(0.0)
+        endErrorVec.append(0.0)
+        l3StallVec.append(0.0)
+        totalStallVec.append(0.0)
+    return np.array(elapseTimeVec), np.array(cpuCycleVec), np.array(memStallVec), np.array(instructionsVec), np.array(
+        ammErroVec), np.array(endErrorVec), np.array(l3StallVec),np.array(totalStallVec)
 def checkResultVector(singleValueVec, resultPath):
     resultIsComplete=0
     for i in singleValueVec:
@@ -170,6 +168,12 @@ def checkResultVector(singleValueVec, resultPath):
         if resultIsComplete==0:
             return 0
     return 1
+def isValidAlgoTag(algoTag):
+    invalidTags=['vqq','pqq']
+    for i in invalidTags:
+        if algoTag==i:
+            return False
+    return True
 
 def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,srcBVec,algos,dataSetName,reRun=1):
     elapsedTimeAll = []
@@ -188,22 +192,31 @@ def compareMethod(exeSpace, commonPathBase, resultPaths, csvTemplate, srcAVec,sr
         if (reRun == 1):
             os.system("sudo rm -rf " + resultPath)
             os.system("sudo mkdir " + resultPath)
-            runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate)
+            if isValidAlgoTag(algoTag):
+                runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate)
         else:
             if(reRun == 2):
                 resultIsComplete=checkResultVector(dataSetName,resultPath)
                 if resultIsComplete==1:
                     print(algoTag+ " is complete, skip")
                 else:
-                    print(algoTag+ " is incomplete, redo it")
-                    if os.path.exists(resultPath)==False:
-                        os.system("sudo mkdir " + resultPath)
-                    runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate,2)
-                    resultIsComplete=checkResultVector(dataSetName,resultPath)
+                    if isValidAlgoTag(algoTag):
+                        print(algoTag+ " is incomplete, redo it")
+                        if os.path.exists(resultPath)==False:
+                            os.system("sudo mkdir " + resultPath)
+                        runPeriodVector(exeSpace, srcAVec,srcBVec,algoTag, resultPath, dataSetName,csvTemplate,2)
+                        resultIsComplete=checkResultVector(dataSetName,resultPath)
+                    else:
+                        print(algoTag+ " is invalid, skip")
+                        resultIsComplete=1
+
 
      #exit()
         if resultIsComplete:
-            elapsedTime, cpuCycle, memStall, instructions, ammErro, endError, l3Stall,totalStall = readResultVector(dataSetName, resultPath)
+            if (isValidAlgoTag(algoTag)):
+                 elapsedTime, cpuCycle, memStall, instructions, ammErro, endError, l3Stall,totalStall = readResultVector(dataSetName, resultPath)
+            else:
+                elapsedTime, cpuCycle, memStall, instructions, ammErro, endError, l3Stall,totalStall = readResultVectorNull(dataSetName, resultPath)
             elapsedTimeAll.append(elapsedTime)
             cpuCycleAll.append(cpuCycle)
             memStallAll.append(memStall)
@@ -247,8 +260,8 @@ def main():
     #srcBVec=['datasets/ECO/wm3.mtx',"datasets/DWAVE/dwb512.mtx","datasets/AST/mcfe.mtx",'datasets/UTM/utm1700b.mtx','datasets/RDB/rdb2048l.mtx','datasets/ZENIOS/zenios.mtx','datasets/QCD/qcdb_small.mtx',"datasets/BUS/gemat1.mtx",]
     #dataSetNames=['ECO','DWAVE','AST','UTM','RDB','ZENIOS','QCD','BUS']
     # add the algo tag here
-    #algosVec=[ 'crs',  'rip', 'smp-pca', 'mm']
-    #algoDisp=[ 'CRS', 'RIP', 'SMP-PCA', 'LTMM']
+    #algosVec=[ 'crs']
+    #algoDisp=[ 'CRS']
     #algosVec=[ 'smp-pca']
     #algoDisp=[ 'SMP-PCA']
     # add the algo tag here
@@ -258,7 +271,7 @@ def main():
     csvTemplate = 'config_e2e_static_lazy.csv'
     # do not change the following
     resultPaths = algosVec
-    tryQCD(exeSpace)
+    #tryQCD(exeSpace)
     #exit()
     # run
     reRun = 0
@@ -280,11 +293,15 @@ def main():
     # Add some pre-process logic for int8 here if it is used
 
     #groupBar2.DrawFigure(dataSetNames,(ammErroAll+endErrorAll+l3StallAll)/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of cacheStalls (%)", 5, 15, figPath + "cachestall_ratio", True)
+    for instruc in [elapsedTimeAll]:
+        instruc=np.maximum(instruc,0)
+        int8_adjust_ratio = instruc[0]/instruc[-2]
+        instruc[0] = instruc[-1]*int8_adjust_ratio
+    int8_adjust_ratio = elapsedTimeAll[0]/elapsedTimeAll[-2]
+    elapsedTimeAll[0]=elapsedTimeAll[-1]*int8_adjust_ratio
+    ammErroAll[-2]=ammErroAll[-2]-ammErroAll[-2]
+   
 
-    groupBar2.DrawFigure(dataSetNames, ammErroAll, methodTags, "Datasets", "Error (%)",
-                         5, 15, figPath + "sec4_1_qcd_static_lazy_fro", True)
-    groupBar2.DrawFigure(dataSetNames, endErrorAll, methodTags, "Datasets", "Acc (%)",
-                         5, 15, figPath + "sec4_1_qcd_static_lazy_ending_acc", True)
 
     
     #groupBar2.DrawFigure(dataSetNames, np.log(thrAll), methodTags, "Datasets", "elements/ms", 5, 15, figPath + "sec4_1_e2e_static_lazy_throughput_log", True)
