@@ -13,24 +13,6 @@ using namespace INTELLI;
 using namespace torch;
 using namespace DIVERSE_METER;
 
-// Function to generate a 2D Gaussian kernel
-torch::Tensor gaussian_kernel(int size, double sigma) {
-    int center = size / 2;
-    torch::Tensor kernel = torch::empty({size, size});
-
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            int x = i - center;
-            int y = j - center;
-            kernel[i][j] = std::exp(-(x * x + y * y) / (2.0 * sigma * sigma));
-        }
-    }
-
-    // Normalize the kernel
-    kernel /= kernel.sum();
-
-    return kernel;
-}
 float qcdMSE(const torch::Tensor& A, const torch::Tensor& B) {
     // Compute the square difference
     auto A2=torch::pow(A, 2);
@@ -50,44 +32,22 @@ private:
 
     /* data */
 public:
-    torch::Tensor qcdA,qcdB,conv_kernel;
-    int64_t padded_rows,padded_cols;
+    torch::Tensor U,Ut;
     uint64_t prepareTime;
     QCDPairs(/* args */){}
     ~QCDPairs(){}
-    void genPairs(torch::Tensor qcdMat,int size,double sigma);
-    torch::Tensor getResult(torch::Tensor mmRu);
+    void genPairs(torch::Tensor qcdMat,double sigma);
 
 };
-void QCDPairs::genPairs(torch::Tensor qcd_matrix,int kernel_size,double sigma)
-{  struct timeval ts;
-  gettimeofday(&ts, NULL);
-    conv_kernel = gaussian_kernel(kernel_size, sigma);
-    // Padding to ensure the output has the same size as the input
-    int padding = 1;
-
-    // Add padding to the input matrix
-    auto padded_matrix = torch::nn::functional::pad(qcd_matrix, torch::nn::functional::PadFuncOptions({padding, padding, padding, padding}));
-
-    // Get the size of the padded matrix
-     padded_rows = padded_matrix.size(0);
-     padded_cols = padded_matrix.size(1);
-
-    // Reshape the padded matrix into a column matrix
-    auto reshaped_matrix = padded_matrix.unfold(0, conv_kernel.size(0), 1).unfold(1, conv_kernel.size(1), 1);
-
-    // Flatten the unfolded matrix to prepare for matrix multiplication
-    auto flattened_matrix = reshaped_matrix.reshape({-1, conv_kernel.size(0) * conv_kernel.size(1)});
-
-    // Reshape the convolution kernel for matrix multiplication
-    auto reshaped_kernel = conv_kernel.view({-1, 1});
-    qcdA=flattened_matrix;
-    qcdB=reshaped_kernel;
-    prepareTime=UtilityFunctions::timeLastUs(ts);
-}
-torch::Tensor QCDPairs::getResult(torch::Tensor result)
-{
-    return result.view({padded_rows - conv_kernel.size(0) + 1, padded_cols - conv_kernel.size(1) + 1});
+void QCDPairs::genPairs(torch::Tensor qcd_matrix,double alpha_real)
+{    torch::manual_seed(123);
+  
+      auto A_size = qcd_matrix.sizes();
+    int64_t size=A_size[0];
+    torch::Tensor a_real = torch::randn({size, size});
+      // Compute the real-valued displacement operator matrix U
+    U = std::cos(alpha_real) * torch::exp(-0.5 * (a_real + a_real.t()));
+    Ut=U.t();
 }
 
 void runSingleThreadTest(std::string configName) {
@@ -99,13 +59,13 @@ void runSingleThreadTest(std::string configName) {
   uint64_t sketchDimension;
   ConfigMapPtr breakDownResult = nullptr;
   INTELLI_INFO("cppAlgoTag: "+cfg->tryString("cppAlgoTag", "mm", true));
- 
+  
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
   uint64_t usingMeter = cfg->tryU64("usingMeter", 0, true);
   std::string meterTag = cfg->tryString("meterTag", "intelMsr", true);
   uint64_t useCPP = cfg->tryU64("useCPP", 0, true);
-  uint64_t forceMP = cfg->tryU64("forceMP", 0, true);
+  //uint64_t forceMP = cfg->tryU64("forceMP", 0, true);
   QCDPairs qcdp;
   if (usingMeter) {
     eMeter = meterTable.findMeter(meterTag);
@@ -136,11 +96,12 @@ void runSingleThreadTest(std::string configName) {
   auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);
   assert(matLoaderPtr);
   matLoaderPtr->setConfig(cfg);
-  qcdp.genPairs(matLoaderPtr->getA(),4,1.0);
+  qcdp.genPairs(matLoaderPtr->getA(),0.5);
   INTELLI_INFO("Pre-amm time for QCD ="+to_string(qcdp.prepareTime));
-  auto A = qcdp.qcdA;
-  auto B = qcdp.qcdB;
-  torch::Tensor C;
+  auto U = qcdp.U;
+  auto Ut = qcdp.Ut;
+  auto A=matLoaderPtr->getA();
+  torch::Tensor C,C2;
 
   //555
   /*torch::manual_seed(114514);
@@ -148,7 +109,7 @@ void runSingleThreadTest(std::string configName) {
 auto A = torch::rand({(long) aRow, (long) aCol});
 auto B = torch::rand({(long) aCol, (long) bCol});*/
   INTELLI_INFO("Generation done, conducting...");
-  uint64_t threads = cfg->tryU64("threads", 0, true);
+  //uint64_t threads = cfg->tryU64("threads", 0, true);
   ThreadPerfPtr pef;
 #if AMMBENCH_PAPI == 1
   if (cfg->tryU64("usePAPI", 1)) {
@@ -161,25 +122,27 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
 #endif
   pef->initEventsByCfg(cfg);
   AMMBench::BlockPartitionRunner br,br2;
-  if (threads > 1 || forceMP) {
-    INTELLI_WARNING("use multithread");
-    br.setConfig(cfg);
-    br.createABC(A, B);
-    if (eMeter != nullptr) {
-      eMeter->startMeter();
-    }
-    pef->start();
-    C = br.parallelForward();
-    pef->end();
-    if (eMeter != nullptr) {
-      eMeter->stopMeter();
-    }
-    breakDownResult = br.getBreakDown();
-  } else {
-    AMMBench::CPPAlgoTable cppAlgoTable;
-    std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
-    AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
-    cppAlgoPtr->setConfig(cfg);
+
+  AMMBench::CPPAlgoTable cppAlgoTable;
+  std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
+  AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
+  AMMBench::AbstractCPPAlgoPtr cppAlgoPtr2 = cppAlgoTable.findCppAlgo(cppAlgoTag);
+  if(cppAlgoTag=="pq")
+  {
+    cfg->edit("pqvqCodewordLookUpTablePath","qcdS1_m10.pth");
+  }
+  else{
+    cfg->edit("pqvqCodewordLookUpTablePath","qcdS1_m1.pth");
+  }
+  cppAlgoPtr->setConfig(cfg);
+    if(cppAlgoTag=="pq")
+  {
+    cfg->edit("pqvqCodewordLookUpTablePath","qcdS2_m10.pth");
+  }
+  else{
+    cfg->edit("pqvqCodewordLookUpTablePath","qcdS2_m1.pth");
+  }
+  cppAlgoPtr2->setConfig(cfg);
     INTELLI_WARNING("single thread, algo " + cppAlgoTag);
     if (eMeter != nullptr) {
       eMeter->startMeter();
@@ -187,8 +150,8 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     pef->start();
    
     INTELLI_WARNING("this is pure c++");
-    C = cppAlgoPtr->amm(A, B, sketchDimension);
-   
+    C = cppAlgoPtr->amm(U, A, sketchDimension);
+    C2= cppAlgoPtr2->amm(C, Ut, sketchDimension);
     pef->end();
     if (eMeter != nullptr) {
       eMeter->stopMeter();
@@ -196,7 +159,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     if (useCPP && cppAlgoPtr) {
       breakDownResult = cppAlgoPtr->getBreakDown();
     }
-  }
+
 
   std::string ruName = "default";
 
@@ -210,44 +173,25 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     resultCsv->edit("energyAll", (double) energyConsumption);
     resultCsv->edit("energyOnlyMe", (double) pureEnergy);
   }
-  if (threads > 1 || forceMP) {
-    INTELLI_WARNING("consider multithread elapsed time");
-    resultCsv->edit("perfElapsedTime", (uint64_t) br.getElapsedTime());
-    br.appendThreadInfo(resultCsv);
-  }
-  // error
-   torch::Tensor realC; 
-  INTELLI_WARNING("evaluating the error, may takes some time");
-   if (threads > 1 || forceMP) {
-    INTELLI_WARNING("use multithread to evaluate error");
-    std::string ev="mm";
 
-    cfg->edit("cppAlgoTag", ev);
-    br2.setConfig(cfg);
-    br2.createABC(A, B);
-    if (eMeter != nullptr) {
-      eMeter->startMeter();
-    }
-    pef->start();
-    realC = br2.parallelForward();
-    pef->end();
-  }
-  else
-  {
-    realC = torch::matmul(A, B);
-  }
-  uint64_t otherTime=qcdp.prepareTime;
-  auto endCCal=qcdp.getResult(C);
-  auto endCReal=qcdp.getResult(realC);
+  // error
+   torch::Tensor realC,realC2; 
+  INTELLI_WARNING("evaluating the error, may takes some time");
+ 
+  realC = torch::matmul(U, A);
+  realC2=torch::matmul(realC, Ut);
+  
+ // uint64_t otherTime=qcdp.prepareTime;
   double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, C);
-  double qcdError= qcdMSE(realC, C);
-  double froBNormal = B.norm().item<double>();
+  double froError2 = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC2, C2);
+  double qcdError= qcdMSE(realC2, C2);
+  double froBNormal = A.norm().item<double>();
   double errorBoundRatio = froError / froBNormal;
-  INTELLI_INFO("B normal is " + to_string(froBNormal));
-  resultCsv->edit("froError", (double) froError);
+  INTELLI_INFO("A normal is " + to_string(froBNormal));
+  resultCsv->edit("froError", (double) (froError+froError2)/2);
   resultCsv->edit("qcdError", (double) qcdError);
   resultCsv->edit("errorBoundRatio", (double) errorBoundRatio);
-  resultCsv->edit("otherTime", (uint64_t)otherTime);
+  //resultCsv->edit("otherTime", (uint64_t)otherTime);
   resultCsv->toFile(ruName + ".csv");
   INTELLI_INFO("Done. here is overall result");
   std::cout << resultCsv->toString() << endl;
