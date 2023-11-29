@@ -1,6 +1,7 @@
 getTorchScripts
 Instructions_breakdown_1
 cycles_breakdown_1
+energyMes
 end2end
 scanARowCycles
 scanZeroMaskACycles
@@ -9,4 +10,3 @@ scanAZipfCycles
 DownstreamCCA_static_lazy
 Downstream_qcd
 Downstream_Inference
-
