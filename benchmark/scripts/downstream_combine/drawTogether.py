@@ -240,30 +240,29 @@ def main():
     import drawPCA
     import drawInference
     import drawTraining
-    import drawQCD
     procLat, ammError, endError=drawPCA.main()
     i=0
     while i<4:
         procLat2=[]
         ammError2=[]
         endError2=[]
-        if(i==3):
-            procLat2, ammError2, endError2=drawQCD.main()
+        if(i==0):
+            procLat2, ammError2, endError2=drawCCA.main()
             print(len(ammError2))
-        if (i==0):
+        if (i==1):
             procLat2, endError2, ammError2, temp, temp2, temp3=drawTraining.main()
             print(ammError2)
             #print(procLat2)
             #exit()
         # D= 2000
-        if (i==1):
+        if (i==2):
             temp, temp2, temp3,procLat2, endError2, ammError2=drawTraining.main()
             print(ammError2)
             #print(procLat2)
             #exit()
-        if (i==2):
+        if (i==3):
             procLat2, ammError2, endError2=drawInference.main()
-        if not (i==0 or i == 1):
+        if not (i==1 or i == 2):
             ammError=combinDownStream(ammError,ammError2)
             procLat=combinDownStream(procLat,procLat2)
             endError=combinDownStream(endError,endError2)
@@ -279,12 +278,12 @@ def main():
     os.system("mkdir ../../results")
     os.system("mkdir ../../figures")
     os.system("mkdir " + figPath)
-    taskNames=['PCA','Training\n(500-D)','Training\n(2000-D)','Inference\n(CIFAR10)','Inference\n(CIFAR100)','Unitary trans-\nformation']
+    taskNames=['PCA','CCA','Training\n(500-D)','Training\n(2000-D)','Inference\n(CIFAR10)','Inference\n(CIFAR100)']
     taskNamesShort=['PCA','CCA','Inference\n(CIFAR10)','Inference\n(CIFAR100)']
     methodTags=['INT8', 'CRS', 'CS', 'CoOFD', 'BlockLRA', 'FastJLT', 'VQ', 'PQ', 'RIP', 'SMP-PCA', 'WeightedCR', 'TugOfWar',  'NLMM', 'LTMM']
     groupBar2.DrawFigureYLog(taskNames,procLat,methodTags, "Task", r'Processing Latency l (ms)', 5, 15, figPath + "ds_latency", True)
     groupBar2.DrawFigureYLog(taskNames,ammError,methodTags, "Task",r'AMM Error $\epsilon$ ', 5, 15, figPath + "ds_amm_error", False)
-    groupBar2.DrawFigureYLog(taskNames,endError,methodTags, "Task",r'Application Error $e$ ', 5, 15, figPath + "ds_app_error", False)
+    groupBar2.DrawFigureYLog(taskNames,endError,methodTags, "Task",r'Ending Error $e$ ', 5, 15, figPath + "ds_app_error", False)
     #print(ipcAll)
     #groupBar2.DrawFigure(dataSetNames,(l1dStallAll+l2StallAll+l3StallAll)/cpuCycleAll*100.0,methodTags, "Datasets", "Ratio of cacheStalls (%)", 5, 15, figPath + "cachestall_ratio", True)
 
