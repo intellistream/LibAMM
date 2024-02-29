@@ -1,4 +1,4 @@
-# AMMBench
+# LibAMM
 
 An universal parallel approximate matrix multiplication (AMM) on multiple devices. This project is compatable with
 libtorch
