@@ -1,7 +1,6 @@
 # LibAMM
 
-An universal parallel approximate matrix multiplication (AMM) on multiple devices. This project is compatable with
-libtorch
+LibAMM aggregates prevalent AMM algorithms, enabling standardized evaluations and efficient experiment management. This project is compatable with libtorch (C++).
 
 ## Extra Cmake options (set by cmake -Dxxx=ON/OFF)
 
