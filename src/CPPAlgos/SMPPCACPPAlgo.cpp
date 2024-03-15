@@ -61,6 +61,9 @@ torch::Tensor AMMBench::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uin
     M_tilde = M_tilde.to(torch::kCPU);
     postProcessTime=chronoElapsedTime(start)-buildATime-buildBTime-fABTime;
   }
+  else {
+    fABTime = chronoElapsedTime(start);
+  }
   return M_tilde;
 }
 } // AMMBench
