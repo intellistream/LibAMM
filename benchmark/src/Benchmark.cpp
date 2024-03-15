@@ -131,7 +131,7 @@ void runSingleThreadTest(std::string configName) {
   INTELLI_INFO("with sketch" + to_string(sketchDimension));
   torch::jit::script::Module module;
   INTELLI_INFO("Try pt file " + ptFile);
-  module = torch::jit::load(ptFile);
+  //module = torch::jit::load(ptFile);
   std::string matrixLoaderTag = cfg->tryString("matrixLoaderTag", "random", true);
   auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);
   assert(matLoaderPtr);

@@ -3,10 +3,20 @@
 //
 
 #include <CPPAlgos/SMPPCACPPAlgo.h>
-
+#include <Utils/UtilityFunctions.h>
+#include <chrono>
 namespace AMMBench {
 torch::Tensor AMMBench::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
-
+  if(useCuda) {
+    INTELLI_INFO("I am SMP-PCA, using cuda");
+  }
+  auto start = std::chrono::high_resolution_clock::now();
+  if (useCuda) {
+    A = A.to(torch::kCUDA);
+    buildATime = chronoElapsedTime(start);
+    B= B.to(torch::kCUDA);
+    buildBTime = chronoElapsedTime(start) - buildATime;
+  }
   // Step 1: Input A:n1*d B:d*n2
   A = A.t(); // d*n1
   int64_t d = A.size(0);
@@ -16,6 +26,9 @@ torch::Tensor AMMBench::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uin
 
   // Step 2: Get sketched matrix
   torch::Tensor pi = 1 / std::sqrt(k) * torch::randn({k, d}); // Gaussian sketching matrix
+  if (useCuda) {
+   pi=pi.to(torch::kCUDA);
+  }
   torch::Tensor A_tilde = torch::matmul(pi, A); // k*n1
   torch::Tensor B_tilde = torch::matmul(pi, B); // k*n2
 
@@ -43,7 +56,11 @@ torch::Tensor AMMBench::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uin
   torch::Tensor ratio = torch::div(col_norm_A_col_norm_B, col_norm_A_tilde_col_norm_B_tilde);
 
   torch::Tensor M_tilde = torch::mul(A_tilde_B_tilde, ratio);
-
+  if (useCuda) {
+    fABTime = chronoElapsedTime(start) - buildATime - buildBTime;
+    M_tilde = M_tilde.to(torch::kCPU);
+    postProcessTime=chronoElapsedTime(start)-buildATime-buildBTime-fABTime;
+  }
   return M_tilde;
 }
 } // AMMBench
