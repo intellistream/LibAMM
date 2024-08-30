@@ -2,14 +2,14 @@
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include <AMMBench.h>
+#include <LibAMM.h>
 using namespace std;
 using namespace INTELLI;
 using namespace torch;
 void runSingleThreadTest(std::string configName) {
   ConfigMapPtr cfg = newConfigMap();
   cfg->fromFile(configName);
-  AMMBench::MatrixLoaderTable mLoaderTable;
+  LibAMM::MatrixLoaderTable mLoaderTable;
   uint64_t sketchDimension;
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
@@ -57,7 +57,7 @@ TEST_CASE("Test the FastJLT", "[short]")
 TEST_CASE("Test FastJLT in cpp", "[short]")
 {
   torch::manual_seed(114514);
-  AMMBench::FastJLTCPPAlgo tw;
+  LibAMM::FastJLTCPPAlgo tw;
   auto A = torch::rand({400, 400});
   auto B = torch::rand({400, 400});
   auto realC = torch::matmul(A, B);

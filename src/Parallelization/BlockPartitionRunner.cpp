@@ -8,7 +8,7 @@
 
 using namespace INTELLI;
 
-void AMMBench::BlockPartitionWorker::setConfig(INTELLI::ConfigMapPtr _cfg) {
+void LibAMM::BlockPartitionWorker::setConfig(INTELLI::ConfigMapPtr _cfg) {
   cfg = _cfg;
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   osScheduling = cfg->tryU64("osScheduling", 0, false);
@@ -29,7 +29,7 @@ void AMMBench::BlockPartitionWorker::setConfig(INTELLI::ConfigMapPtr _cfg) {
 
 }
 
-void AMMBench::BlockPartitionWorker::setWorkParameters(uint64_t aStart, uint64_t aEnd, int mycore) {
+void LibAMM::BlockPartitionWorker::setWorkParameters(uint64_t aStart, uint64_t aEnd, int mycore) {
   startRow = aStart;
   endRow = aEnd;
   coreBind = mycore;
@@ -38,14 +38,14 @@ void AMMBench::BlockPartitionWorker::setWorkParameters(uint64_t aStart, uint64_t
 
 }
 
-void AMMBench::BlockPartitionWorker::setABC(AMMBench::TensorPtr A, AMMBench::TensorPtr B, AMMBench::TensorPtr C) {
+void LibAMM::BlockPartitionWorker::setABC(LibAMM::TensorPtr A, LibAMM::TensorPtr B, LibAMM::TensorPtr C) {
   matA = A;
   matB = B;
   matC = C;
   //assert(C);
 }
 
-void AMMBench::BlockPartitionWorker::inlineMain() {
+void LibAMM::BlockPartitionWorker::inlineMain() {
     //std::cout<<"thread at "+ to_string(coreBind)+" start\r\n";
     /**
      * @brief 1. bind core and torch setting
@@ -78,22 +78,22 @@ void AMMBench::BlockPartitionWorker::inlineMain() {
     //std::cout<<subC;
 }
 
-INTELLI::ConfigMapPtr AMMBench::BlockPartitionWorker::getBreakDown() {
+INTELLI::ConfigMapPtr LibAMM::BlockPartitionWorker::getBreakDown() {
   if (useCPP && cppAlgoPtr) {
     return cppAlgoPtr->getBreakDown();
   }
   return nullptr;
 }
 
-uint64_t AMMBench::BlockPartitionWorker::getElapsedTime() {
+uint64_t LibAMM::BlockPartitionWorker::getElapsedTime() {
     return pefResult->getU64("perfElapsedTime");
 }
 
-INTELLI::ConfigMapPtr AMMBench::BlockPartitionWorker::getPefResult(){
+INTELLI::ConfigMapPtr LibAMM::BlockPartitionWorker::getPefResult(){
     return pefResult;
 };
 
-void AMMBench::BlockPartitionRunner::setConfig(INTELLI::ConfigMapPtr _cfg) {
+void LibAMM::BlockPartitionRunner::setConfig(INTELLI::ConfigMapPtr _cfg) {
   cfg = _cfg;
   threads = cfg->tryU64("threads", 2, true);
   workers = std::vector<BlockPartitionWorkerPtr>(threads);
@@ -106,7 +106,7 @@ void AMMBench::BlockPartitionRunner::setConfig(INTELLI::ConfigMapPtr _cfg) {
   INTELLI_INFO("set up " + to_string(threads) + "workers.");
 }
 
-void AMMBench::BlockPartitionRunner::createABC(torch::Tensor A, torch::Tensor B) {
+void LibAMM::BlockPartitionRunner::createABC(torch::Tensor A, torch::Tensor B) {
 
   matA = newTensor(A);
   matB = newTensor(B);
@@ -121,7 +121,7 @@ void AMMBench::BlockPartitionRunner::createABC(torch::Tensor A, torch::Tensor B)
   }
 }
 
-torch::Tensor AMMBench::BlockPartitionRunner::parallelForward() {
+torch::Tensor LibAMM::BlockPartitionRunner::parallelForward() {
     for (uint64_t i = 0; i < threads; i++) {
         workers[i]->startThread();
     }
@@ -136,14 +136,14 @@ torch::Tensor AMMBench::BlockPartitionRunner::parallelForward() {
     return *matC;
 }
 
-torch::Tensor AMMBench::BlockPartitionRunner::runAMM(torch::Tensor A, torch::Tensor B) {
+torch::Tensor LibAMM::BlockPartitionRunner::runAMM(torch::Tensor A, torch::Tensor B) {
     createABC(A, B);
     parallelForward();
     calculateMetrics();
     return *matC;
 }
 
-uint64_t AMMBench::BlockPartitionRunner::getElapsedTime() {
+uint64_t LibAMM::BlockPartitionRunner::getElapsedTime() {
   uint64_t ti = 0;
   uint64_t tMax = 0;
   for (uint64_t i = 0; i < threads; i++) {
@@ -155,14 +155,14 @@ uint64_t AMMBench::BlockPartitionRunner::getElapsedTime() {
   return tMax;
 }
 
-void AMMBench::BlockPartitionRunner::appendThreadInfo(INTELLI::ConfigMapPtr ru) {
+void LibAMM::BlockPartitionRunner::appendThreadInfo(INTELLI::ConfigMapPtr ru) {
   for (uint64_t i = 0; i < threads; i++) {
     std::string keyElapesedTime = "thread" + to_string(i) + "RunTime";
     ru->edit(keyElapesedTime, (uint64_t) workers[i]->getElapsedTime());
   }
 }
 
-void AMMBench::BlockPartitionRunner::calculateMetrics() {
+void LibAMM::BlockPartitionRunner::calculateMetrics() {
     ConfigMap allThreadPefResult;
     ConfigMap singleThreadperResult;
     for (uint64_t i = 0; i < threads; i++) {
@@ -178,10 +178,10 @@ void AMMBench::BlockPartitionRunner::calculateMetrics() {
     metrics->edit("throughputByElements", (double) (throughput * matA->size(1)));
 }
 
-INTELLI::ConfigMapPtr AMMBench::BlockPartitionRunner::getMetrics() {
+INTELLI::ConfigMapPtr LibAMM::BlockPartitionRunner::getMetrics() {
     return metrics;
 }
 
-INTELLI::ConfigMapPtr AMMBench::BlockPartitionRunner::getBreakDown() {
+INTELLI::ConfigMapPtr LibAMM::BlockPartitionRunner::getBreakDown() {
   return workers[0]->getBreakDown();
 }

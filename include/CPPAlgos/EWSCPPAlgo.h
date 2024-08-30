@@ -8,9 +8,9 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -18,7 +18,7 @@ namespace AMMBench {
  * @brief The Element Wise Sampling (EWS) class of c++ algos
  *
  */
-class EWSCPPAlgo : public AMMBench::AbstractCPPAlgo {
+class EWSCPPAlgo : public LibAMM::AbstractCPPAlgo {
  public:
   EWSCPPAlgo() {
 
@@ -40,18 +40,18 @@ class EWSCPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref EWSCppAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::EWSCPPAlgo> EWSCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::EWSCPPAlgo> EWSCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newEWSCppAlgo
  * @brief (Macro) To creat a new @ref  EWSCppAlgounder shared pointer.
  */
-#define newEWSCPPAlgo std::make_shared<AMMBench::EWSCPPAlgo>
+#define newEWSCPPAlgo std::make_shared<LibAMM::EWSCPPAlgo>
 }
 /**
  * @}

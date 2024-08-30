@@ -5,7 +5,7 @@
 #include <Streaming/SingleThreadStreamer.h>
 #include <Utils/UtilityFunctions.h>
 #include <chrono>
-bool AMMBench::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
   cfgGlobal = cfg;
   /**
   * @brief 1.set the algo
@@ -29,13 +29,13 @@ bool AMMBench::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
   staticDataSet = cfg->tryU64("staticDataSet",0,true);
   return true;
 }
-bool AMMBench::SingleThreadStreamer::prepareRun(torch::Tensor A, torch::Tensor B) {
+bool LibAMM::SingleThreadStreamer::prepareRun(torch::Tensor A, torch::Tensor B) {
   uint64_t aRows = A.size(0);
   cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
   if ((batchSize > aRows) || fullLazy) {
     batchSize = aRows;
   }
-  AMMBench::TimeStamper tsGen, tsGenB;
+  LibAMM::TimeStamper tsGen, tsGenB;
   tsGen.setConfig(cfgGlobal);
   myTs = tsGen.getTimeStamps();
   tsGenB.setSeed(7758258);
@@ -45,7 +45,7 @@ bool AMMBench::SingleThreadStreamer::prepareRun(torch::Tensor A, torch::Tensor B
   matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
   return true;
 }
-torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+torch::Tensor LibAMM::SingleThreadStreamer::streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   //INTELLI_INFO("I am mm");
   INTELLI_INFO("Start Streaming A rows");
@@ -110,7 +110,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm(torch::Tensor A, torc
   return *matC;
 }
 
-torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+torch::Tensor LibAMM::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   uint64_t aRows = A.size(0);
 
@@ -195,7 +195,7 @@ torch::Tensor AMMBench::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, to
   return *matC;
 }
 
-double AMMBench::SingleThreadStreamer::getLatencyPercentage(double fraction) {
+double LibAMM::SingleThreadStreamer::getLatencyPercentage(double fraction) {
   size_t rLen = myTs.size();
   size_t nonZeroCnt = 0;
   std::vector<uint64_t> validLatency;

@@ -11,7 +11,7 @@
 
 using namespace INTELLI;
 
-torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize, string metricsPrefix) {
+torch::Tensor LibAMM::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize, string metricsPrefix) {
     metrics = newConfigMap(); // has error and pef events: time, instructions, memory access etc.
     matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
     uint64_t isStreaming = cfg->tryU64("isStreaming", 0, true);
@@ -22,7 +22,7 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
         uint64_t streamingTwoMatrices = cfg->tryU64("streamingTwoMatrices", 0, true);
         if (threads>1) {
             INTELLI_INFO("streaming, multithread "+to_string(threads));
-            AMMBench::BlockPartitionStreamer ss;
+            LibAMM::BlockPartitionStreamer ss;
             ss.setConfig(cfg);
             if (streamingTwoMatrices) {
                 *matC = ss.streamingAmm2S(A, B, sketchSize);
@@ -32,7 +32,7 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
         } else {
             INTELLI_INFO("streaming, singlethread");
             INTELLI_INFO(cfg->toString());
-            AMMBench::SingleThreadStreamer ss;
+            LibAMM::SingleThreadStreamer ss;
             ss.setConfig(cfg);
             ss.prepareRun(A, B);
             if (streamingTwoMatrices) {
@@ -52,7 +52,7 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
         
         if (threads > 1 || forceMP) {
             INTELLI_INFO("AMM non-streaming, multithread "+to_string(threads));
-            AMMBench::BlockPartitionRunner br;
+            LibAMM::BlockPartitionRunner br;
             br.setConfig(cfg);
             *matC = br.runAMM(A, B);
             metrics = br.getMetrics();
@@ -75,9 +75,9 @@ torch::Tensor AMMBench::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A
             INTELLI_INFO("AMM non-streaming, singlethread");
             uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
             UtilityFunctions::bind2Core((int) coreBind);
-            AMMBench::CPPAlgoTable cppAlgoTable;
+            LibAMM::CPPAlgoTable cppAlgoTable;
             std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
-            AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
+            LibAMM::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
             cppAlgoPtr->setConfig(cfg);
             ThreadPerf pef(-1);
             pef.setPerfList();

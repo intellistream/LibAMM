@@ -3,7 +3,7 @@
 //
 #include <CPPAlgos/CoOccurringFDCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 torch::Scalar get_first_element(const torch::Tensor &tensor) {
   if (tensor.numel() == 1) {
     return tensor.item();

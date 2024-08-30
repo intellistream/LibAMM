@@ -7,19 +7,19 @@
 
 #include <MatrixLoader/CCAMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MediaMill The MediaMill 2005-2006 Feature Label Matrix
+ * @ingroup LibAMM_MatrixLOADER_MediaMill The MediaMill 2005-2006 Feature Label Matrix
  * @{
  */
 /**
  * @class MediaMillMatrixLoader MatrixLoader/MediaMillMatrixLoader.h
  * @brief Load MediaMill 2005-2006 data (https://rdrr.io/github/fcharte/mldr.datasets/man/mediamill.html)
- * @ingroup AMMBENCH_MatrixLOADER_MediaMill
+ * @ingroup LibAMM_MatrixLOADER_MediaMill
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -141,18 +141,18 @@ class MediaMillMatrixLoader : public CCAMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MediaMill
+ * @ingroup LibAMM_MatrixLOADER_MediaMill
  * @typedef MediaMillMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref MediaMillMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::MediaMillMatrixLoader> MediaMillMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::MediaMillMatrixLoader> MediaMillMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MediaMill
+ * @ingroup LibAMM_MatrixLOADER_MediaMill
  * @def newMediaMillMatrixLoader
  * @brief (Macro) To creat a new @ref MediaMillMatrixLoader under shared pointer.
  */
-#define newMediaMillMatrixLoader std::make_shared<AMMBench::MediaMillMatrixLoader>
+#define newMediaMillMatrixLoader std::make_shared<LibAMM::MediaMillMatrixLoader>
 /**
  * @}
  */

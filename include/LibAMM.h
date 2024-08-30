@@ -1,10 +1,10 @@
-/*! \file AMMBench.h*/
+/*! \file LibAMM.h*/
 //
 // Created by tony on 22/11/22.
 //
 
-#ifndef INTELLISTREAM_AMMBENCH_H
-#define INTELLISTREAM_AMMBENCH_H
+#ifndef INTELLISTREAM_LibAMM_H
+#define INTELLISTREAM_LibAMM_H
 
 #include <torch/torch.h>
 #include <iostream>
@@ -91,7 +91,7 @@
 /**
  * @subsection code_stru_matrixloader MatrixLoader
  * This folder contains the loader to matrixes under different generation rules
- * @defgroup AMMBENCH_MatrixLOADER The matrix loaders
+ * @defgroup LibAMM_MatrixLOADER The matrix loaders
  * @{
  * We define the generation classes of matrixes. here
  **/
@@ -114,7 +114,7 @@
 /**
 * @subsection code_stru_parallelization Parallelization
 * This folder contains the parallelization approaches
-* @defgroup  AMMBENCH_PARALLELIZATION The parallelization classes
+* @defgroup  LibAMM_PARALLELIZATION The parallelization classes
 * @{
 * We define the parallelization classes of AMM. here
 **/
@@ -126,7 +126,7 @@
 /**
 * @subsection code_stru_STREAMING STREAMING
 * This folder contains the STREAMING approaches
-* @defgroup  AMMBENCH_STREAMING The streaming classes
+* @defgroup  LibAMM_STREAMING The streaming classes
 * @{
 * We define the streaming classes of AMM. here
 **/
@@ -141,7 +141,7 @@
 /**
 * @subsection code_stru_cppalgo c++ algorithms
 * This folder contains the agorithms implemented under pure c++
-* @defgroup  AMMBENCH_CppAlgos The c++ amm algorithms
+* @defgroup  LibAMM_CppAlgos The c++ amm algorithms
 * @{
 * We define the c++ algorithm classes of AMM. here
 **/

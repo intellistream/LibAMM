@@ -2,14 +2,14 @@
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include <AMMBench.h>
+#include <LibAMM.h>
 using namespace std;
 using namespace INTELLI;
 using namespace torch;
 void runSingleThreadTest(std::string configName) {
   ConfigMapPtr cfg = newConfigMap();
   cfg->fromFile(configName);
-  AMMBench::MatrixLoaderTable mLoaderTable;
+  LibAMM::MatrixLoaderTable mLoaderTable;
   uint64_t sketchDimension;
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
@@ -55,7 +55,7 @@ TEST_CASE("Test the cl", "[short]")
   torch::manual_seed(114514);
   auto A = torch::rand({(long) 4, (long) 4});
   auto B = torch::rand({(long) 4, (long) 4});
-  AMMBench::CLMMCPPAlgo cl;
+  LibAMM::CLMMCPPAlgo cl;
   cl.setConfig(cfg);
   auto C1 = cl.amm(A, B, 1);
   auto C2 = torch::matmul(A, B);
@@ -77,7 +77,7 @@ TEST_CASE("Test the cl-int8", "[short]")
   torch::manual_seed(114514);
   auto A = torch::rand({(long) 4, (long) 4});
   auto B = torch::rand({(long) 4, (long) 4});
-  AMMBench::CLMMCPPAlgo cl;
+  LibAMM::CLMMCPPAlgo cl;
   cl.setConfig(cfg);
   auto C1 = cl.amm(A, B, 1);
   auto C2 = torch::matmul(A, B);

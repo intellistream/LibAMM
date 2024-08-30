@@ -3,7 +3,7 @@
 #define CATCH_CONFIG_MAIN
 
 #include "catch.hpp"
-#include <AMMBench.h>
+#include <LibAMM.h>
 
 using namespace std;
 using namespace INTELLI;
@@ -12,7 +12,7 @@ using namespace torch;
 void runSingleThreadTest(std::string configName) {
   ConfigMapPtr cfg = newConfigMap();
   cfg->fromFile(configName);
-  AMMBench::MatrixLoaderTable mLoaderTable;
+  LibAMM::MatrixLoaderTable mLoaderTable;
   uint64_t sketchDimension;
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
@@ -70,7 +70,7 @@ TEST_CASE("Test the COLUMN ROW SAMPLINGS, V2", "[short]")
 TEST_CASE("Test CRS in cpp", "[short]")
 {
   torch::manual_seed(114514);
-  AMMBench::CRSCPPAlgo crs;
+  LibAMM::CRSCPPAlgo crs;
   auto A = torch::rand({400, 400});
   auto B = torch::rand({400, 400});
   auto realC = torch::matmul(A, B);
@@ -83,7 +83,7 @@ TEST_CASE("Test CRS in cpp", "[short]")
 TEST_CASE("Test CRS v2 in cpp", "[short]")
 {
   torch::manual_seed(114514);
-  AMMBench::CRSV2CPPAlgo crs;
+  LibAMM::CRSV2CPPAlgo crs;
   auto A = torch::rand({400, 400});
   auto B = torch::rand({400, 400});
   auto realC = torch::matmul(A, B);
@@ -96,7 +96,7 @@ TEST_CASE("Test CRS v2 in cpp", "[short]")
 TEST_CASE("Test Bernoulli CRS in cpp", "[short]")
 {
   torch::manual_seed(114514);
-  AMMBench::BCRSCPPAlgo bcrs;
+  LibAMM::BCRSCPPAlgo bcrs;
   auto A = torch::rand({400, 400});
   auto B = torch::rand({400, 400});
   auto realC = torch::matmul(A, B);

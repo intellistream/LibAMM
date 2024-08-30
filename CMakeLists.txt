@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.14)
-project(AMMBench CXX)
+project(LibAMM CXX)
 
 
 # Custom CMake find instructions and macros
@@ -20,7 +20,7 @@ find_package(Torch REQUIRED)
 set(LIBRARIES ${LIBRARIES} ${TORCH_LIBRARIES})
 # Set Optimization Flags
 set(CMAKE_CXX_FLAGS "-std=c++20 -Wall -Werror=return-type -Werror=unused-variable -Werror=unused-parameter")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DNO_RACE_CHECK -DAMMBench_DEBUG_MODE=1")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DNO_RACE_CHECK -DLibAMM_DEBUG_MODE=1")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wno-ignored-qualifiers -Wno-sign-compare -O3")
 #set(CMAKE_CUDA_STANDARD 11)
 #set(CMAKE_CUDA_FLAGS "-std=c++11")
@@ -31,9 +31,9 @@ option (ENABLE_OPENCL
 #OPTIONAL OPENCL
 if (NOT ENABLE_OPENCL)
     message(STATUS "I will NOT include opencl support ")
-    set(AMMBENCH_CL 0)
+    set(LibAMM_CL 0)
 else ()
-    set(AMMBENCH_CL 1)
+    set(LibAMM_CL 1)
     message(STATUS "I will include opencl support, pls make sure you have corresponding libs")
     set(LIBRARIES ${LIBRARIES} OpenCL)
 endif ()
@@ -48,9 +48,9 @@ option (ENABLE_PAPI
 # OPTIONAL PAPI
 if (NOT ENABLE_PAPI)
     message(STATUS "I will NOT use PAPI ")
-    set(AMMBENCH_PAPI 0)
+    set(LibAMM_PAPI 0)
 else ()
-    set(AMMBENCH_PAPI 1)
+    set(LibAMM_PAPI 1)
     message(STATUS "I will try to use PAPI for HW counters, pls make sure your arch supports it")
     option (REBUILD_PAPI
             "Rebuild the papi libs"
@@ -62,8 +62,8 @@ else ()
         execute_process(COMMAND bash ${PAPISCRIPTPATH}/installPAPI.sh WORKING_DIRECTORY ${PAPISCRIPTPATH})
         message(STATUS "I have rebuilt PAPI" )
     endif()
-    find_library (libPAPI libpapi.a ./thirdparty/papi_build/lib)
-    message(STATUS "papiLibs= " ${libPAPI} )
+    find_library (libPAPI libpapi.so ./thirdparty/papi_build/lib)
+    message(STATUS "papi Libs= " ${libPAPI} )
     set(LIBRARIES ${LIBRARIES} ${libPAPI})
 
 endif ()
@@ -72,16 +72,21 @@ configure_file (
         "${PROJECT_BINARY_DIR}/include/papi_config.h"
 )
 
+option(ENABLE_PYBIND
+        "Enable original pybind and build LibAMM python"
+        OFF
+)
+
 #set(CMAKE_CUDA_ARCHITECTURES 55)
 # Set LOGGING_LEVEL Flag
-if (AMMBench_LOGGING_LEVEL)
-    get_log_level_value(AMMBench_LOGGING_VALUE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DAMMBench_LOGGING_LEVEL=${AMMBench_LOGGING_VALUE}")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DAMMBench_LOGGING_LEVEL=${AMMBench_LOGGING_VALUE}")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DAMMBench_LOGGING_LEVEL=${AMMBench_LOGGING_VALUE}")
-else (AMMBench_LOGGING_LEVEL)
+if (LibAMM_LOGGING_LEVEL)
+    get_log_level_value(LibAMM_LOGGING_VALUE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLibAMM_LOGGING_LEVEL=${LibAMM_LOGGING_VALUE}")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DLibAMM_LOGGING_LEVEL=${LibAMM_LOGGING_VALUE}")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DLibAMM_LOGGING_LEVEL=${LibAMM_LOGGING_VALUE}")
+else (LibAMM_LOGGING_LEVEL)
     message("---Everything will be logged")
-endif (AMMBench_LOGGING_LEVEL)
+endif (LibAMM_LOGGING_LEVEL)
 
 message(STATUS "CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}")
 message(STATUS "CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -111,15 +116,15 @@ message(STATUS " Libraries: ${LIBRARIES}")
 add_subdirectory(src)
 
 # Add Library
-get_sources(AMMBench_SOURCE_FILES)
-get_headers(AMMBench_HEADER_FILES)
-add_library(AMMBench SHARED ${AMMBench_SOURCE_FILES} ${AMMBench_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR})
-set_property(TARGET AMMBench PROPERTY CXX_STANDARD 20)
+get_sources(LibAMM_SOURCE_FILES)
+get_headers(LibAMM_HEADER_FILES)
+add_library(LibAMM SHARED ${LibAMM_SOURCE_FILES} ${LibAMM_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR})
+set_property(TARGET LibAMM PROPERTY CXX_STANDARD 20)
 
-target_include_directories(AMMBench PUBLIC "include")
-target_include_directories(AMMBench PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-target_include_directories  (AMMBench PUBLIC "thirdparty/papi_build/include")
-target_link_libraries(AMMBench PUBLIC ${LIBRARIES})
+target_include_directories(LibAMM PUBLIC "include")
+target_include_directories(LibAMM PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+target_include_directories  (LibAMM PUBLIC "thirdparty/papi_build/include")
+target_link_libraries(LibAMM PUBLIC ${LIBRARIES})
 #add_subdirectory(test)
 #Add benchmarks with command
 add_subdirectory(benchmark)
@@ -131,8 +136,26 @@ if (ENABLE_UNIT_TESTS)
     add_subdirectory(test)
 endif ()
 
+if (NOT ENABLE_PYBIND)
+    message(STATUS "I will NOT build original python package PyAMM")
+    set(LibAMM_PYBIND 0)
+else ()
+    message(STATUS "I will  build original python package PyAMM")
+    add_subdirectory(thirdparty/pybind11)
+    pybind11_add_module(PyAMM ${PROJECT_SOURCE_DIR}/src/PyAMM.cpp)
+    find_library(TORCH_PYTHON_LIBRARY torch_python PATH "${TORCH_INSTALL_PREFIX}/lib")
+    target_link_libraries(PyAMM PUBLIC ${LIBRARIES} LibAMM ${TORCH_PYTHON_LIBRARY})
+    install(TARGETS PyAMM LIBRARY DESTINATION .)
+    message(STATUS "Additional include torch_python: ${TORCH_PYTHON_LIBRARY}")
+    set(LibAMM_PYBIND 1)
+    set_property(TARGET PyAMM PROPERTY CXX_STANDARD 20)
+endif ()
+configure_file(
+        "${PROJECT_SOURCE_DIR}/include/pybind_config.h.in"
+        "${PROJECT_BINARY_DIR}/include/pybind_config.h"
+)
 
-install(DIRECTORY "include" DESTINATION "/AMMBench" COMPONENT AMMBench)
+install(DIRECTORY "include" DESTINATION "/LibAMM" COMPONENT LibAMM)
 # copy scripts
 file(GLOB allCopyFiles "${PROJECT_SOURCE_DIR}/scripts/*")
 file(COPY ${allCopyFiles} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/benchmark/scripts)

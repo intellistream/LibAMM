@@ -5,8 +5,8 @@
 #include <CPPAlgos/CRSCPPAlgo.h>
 #include <Utils/UtilityFunctions.h>
 #include <chrono>
-namespace AMMBench {
-torch::Tensor AMMBench::CRSCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k) {
+namespace LibAMM {
+torch::Tensor LibAMM::CRSCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k) {
   torch::Tensor C;
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -70,4 +70,4 @@ torch::Tensor AMMBench::CRSCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64
   }
   return C;
 }
-} // AMMBench
+} // LibAMM

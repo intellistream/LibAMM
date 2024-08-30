@@ -1,11 +1,11 @@
 //
 // Created by tony on 27/11/23.
 //
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <Utils/UtilityFunctions.h>
 #include <include/papi_config.h>
 #include <Utils/ThreadPerf.hpp>
-#if AMMBENCH_PAPI == 1
+#if LibAMM_PAPI == 1
 #include <Utils/ThreadPerfPAPI.hpp>
 #endif
 using namespace std;
@@ -55,7 +55,7 @@ void runSingleThreadTest(std::string configName) {
   AbstractMeterPtr eMeter = nullptr;
   ConfigMapPtr cfg = newConfigMap();
   cfg->fromFile(configName);
-  AMMBench::MatrixLoaderTable mLoaderTable;
+  LibAMM::MatrixLoaderTable mLoaderTable;
   uint64_t sketchDimension;
   ConfigMapPtr breakDownResult = nullptr;
   INTELLI_INFO("cppAlgoTag: "+cfg->tryString("cppAlgoTag", "mm", true));
@@ -111,7 +111,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   INTELLI_INFO("Generation done, conducting...");
   //uint64_t threads = cfg->tryU64("threads", 0, true);
   ThreadPerfPtr pef;
-#if AMMBENCH_PAPI == 1
+#if LibAMM_PAPI == 1
   if (cfg->tryU64("usePAPI", 1)) {
     pef = newThreadPerfPAPI(-1);
   } else {
@@ -121,12 +121,12 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   pef=newThreadPerf(-1);
 #endif
   pef->initEventsByCfg(cfg);
-  AMMBench::BlockPartitionRunner br,br2;
+  LibAMM::BlockPartitionRunner br,br2;
 
-  AMMBench::CPPAlgoTable cppAlgoTable;
+  LibAMM::CPPAlgoTable cppAlgoTable;
   std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
-  AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
-  AMMBench::AbstractCPPAlgoPtr cppAlgoPtr2 = cppAlgoTable.findCppAlgo(cppAlgoTag);
+  LibAMM::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
+  LibAMM::AbstractCPPAlgoPtr cppAlgoPtr2 = cppAlgoTable.findCppAlgo(cppAlgoTag);
   if(cppAlgoTag=="pq")
   {
     cfg->edit("pqvqCodewordLookUpTablePath","qcdS1_m10.pth");

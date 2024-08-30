@@ -8,9 +8,9 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CPPAlgos The algorithms writtrn in c++
+ * @ingroup LibAMM_CPPAlgos The algorithms writtrn in c++
  * @{
  */
 /**
@@ -18,7 +18,7 @@ namespace AMMBench {
  * @brief The block SVD LRA class of c++ algos
  *
  */
-class BlockLRACPPAlgo : public AMMBench::AbstractCPPAlgo {
+class BlockLRACPPAlgo : public LibAMM::AbstractCPPAlgo {
 
  protected:
   double ARankRatio = 0.5;
@@ -51,18 +51,18 @@ class BlockLRACPPAlgo : public AMMBench::AbstractCPPAlgo {
 
 };
 /**
- * @ingroup AMMBENCH_CPPAlgos
+ * @ingroup LibAMM_CPPAlgos
  * @typedef AbstractMatrixCPPAlgoPtr
  * @brief The class to describe a shared pointer to @ref BlockLRACPPAlgo
 
 */
-typedef std::shared_ptr<class AMMBench::BlockLRACPPAlgo> BlockLRACPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::BlockLRACPPAlgo> BlockLRACPPAlgoPtr;
 /**
-   * @ingroup AMMBENCH_CPPAlgos
+   * @ingroup LibAMM_CPPAlgos
    * @def newBlockLRACPPAlgo
    * @brief (Macro) To creat a new @ref  BlockLRACPPAlgounder shared pointer.
    */
-#define newBlockLRACPPAlgo std::make_shared<AMMBench::BlockLRACPPAlgo>
+#define newBlockLRACPPAlgo std::make_shared<LibAMM::BlockLRACPPAlgo>
 }
 /**
  * @}

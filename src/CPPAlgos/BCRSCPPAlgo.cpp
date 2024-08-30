@@ -3,7 +3,7 @@
 //
 #include <CPPAlgos/BCRSCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 torch::Tensor BCRSCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
   A = A.t();
   auto A_size = A.sizes();

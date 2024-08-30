@@ -8,19 +8,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Sparse The Sparse generator
+ * @ingroup LibAMM_MatrixLOADER_Sparse The Sparse generator
  * @{
  */
 /**
  * @class SparseMatrixLoader MatrixLoader/SparseMatrixLoader.h
  * @brief The  matrix loader to generate adjustable sparse matrix with adjust rank reduction
- * @ingroup AMMBENCH_MatrixLOADER_Sparse
+ * @ingroup LibAMM_MatrixLOADER_Sparse
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -92,18 +92,18 @@ class SparseMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Sparse
+ * @ingroup LibAMM_MatrixLOADER_Sparse
  * @typedef SparseMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref SparseMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::SparseMatrixLoader> SparseMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::SparseMatrixLoader> SparseMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Sparse
+ * @ingroup LibAMM_MatrixLOADER_Sparse
  * @def newSparseMatrixLoader
  * @brief (Macro) To creat a new @ref SparseMatrixLoader under shared pointer.
  */
-#define newSparseMatrixLoader std::make_shared<AMMBench::SparseMatrixLoader>
+#define newSparseMatrixLoader std::make_shared<LibAMM::SparseMatrixLoader>
 /**
  * @}
  */

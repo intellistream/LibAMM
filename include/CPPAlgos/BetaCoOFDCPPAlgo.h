@@ -7,9 +7,9 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -18,7 +18,7 @@ namespace AMMBench {
  * @note parameters
  * - algoBeta Double, the beta parameters in this algo, default 1.0
  */
-class BetaCoOFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
+class BetaCoOFDCPPAlgo : public LibAMM::AbstractCPPAlgo {
  protected:
   float algoBeta = 1.0;
  public:
@@ -47,18 +47,18 @@ class BetaCoOFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref BetaCoOFDCppAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::BetaCoOFDCPPAlgo> BetaCoOFDCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::BetaCoOFDCPPAlgo> BetaCoOFDCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newBetaCoOFDCppAlgo
  * @brief (Macro) To creat a new @ref  BetaCoOFDCppAlgounder shared pointer.
  */
-#define newBetaCoOFDCPPAlgo std::make_shared<AMMBench::BetaCoOFDCPPAlgo>
+#define newBetaCoOFDCPPAlgo std::make_shared<LibAMM::BetaCoOFDCPPAlgo>
 }
 /**
  * @}
