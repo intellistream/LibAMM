@@ -1,8 +1,0 @@
-LICENSE
-README.md
-setup.py
-PyAMM.egg-info/PKG-INFO
-PyAMM.egg-info/SOURCES.txt
-PyAMM.egg-info/dependency_links.txt
-PyAMM.egg-info/not-zip-safe
-PyAMM.egg-info/top_level.txt
