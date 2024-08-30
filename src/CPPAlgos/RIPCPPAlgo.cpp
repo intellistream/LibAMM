@@ -3,7 +3,7 @@
 //
 
 #include <CPPAlgos/RIPCPPAlgo.h>
-#include <AMMBench.h>
+#include <LibAMM.h>
 
 using namespace std;
 using namespace INTELLI;
@@ -18,8 +18,8 @@ torch::Tensor createRandomTensor(int N) {
   return tensor;
 }
 
-namespace AMMBench {
-torch::Tensor AMMBench::RIPCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
+namespace LibAMM {
+torch::Tensor LibAMM::RIPCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
 
   // Step 1: Input A:n1*d B:d*n2
   A = A.t(); // d*n1
@@ -53,12 +53,12 @@ torch::Tensor AMMBench::RIPCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64
   torch::Tensor B_prime = torch::matmul(RIP, B*D.view({-1, 1})); // B' = k*d * d*n2 = k*n2
   return torch::matmul(A_prime.t(), B_prime);
 }
-} // AMMBench
+} // LibAMM
 
 // GDB debug purpose
 // int main() {
 //     // torch::manual_seed(114513);
-//     AMMBench::RIPCPPAlgo rip;
+//     LibAMM::RIPCPPAlgo rip;
 //     auto A = torch::rand({600, 400});
 //     auto B = torch::rand({400, 1000});
 //     auto realC = torch::matmul(A, B);

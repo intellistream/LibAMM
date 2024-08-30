@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 
 #include "catch.hpp"
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <iostream>
 
 using namespace std;
@@ -16,7 +16,7 @@ TEST_CASE("Test the basic streaming batch 1", "[short]")
     auto A = torch::rand({(long) 4, (long) 4});
     auto B = torch::rand({(long) 4, (long) 4});
     auto rawC = torch::matmul(A, B);
-    AMMBench::SingleThreadStreamer ss;
+    LibAMM::SingleThreadStreamer ss;
     //cfg->edit("",(uint64_t)100);
     ss.setConfig(cfg);
     auto ssC = ss.streamingAmm(A, B);
@@ -37,7 +37,7 @@ TEST_CASE("Test the basic streaming batch 2", "[short]")
   auto A = torch::rand({(long) 4, (long) 4});
   auto B = torch::rand({(long) 4, (long) 4});
   auto rawC = torch::matmul(A, B);
-  AMMBench::SingleThreadStreamer ss;
+  LibAMM::SingleThreadStreamer ss;
   cfg->edit("batchSize", (uint64_t) 2);
   ss.setConfig(cfg);
   ss.prepareRun(A, B);
@@ -57,7 +57,7 @@ TEST_CASE("Test the basic streaming batch 1, 2 matrix in streaming", "[short]")
   auto A = torch::rand({(long) 4, (long) 4});
   auto B = torch::rand({(long) 4, (long) 4});
   auto rawC = torch::matmul(A, B);
-  AMMBench::SingleThreadStreamer ss;
+  LibAMM::SingleThreadStreamer ss;
   cfg->edit("batchSize", (uint64_t) 2);
   //cfg->edit("",(uint64_t)100);
   ss.setConfig(cfg);
@@ -79,7 +79,7 @@ TEST_CASE("Test the basic streaming batch 1, 2 matrix in streaming, full lazy", 
   auto A = torch::rand({(long) 4, (long) 4});
   auto B = torch::rand({(long) 4, (long) 4});
   auto rawC = torch::matmul(A, B);
-  AMMBench::SingleThreadStreamer ss;
+  LibAMM::SingleThreadStreamer ss;
   cfg->edit("batchSize", (uint64_t) 2);
   cfg->edit("fullLazy", (uint64_t) 2);
   //cfg->edit("",(uint64_t)100);

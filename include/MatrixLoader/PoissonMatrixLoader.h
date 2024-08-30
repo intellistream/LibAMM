@@ -7,19 +7,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Poisson The Poisson generator
+ * @ingroup LibAMM_MatrixLOADER_Poisson The Poisson generator
  * @{
  */
 /**
  * @class PoissonMatrixLoader MatrixLoader/PoissonMatrixLoader.h
  * @brief The Poisson class of matrix loader
- * @ingroup AMMBENCH_MatrixLOADER_Poisson
+ * @ingroup LibAMM_MatrixLOADER_Poisson
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -77,18 +77,18 @@ class PoissonMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Poisson
+ * @ingroup LibAMM_MatrixLOADER_Poisson
  * @typedef PoissonMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref PoissonMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::PoissonMatrixLoader> PoissonMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::PoissonMatrixLoader> PoissonMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Poisson
+ * @ingroup LibAMM_MatrixLOADER_Poisson
  * @def newPoissonMatrixLoader
  * @brief (Macro) To creat a new @ref PoissonMatrixLoader under shared pointer.
  */
-#define newPoissonMatrixLoader std::make_shared<AMMBench::PoissonMatrixLoader>
+#define newPoissonMatrixLoader std::make_shared<LibAMM::PoissonMatrixLoader>
 /**
  * @}
  */

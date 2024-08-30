@@ -8,16 +8,16 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
  * @class BCRSCPPAlgo CPPAlgos/BCRSCPPAlgo.h
  * @brief The Bernoulli column row sampling (BCRS) class of c++ algos
  */
-class BCRSCPPAlgo : public AMMBench::AbstractCPPAlgo {
+class BCRSCPPAlgo : public LibAMM::AbstractCPPAlgo {
  public:
   BCRSCPPAlgo() {
 
@@ -39,18 +39,18 @@ class BCRSCPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref BCRSCppAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::BCRSCPPAlgo> BCRSCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::BCRSCPPAlgo> BCRSCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newBCRSCppAlgo
  * @brief (Macro) To creat a new @ref  BCRSCppAlgounder shared pointer.
  */
-#define newBCRSCPPAlgo std::make_shared<AMMBench::BCRSCPPAlgo>
+#define newBCRSCPPAlgo std::make_shared<LibAMM::BCRSCPPAlgo>
 }
 /**
  * @}

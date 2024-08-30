@@ -4,8 +4,8 @@
 
 #include <CPPAlgos/EWSCPPAlgo.h>
 
-namespace AMMBench {
-torch::Tensor AMMBench::EWSCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
+namespace LibAMM {
+torch::Tensor LibAMM::EWSCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
   auto A_size = A.sizes();
   int64_t m = A_size[0];
   int64_t n = A_size[1];

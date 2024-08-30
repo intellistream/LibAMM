@@ -3,7 +3,7 @@
 #define CATCH_CONFIG_MAIN
 
 #include "catch.hpp"
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <Utils/ConfigMap.hpp>
 
 using namespace std;
@@ -26,7 +26,7 @@ TEST_CASE("Generate spase matrix", "[short]")
   cfg->edit("bDensity", (double) 0.5);
   cfg->edit("aReduce", (uint64_t) 1);
   cfg->edit("bReduce", (uint64_t) 2);
-  AMMBench::SparseMatrixLoader sml;
+  LibAMM::SparseMatrixLoader sml;
   sml.setConfig(cfg);
   cout << "sparse A" << endl;
   cout << sml.getA() << endl;

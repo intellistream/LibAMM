@@ -3,7 +3,7 @@
 //
 #include <CPPAlgos/ProductQuantizationHash.h>
 
-void AMMBench::ProductQuantizationHash::setConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::ProductQuantizationHash::setConfig(INTELLI::ConfigMapPtr cfg) {
     C = cfg->tryU64("C", 10, true);
     prototypesLoadPath = cfg->tryString("prototypesLoadPath", "torchscripts/PQ/prototypes.pt", true);
     hashLoadPath = cfg->tryString("hashLoadPath", "torchscripts/PQ/hash.pt", true);
@@ -21,7 +21,7 @@ int compute_hash_bucket(const std::vector<int>& split_indices, const std::vector
     return i;
 }
 
-torch::Tensor AMMBench::ProductQuantizationHash::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+torch::Tensor LibAMM::ProductQuantizationHash::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
 
     const int D = A.size(1);
     sketchSize=0; // no need this parameter
@@ -30,12 +30,12 @@ torch::Tensor AMMBench::ProductQuantizationHash::amm(torch::Tensor A, torch::Ten
     INTELLI_INFO("Load prototypes from " + prototypesLoadPath);
     torch::Tensor prototypes;
     torch::serialize::InputArchive archive;
-    // archive.load_from("/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/benchmark/torchscripts/PQ/prototypes_PCA_SIFT_Small_A_minus_mean.pt");
+    // archive.load_from("/home/yuhao/Documents/work/SUTD/AMM/codespace/LibAMM/benchmark/torchscripts/PQ/prototypes_PCA_SIFT_Small_A_minus_mean.pt");
     archive.load_from(prototypesLoadPath);
     archive.read("prototypes", prototypes);
     
     INTELLI_INFO("Load hash from " + hashLoadPath);
-    // torch::jit::script::Module container = torch::jit::load("/home/yuhao/Documents/work/SUTD/AMM/codespace/AMMBench/yuhao/container.pt");
+    // torch::jit::script::Module container = torch::jit::load("/home/yuhao/Documents/work/SUTD/AMM/codespace/LibAMM/yuhao/container.pt");
     torch::jit::script::Module container = torch::jit::load(hashLoadPath);
 
     torch::Tensor split_indices_tensor = container.attr("split_indices").toTensor();

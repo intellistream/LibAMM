@@ -4,7 +4,7 @@
 #include <MatrixLoader/BetaMatrixLoader.h>
 #include <Utils/IntelliLog.h>
 
-void AMMBench::BetaMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::BetaMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   aRow = cfg->tryU64("aRow", 100, true);
   aCol = cfg->tryU64("aCol", 1000, true);
   bCol = cfg->tryU64("bCol", 500, true);
@@ -16,7 +16,7 @@ void AMMBench::BetaMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
           + "]" + " Parameter: " + to_string(a) + ", " + to_string(b));
 }
 
-void AMMBench::BetaMatrixLoader::generateAB() {
+void LibAMM::BetaMatrixLoader::generateAB() {
   torch::manual_seed(seed);
 
   auto tensor1 = torch::randn({(long) aRow, (long) aCol}).abs_();
@@ -37,16 +37,16 @@ void AMMBench::BetaMatrixLoader::generateAB() {
 }
 
 //do nothing in abstract class
-bool AMMBench::BetaMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::BetaMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::BetaMatrixLoader::getA() {
+torch::Tensor LibAMM::BetaMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor AMMBench::BetaMatrixLoader::getB() {
+torch::Tensor LibAMM::BetaMatrixLoader::getB() {
   return B;
 }

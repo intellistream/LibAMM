@@ -7,9 +7,9 @@
 #define INTELLISTREAM_PRODUCTQUANTIZATIONHASH_H
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -17,7 +17,7 @@ namespace AMMBench {
  * @brief The Product Quantization AMM class of c++ algos, using hash function to find matching prototypes
  *
  */
-  class ProductQuantizationHash : public AMMBench::AbstractCPPAlgo {
+  class ProductQuantizationHash : public LibAMM::AbstractCPPAlgo {
 
   protected:
       string prototypesLoadPath;
@@ -52,18 +52,18 @@ namespace AMMBench {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref ProductQuantizationHashAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::ProductQuantizationHash> ProductQuantizationHashPtr;
+typedef std::shared_ptr<class LibAMM::ProductQuantizationHash> ProductQuantizationHashPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newProductQuantizationHashAlgo
  * @brief (Macro) To creat a new @ref  ProductQuantizationHashAlgounder shared pointer.
  */
-#define newProductQuantizationHashAlgo std::make_shared<AMMBench::ProductQuantizationHash>
+#define newProductQuantizationHashAlgo std::make_shared<LibAMM::ProductQuantizationHash>
 }
 /**
  * @}

@@ -5,15 +5,15 @@
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
 //do nothing in abstract class
-bool AMMBench::AbstractMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::AbstractMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   assert(cfg);
   return true;
 }
 
-torch::Tensor AMMBench::AbstractMatrixLoader::getA() {
+torch::Tensor LibAMM::AbstractMatrixLoader::getA() {
   return torch::rand({1, 1});
 }
 
-torch::Tensor AMMBench::AbstractMatrixLoader::getB() {
+torch::Tensor LibAMM::AbstractMatrixLoader::getB() {
   return torch::rand({1, 1});
 }

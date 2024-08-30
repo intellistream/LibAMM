@@ -10,17 +10,17 @@
 #include <CPPAlgos/CPPAlgoTable.h>
 #include <Parallelization/BlockPartitionRunner.h>
 
-namespace AMMBench {
+namespace LibAMM {
 
 /**
- * @ingroup AMMBENCH_STREAMING
+ * @ingroup LibAMM_STREAMING
  * @{
  *
  */
 /**
   * @class SingleThreadStreamer Streaming/SingleThreadStreamer.h
   * @brief The class to run streaming amm under single thread, let each row of A coming in a streaming manner
-  * @ingroup AMMBENCH_STREAMING
+  * @ingroup LibAMM_STREAMING
   * @note  Default behavior
   * - create
   * - call @ref setConfig, this will also determine how to generate time stamp and config will be passed to @ref TimeStamper
@@ -36,10 +36,10 @@ namespace AMMBench {
 class SingleThreadStreamer {
  protected:
   INTELLI::ConfigMapPtr cfgGlobal;
-  AMMBench::CPPAlgoTable cppAlgoTable;
+  LibAMM::CPPAlgoTable cppAlgoTable;
   uint64_t batchSize = 1;
-  AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
-  AMMBench::TensorPtr matC = nullptr;
+  LibAMM::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
+  LibAMM::TensorPtr matC = nullptr;
   double throughput = 0.0;
   int coreBind;
   INTELLI::ConfigMapPtr metrics = newConfigMap();
@@ -53,11 +53,11 @@ class SingleThreadStreamer {
   /**
    * @brief the timestamps to trace the streaming process
    */
-  std::vector<AMMBench::AMMTimeStampPtr> myTs;
+  std::vector<LibAMM::AMMTimeStampPtr> myTs;
   /**
   * @brief the additional timestamps to trace the streaming process, if B is also stream
   */
-  std::vector<AMMBench::AMMTimeStampPtr> myTsB;
+  std::vector<LibAMM::AMMTimeStampPtr> myTsB;
 
   /**
 * @brief Set the GLOBAL config map related to this TimerStamper
@@ -113,6 +113,6 @@ class SingleThreadStreamer {
 /**
  * @}
  */
-} // AMMBench
+} // LibAMM
 
 #endif //INTELLISTREAM_SINGLETHREADSTREAMER_H

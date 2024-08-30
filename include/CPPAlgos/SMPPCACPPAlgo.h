@@ -8,9 +8,9 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -18,7 +18,7 @@ namespace AMMBench {
  * @brief sketch scaled JL class of c++ algos
  *
  */
-class SMPPCACPPAlgo : public AMMBench::AbstractCPPAlgo {
+class SMPPCACPPAlgo : public LibAMM::AbstractCPPAlgo {
  public:
   SMPPCACPPAlgo() {
 
@@ -40,18 +40,18 @@ class SMPPCACPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref SMPPCACppAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::SMPPCACPPAlgo> SMPPCACPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::SMPPCACPPAlgo> SMPPCACPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newSMPPCACppAlgo
  * @brief (Macro) To creat a new @ref  SMPPCACppAlgounder shared pointer.
  */
-#define newSMPPCACPPAlgo std::make_shared<AMMBench::SMPPCACPPAlgo>
+#define newSMPPCACPPAlgo std::make_shared<LibAMM::SMPPCACPPAlgo>
 }
 /**
  * @}

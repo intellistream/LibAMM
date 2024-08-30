@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: PyAMM
+Version: 0.1
+Summary: A simple python version of LibAMM benchmark built with Pybind11 and CMake
+Home-page: UNKNOWN
+Author: Your Name
+License: UNKNOWN
+Platform: UNKNOWN
+License-File: LICENSE
+
+UNKNOWN
+

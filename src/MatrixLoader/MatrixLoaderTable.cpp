@@ -16,11 +16,11 @@
 #include <MatrixLoader/MtxMatrixLoader.h>
 #include <MatrixLoader/ZeroMaskedMatrixLoader.h>
 #include <MatrixLoader/ZipfMatrixLoader.h>
-namespace AMMBench {
+namespace LibAMM {
 /**
  * @note revise me if you need new loader
  */
-AMMBench::MatrixLoaderTable::MatrixLoaderTable() {
+LibAMM::MatrixLoaderTable::MatrixLoaderTable() {
   loaderMap["random"] = newRandomMatrixLoader();
   loaderMap["sparse"] = newSparseMatrixLoader();
   loaderMap["gaussian"] = newGaussianMatrixLoader();
@@ -36,4 +36,4 @@ AMMBench::MatrixLoaderTable::MatrixLoaderTable() {
   loaderMap["zipf"]=newZipfMatrixLoader();
 }
 
-} // AMMBench
+} // LibAMM

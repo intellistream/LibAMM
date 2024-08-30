@@ -8,9 +8,9 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms writtrn in c++
+ * @ingroup LibAMM_CppAlgos The algorithms writtrn in c++
  * @{
  */
 /**
@@ -18,7 +18,7 @@ namespace AMMBench {
  * @brief The counter sketch class of c++ algos
  *
  */
-class CountSketchCPPAlgo : public AMMBench::AbstractCPPAlgo {
+class CountSketchCPPAlgo : public LibAMM::AbstractCPPAlgo {
  public:
   CountSketchCPPAlgo() {
 
@@ -40,18 +40,18 @@ class CountSketchCPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref CountSketchCPPAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::CountSketchCPPAlgo> CountSketchCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::CountSketchCPPAlgo> CountSketchCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newCRSV2CppAlgo
  * @brief (Macro) To creat a new @ref  CRSV2CppAlgounder shared pointer.
  */
-#define newCountSketchCPPAlgo std::make_shared<AMMBench::CountSketchCPPAlgo>
+#define newCountSketchCPPAlgo std::make_shared<LibAMM::CountSketchCPPAlgo>
 }
 /**
  * @}

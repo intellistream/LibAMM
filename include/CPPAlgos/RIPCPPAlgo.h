@@ -8,9 +8,9 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -18,7 +18,7 @@ namespace AMMBench {
  * @brief New and improved Johnson-Lindenstrauss embeddings via the Restricted Isometry Property
  *
  */
-class RIPCPPAlgo : public AMMBench::AbstractCPPAlgo {
+class RIPCPPAlgo : public LibAMM::AbstractCPPAlgo {
  public:
   RIPCPPAlgo() {
 
@@ -40,18 +40,18 @@ class RIPCPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref RIPCppAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::RIPCPPAlgo> RIPCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::RIPCPPAlgo> RIPCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newRIPCppAlgo
  * @brief (Macro) To creat a new @ref  RIPCppAlgounder shared pointer.
  */
-#define newRIPCPPAlgo std::make_shared<AMMBench::RIPCPPAlgo>
+#define newRIPCPPAlgo std::make_shared<LibAMM::RIPCPPAlgo>
 }
 /**
  * @}

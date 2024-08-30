@@ -7,12 +7,12 @@
 #include <Utils/UtilityFunctions.h>
 #include <time.h>
 #include <chrono>
-void AMMBench::AbstractCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::AbstractCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   assert(cfg);
   useCuda = cfg->tryU64("useCuda", 0, false);
 }
 
-torch::Tensor AMMBench::AbstractCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+torch::Tensor LibAMM::AbstractCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   auto start = std::chrono::high_resolution_clock::now();
   // std::cout << "Tensor A size: " << A.sizes() << std::endl;
@@ -36,7 +36,7 @@ torch::Tensor AMMBench::AbstractCPPAlgo::amm(torch::Tensor A, torch::Tensor B, u
   return C;
 }
 
-INTELLI::ConfigMapPtr AMMBench::AbstractCPPAlgo::getBreakDown() {
+INTELLI::ConfigMapPtr LibAMM::AbstractCPPAlgo::getBreakDown() {
   INTELLI::ConfigMapPtr cfg = newConfigMap();
   cfg->edit("buildATime", (uint64_t) buildATime);
   cfg->edit("buildBTime", (uint64_t) buildBTime);

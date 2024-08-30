@@ -4,11 +4,11 @@
  * @brief This is the main entry point of the entire program.
  * We use this as the entry point for benchmarking.
  */
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <Utils/UtilityFunctions.h>
 #include <include/papi_config.h>
 #include <Utils/ThreadPerf.hpp>
-#if AMMBENCH_PAPI == 1
+#if LibAMM_PAPI == 1
 #include <Utils/ThreadPerfPAPI.hpp>
 #endif
 using namespace std;
@@ -19,7 +19,7 @@ using namespace DIVERSE_METER;
 void streamingTest(std::string configName) {
   ConfigMapPtr cfg = newConfigMap();
   cfg->fromFile(configName);
-  AMMBench::MatrixLoaderTable mLoaderTable;
+  LibAMM::MatrixLoaderTable mLoaderTable;
   uint64_t sketchDimension;
   ConfigMapPtr breakDownResult = nullptr;
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
@@ -42,12 +42,12 @@ void streamingTest(std::string configName) {
   auto ACopy=A.clone();
   auto BCopy=B.clone();
   torch::Tensor C;
-  AMMBench::SingleThreadStreamer ss;
+  LibAMM::SingleThreadStreamer ss;
   ss.setConfig(cfg);
   ss.prepareRun(A, B);
   torch::Tensor ssC;
   ThreadPerfPtr pef;
-#if AMMBENCH_PAPI == 1
+#if LibAMM_PAPI == 1
   if (cfg->tryU64("usePAPI", 1)) {
     pef = newThreadPerfPAPI(-1);
   } else {
@@ -90,7 +90,7 @@ void runSingleThreadTest(std::string configName) {
   AbstractMeterPtr eMeter = nullptr;
   ConfigMapPtr cfg = newConfigMap();
   cfg->fromFile(configName);
-  AMMBench::MatrixLoaderTable mLoaderTable;
+  LibAMM::MatrixLoaderTable mLoaderTable;
   uint64_t sketchDimension;
   ConfigMapPtr breakDownResult = nullptr;
   INTELLI_INFO("cppAlgoTag: "+cfg->tryString("cppAlgoTag", "mm", true));
@@ -148,7 +148,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   INTELLI_INFO("Generation done, conducting...");
   uint64_t threads = cfg->tryU64("threads", 0, true);
   ThreadPerfPtr pef;
-#if AMMBENCH_PAPI == 1
+#if LibAMM_PAPI == 1
   if (cfg->tryU64("usePAPI", 1)) {
     pef = newThreadPerfPAPI(-1);
   } else {
@@ -158,7 +158,7 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
   pef=newThreadPerf(-1);
 #endif
   pef->initEventsByCfg(cfg);
-  AMMBench::BlockPartitionRunner br;
+  LibAMM::BlockPartitionRunner br;
   if (threads > 1 || forceMP) {
     INTELLI_WARNING("use multithread");
     br.setConfig(cfg);
@@ -174,9 +174,9 @@ auto B = torch::rand({(long) aCol, (long) bCol});*/
     }
     breakDownResult = br.getBreakDown();
   } else {
-    AMMBench::CPPAlgoTable cppAlgoTable;
+    LibAMM::CPPAlgoTable cppAlgoTable;
     std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
-    AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
+    LibAMM::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
     cppAlgoPtr->setConfig(cfg);
     INTELLI_WARNING("single thread, algo " + cppAlgoTag);
     if (eMeter != nullptr) {

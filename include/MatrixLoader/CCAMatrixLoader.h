@@ -7,19 +7,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_CCA
+ * @ingroup LibAMM_MatrixLOADER_CCA
  * @{
  */
 /**
  * @class CCAMatrixLoader MatrixLoader/CCAMatrixLoader.h
  * @brief For CCA downstream task
- * @ingroup AMMBENCH_MatrixLOADER_CCA
+ * @ingroup LibAMM_MatrixLOADER_CCA
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -141,18 +141,18 @@ class CCAMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_CCA
+ * @ingroup LibAMM_MatrixLOADER_CCA
  * @typedef CCAMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref CCAMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::CCAMatrixLoader> CCAMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::CCAMatrixLoader> CCAMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_CCA
+ * @ingroup LibAMM_MatrixLOADER_CCA
  * @def newCCAMatrixLoader
  * @brief (Macro) To creat a new @ref CCAMatrixLoader under shared pointer.
  */
-#define newCCAMatrixLoader std::make_shared<AMMBench::CCAMatrixLoader>
+#define newCCAMatrixLoader std::make_shared<LibAMM::CCAMatrixLoader>
 /**
  * @}
  */

@@ -3,15 +3,15 @@
 //
 #include <MatrixLoader/MediaMillMatrixLoader.h>
 #include <Utils/IntelliLog.h>
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <fstream>
 #include <iostream>
 
-void AMMBench::MediaMillMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::MediaMillMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   filePath = cfg->tryString("filePath", "datasets/Mediamill/MediaMill.pth", true);
 }
 
-void AMMBench::MediaMillMatrixLoader::generateAB() {
+void LibAMM::MediaMillMatrixLoader::generateAB() {
 
   torch::jit::script::Module tensors = torch::jit::load(filePath);
   // A, B already normalized
@@ -34,61 +34,61 @@ void AMMBench::MediaMillMatrixLoader::generateAB() {
 }
 
 //do nothing in abstract class
-bool AMMBench::MediaMillMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::MediaMillMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getA() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getB() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getB() {
   return B;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getAt() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getAt() {
   return At;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getBt() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getBt() {
   return Bt;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getSxx() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getSxx() {
   return Sxx;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getSyy() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getSyy() {
   return Syy;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getSxy() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getSxy() {
   return Sxy;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getSxxNegativeHalf() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getSxxNegativeHalf() {
   return SxxNegativeHalf;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getSyyNegativeHalf() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getSyyNegativeHalf() {
   return SyyNegativeHalf;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getM() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getM() {
   return M;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getM1() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getM1() {
   return M1;
 }
 
-torch::Tensor AMMBench::MediaMillMatrixLoader::getCorrelation() {
+torch::Tensor LibAMM::MediaMillMatrixLoader::getCorrelation() {
   return correlation;
 }
 
-void AMMBench::MediaMillMatrixLoader::calculate_correlation() {
+void LibAMM::MediaMillMatrixLoader::calculate_correlation() {
   
   // Sxx, Syy, Sxy: covariance matrix
   Sxx = torch::matmul(A, At) / A.size(1); // 120*120

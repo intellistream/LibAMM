@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void AMMBench::VectorQuantization::setConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::VectorQuantization::setConfig(INTELLI::ConfigMapPtr cfg) {
     pqvqCodewordLookUpTablePath = cfg->tryString("pqvqCodewordLookUpTablePath", "", true);
     INTELLI_INFO("pqvqCodewordLookUpTablePath: " + pqvqCodewordLookUpTablePath);
     assert(pqvqCodewordLookUpTablePath!="");
@@ -28,7 +28,7 @@ void AMMBench::VectorQuantization::setConfig(INTELLI::ConfigMapPtr cfg) {
     //assert ((algo=="vq" && m==1) || (algo=="pq" && m>1));
     }
 
-torch::Tensor AMMBench::VectorQuantization::amm(const torch::Tensor A, const torch::Tensor B, uint64_t l) {
+torch::Tensor LibAMM::VectorQuantization::amm(const torch::Tensor A, const torch::Tensor B, uint64_t l) {
     
     l=0;
     int A_rows = A.sizes()[0];

@@ -8,9 +8,9 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CPPAlgos The algorithms writtrn in c++
+ * @ingroup LibAMM_CPPAlgos The algorithms writtrn in c++
  * @{
  */
 /**
@@ -18,7 +18,7 @@ namespace AMMBench {
  * @brief The weighted cloumn row sampling class of c++ algos
  *
  */
-class WeightedCRCPPAlgo : public AMMBench::AbstractCPPAlgo {
+class WeightedCRCPPAlgo : public LibAMM::AbstractCPPAlgo {
  public:
   WeightedCRCPPAlgo() {
 
@@ -40,18 +40,18 @@ class WeightedCRCPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CPPAlgos
+ * @ingroup LibAMM_CPPAlgos
  * @typedef AbstractMatrixCPPAlgoPtr
  * @brief The class to describe a shared pointer to @ref WeightedCRCPPAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::WeightedCRCPPAlgo> WeightedCRCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::WeightedCRCPPAlgo> WeightedCRCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CPPAlgos
+ * @ingroup LibAMM_CPPAlgos
  * @def newWeightedCRCPPAlgo
  * @brief (Macro) To creat a new @ref  WeightedCRCPPAlgounder shared pointer.
  */
-#define newWeightedCRCPPAlgo std::make_shared<AMMBench::WeightedCRCPPAlgo>
+#define newWeightedCRCPPAlgo std::make_shared<LibAMM::WeightedCRCPPAlgo>
 }
 /**
  * @}

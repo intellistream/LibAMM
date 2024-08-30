@@ -4,7 +4,7 @@
 
 #include <CPPAlgos/FastJLTCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 torch::Tensor hadamard_transform_matrix(int64_t n) {
   torch::Tensor H = torch::ones({1, 1}, torch::kInt8);
   int64_t i = 1;
@@ -79,4 +79,4 @@ torch::Tensor FastJLTCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t d_)
   // torch::Tensor B_sampled = B_pad.index_select(0, indices);
   // return torch::matmul(A_sampled, B_sampled);
 }
-} // AMMBench
+} // LibAMM

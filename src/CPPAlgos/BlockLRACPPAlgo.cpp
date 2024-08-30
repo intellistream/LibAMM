@@ -5,17 +5,17 @@
 #include <CPPAlgos/BlockLRACPPAlgo.h>
 #include <ATen/ATen.h>
 #include <vector>
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <cassert>
 using namespace std;
 
-namespace AMMBench {
-void AMMBench::BlockLRACPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
+namespace LibAMM {
+void LibAMM::BlockLRACPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   ARankRatio = cfg->tryDouble("algoARankRatio", 0.1, true); // 0.1 is kinda same as sketch_size=0.1
   BRankRatio = cfg->tryDouble("algoBRankRatio", 0.1, true); // 0.1 is kinda same as sketch_size=0.1
 }
 
-torch::Tensor AMMBench::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t l) {
+torch::Tensor LibAMM::BlockLRACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t l) {
 
   l=0; // l is meaningless, as "sketch_size" is already set in rank, and blockSize is not about sketch size also.
   uint64_t blockSize = 30;

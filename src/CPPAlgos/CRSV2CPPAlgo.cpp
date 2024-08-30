@@ -4,8 +4,8 @@
 
 #include <CPPAlgos/CRSV2CPPAlgo.h>
 
-namespace AMMBench {
-torch::Tensor AMMBench::CRSV2CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
+namespace LibAMM {
+torch::Tensor LibAMM::CRSV2CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
   A = A.t();
   auto A_size = A.sizes();
   int64_t n = A_size[0];
@@ -37,4 +37,4 @@ torch::Tensor AMMBench::CRSV2CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint
 
   return torch::matmul(b, B);
 }
-} // AMMBench
+} // LibAMM

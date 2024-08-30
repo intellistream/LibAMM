@@ -7,19 +7,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Gaussian The Gaussian Random generator
+ * @ingroup LibAMM_MatrixLOADER_Gaussian The Gaussian Random generator
  * @{
  */
 /**
  * @class GaussianMatrixLoader MatrixLoader/GaussianMatrixLoader.h
  * @brief The Gaussian  class of matrix loader
- * @ingroup AMMBENCH_MatrixLOADER_Gaussian
+ * @ingroup LibAMM_MatrixLOADER_Gaussian
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -83,18 +83,18 @@ class GaussianMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Gaussian
+ * @ingroup LibAMM_MatrixLOADER_Gaussian
  * @typedef GaussianMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref GaussianMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::GaussianMatrixLoader> GaussianMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::GaussianMatrixLoader> GaussianMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Gaussian
+ * @ingroup LibAMM_MatrixLOADER_Gaussian
  * @def newGaussianMatrixLoader
  * @brief (Macro) To creat a new @ref GaussianMatrixLoader under shared pointer.
  */
-#define newGaussianMatrixLoader std::make_shared<AMMBench::GaussianMatrixLoader>
+#define newGaussianMatrixLoader std::make_shared<LibAMM::GaussianMatrixLoader>
 /**
  * @}
  */

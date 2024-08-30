@@ -8,19 +8,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 #include <vector>
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Zipf The Zipf generator
+ * @ingroup LibAMM_MatrixLOADER_Zipf The Zipf generator
  * @{
  */
 /**
  * @class ZipfMatrixLoader MatrixLoader/ZipfMatrixLoader.h
  * @brief The Zipf class of matrix loader
- * @ingroup AMMBENCH_MatrixLOADER_Zipf
+ * @ingroup LibAMM_MatrixLOADER_Zipf
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -82,18 +82,18 @@ class ZipfMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Zipf
+ * @ingroup LibAMM_MatrixLOADER_Zipf
  * @typedef ZipfMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref ZipfMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::ZipfMatrixLoader> ZipfMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::ZipfMatrixLoader> ZipfMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Zipf
+ * @ingroup LibAMM_MatrixLOADER_Zipf
  * @def newZipfMatrixLoader
  * @brief (Macro) To creat a new @ref ZipfMatrixLoader under shared pointer.
  */
-#define newZipfMatrixLoader std::make_shared<AMMBench::ZipfMatrixLoader>
+#define newZipfMatrixLoader std::make_shared<LibAMM::ZipfMatrixLoader>
 /**
  * @}
  */

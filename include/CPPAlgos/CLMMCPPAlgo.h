@@ -13,9 +13,9 @@
 #include <vector>
 #include <CPPAlgos/AbstractCPPAlgo.h>
 #include <CL/CLContainer.hpp>
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -24,7 +24,7 @@ namespace AMMBench {
  * @note additionally parameters
  * - clFile, String, default "CL/CLMM"
  */
-class CLMMCPPAlgo : public AMMBench::AbstractCPPAlgo {
+class CLMMCPPAlgo : public LibAMM::AbstractCPPAlgo {
  protected:
   torch::Tensor clmm(torch::Tensor A, torch::Tensor B);
   torch::Tensor clint8(torch::Tensor A, torch::Tensor B);
@@ -53,18 +53,18 @@ class CLMMCPPAlgo : public AMMBench::AbstractCPPAlgo {
   virtual void setConfig(INTELLI::ConfigMapPtr cfg);
 };
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef CLMMMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref CLMMCPPAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::CLMMCPPAlgo> CLMMCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::CLMMCPPAlgo> CLMMCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newCLMMCppAlgo
  * @brief (Macro) To creat a new @ref  CLMMCppAlgo shared pointer.
  */
-#define newCLMMCPPAlgo std::make_shared<AMMBench::CLMMCPPAlgo>
+#define newCLMMCPPAlgo std::make_shared<LibAMM::CLMMCPPAlgo>
 }
 /**
  * @}

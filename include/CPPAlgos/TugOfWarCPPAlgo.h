@@ -8,9 +8,9 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms writtrn in c++
+ * @ingroup LibAMM_CppAlgos The algorithms writtrn in c++
  * @{
  */
 /**
@@ -19,7 +19,7 @@ namespace AMMBench {
  * @note parameters
  * - algoDelta Double, the delta parameter in this algo, default 0.02
  */
-class TugOfWarCPPAlgo : public AMMBench::AbstractCPPAlgo {
+class TugOfWarCPPAlgo : public LibAMM::AbstractCPPAlgo {
   double algoDelta = 0.02;
 
  public:
@@ -51,18 +51,18 @@ class TugOfWarCPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref TugOfWarCppAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::TugOfWarCPPAlgo> TugOfWarCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::TugOfWarCPPAlgo> TugOfWarCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newTugOfWarCppAlgo
  * @brief (Macro) To creat a new @ref  TugOfWarCppAlgounder shared pointer.
  */
-#define newTugOfWarCPPAlgo std::make_shared<AMMBench::TugOfWarCPPAlgo>
+#define newTugOfWarCPPAlgo std::make_shared<LibAMM::TugOfWarCPPAlgo>
 }
 /**
  * @}
