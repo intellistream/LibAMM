@@ -13,16 +13,19 @@ LibAMM aggregates prevalent AMM algorithms, enabling standardized evaluations an
     - please compile at a machine with 64GB + memory (swap is also acceptable) when PYBIND is to be compiled
 
 ## One-Key build examples with auto solving of dependencies
-Please ensure your machine has 64GB + memory (swap is also acceptable) to do either the following
+Please ensure your machine has 64GB + memory (swap is also acceptable) to do either the following. Otherwise, you may need to disable 
+the compilation of PyBind or try to copy the binary from another one for compiling it.
 - buildWithCuda.sh To build LibAMM and PyAMM with cuda support, make sure you have cuda installed before it
 - buildCPUOnly.sh This is a CPU-only version
 - After either one, you can run the following to add PyAMM To your default python environment
 ```shell
  python3 setup.py install --user
 ```
-##  Native python interface (NEW EXPERIMENTAL feature)
+###  Native python interface (NEW EXPERIMENTAL feature)
 If you have compiled PyAMM and make it available, please refer to <buildPath>/benchmark/scripts/PyAMM/*.ipynb for details.
 We have opened the python call to AbstractCPPAlgo and AbstractMatrixLoader. They are totally the same as C++ classes.
+#### Known issues of pybind
+Some U64 settings is not well supported in the python wrapper, so we temporarily convert I64 python list into U64 inside it.
 ## Requires G++11
 
 The default version of gcc/g++ on ubuntu 22.04 (jammy) is good enough.
