@@ -3,13 +3,13 @@
 // Created by haolan on 22/6/23.
 //
 
-#ifndef AMMBENCH_PRODUCTQUANTIZATIONRAW_H
-#define AMMBENCH_PRODUCTQUANTIZATIONRAW_H
+#ifndef LibAMM_PRODUCTQUANTIZATIONRAW_H
+#define LibAMM_PRODUCTQUANTIZATIONRAW_H
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -17,7 +17,7 @@ namespace AMMBench {
  * @brief The Product Quantization AMM class of c++ algos, using Euclidean distance
  *
  */
-class ProductQuantizationRaw : public AMMBench::AbstractCPPAlgo {
+class ProductQuantizationRaw : public LibAMM::AbstractCPPAlgo {
   protected:
         string prototypesLoadPath;
         int64_t C;
@@ -48,20 +48,20 @@ class ProductQuantizationRaw : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref ProductQuantizationRawAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::ProductQuantizationRaw> ProductQuantizationRawPtr;
+typedef std::shared_ptr<class LibAMM::ProductQuantizationRaw> ProductQuantizationRawPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newProductQuantizationRawAlgo
  * @brief (Macro) To creat a new @ref  ProductQuantizationRawAlgounder shared pointer.
  */
-#define newProductQuantizationRawAlgo std::make_shared<AMMBench::ProductQuantizationRaw>
+#define newProductQuantizationRawAlgo std::make_shared<LibAMM::ProductQuantizationRaw>
 }
 /**
  * @}
  */
-#endif //AMMBENCH_PRODUCTQUANTIZATIONRAW_H
+#endif //LibAMM_PRODUCTQUANTIZATIONRAW_H

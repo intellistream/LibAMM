@@ -8,9 +8,9 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -18,7 +18,7 @@ namespace AMMBench {
  * @brief The column row sampling (CRS) class of c++ algos, a second implementation
  *
  */
-class CRSV2CPPAlgo : public AMMBench::AbstractCPPAlgo {
+class CRSV2CPPAlgo : public LibAMM::AbstractCPPAlgo {
  public:
   CRSV2CPPAlgo() {
 
@@ -40,18 +40,18 @@ class CRSV2CPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref CRSV2CppAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::CRSV2CPPAlgo> CRSV2CPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::CRSV2CPPAlgo> CRSV2CPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newCRSV2CppAlgo
  * @brief (Macro) To creat a new @ref  CRSV2CppAlgounder shared pointer.
  */
-#define newCRSV2CPPAlgo std::make_shared<AMMBench::CRSV2CPPAlgo>
+#define newCRSV2CPPAlgo std::make_shared<LibAMM::CRSV2CPPAlgo>
 }
 /**
  * @}

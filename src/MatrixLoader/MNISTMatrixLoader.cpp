@@ -3,11 +3,11 @@
 //
 #include <MatrixLoader/MNISTMatrixLoader.h>
 #include <Utils/IntelliLog.h>
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <fstream>
 #include <iostream>
 
-void AMMBench::MNISTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::MNISTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   filePath = cfg->tryString("filePath", "datasets/MNIST/train-images.idx3-ubyte", true);
 }
 
@@ -23,7 +23,7 @@ int reverseInt(int i) {
   return ((int) c1 << 24) + ((int) c2 << 16) + ((int) c3 << 8) + c4;
 }
 
-void AMMBench::MNISTMatrixLoader::generateAB() {
+void LibAMM::MNISTMatrixLoader::generateAB() {
 
   int magic_number = 0;
   int number_of_images = 0;
@@ -107,61 +107,61 @@ void AMMBench::MNISTMatrixLoader::generateAB() {
 }
 
 //do nothing in abstract class
-bool AMMBench::MNISTMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::MNISTMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getA() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getB() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getB() {
   return B;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getAt() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getAt() {
   return At;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getBt() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getBt() {
   return Bt;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getSxx() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getSxx() {
   return Sxx;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getSyy() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getSyy() {
   return Syy;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getSxy() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getSxy() {
   return Sxy;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getSxxNegativeHalf() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getSxxNegativeHalf() {
   return SxxNegativeHalf;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getSyyNegativeHalf() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getSyyNegativeHalf() {
   return SyyNegativeHalf;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getM() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getM() {
   return M;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getM1() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getM1() {
   return M1;
 }
 
-torch::Tensor AMMBench::MNISTMatrixLoader::getCorrelation() {
+torch::Tensor LibAMM::MNISTMatrixLoader::getCorrelation() {
   return correlation;
 }
 
-void AMMBench::MNISTMatrixLoader::calculate_correlation() {
+void LibAMM::MNISTMatrixLoader::calculate_correlation() {
   
   // Sxx, Syy, Sxy: covariance matrix
   Sxx = torch::matmul(A, At) / A.size(1); // 392x60000 * 60000x392 max 12752.4 min -3912.51

@@ -5,7 +5,7 @@
 #include <CPPAlgos/INT8CPPAlgo.h>
 #include <Utils/UtilityFunctions.h>
 
-torch::Tensor AMMBench::INT8CPPAlgo::fp32amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+torch::Tensor LibAMM::INT8CPPAlgo::fp32amm(torch::Tensor tensor1, torch::Tensor tensor2) {
   tensor1 = tensor1.contiguous();
   tensor2 = tensor2.contiguous();
   auto A_size = tensor1.sizes();
@@ -40,7 +40,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::fp32amm(torch::Tensor tensor1, torch::Tenso
   return resultTensor.clone();
 }
 
-torch::Tensor AMMBench::INT8CPPAlgo::fp64amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+torch::Tensor LibAMM::INT8CPPAlgo::fp64amm(torch::Tensor tensor1, torch::Tensor tensor2) {
   std::cout << "Scalar Type of the tensor1: " << torch::toString(tensor1.scalar_type()) << std::endl;
   std::cout << "Scalar Type of the tensor2: " << torch::toString(tensor2.scalar_type()) << std::endl;
   auto A_size = tensor1.sizes();
@@ -85,7 +85,7 @@ static float getScaleingFactor(float scalingBase, std::vector<float> matrix1Floa
   return scalingBase / maxa;
 }
 
-torch::Tensor AMMBench::INT8CPPAlgo::int4amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+torch::Tensor LibAMM::INT8CPPAlgo::int4amm(torch::Tensor tensor1, torch::Tensor tensor2) {
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
@@ -168,7 +168,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::int4amm(torch::Tensor tensor1, torch::Tenso
   return resultTensor.clone();
 }
 
-torch::Tensor AMMBench::INT8CPPAlgo::int8amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+torch::Tensor LibAMM::INT8CPPAlgo::int8amm(torch::Tensor tensor1, torch::Tensor tensor2) {
 
   tensor1 = tensor1.contiguous();
   tensor2 = tensor2.contiguous();
@@ -261,7 +261,7 @@ torch::Tensor AMMBench::INT8CPPAlgo::int8amm(torch::Tensor tensor1, torch::Tenso
   return resultTensor.clone();
 }
 
-torch::Tensor AMMBench::INT8CPPAlgo::int16amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+torch::Tensor LibAMM::INT8CPPAlgo::int16amm(torch::Tensor tensor1, torch::Tensor tensor2) {
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
@@ -336,13 +336,13 @@ torch::Tensor AMMBench::INT8CPPAlgo::int16amm(torch::Tensor tensor1, torch::Tens
   return resultTensor.clone();
 }
 
-void AMMBench::INT8CPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::INT8CPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   AbstractCPPAlgo::setConfig(cfg);
   fpMode = cfg->tryString("fpMode", "INT8", true);
   INTELLI_INFO("fpMode: "+fpMode);
 }
 
-torch::Tensor AMMBench::INT8CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+torch::Tensor LibAMM::INT8CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   if (fpMode == "INT4") {
     return int4amm(A, B);

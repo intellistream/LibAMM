@@ -6,7 +6,7 @@
 #define CATCH_CONFIG_MAIN
 
 #include "catch.hpp"
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <Utils/ThreadPerf.hpp>
 using namespace std;
 using namespace INTELLI;
@@ -15,7 +15,7 @@ using namespace torch;
 void runSingleThreadTest(std::string configName) {
   ConfigMapPtr cfg = newConfigMap();
   cfg->fromFile(configName);
-  AMMBench::MatrixLoaderTable mLoaderTable;
+  LibAMM::MatrixLoaderTable mLoaderTable;
   uint64_t sketchDimension;
   sketchDimension = cfg->tryU64("sketchDimension", 50, true);
   uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
@@ -63,7 +63,7 @@ TEST_CASE("Test the parallelization, thread=2", "[short]")
   torch::manual_seed(114514);
   auto A = torch::rand({(long) 4, (long) 4});
   auto B = torch::rand({(long) 4, (long) 4});
-  AMMBench::BlockPartitionRunner br;
+  LibAMM::BlockPartitionRunner br;
   br.setConfig(cfg);
   auto C1 = br.runAMM(A, B);
   auto C2 = torch::matmul(A, B);

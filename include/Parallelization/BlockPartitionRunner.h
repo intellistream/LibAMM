@@ -14,12 +14,12 @@
 #include <vector>
 #include <CPPAlgos/CPPAlgoTable.h>
 
-namespace AMMBench {
+namespace LibAMM {
 
 #define  newTensor make_shared<torch::Tensor>
 typedef std::shared_ptr<torch::Tensor> TensorPtr;
 /**
- * @ingroup AMMBENCH_PARALLELIZATION
+ * @ingroup LibAMM_PARALLELIZATION
  * @{
  * @defgroup PARTITION_RUNNER The partition-based parallelization
  */
@@ -32,11 +32,11 @@ class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
  protected:
   virtual void inlineMain();
 
-  AMMBench::CPPAlgoTable cppAlgoTable;
+  LibAMM::CPPAlgoTable cppAlgoTable;
   struct timeval tstart, tend;
   uint64_t useCPP = 0;
   uint64_t osScheduling = 0;
-  AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
+  LibAMM::AbstractCPPAlgoPtr cppAlgoPtr = nullptr;
   /**
    * @brief Input matrix A
    */
@@ -108,8 +108,8 @@ public:
 * @def newBlockPartitionWorker
 * @brief (Macro) To creat a new @ref BlockPartitionWorker under shared pointer.
 */
-#define  newBlockPartitionWorker std::make_shared<AMMBench::BlockPartitionWorker>
-typedef std::shared_ptr<AMMBench::BlockPartitionWorker> BlockPartitionWorkerPtr;
+#define  newBlockPartitionWorker std::make_shared<LibAMM::BlockPartitionWorker>
+typedef std::shared_ptr<LibAMM::BlockPartitionWorker> BlockPartitionWorkerPtr;
 
 /**
  * @class BlockPartitionRunner Parallelization/BlockPartitionRunner.h
@@ -219,7 +219,7 @@ class BlockPartitionRunner {
   virtual INTELLI::ConfigMapPtr getBreakDown();
     };
 
-} // AMMBench
+} // LibAMM
 /**
  * @}
  */

@@ -3,13 +3,13 @@
 //
 #include <CPPAlgos/ProductQuantizationRaw.h>
 
-void AMMBench::ProductQuantizationRaw::setConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::ProductQuantizationRaw::setConfig(INTELLI::ConfigMapPtr cfg) {
     C = cfg->tryU64("C", 10, true);
     prototypesLoadPath = cfg->tryString("prototypesLoadPath", "torchscripts/prototypes.pt", true);
     INTELLI_INFO("prototypesLoadPath: " + prototypesLoadPath);
     }
 
-torch::Tensor AMMBench::ProductQuantizationRaw::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+torch::Tensor LibAMM::ProductQuantizationRaw::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   const int D = A.size(1);
   if (sketchSize < 50) C = (int) sketchSize;
   const int D_c = D / C;

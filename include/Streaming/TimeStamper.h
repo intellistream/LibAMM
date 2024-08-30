@@ -12,16 +12,16 @@
 #include <vector>
 #include <Utils/ConfigMap.hpp>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_STREAMING
+ * @ingroup LibAMM_STREAMING
  * @{
  *
  */
 /**
 * @class AMMTimeStamp Streaming/TimeStamper.h
 * @brief The class to define timestamp in streaming
-* @ingroup AMMBENCH_STREAMING
+* @ingroup LibAMM_STREAMING
 */
 class AMMTimeStamp {
  public:
@@ -58,12 +58,12 @@ typedef std::shared_ptr<class AMMTimeStamp> AMMTimeStampPtr;
  * @cite newAMMTimeStampPtr
  * @brief (Macro) To creat a new @ref AMMTimeStamp under shared pointer.
  */
-#define newAMMTimeStamp std::make_shared<AMMBench::AMMTimeStamp>
+#define newAMMTimeStamp std::make_shared<LibAMM::AMMTimeStamp>
 
 /**
 * @class TimeStamper Streaming/TimeStamper.h
 * @brief The basic class to generate time stamps
-* @ingroup AMMBENCH_STREAMING
+* @ingroup LibAMM_STREAMING
 * @note require configs:
 *  - eventRateTps U64 The real-world rate of spawn event, in Tuples/s
 *  - streamingTupleCnt U64 The number of "streaming tuples", can be set to the #rows or #cols of a matrix
@@ -106,7 +106,7 @@ class TimeStamper {
    */
   void generateFinal();
 
-  std::vector<AMMBench::AMMTimeStampPtr> constructTimeStamps(
+  std::vector<LibAMM::AMMTimeStampPtr> constructTimeStamps(
       std::vector<uint64_t> eventS,
       std::vector<uint64_t> arrivalS);
 
@@ -115,7 +115,7 @@ class TimeStamper {
 
   ~TimeStamper() {}
 
-  std::vector<AMMBench::AMMTimeStampPtr> myTs;
+  std::vector<LibAMM::AMMTimeStampPtr> myTs;
   /**
    * @brief to set the seed of this timestamer
    * @param _seed
@@ -134,13 +134,13 @@ class TimeStamper {
   * @brief get the vector of R tuple
   * @return the vector
   */
-  virtual std::vector<AMMBench::AMMTimeStampPtr> getTimeStamps() {
+  virtual std::vector<LibAMM::AMMTimeStampPtr> getTimeStamps() {
     return myTs;
   }
 };
 /**
  * @}
  */
-} // AMMBench
+} // LibAMM
 
 #endif //INTELLISTREAM_TIMESTAMPER_H

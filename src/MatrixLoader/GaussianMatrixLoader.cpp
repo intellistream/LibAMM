@@ -4,7 +4,7 @@
 #include <MatrixLoader/GaussianMatrixLoader.h>
 #include <Utils/IntelliLog.h>
 
-void AMMBench::GaussianMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::GaussianMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   aRow = cfg->tryU64("aRow", 100, true);
   aCol = cfg->tryU64("aCol", 1000, true);
   bCol = cfg->tryU64("bCol", 500, true);
@@ -20,7 +20,7 @@ void AMMBench::GaussianMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
           + "]");
 }
 
-void AMMBench::GaussianMatrixLoader::generateAB() {
+void LibAMM::GaussianMatrixLoader::generateAB() {
   torch::manual_seed(seed);
   if (randA)
   {
@@ -44,16 +44,16 @@ void AMMBench::GaussianMatrixLoader::generateAB() {
 }
 
 //do nothing in abstract class
-bool AMMBench::GaussianMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::GaussianMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::GaussianMatrixLoader::getA() {
+torch::Tensor LibAMM::GaussianMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor AMMBench::GaussianMatrixLoader::getB() {
+torch::Tensor LibAMM::GaussianMatrixLoader::getB() {
   return B;
 }

@@ -1,9 +1,9 @@
 This section is to run MADNESS evaluation on CIFAR datasets with our C++ AMM algorithms
 
-If you just cloned AMMBench repo, remember to initialize the **[bolt](https://github.com/dblalock/bolt)** submodule
+If you just cloned LibAMM repo, remember to initialize the **[bolt](https://github.com/dblalock/bolt)** submodule
 
 ```bash
-# Assume you are at AMMBench/
+# Assume you are at LibAMM/
 git submodule init
 git submodule update
 ```

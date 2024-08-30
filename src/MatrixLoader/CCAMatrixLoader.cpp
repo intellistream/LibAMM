@@ -3,74 +3,74 @@
 //
 #include <MatrixLoader/CCAMatrixLoader.h>
 #include <Utils/IntelliLog.h>
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <fstream>
 #include <iostream>
 
-void AMMBench::CCAMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::CCAMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   assert(cfg);
 }
 
-void AMMBench::CCAMatrixLoader::generateAB() {
+void LibAMM::CCAMatrixLoader::generateAB() {
   INTELLI_INFO("This function is not used");
 }
 
 //do nothing in abstract class
-bool AMMBench::CCAMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::CCAMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getA() {
+torch::Tensor LibAMM::CCAMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getB() {
+torch::Tensor LibAMM::CCAMatrixLoader::getB() {
   return B;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getAt() {
+torch::Tensor LibAMM::CCAMatrixLoader::getAt() {
   return At;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getBt() {
+torch::Tensor LibAMM::CCAMatrixLoader::getBt() {
   return Bt;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getSxx() {
+torch::Tensor LibAMM::CCAMatrixLoader::getSxx() {
   return Sxx;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getSyy() {
+torch::Tensor LibAMM::CCAMatrixLoader::getSyy() {
   return Syy;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getSxy() {
+torch::Tensor LibAMM::CCAMatrixLoader::getSxy() {
   return Sxy;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getSxxNegativeHalf() {
+torch::Tensor LibAMM::CCAMatrixLoader::getSxxNegativeHalf() {
   return SxxNegativeHalf;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getSyyNegativeHalf() {
+torch::Tensor LibAMM::CCAMatrixLoader::getSyyNegativeHalf() {
   return SyyNegativeHalf;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getM() {
+torch::Tensor LibAMM::CCAMatrixLoader::getM() {
   return M;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getM1() {
+torch::Tensor LibAMM::CCAMatrixLoader::getM1() {
   return M1;
 }
 
-torch::Tensor AMMBench::CCAMatrixLoader::getCorrelation() {
+torch::Tensor LibAMM::CCAMatrixLoader::getCorrelation() {
   return correlation;
 }
 
-void AMMBench::CCAMatrixLoader::calculate_correlation() {
+void LibAMM::CCAMatrixLoader::calculate_correlation() {
   
   // Sxx, Syy, Sxy: covariance matrix
   Sxx = torch::matmul(A, At) / A.size(1); // 120*120

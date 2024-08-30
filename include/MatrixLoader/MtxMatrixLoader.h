@@ -12,14 +12,14 @@
 #include <fstream>
 #include <vector>
 #include <tuple>
-namespace AMMBench {
+namespace LibAMM {
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Mtx The loader of matrix market mtx matrixes
+ * @ingroup LibAMM_MatrixLOADER_Mtx The loader of matrix market mtx matrixes
  * @{
  */
 /**
@@ -43,7 +43,7 @@ torch::Tensor scaleIntoPN1(torch::Tensor a);
 /**
  * @class MtxMatrixLoader MatrixLoader/MtxMatrixLoader.h
  * @brief The matrix loader to load matrixes stored in matrix market mtx format
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -108,18 +108,18 @@ class MtxMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Random
+ * @ingroup LibAMM_MatrixLOADER_Random
  * @typedef MtxMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref MtxMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::MtxMatrixLoader> MtxMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::MtxMatrixLoader> MtxMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Random
+ * @ingroup LibAMM_MatrixLOADER_Random
  * @def newMtxMatrixLoader
  * @brief (Macro) To creat a new @ref MtxMatrixLoader under shared pointer.
  */
-#define newMtxMatrixLoader std::make_shared<AMMBench::MtxMatrixLoader>
+#define newMtxMatrixLoader std::make_shared<LibAMM::MtxMatrixLoader>
 /**
  * @}
  */

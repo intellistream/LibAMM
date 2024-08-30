@@ -6,13 +6,13 @@
 #define CATCH_CONFIG_MAIN
 
 #include "catch.hpp"
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <iostream>
 
 TEST_CASE("Test int8", "[short]")
 {
   torch::manual_seed(114514);
-  AMMBench::INT8CPPAlgo int8mm;
+  LibAMM::INT8CPPAlgo int8mm;
   auto A = torch::rand({4, 4});
   auto B = torch::rand({4, 4});
   auto realC = torch::matmul(A, B);

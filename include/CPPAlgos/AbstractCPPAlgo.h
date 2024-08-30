@@ -13,9 +13,9 @@
 #include <memory>
 #include <vector>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -66,18 +66,18 @@ class AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref AbstractCPPAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::AbstractCPPAlgo> AbstractCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::AbstractCPPAlgo> AbstractCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newAbstractCppAlgo
  * @brief (Macro) To creat a new @ref  AbstractCppAlgounder shared pointer.
  */
-#define newAbstractCPPAlgo std::make_shared<AMMBench::AbstractCPPAlgo>
+#define newAbstractCPPAlgo std::make_shared<LibAMM::AbstractCPPAlgo>
 }
 /**
  * @}

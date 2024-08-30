@@ -5,8 +5,8 @@
 #include <CPPAlgos/WeightedCRCPPAlgo.h>
 #include <ATen/ATen.h>
 
-namespace AMMBench {
-torch::Tensor AMMBench::WeightedCRCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t c) {
+namespace LibAMM {
+torch::Tensor LibAMM::WeightedCRCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t c) {
 
   int64_t n = A.size(1); // A: m*n, B: n*d
   // std::cout << "A shape: " << A.sizes() << std::endl;
@@ -35,4 +35,4 @@ torch::Tensor AMMBench::WeightedCRCPPAlgo::amm(torch::Tensor A, torch::Tensor B,
 
   return weighted_CR;
 }
-} // AMMBench
+} // LibAMM

@@ -4,7 +4,7 @@
  * @brief This is the main entry point of the entire program.
  * We use this as the entry point for benchmarking.
  */
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <Utils/UtilityFunctions.h>
 #include <Streaming/Streamer.h>
 
@@ -12,7 +12,7 @@ using namespace std;
 using namespace INTELLI;
 using namespace torch;
 using namespace DIVERSE_METER;
-using namespace AMMBench;
+using namespace LibAMM;
 
 void benchmarkPCA(std::string configName) {
 
@@ -27,7 +27,7 @@ void benchmarkPCA(std::string configName) {
   uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
   UtilityFunctions::bind2Core((int) coreBind);
 
-  AMMBench::MatrixLoaderTable mLoaderTable;
+  LibAMM::MatrixLoaderTable mLoaderTable;
   std::string matrixLoaderTag = cfg->tryString("matrixLoaderTag", "SIFT", true);
   INTELLI_INFO("matrixLoaderTag: " + matrixLoaderTag);
   auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);

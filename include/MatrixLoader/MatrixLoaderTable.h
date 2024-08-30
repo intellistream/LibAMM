@@ -8,19 +8,19 @@
 #include <map>
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Table The Table to index all matrix loaders
+ * @ingroup LibAMM_MatrixLOADER_Table The Table to index all matrix loaders
  * @{
  */
 /**
  * @class MatrixLoaderTable MatrixLoader/MatrixLoaderTable.h
  * @brief The table class to index all matrix loaders
- * @ingroup AMMBENCH_MatrixLOADER_Table
+ * @ingroup LibAMM_MatrixLOADER_Table
  * @note  Default behavior
 * - create
 * - (optional) call @ref registerNewDataLoader for new loader
@@ -31,7 +31,7 @@ namespace AMMBench {
  */
 class MatrixLoaderTable {
  protected:
-  std::map<std::string, AMMBench::AbstractMatrixLoaderPtr> loaderMap;
+  std::map<std::string, LibAMM::AbstractMatrixLoaderPtr> loaderMap;
  public:
   /**
    * @brief The constructing function
@@ -47,7 +47,7 @@ class MatrixLoaderTable {
     * @param onew The new operator
     * @param tag THe name tag
     */
-  void registerNewDataLoader(AMMBench::AbstractMatrixLoaderPtr dnew, std::string tag) {
+  void registerNewDataLoader(LibAMM::AbstractMatrixLoaderPtr dnew, std::string tag) {
     loaderMap[tag] = dnew;
   }
 
@@ -56,7 +56,7 @@ class MatrixLoaderTable {
    * @param name The nameTag of loader
    * @return The MatrixLoader, nullptr if not found
    */
-  AMMBench::AbstractMatrixLoaderPtr findMatrixLoader(std::string name) {
+  LibAMM::AbstractMatrixLoaderPtr findMatrixLoader(std::string name) {
     if (loaderMap.count(name)) {
       return loaderMap[name];
     }
@@ -64,18 +64,18 @@ class MatrixLoaderTable {
   }
 
   /**
- * @ingroup AMMBENCH_MatrixLOADER_Table
+ * @ingroup LibAMM_MatrixLOADER_Table
  * @typedef MatrixLoaderTablePtr
  * @brief The class to describe a shared pointer to @ref MatrixLoaderTable
 
  */
-  typedef std::shared_ptr<class AMMBench::MatrixLoaderTable> MatrixLoaderTablePtr;
+  typedef std::shared_ptr<class LibAMM::MatrixLoaderTable> MatrixLoaderTablePtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Table
+ * @ingroup LibAMM_MatrixLOADER_Table
  * @def newMatrixLoaderTable
  * @brief (Macro) To creat a new @ref  MatrixLoaderTable under shared pointer.
  */
-#define newMatrixLoaderTable std::make_shared<AMMBench::MatrixLoaderTable>
+#define newMatrixLoaderTable std::make_shared<LibAMM::MatrixLoaderTable>
 };
 /**
  * @}
@@ -83,6 +83,6 @@ class MatrixLoaderTable {
 /**
  * @}
  */
-} // AMMBench
+} // LibAMM
 
 #endif //INTELLISTREAM_INCLUDE_MATRIXLOADER_MATRIXLOADERTABLE_H_

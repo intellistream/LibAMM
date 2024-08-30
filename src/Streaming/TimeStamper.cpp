@@ -5,7 +5,7 @@
 #include <Streaming/TimeStamper.h>
 #include <Utils/IntelliLog.h>
 
-bool AMMBench::TimeStamper::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::TimeStamper::setConfig(INTELLI::ConfigMapPtr cfg) {
   cfgGlobal = cfg;
   eventRateTps = cfg->tryU64("eventRateTps", 100, true);
   timeStepUs = cfg->tryU64("timeStepUs", 100, true);
@@ -20,7 +20,7 @@ bool AMMBench::TimeStamper::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-void AMMBench::TimeStamper::generateEvent() {
+void LibAMM::TimeStamper::generateEvent() {
   uint64_t maxTime = testSize * 1000 * 1000 / eventRateTps;
   if(staticDataSet)
   { eventS.resize(testSize);
@@ -40,22 +40,22 @@ void AMMBench::TimeStamper::generateEvent() {
   INTELLI_INFO("Finish the generation of event time");
 }
 
-void AMMBench::TimeStamper::generateArrival() {
+void LibAMM::TimeStamper::generateArrival() {
 
   INTELLI_INFO("Finish the generation of arrival time");
 }
 
-std::vector<AMMBench::AMMTimeStampPtr> AMMBench::TimeStamper::constructTimeStamps(
+std::vector<LibAMM::AMMTimeStampPtr> LibAMM::TimeStamper::constructTimeStamps(
     std::vector<uint64_t> _eventS,
     std::vector<uint64_t> _arrivalS) {
   size_t len = _eventS.size();
-  std::vector<AMMBench::AMMTimeStampPtr> ru = std::vector<AMMBench::AMMTimeStampPtr>(len);
+  std::vector<LibAMM::AMMTimeStampPtr> ru = std::vector<LibAMM::AMMTimeStampPtr>(len);
   for (size_t i = 0; i < len; i++) {
     ru[i] = newAMMTimeStamp(_eventS[i], _arrivalS[i], 0);
   }
   return ru;
 }
 
-void AMMBench::TimeStamper::generateFinal() {
+void LibAMM::TimeStamper::generateFinal() {
   myTs = constructTimeStamps(eventS, eventS);
 }

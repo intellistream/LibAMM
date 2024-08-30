@@ -54,7 +54,7 @@ void clint8Test(TONY_CL_HOST::CLContainerPtr clc,
 
   return;
 }
-torch::Tensor AMMBench::CLMMCPPAlgo::clmm(torch::Tensor tensor1, torch::Tensor tensor2) {
+torch::Tensor LibAMM::CLMMCPPAlgo::clmm(torch::Tensor tensor1, torch::Tensor tensor2) {
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
@@ -119,7 +119,7 @@ static float getScaleingFactor(float scalingBase, std::vector<float> matrix1Floa
   }
   return scalingBase / maxa;
 }
-torch::Tensor AMMBench::CLMMCPPAlgo::clint8(torch::Tensor tensor1, torch::Tensor tensor2) {
+torch::Tensor LibAMM::CLMMCPPAlgo::clint8(torch::Tensor tensor1, torch::Tensor tensor2) {
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
@@ -178,7 +178,7 @@ torch::Tensor AMMBench::CLMMCPPAlgo::clint8(torch::Tensor tensor1, torch::Tensor
   postProcessTime += clc->tOut;
   return resultTensor.clone();
 }
-void AMMBench::CLMMCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::CLMMCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   AbstractCPPAlgo::setConfig(cfg);
   clFile = cfg->tryString("clFile", "CL/CLMM.cl", true);
   clc = newCLContainer(1, CL_DEVICE_TYPE_DEFAULT, "CLMM", clFile);
@@ -186,7 +186,7 @@ void AMMBench::CLMMCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   localSize1 = cfg->tryU64("localSize1", 1, true);
   clWorkDim = cfg->tryU64("clWorkDim", 2, true);
 }
-torch::Tensor AMMBench::CLMMCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+torch::Tensor LibAMM::CLMMCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   if (clFile == "CL/CLINT8.cl") {
     return clint8(A, B);

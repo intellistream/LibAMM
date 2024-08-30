@@ -4,7 +4,7 @@
 
 #include <CPPAlgos/TugOfWarCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 void TugOfWarCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   algoDelta = cfg->tryDouble("algoDelta", algoDelta, true);
 }
@@ -53,4 +53,4 @@ torch::Tensor TugOfWarCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t l2
 
   return AS[i_star].matmul(SB[i_star]);
 }
-} // AMMBench
+} // LibAMM

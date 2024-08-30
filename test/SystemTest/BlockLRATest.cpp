@@ -2,7 +2,7 @@
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include <AMMBench.h>
+#include <LibAMM.h>
 using namespace std;
 using namespace INTELLI;
 using namespace torch;
@@ -10,7 +10,7 @@ using namespace torch;
 TEST_CASE("Test Block LRA in cpp", "[short]")
 {
   torch::manual_seed(114514);
-  AMMBench::BlockLRACPPAlgo wcr;
+  LibAMM::BlockLRACPPAlgo wcr;
   auto A = torch::rand({500, 400});
   auto B = torch::rand({400, 600});
   auto realC = torch::matmul(A, B);

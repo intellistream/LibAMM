@@ -7,19 +7,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Beta The Beta generator
+ * @ingroup LibAMM_MatrixLOADER_Beta The Beta generator
  * @{
  */
 /**
  * @class BetaMatrixLoader MatrixLoader/BetaMatrixLoader.h
  * @brief The Beta class of matrix loader
- * @ingroup AMMBENCH_MatrixLOADER_Beta
+ * @ingroup LibAMM_MatrixLOADER_Beta
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -80,18 +80,18 @@ class BetaMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Beta
+ * @ingroup LibAMM_MatrixLOADER_Beta
  * @typedef BetaMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref BetaMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::BetaMatrixLoader> BetaMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::BetaMatrixLoader> BetaMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Beta
+ * @ingroup LibAMM_MatrixLOADER_Beta
  * @def newBetaMatrixLoader
  * @brief (Macro) To creat a new @ref BetaMatrixLoader under shared pointer.
  */
-#define newBetaMatrixLoader std::make_shared<AMMBench::BetaMatrixLoader>
+#define newBetaMatrixLoader std::make_shared<LibAMM::BetaMatrixLoader>
 /**
  * @}
  */

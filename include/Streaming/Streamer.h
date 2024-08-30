@@ -7,10 +7,10 @@
 
 #include <Parallelization/BlockPartitionRunner.h>
 
-namespace AMMBench {
+namespace LibAMM {
 class Streamer {
  protected:
-  AMMBench::TensorPtr matC = nullptr;
+  LibAMM::TensorPtr matC = nullptr;
   INTELLI::ConfigMapPtr metrics;
  public:
   Streamer() {}
@@ -29,5 +29,5 @@ class Streamer {
     return metrics;
   }
 };
-} // AMMBench
+} // LibAMM
 #endif //INTELLISTREAM_STREAMER_H

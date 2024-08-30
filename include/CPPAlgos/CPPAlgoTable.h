@@ -9,9 +9,9 @@
 #include <map>
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms writtrn in c++
+ * @ingroup LibAMM_CppAlgos The algorithms writtrn in c++
  * @{
  */
 /**
@@ -27,7 +27,7 @@ namespace AMMBench {
 */
 class CPPAlgoTable {
  protected:
-  std::map<std::string, AMMBench::AbstractCPPAlgoPtr> algoMap;
+  std::map<std::string, LibAMM::AbstractCPPAlgoPtr> algoMap;
  public:
   CPPAlgoTable();
 
@@ -38,7 +38,7 @@ class CPPAlgoTable {
    * @param anew The new algo
    * @param tag THe name tag
    */
-  void registerNewCppAlgo(AMMBench::AbstractCPPAlgoPtr anew, std::string tag) {
+  void registerNewCppAlgo(LibAMM::AbstractCPPAlgoPtr anew, std::string tag) {
     algoMap[tag] = anew;
   }
 
@@ -47,7 +47,7 @@ class CPPAlgoTable {
    * @param name The nameTag of loader
    * @return The AbstractCppAlgoPtr, nullptr if not found
    */
-  AMMBench::AbstractCPPAlgoPtr findCppAlgo(std::string name) {
+  LibAMM::AbstractCPPAlgoPtr findCppAlgo(std::string name) {
     if (algoMap.count(name)) {
       return algoMap[name];
     }
@@ -57,6 +57,6 @@ class CPPAlgoTable {
 /**
  * @}
  */
-} // AMMBench
+} // LibAMM
 
 #endif //INTELLISTREAM_INCLUDE_CPPALGOS_CPPALGOTABLE_H_

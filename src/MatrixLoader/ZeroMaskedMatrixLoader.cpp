@@ -5,7 +5,7 @@
 #include <MatrixLoader/ZeroMaskedMatrixLoader.h>
 #include <Utils/IntelliLog.h>
 
-void AMMBench::ZeroMaskedMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::ZeroMaskedMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   aRow = cfg->tryU64("aRow", 100, true);
   aCol = cfg->tryU64("aCol", 1000, true);
   bCol = cfg->tryU64("bCol", 500, true);
@@ -17,7 +17,7 @@ void AMMBench::ZeroMaskedMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
           + "]");
 }
 
-void AMMBench::ZeroMaskedMatrixLoader::generateAB() {
+void LibAMM::ZeroMaskedMatrixLoader::generateAB() {
   torch::manual_seed(seed);
   auto maskedA = torch::rand({(long) (aRow*nnzA), (long) (aCol*nnzA)});
   auto maskedB = torch::rand({(long) (aCol*nnzB), (long) (bCol*nnzB)});
@@ -28,16 +28,16 @@ void AMMBench::ZeroMaskedMatrixLoader::generateAB() {
 }
 
 //do nothing in abstract class
-bool AMMBench::ZeroMaskedMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::ZeroMaskedMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::ZeroMaskedMatrixLoader::getA() {
+torch::Tensor LibAMM::ZeroMaskedMatrixLoader::getA() {
   return A.clone();
 }
 
-torch::Tensor AMMBench::ZeroMaskedMatrixLoader::getB() {
+torch::Tensor LibAMM::ZeroMaskedMatrixLoader::getB() {
   return B.clone();
 }

@@ -4,8 +4,8 @@
 
 #include <CPPAlgos/CountSketchCPPAlgo.h>
 
-namespace AMMBench {
-torch::Tensor AMMBench::CountSketchCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
+namespace LibAMM {
+torch::Tensor LibAMM::CountSketchCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
   int64_t m1 = A.size(0);
   int64_t n = A.size(1);
   int64_t m2 = B.size(1);
@@ -30,4 +30,4 @@ torch::Tensor AMMBench::CountSketchCPPAlgo::amm(torch::Tensor A, torch::Tensor B
 
   return torch::matmul(Ca, Cb);
 }
-} // AMMBench
+} // LibAMM

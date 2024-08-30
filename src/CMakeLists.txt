@@ -8,7 +8,7 @@ add_sources(
         pythonBoundings.cpp
 )
 #gcc options
-if (DEFINED ENV{AMMBENCH_CL})
+if (DEFINED ENV{LibAMM_CL})
     add_sources(
             CLContainer.cpp
     )
