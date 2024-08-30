@@ -1,1 +1,4 @@
-1. add the cuda version to smp-pca
+1. fix ambigious name space
+2. enable pybind
+3. one-key scripts
+4. tutorials
