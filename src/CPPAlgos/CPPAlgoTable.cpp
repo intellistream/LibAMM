@@ -23,11 +23,11 @@
 #include <CPPAlgos/BlockLRACPPAlgo.h>
 #include <CPPAlgos/RIPCPPAlgo.h>
 #include <include/opencl_config.h>
-#if AMMBENCH_CL == 1
+#if LibAMM_CL == 1
 #include <CPPAlgos/CLMMCPPAlgo.h>
 #endif
-namespace AMMBench {
-AMMBench::CPPAlgoTable::CPPAlgoTable() {
+namespace LibAMM {
+LibAMM::CPPAlgoTable::CPPAlgoTable() {
   algoMap["mm"] = newAbstractCPPAlgo();
   algoMap["crs"] = newCRSCPPAlgo();
   algoMap["crsV2"] = newCRSV2CPPAlgo();
@@ -50,8 +50,8 @@ AMMBench::CPPAlgoTable::CPPAlgoTable() {
   algoMap["pq-hash"] = newProductQuantizationHashAlgo();
   algoMap["vq"] = newVectorQuantizationAlgo();
   algoMap["pq"] = newVectorQuantizationAlgo();
-#if AMMBENCH_CL == 1
+#if LibAMM_CL == 1
   algoMap["cl"] = newCLMMCPPAlgo();
 #endif
 }
-} // AMMBench
+} // LibAMM

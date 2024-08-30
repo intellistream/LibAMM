@@ -7,19 +7,19 @@
 
 #include <MatrixLoader/CCAMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MNIST The MNIST training image dataset generator
+ * @ingroup LibAMM_MatrixLOADER_MNIST The MNIST training image dataset generator
  * @{
  */
 /**
  * @class MNISTMatrixLoader MatrixLoader/MNISTMatrixLoader.h
  * @brief The MNIST class of matrix loader https://www.kaggle.com/datasets/hojjatk/mnist-dataset
- * @ingroup AMMBENCH_MatrixLOADER_MNIST
+ * @ingroup LibAMM_MatrixLOADER_MNIST
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -141,18 +141,18 @@ class MNISTMatrixLoader : public CCAMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MNIST
+ * @ingroup LibAMM_MatrixLOADER_MNIST
  * @typedef MNISTMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref MNISTMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::MNISTMatrixLoader> MNISTMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::MNISTMatrixLoader> MNISTMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_MNIST
+ * @ingroup LibAMM_MatrixLOADER_MNIST
  * @def newMNISTMatrixLoader
  * @brief (Macro) To creat a new @ref MNISTMatrixLoader under shared pointer.
  */
-#define newMNISTMatrixLoader std::make_shared<AMMBench::MNISTMatrixLoader>
+#define newMNISTMatrixLoader std::make_shared<LibAMM::MNISTMatrixLoader>
 /**
  * @}
  */

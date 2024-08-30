@@ -14,9 +14,9 @@
 #include <vector>
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -27,7 +27,7 @@ namespace AMMBench {
  * @note additionally parameters
  * - fpMode, String, default FP32, can also use INT8 or INT16
  */
-class INT8CPPAlgo : public AMMBench::AbstractCPPAlgo {
+class INT8CPPAlgo : public LibAMM::AbstractCPPAlgo {
  protected:
   /**
   * @brief the inline amm under nested loop fp32
@@ -95,18 +95,18 @@ class INT8CPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef INT8MatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref INT8CPPAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::INT8CPPAlgo> INT8CPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::INT8CPPAlgo> INT8CPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newINT8CppAlgo
  * @brief (Macro) To creat a new @ref  INT8CppAlgo shared pointer.
  */
-#define newINT8CPPAlgo std::make_shared<AMMBench::INT8CPPAlgo>
+#define newINT8CPPAlgo std::make_shared<LibAMM::INT8CPPAlgo>
 }
 /**
  * @}

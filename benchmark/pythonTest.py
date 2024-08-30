@@ -11,11 +11,11 @@ def main():
     print('/****test add****/')
     print('pytorch-mm:', torch.matmul(a, b))
     # our c++ extension of +
-    torch.ops.load_library("../libAMMBench.so")
-    torch.ops.AMMBench.setTag('mm')
-    print('AMMBench-MM+:', torch.ops.AMMBench.ammDefault(a, b))
-    torch.ops.AMMBench.setTag('crs')
-    print('AMMBench-CRS+:', torch.ops.AMMBench.ammDefault(a, b))
+    torch.ops.load_library("../libLibAMM.so")
+    torch.ops.LibAMM.setTag('mm')
+    print('LibAMM-MM+:', torch.ops.LibAMM.ammDefault(a, b))
+    torch.ops.LibAMM.setTag('crs')
+    print('LibAMM-CRS+:', torch.ops.LibAMM.ammDefault(a, b))
 
 
 if __name__ == "__main__":

@@ -8,19 +8,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Random The Random generator
+ * @ingroup LibAMM_MatrixLOADER_Random The Random generator
  * @{
  */
 /**
  * @class RandomMatrixLoader MatrixLoader/RandomMatrixLoader.h
  * @brief The Random class of matrix loader
- * @ingroup AMMBENCH_MatrixLOADER_Random
+ * @ingroup LibAMM_MatrixLOADER_Random
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -78,18 +78,18 @@ class RandomMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Random
+ * @ingroup LibAMM_MatrixLOADER_Random
  * @typedef RandomMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref RandomMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::RandomMatrixLoader> RandomMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::RandomMatrixLoader> RandomMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Random
+ * @ingroup LibAMM_MatrixLOADER_Random
  * @def newRandomMatrixLoader
  * @brief (Macro) To creat a new @ref RandomMatrixLoader under shared pointer.
  */
-#define newRandomMatrixLoader std::make_shared<AMMBench::RandomMatrixLoader>
+#define newRandomMatrixLoader std::make_shared<LibAMM::RandomMatrixLoader>
 /**
  * @}
  */

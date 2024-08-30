@@ -7,19 +7,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Exponential The Exponential generator
+ * @ingroup LibAMM_MatrixLOADER_Exponential The Exponential generator
  * @{
  */
 /**
  * @class ExponentialMatrixLoader MatrixLoader/ExponentialMatrixLoader.h
  * @brief The Exponential class of matrix loader
- * @ingroup AMMBENCH_MatrixLOADER_Exponential
+ * @ingroup LibAMM_MatrixLOADER_Exponential
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -77,18 +77,18 @@ class ExponentialMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Exponential
+ * @ingroup LibAMM_MatrixLOADER_Exponential
  * @typedef ExponentialMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref ExponentialMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::ExponentialMatrixLoader> ExponentialMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::ExponentialMatrixLoader> ExponentialMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Exponential
+ * @ingroup LibAMM_MatrixLOADER_Exponential
  * @def newExponentialMatrixLoader
  * @brief (Macro) To creat a new @ref ExponentialMatrixLoader under shared pointer.
  */
-#define newExponentialMatrixLoader std::make_shared<AMMBench::ExponentialMatrixLoader>
+#define newExponentialMatrixLoader std::make_shared<LibAMM::ExponentialMatrixLoader>
 /**
  * @}
  */

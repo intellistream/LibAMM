@@ -8,4 +8,4 @@ useCPP,1,U64
 cppAlgoTag,pq,String
 threads,1,U64
 forceMP,1,U64
-pqvqCodewordLookUpTablePath,/home/miter/projects/AMMBench/benchmark/torchscripts/VQ/CodewordLookUpTable/1000x1000_m10_lA10_lB10.pth,String
+pqvqCodewordLookUpTablePath,/home/miter/projects/LibAMM/benchmark/torchscripts/VQ/CodewordLookUpTable/1000x1000_m10_lA10_lB10.pth,String

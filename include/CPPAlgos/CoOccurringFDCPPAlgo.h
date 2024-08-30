@@ -7,9 +7,9 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -17,7 +17,7 @@ namespace AMMBench {
  * @brief The Co-Occurring FD AMM class of c++ algos
  *
  */
-class CoOccurringFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
+class CoOccurringFDCPPAlgo : public LibAMM::AbstractCPPAlgo {
  public:
   CoOccurringFDCPPAlgo() {
 
@@ -39,18 +39,18 @@ class CoOccurringFDCPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref CoOccurringFDCppAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::CoOccurringFDCPPAlgo> CoOccurringFDCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::CoOccurringFDCPPAlgo> CoOccurringFDCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newCoOccurringFDCppAlgo
  * @brief (Macro) To creat a new @ref  CoOccurringFDCppAlgounder shared pointer.
  */
-#define newCoOccurringFDCPPAlgo std::make_shared<AMMBench::CoOccurringFDCPPAlgo>
+#define newCoOccurringFDCPPAlgo std::make_shared<LibAMM::CoOccurringFDCPPAlgo>
 }
 /**
  * @}

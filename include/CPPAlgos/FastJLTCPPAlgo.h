@@ -8,16 +8,16 @@
 
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms writtrn in c++
+ * @ingroup LibAMM_CppAlgos The algorithms writtrn in c++
  * @{
  */
 /**
  * @class FastJLTCPPAlgo CPPAlgos/FastJLTCPPAlgo.h
  * @brief The tug of war class of c++ algoS
  */
-class FastJLTCPPAlgo : public AMMBench::AbstractCPPAlgo {
+class FastJLTCPPAlgo : public LibAMM::AbstractCPPAlgo {
  public:
   FastJLTCPPAlgo() {
 
@@ -40,18 +40,18 @@ class FastJLTCPPAlgo : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref FastJLTCppAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::FastJLTCPPAlgo> FastJLTCPPAlgoPtr;
+typedef std::shared_ptr<class LibAMM::FastJLTCPPAlgo> FastJLTCPPAlgoPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newFastJLTCppAlgo
  * @brief (Macro) To creat a new @ref  FastJLTCppAlgounder shared pointer.
  */
-#define newFastJLTCPPAlgo std::make_shared<AMMBench::FastJLTCPPAlgo>
+#define newFastJLTCPPAlgo std::make_shared<LibAMM::FastJLTCPPAlgo>
 }
 /**
  * @}

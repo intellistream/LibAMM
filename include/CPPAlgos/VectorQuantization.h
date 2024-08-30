@@ -6,9 +6,9 @@
 #define INTELLISTREAM_VECTORQUANTIZATION_H
 #include <CPPAlgos/AbstractCPPAlgo.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_CppAlgos The algorithms written in c++
+ * @ingroup LibAMM_CppAlgos The algorithms written in c++
  * @{
  */
 /**
@@ -16,7 +16,7 @@ namespace AMMBench {
  * @brief The Vector Quantization AMM class of c++ algos
  *
  */
-class VectorQuantization : public AMMBench::AbstractCPPAlgo {
+class VectorQuantization : public LibAMM::AbstractCPPAlgo {
   protected:
     string pqvqCodewordLookUpTablePath;
     int m; // num of subspaces
@@ -47,18 +47,18 @@ class VectorQuantization : public AMMBench::AbstractCPPAlgo {
 };
 
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @typedef AbstractMatrixCppAlgoPtr
  * @brief The class to describe a shared pointer to @ref VectorQuantizationAlgo
 
  */
-typedef std::shared_ptr<class AMMBench::VectorQuantization> VectorQuantizationPtr;
+typedef std::shared_ptr<class LibAMM::VectorQuantization> VectorQuantizationPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newVectorQuantizationAlgo
  * @brief (Macro) To creat a new @ref  VectorQuantizationAlgounder shared pointer.
  */
-#define newVectorQuantizationAlgo std::make_shared<AMMBench::VectorQuantization>
+#define newVectorQuantizationAlgo std::make_shared<LibAMM::VectorQuantization>
 }
 /**
  * @}

@@ -11,19 +11,19 @@
 #include <torch/torch.h>
 #include <memory>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_abstract The abstract template
+ * @ingroup LibAMM_MatrixLOADER_abstract The abstract template
  * @{
  */
 /**
  * @class AbstractMatrixLoader MatrixLoader/AbstractMatrixLoader.h
  * @brief The abstract class of matrix loader, parent for all loaders
- * @ingroup AMMBENCH_MatrixLOADER_abstract
+ * @ingroup LibAMM_MatrixLOADER_abstract
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -59,24 +59,24 @@ class AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_abstract
+ * @ingroup LibAMM_MatrixLOADER_abstract
  * @typedef AbstractMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref AbstractMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::AbstractMatrixLoader> AbstractMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::AbstractMatrixLoader> AbstractMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_abstract
+ * @ingroup LibAMM_MatrixLOADER_abstract
  * @def newAbstractMatrixLoader
  * @brief (Macro) To creat a new @ref AbstractMatrixLoader under shared pointer.
  */
-#define newAbstractMatrixLoader std::make_shared<AMMBench::AbstractMatrixLoader>
+#define newAbstractMatrixLoader std::make_shared<LibAMM::AbstractMatrixLoader>
 /**
  * @}
  */
 /**
  * @}
  */
-} // AMMBench
+} // LibAMM
 
 #endif //INTELLISTREAM_INCLUDE_MATRIXLOADER_ABSTRACTMATRIXLOADER_H_

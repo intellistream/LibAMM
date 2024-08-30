@@ -5,7 +5,7 @@
 #include <MatrixLoader/MtxMatrixLoader.h>
 #include <Utils/IntelliLog.h>
 #include <cmath>
-torch::Tensor AMMBench::scaleIntoPN1(torch::Tensor a){
+torch::Tensor LibAMM::scaleIntoPN1(torch::Tensor a){
   torch::Tensor min_value = a.min();
   torch::Tensor max_value = a.max();
   torch::Tensor normalized_tensor;
@@ -18,7 +18,7 @@ torch::Tensor AMMBench::scaleIntoPN1(torch::Tensor a){
   }
   return normalized_tensor;
 }
-torch::Tensor AMMBench::normalizeIntoPN1(torch::Tensor a){
+torch::Tensor LibAMM::normalizeIntoPN1(torch::Tensor a){
   torch::Tensor min_value = a.min();
   torch::Tensor max_value = a.max();
 
@@ -27,7 +27,7 @@ torch::Tensor AMMBench::normalizeIntoPN1(torch::Tensor a){
 
   return normalized_tensor;
 }
-torch::Tensor AMMBench::loadMatrixFromMatrixMarket(const std::string &filename) {
+torch::Tensor LibAMM::loadMatrixFromMatrixMarket(const std::string &filename) {
   ifstream file(filename);
   if (!file.is_open()) {
     //cerr << "Error: Unable to open the file " << filename << endl;
@@ -75,7 +75,7 @@ torch::Tensor AMMBench::loadMatrixFromMatrixMarket(const std::string &filename) 
 
   return result.clone();
 }
-void AMMBench::MtxMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::MtxMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   transposeA = cfg->tryU64("transposeA", 0, true);
   transposeB = cfg->tryU64("transposeB", 1, true);
   normalizeA= cfg->tryU64("normalizeA", 0, true);
@@ -90,7 +90,7 @@ void AMMBench::MtxMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 
 }
 
-void AMMBench::MtxMatrixLoader::generateAB() {
+void LibAMM::MtxMatrixLoader::generateAB() {
   A = loadMatrixFromMatrixMarket(srcA);
   if (transposeA) {
     A = A.t().contiguous();
@@ -122,16 +122,16 @@ void AMMBench::MtxMatrixLoader::generateAB() {
 }
 
 //do nothing in abstract class
-bool AMMBench::MtxMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::MtxMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::MtxMatrixLoader::getA() {
+torch::Tensor LibAMM::MtxMatrixLoader::getA() {
   return A.clone();
 }
 
-torch::Tensor AMMBench::MtxMatrixLoader::getB() {
+torch::Tensor LibAMM::MtxMatrixLoader::getB() {
   return B.clone();
 }

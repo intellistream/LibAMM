@@ -8,19 +8,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_zero masked The  zero-masked Random generator
+ * @ingroup LibAMM_MatrixLOADER_zero masked The  zero-masked Random generator
  * @{
  */
 /**
  * @class ZeroMaskedMatrixLoader MatrixLoader/ZeroMaskedMatrixLoader.h
  * @brief The zero masked class of matrix loader, given generate a n*m matrix, where only the left-top n1*m2 contents are not zero
- * @ingroup AMMBENCH_MatrixLOADER_Random
+ * @ingroup LibAMM_MatrixLOADER_Random
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -81,18 +81,18 @@ class ZeroMaskedMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Random
+ * @ingroup LibAMM_MatrixLOADER_Random
  * @typedef ZeroMaskedMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref ZeroMaskedMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::ZeroMaskedMatrixLoader> ZeroMaskedMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::ZeroMaskedMatrixLoader> ZeroMaskedMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Random
+ * @ingroup LibAMM_MatrixLOADER_Random
  * @def newZeroMaskedMatrixLoader
  * @brief (Macro) To creat a new @ref ZeroMaskedMatrixLoader under shared pointer.
  */
-#define newZeroMaskedMatrixLoader std::make_shared<AMMBench::ZeroMaskedMatrixLoader>
+#define newZeroMaskedMatrixLoader std::make_shared<LibAMM::ZeroMaskedMatrixLoader>
 /**
  * @}
  */

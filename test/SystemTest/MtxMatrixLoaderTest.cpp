@@ -5,13 +5,13 @@
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include <AMMBench.h>
+#include <LibAMM.h>
 using namespace std;
 using namespace INTELLI;
 using namespace torch;
 TEST_CASE("Test the mtx loader", "[short]")
 {
-  AMMBench::MatrixLoaderTable mLoaderTable;
+  LibAMM::MatrixLoaderTable mLoaderTable;
   ConfigMapPtr cfg = newConfigMap();
   cfg->edit("srcA", "datasets/toy/toy.mtx");
   cfg->edit("srcB", "datasets/toy/toy.mtx");

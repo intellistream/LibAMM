@@ -3,13 +3,13 @@
 //
 #include <MatrixLoader/SIFTMatrixLoader.h>
 #include <Utils/IntelliLog.h>
-#include <AMMBench.h>
+#include <LibAMM.h>
 
-void AMMBench::SIFTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::SIFTMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   filePath = cfg->tryString("filePath", "datasets/SIFT/siftsmall_base.fvecs", true);
 }
 
-void AMMBench::SIFTMatrixLoader::generateAB() {
+void LibAMM::SIFTMatrixLoader::generateAB() {
  
   float *data = NULL;
   unsigned num, dim;
@@ -64,22 +64,22 @@ void AMMBench::SIFTMatrixLoader::generateAB() {
 }
 
 //do nothing in abstract class
-bool AMMBench::SIFTMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::SIFTMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::SIFTMatrixLoader::getA() {
+torch::Tensor LibAMM::SIFTMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor AMMBench::SIFTMatrixLoader::getB() {
+torch::Tensor LibAMM::SIFTMatrixLoader::getB() {
   return B;
 }
 
 // int main() {
-//     AMMBench::MatrixLoaderTable mLoaderTable;
+//     LibAMM::MatrixLoaderTable mLoaderTable;
 //     auto matLoaderPtr = mLoaderTable.findMatrixLoader("SIFT");
 //     assert(matLoaderPtr);
 

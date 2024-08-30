@@ -8,7 +8,7 @@
 #include <vector>
 #include <random>
 #include <cmath>
-void AMMBench::ZipfMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::ZipfMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   aRow = cfg->tryU64("aRow", 100, true);
   aCol = cfg->tryU64("aCol", 1000, true);
   bCol = cfg->tryU64("bCol", 500, true);
@@ -21,7 +21,7 @@ void AMMBench::ZipfMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
       "Generating [" + to_string(aRow) + "x" + to_string(aCol) + "]*[" + to_string(aCol) + "x" + to_string(bCol)
           + "]");
 }
-torch::Tensor AMMBench::ZipfMatrixLoader::generateZipfDistribution(int64_t n, int64_t m, double alpha) {
+torch::Tensor LibAMM::ZipfMatrixLoader::generateZipfDistribution(int64_t n, int64_t m, double alpha) {
   torch::Tensor indices = torch::arange(1, n * m + 1, torch::kFloat32);
   torch::Tensor probabilities = 1.0 / torch::pow(indices, alpha);
   torch::Tensor normalizedProbabilities = probabilities / torch::sum(probabilities);
@@ -35,7 +35,7 @@ torch::Tensor AMMBench::ZipfMatrixLoader::generateZipfDistribution(int64_t n, in
   // Reshape the 1D tensor to an nxm tensor
   return ru;
 }
-void AMMBench::ZipfMatrixLoader::generateAB() {
+void LibAMM::ZipfMatrixLoader::generateAB() {
   torch::manual_seed(seed);
   if(randA)
   {
@@ -58,16 +58,16 @@ void AMMBench::ZipfMatrixLoader::generateAB() {
 }
 
 //do nothing in abstract class
-bool AMMBench::ZipfMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::ZipfMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::ZipfMatrixLoader::getA() {
+torch::Tensor LibAMM::ZipfMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor AMMBench::ZipfMatrixLoader::getB() {
+torch::Tensor LibAMM::ZipfMatrixLoader::getB() {
   return B;
 }

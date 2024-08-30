@@ -7,19 +7,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_SIFT The SIFTsmall dataset generator
+ * @ingroup LibAMM_MatrixLOADER_SIFT The SIFTsmall dataset generator
  * @{
  */
 /**
  * @class SIFTMatrixLoader MatrixLoader/SIFTMatrixLoader.h
  * @brief The SIFT class of matrix loader http://corpus-texmex.irisa.fr/
- * @ingroup AMMBENCH_MatrixLOADER_SIFT
+ * @ingroup LibAMM_MatrixLOADER_SIFT
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -73,18 +73,18 @@ class SIFTMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_SIFT
+ * @ingroup LibAMM_MatrixLOADER_SIFT
  * @typedef SIFTMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref SIFTMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::SIFTMatrixLoader> SIFTMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::SIFTMatrixLoader> SIFTMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_SIFT
+ * @ingroup LibAMM_MatrixLOADER_SIFT
  * @def newSIFTMatrixLoader
  * @brief (Macro) To creat a new @ref SIFTMatrixLoader under shared pointer.
  */
-#define newSIFTMatrixLoader std::make_shared<AMMBench::SIFTMatrixLoader>
+#define newSIFTMatrixLoader std::make_shared<LibAMM::SIFTMatrixLoader>
 /**
  * @}
  */

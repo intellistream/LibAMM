@@ -4,7 +4,7 @@
  * @brief This is the main entry point of the entire program.
  * We use this as the entry point for benchmarking.
  */
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <Utils/UtilityFunctions.h>
 #include <Streaming/Streamer.h>
 #include <cstdlib> // For the exit() function
@@ -16,7 +16,7 @@ using namespace std;
 using namespace INTELLI;
 using namespace torch;
 using namespace DIVERSE_METER;
-using namespace AMMBench;
+using namespace LibAMM;
 namespace fs = std::filesystem;
 
 void printStatsOfTensor(torch::Tensor M) {
@@ -112,22 +112,22 @@ void benchmarkCCA(std::string configName) {
     uint64_t coreBind = cfg->tryU64("coreBind", 0, true);
     UtilityFunctions::bind2Core((int) coreBind);
     // 1.1 AMM algorithm
-    AMMBench::CPPAlgoTable cppAlgoTable;
+    LibAMM::CPPAlgoTable cppAlgoTable;
     std::string cppAlgoTag = cfg->tryString("cppAlgoTag", "mm", true);
-    AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
+    LibAMM::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(cppAlgoTag);
     INTELLI_INFO("1.1 algo: " + cppAlgoTag);
     // 1.2 matrixLoader uses MNIST dataset
     std::string matrixLoaderTag = cfg->tryString("matrixLoaderTag", "MediaMill", true);
     INTELLI_INFO("1.2 matrixLoaderTag: " + matrixLoaderTag);
-    AMMBench::MatrixLoaderTable mLoaderTable;
-    //std::shared_ptr<AMMBench::AbstractMatrixLoader> matLoaderPtr;
+    LibAMM::MatrixLoaderTable mLoaderTable;
+    //std::shared_ptr<LibAMM::AbstractMatrixLoader> matLoaderPtr;
     auto matLoaderPtr = mLoaderTable.findMatrixLoader(matrixLoaderTag);
    /* if (matrixLoaderTag=="MediaMill"){
-        matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MediaMillMatrixLoader>(mLoaderTable.findMatrixLoader("MediaMill"));
+        matLoaderPtr = std::dynamic_pointer_cast<LibAMM::MediaMillMatrixLoader>(mLoaderTable.findMatrixLoader("MediaMill"));
         // std::cout << "1 The type of myVariable is: " << typeid(matLoaderPtr).name() << std::endl;
     }
     else if (matrixLoaderTag=="MNIST"){
-        matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MNISTMatrixLoader>(mLoaderTable.findMatrixLoader("MNIST"));
+        matLoaderPtr = std::dynamic_pointer_cast<LibAMM::MNISTMatrixLoader>(mLoaderTable.findMatrixLoader("MNIST"));
         // std::cout << "2 The type of myVariable is: " << typeid(matLoaderPtr).name() << std::endl;
     }
     else{
@@ -136,10 +136,10 @@ void benchmarkCCA(std::string configName) {
     }*/
 
     // if (matrixLoaderTag=="MediaMill"){
-    //     std::shared_ptr<AMMBench::MediaMillMatrixLoader> matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MediaMillMatrixLoader>(mLoaderTable.findMatrixLoader(matrixLoaderTag));
+    //     std::shared_ptr<LibAMM::MediaMillMatrixLoader> matLoaderPtr = std::dynamic_pointer_cast<LibAMM::MediaMillMatrixLoader>(mLoaderTable.findMatrixLoader(matrixLoaderTag));
     // }
     // else if (matrixLoaderTag=="MNIST"){
-    //     std::shared_ptr<AMMBench::MNISTMatrixLoader> matLoaderPtr = std::dynamic_pointer_cast<AMMBench::MNISTMatrixLoader>(mLoaderTable.findMatrixLoader(matrixLoaderTag));
+    //     std::shared_ptr<LibAMM::MNISTMatrixLoader> matLoaderPtr = std::dynamic_pointer_cast<LibAMM::MNISTMatrixLoader>(mLoaderTable.findMatrixLoader(matrixLoaderTag));
     // }
     // else{
     //     INTELLI_ERROR(matrixLoaderTag+" not found");
@@ -184,7 +184,7 @@ void benchmarkCCA(std::string configName) {
     //     INTELLI_INFO("Runing AMM streaming");
     //     B=Bt; // A: 392*60000, B:60000*392
         
-    //     AMMBench::SingleThreadStreamer ss;
+    //     LibAMM::SingleThreadStreamer ss;
     //     ConfigMapPtr cfgGlobal = cfg;
     //     uint64_t aRows = A.size(0);
     //     cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
@@ -192,13 +192,13 @@ void benchmarkCCA(std::string configName) {
     //     if (batchSize > aRows) {
     //         batchSize = aRows;
     //     }
-    //     AMMBench::TimeStamper tsGen,tsGenB;
+    //     LibAMM::TimeStamper tsGen,tsGenB;
     //     tsGen.setConfig(cfgGlobal);
-    //     std::vector<AMMBench::AMMTimeStampPtr> myTs = tsGen.getTimeStamps();
+    //     std::vector<LibAMM::AMMTimeStampPtr> myTs = tsGen.getTimeStamps();
 
     //     tsGenB.setSeed(7758258);
     //     tsGenB.setConfig(cfgGlobal);
-    //     std::vector<AMMBench::AMMTimeStampPtr> myTsB = tsGenB.getTimeStamps();
+    //     std::vector<LibAMM::AMMTimeStampPtr> myTsB = tsGenB.getTimeStamps();
     //     INTELLI_INFO("Generate time stamps for two streams done");
     //     Sxy = torch::zeros({A.size(0), B.size(1)});
     //     Sxx = torch::zeros({A.size(0), A.size(0)});

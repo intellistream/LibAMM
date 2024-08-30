@@ -8,7 +8,7 @@
 #include <Utils/BS_thread_pool.hpp>
 #include <Utils/UtilityFunctions.h>
 
-bool AMMBench::BlockPartitionStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::BlockPartitionStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
   cfgGlobal = cfg;
   /**
   * @brief 1.set the algo
@@ -25,14 +25,14 @@ bool AMMBench::BlockPartitionStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   uint64_t aRows = A.size(0);
   cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
   if (batchSize > aRows) {
     batchSize = aRows;
   }
-  AMMBench::TimeStamper tsGen;
+  LibAMM::TimeStamper tsGen;
   tsGen.setConfig(cfgGlobal);
   myTs = tsGen.getTimeStamps();
   INTELLI_INFO("Generate time stamp done");
@@ -107,14 +107,14 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm(torch::Tensor A, to
   return *matC;
 }
 
-torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   uint64_t aRows = A.size(0);
   cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
   if (batchSize > aRows) {
     batchSize = aRows;
   }
-  AMMBench::TimeStamper tsGen, tsGenB;
+  LibAMM::TimeStamper tsGen, tsGenB;
   tsGen.setConfig(cfgGlobal);
   myTs = tsGen.getTimeStamps();
 
@@ -235,7 +235,7 @@ torch::Tensor AMMBench::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, 
   metrics->edit("95%latency", latency95);
   return *matC;
 }
-double AMMBench::BlockPartitionStreamer::getLatencyPercentage(double fraction) {
+double LibAMM::BlockPartitionStreamer::getLatencyPercentage(double fraction) {
   size_t rLen = myTs.size();
   size_t nonZeroCnt = 0;
   std::vector<uint64_t> validLatency;

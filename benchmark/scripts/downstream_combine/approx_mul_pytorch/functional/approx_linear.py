@@ -38,10 +38,10 @@ def approx_linear_forward_xA_b(input,weight,bias,sample_ratio,minimal_k,sample_r
 
 
 def ammE(A,B,bias, minimal_k, algo):
-    torch.ops.AMMBench.setTag(algo)
+    torch.ops.LibAMM.setTag(algo)
     global count
     count += 1
-    C = torch.ops.AMMBench.ammSpecifySs(A, B, minimal_k)
+    C = torch.ops.LibAMM.ammSpecifySs(A, B, minimal_k)
     CE = torch.mm(A, B)
     global error
     error += torch.norm(CE-C, p='fro')
@@ -56,8 +56,8 @@ def ammE(A,B,bias, minimal_k, algo):
     return C
 
 def amm(A,B,bias, minimal_k, algo):
-    torch.ops.AMMBench.setTag(algo)
-    C = torch.ops.AMMBench.ammSpecifySs(A, B, minimal_k)
+    torch.ops.LibAMM.setTag(algo)
+    C = torch.ops.LibAMM.ammSpecifySs(A, B, minimal_k)
     if bias is not None:
         C += bias
     return C

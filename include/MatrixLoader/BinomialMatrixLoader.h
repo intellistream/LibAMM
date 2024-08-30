@@ -7,19 +7,19 @@
 
 #include <MatrixLoader/AbstractMatrixLoader.h>
 
-namespace AMMBench {
+namespace LibAMM {
 /**
- * @ingroup AMMBENCH_MatrixLOADER
+ * @ingroup LibAMM_MatrixLOADER
  * @{
  */
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Binomial The Binomial generator
+ * @ingroup LibAMM_MatrixLOADER_Binomial The Binomial generator
  * @{
  */
 /**
  * @class BinomialMatrixLoader MatrixLoader/BinomialMatrixLoader.h
  * @brief The Binomial class of matrix loader
- * @ingroup AMMBENCH_MatrixLOADER_Binomial
+ * @ingroup LibAMM_MatrixLOADER_Binomial
  * @note:
  * - Must have a global config by @ref setConfig
  * @note  Default behavior
@@ -80,18 +80,18 @@ class BinomialMatrixLoader : public AbstractMatrixLoader {
 };
 
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Binomial
+ * @ingroup LibAMM_MatrixLOADER_Binomial
  * @typedef BinomialMatrixLoaderPtr
  * @brief The class to describe a shared pointer to @ref BinomialMatrixLoader
 
  */
-typedef std::shared_ptr<class AMMBench::BinomialMatrixLoader> BinomialMatrixLoaderPtr;
+typedef std::shared_ptr<class LibAMM::BinomialMatrixLoader> BinomialMatrixLoaderPtr;
 /**
- * @ingroup AMMBENCH_MatrixLOADER_Binomial
+ * @ingroup LibAMM_MatrixLOADER_Binomial
  * @def newBinomialMatrixLoader
  * @brief (Macro) To creat a new @ref BinomialMatrixLoader under shared pointer.
  */
-#define newBinomialMatrixLoader std::make_shared<AMMBench::BinomialMatrixLoader>
+#define newBinomialMatrixLoader std::make_shared<LibAMM::BinomialMatrixLoader>
 /**
  * @}
  */

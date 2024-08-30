@@ -4,7 +4,7 @@
 #include <MatrixLoader/BinomialMatrixLoader.h>
 #include <Utils/IntelliLog.h>
 
-void AMMBench::BinomialMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::BinomialMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   aRow = cfg->tryU64("aRow", 100, true);
   aCol = cfg->tryU64("aCol", 1000, true);
   bCol = cfg->tryU64("bCol", 500, true);
@@ -16,7 +16,7 @@ void AMMBench::BinomialMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
           + "]" + " Parameter: " + to_string(trials) + ", " + to_string(probability));
 }
 
-void AMMBench::BinomialMatrixLoader::generateAB() {
+void LibAMM::BinomialMatrixLoader::generateAB() {
   torch::manual_seed(seed);
   A = torch::zeros({(long) aRow, (long) aCol});
   B = torch::zeros({(long) aCol, (long) bCol});
@@ -41,16 +41,16 @@ void AMMBench::BinomialMatrixLoader::generateAB() {
 }
 
 //do nothing in abstract class
-bool AMMBench::BinomialMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::BinomialMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::BinomialMatrixLoader::getA() {
+torch::Tensor LibAMM::BinomialMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor AMMBench::BinomialMatrixLoader::getB() {
+torch::Tensor LibAMM::BinomialMatrixLoader::getB() {
   return B;
 }

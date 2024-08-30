@@ -8,7 +8,21 @@ LibAMM aggregates prevalent AMM algorithms, enabling standardized evaluations an
     - you have to make sure your compiler knows where opencl is
 - ENABLE_PAPI, this will enable PAPI-based perf tools (OFF by default)
     - you need first cd to thirdparty and run installPAPI.sh to enable PAPI support, or also set REBUILD_PAPI to ON
+- ENABLE_PYBIND, this will enable you to make python binds, i.e., PyAMM (OFF by default)
+    - we have included the source code of pybind 11 in third party folder, please make sure it is complete
+    - please compile at a machine with 64GB + memory (swap is also acceptable) when PYBIND is to be compiled
 
+## One-Key build examples with auto solving of dependencies
+Please ensure your machine has 64GB + memory (swap is also acceptable) to do either the following
+- buildWithCuda.sh To build LibAMM and PyAMM with cuda support, make sure you have cuda installed before it
+- buildCPUOnly.sh This is a CPU-only version
+- After either one, you can run the following to add PyAMM To your default python environment
+```shell
+ python3 setup.py install --user
+```
+##  Native python interface (NEW EXPERIMENTAL feature)
+If you have compiled PyAMM and make it available, please refer to <buildPath>/benchmark/scripts/PyAMM/*.ipynb for details.
+We have opened the python call to AbstractCPPAlgo and AbstractMatrixLoader. They are totally the same as C++ classes.
 ## Requires G++11
 
 The default version of gcc/g++ on ubuntu 22.04 (jammy) is good enough.
@@ -124,7 +138,7 @@ pip install torchviz
 
 PAPI is a consistent interface and methodology for collecting performance counter information from various hardware and
 software components: https://icl.utk.edu/papi/.
-, AMMBench includes it in thirdparty/papi_7_0_1.
+, LibAMM includes it in thirdparty/papi_7_0_1.
 
 ### How to build PAPI
 
@@ -136,9 +150,9 @@ software components: https://icl.utk.edu/papi/.
 - the run papi_native_avail, the printed tags are valid native events.
 - please report to PAPI authors if you find your machine not supported
 
-### How to use PAPI in AMMBench
+### How to use PAPI in LibAMM
 
-- set -DENABLE_PAPI=ON in cmake AMMBench
+- set -DENABLE_PAPI=ON in cmake LibAMM
 - in your top config file, add two config options:
     - usePAPI,1,U64
     - perfUseExternalList,1,U64
@@ -146,7 +160,7 @@ software components: https://icl.utk.edu/papi/.
         - perfListSrc,<the path to your list>,String
 - edit the perfLists/perfList.csv in your BINARY build path of benchmark (or your own list path), use the following
   format
-    - <the event name tag you want AMMBench to display>, <The inline PAPI tags from papi_native_avail/papi_avail>,
+    - <the event name tag you want LibAMM to display>, <The inline PAPI tags from papi_native_avail/papi_avail>,
       String
 - please note that papi has a limitation of events due to hardware constraints, so only put 2~3 in each run
 

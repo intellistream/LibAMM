@@ -2,14 +2,14 @@
 // Created by tony on 25/12/22.
 //
 
-#include <AMMBench.h>
+#include <LibAMM.h>
 #include <string>
 #include <Streaming/Streamer.h>
 
 using namespace std;
 using namespace INTELLI;
 using namespace torch;
-using namespace AMMBench;
+using namespace LibAMM;
 int64_t algoTag = 0;
 std::string algoTagStr = "mm";
 /**
@@ -20,29 +20,29 @@ std::string algoTagStr = "mm";
  * @note please keep input and output as tensors
  * @return tensor
  */
-torch::Tensor AMMBench_crs(torch::Tensor a, torch::Tensor b) {
-  AMMBench::CRSCPPAlgo algo;
+torch::Tensor LibAMM_crs(torch::Tensor a, torch::Tensor b) {
+  LibAMM::CRSCPPAlgo algo;
   auto w = a.sizes()[1] / 10;
   return algo.amm(a, b, (uint64_t) w);
 }
-torch::Tensor AMMBench_ammDefault(torch::Tensor a, torch::Tensor b) {
-  AMMBench::CPPAlgoTable cppAlgoTable;
-  AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(algoTagStr);
+torch::Tensor LibAMM_ammDefault(torch::Tensor a, torch::Tensor b) {
+  LibAMM::CPPAlgoTable cppAlgoTable;
+  LibAMM::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(algoTagStr);
   auto w = a.sizes()[1] / 10;
   return cppAlgoPtr->amm(a, b, (uint64_t) w);
 }
 
-torch::Tensor AMMBench_ammSpecifySs(torch::Tensor a, torch::Tensor b, int64_t ss) {
-  AMMBench::CPPAlgoTable cppAlgoTable;
-  AMMBench::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(algoTagStr);
+torch::Tensor LibAMM_ammSpecifySs(torch::Tensor a, torch::Tensor b, int64_t ss) {
+  LibAMM::CPPAlgoTable cppAlgoTable;
+  LibAMM::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(algoTagStr);
   return cppAlgoPtr->amm(a, b, (uint64_t) ss);
 }
 
-void AMMBench_setTag(std::string tag) {
+void LibAMM_setTag(std::string tag) {
   algoTagStr = tag;
 }
 
-torch::Tensor AMMBench_ammForMadness(torch::Tensor A, torch::Tensor B, string configPath, string metricSavePath) {
+torch::Tensor LibAMM_ammForMadness(torch::Tensor A, torch::Tensor B, string configPath, string metricSavePath) {
 
   // For madness. we need to 
   // 1. load cfg, extract amm method, and related amm paramater (e.g. vq codebook path).
@@ -80,11 +80,11 @@ torch::Tensor AMMBench_ammForMadness(torch::Tensor A, torch::Tensor B, string co
  * @brief Declare the function to pytorch
  * @note The of lib is myLib
  */
-TORCH_LIBRARY(AMMBench, m2) {
-  m2.def("crs", AMMBench_crs);
-  m2.def("setTag", AMMBench_setTag);
-  m2.def("ammDefault", AMMBench_ammDefault);
-  m2.def("ammSpecifySs", AMMBench_ammSpecifySs);
-  m2.def("ammForMadness", AMMBench_ammForMadness);
+TORCH_LIBRARY(LibAMM, m2) {
+  m2.def("crs", LibAMM_crs);
+  m2.def("setTag", LibAMM_setTag);
+  m2.def("ammDefault", LibAMM_ammDefault);
+  m2.def("ammSpecifySs", LibAMM_ammSpecifySs);
+  m2.def("ammForMadness", LibAMM_ammForMadness);
   //m2.def("myVecSub", myVecSub);
 }

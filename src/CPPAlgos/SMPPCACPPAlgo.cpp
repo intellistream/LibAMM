@@ -5,8 +5,8 @@
 #include <CPPAlgos/SMPPCACPPAlgo.h>
 #include <Utils/UtilityFunctions.h>
 #include <chrono>
-namespace AMMBench {
-torch::Tensor AMMBench::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
+namespace LibAMM {
+torch::Tensor LibAMM::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
   if(useCuda) {
     INTELLI_INFO("I am SMP-PCA, using cuda");
   }
@@ -66,4 +66,4 @@ torch::Tensor AMMBench::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uin
   }
   return M_tilde;
 }
-} // AMMBench
+} // LibAMM

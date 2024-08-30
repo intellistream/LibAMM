@@ -119,7 +119,7 @@ class CLContainer {
 };
 typedef std::shared_ptr<class TONY_CL_HOST::CLContainer> CLContainerPtr;
 /**
- * @ingroup AMMBENCH_CppAlgos
+ * @ingroup LibAMM_CppAlgos
  * @def newCLMMCppAlgo
  * @brief (Macro) To creat a new @ref  CLMMCppAlgo shared pointer.
  */

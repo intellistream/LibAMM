@@ -15,7 +15,7 @@ bool is_empty_tensor(const torch::Tensor &tensor) {
   return tensor.numel() == 0;
 }
 
-namespace AMMBench {
+namespace LibAMM {
 torch::Tensor attenuate(float beta, const torch::Tensor &k, int l) {
   return (torch::exp(k * beta / (l - 1)) - 1) / (torch::exp(torch::tensor(beta)) - 1);
 }
@@ -28,7 +28,7 @@ torch::Tensor paramerizedReduceRank(const torch::Tensor &SV, float delta, int l,
   return SV_shrunk;
 }
 
-void AMMBench::BetaCoOFDCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::BetaCoOFDCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   algoBeta = cfg->tryDouble("algoBeta", 1.0, true);
 }
 

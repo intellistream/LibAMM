@@ -7,7 +7,7 @@
 #include <vector>
 #include <random>
 
-torch::Tensor AMMBench::SparseMatrixLoader::genSparseMatrix(uint64_t m,
+torch::Tensor LibAMM::SparseMatrixLoader::genSparseMatrix(uint64_t m,
                                                             uint64_t n,
                                                             double density,
                                                             uint64_t reduceRows) {
@@ -55,7 +55,7 @@ torch::Tensor AMMBench::SparseMatrixLoader::genSparseMatrix(uint64_t m,
   return mat;
 }
 
-void AMMBench::SparseMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
+void LibAMM::SparseMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
   aRow = cfg->tryU64("aRow", 100, true);
   aCol = cfg->tryU64("aCol", 1000, true);
   bCol = cfg->tryU64("bCol", 500, true);
@@ -75,7 +75,7 @@ void AMMBench::SparseMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
           + "], please wait for a while");
 }
 
-void AMMBench::SparseMatrixLoader::generateAB() {
+void LibAMM::SparseMatrixLoader::generateAB() {
   torch::manual_seed(seed);
   std::srand(seed);
   A = genSparseMatrix(aRow, aCol, aDensity, aReduce);
@@ -87,16 +87,16 @@ void AMMBench::SparseMatrixLoader::generateAB() {
 }
 
 //do nothing in abstract class
-bool AMMBench::SparseMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
+bool LibAMM::SparseMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   paraseConfig(cfg);
   generateAB();
   return true;
 }
 
-torch::Tensor AMMBench::SparseMatrixLoader::getA() {
+torch::Tensor LibAMM::SparseMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor AMMBench::SparseMatrixLoader::getB() {
+torch::Tensor LibAMM::SparseMatrixLoader::getB() {
   return B;
 }
