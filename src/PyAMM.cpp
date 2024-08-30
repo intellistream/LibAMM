@@ -51,7 +51,7 @@ std::shared_ptr<ConfigMap> dictToConfigMap(const py::dict &dict) {
       int64_t val = value.cast<int64_t>();
       cfg->edit(key, val);
       cfg->edit(key, (uint64_t) val);
-      //std::cout << "Key: " << key.cast<std::string>() << " has an int value." << std::endl;
+     // std::cout << "Key: " << key.cast<std::string>() << " has an int value." << std::endl;
     }
       // Check if the type is float
     else if (py::isinstance<py::float_>(value)) {
