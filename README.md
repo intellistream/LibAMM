@@ -118,16 +118,16 @@ pip3 install --ignore-installed torch==1.13.0 torchvision torchaudio --index-url
 
 *Note: Conflict between torch1.13.0+cpu and torchaudio+cpu may occur under python version > 3.10*
 
-#### (Optional) Pytorch with Cuda backend on jetson
+#### (Optional) Pytorch with Cuda backend on jetson at Jetpack 6.1)
 
 Refer to https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html.
 The following steps may be outdated
 
 ```shell
-sudo apt-get -y update; 
-sudo apt-get -y install autoconf bc build-essential g++-8 gcc-8 clang-8 lld-8 gettext-base gfortran-8 iputils-ping libbz2-dev libc++-dev libcgal-dev libffi-dev libfreetype6-dev libhdf5-dev libjpeg-dev liblzma-dev libncurses5-dev libncursesw5-dev libpng-dev libreadline-dev libssl-dev libsqlite3-dev libxml2-dev libxslt-dev locales moreutils openssl python-openssl rsync scons python3-pip libopenblas-dev;
-export TORCH_INSTALL=https://developer.download.nvidia.cn/compute/redist/jp/v51/pytorch/torch-2.0.0a0+fe05266f.nv23.04-cp38-cp38-linux_aarch64.whl
-python3 -m pip install --upgrade pip; python3 -m pip install aiohttp numpy=='1.19.4' scipy=='1.5.3' export "LD_LIBRARY_PATH=/usr/lib/llvm-8/lib:$LD_LIBRARY_PATH"; python3 -m pip install --upgrade protobuf; python3 -m pip install --no-cache $TORCH_INSTALL
+sudo apt-get -y update
+sudo apt-get install -y  python3-pip libopenblas-dev
+export TORCH_INSTALL=https://developer.download.nvidia.com/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
+python3 -m pip install --upgrade pip; python3 -m pip install --no-cache $TORCH_INSTALL
 ```
 
 ### (Optional) Install graphviz
