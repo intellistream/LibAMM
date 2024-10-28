@@ -1,8 +1,9 @@
 
 cmake_minimum_required(VERSION 3.14)
 project(LibAMM CXX)
-
-
+include (cmake/FindCuda.cmake)
+include (cmake/FindTorch.cmake)
+find_package(Torch REQUIRED)
 # Custom CMake find instructions and macros
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 include(cmake/macros.cmake)
