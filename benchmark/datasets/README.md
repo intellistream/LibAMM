@@ -1,24 +1,65 @@
-# The real world datasets
-This folder contains all real-world datasets
-## Stand-alone MM/AMM datasets
-They are used for computing the similarity of two matrixes or the covariance of one matrix
-, by matmul(A,B.t()) or matmul(A,A.t()).
-   | Dataset Name | Application Filed  | Size for A,B | If Streaming     |
-   | -------------|--------------------|--------------|------------------|
-   | AST          | Astrophysics       | 765*765      | 2 stream         |
-   | BUS          | Land Traffic       | 4929*10595   | 2 stream         |
-   | DWAVE        | Integrated Circuit | 512*512      | 1 stream+1 Static |
-   | ECO          | Economic Models    | 207*260      | 1 stream+1 Static |
-   | QCD(Large)   | Quantum Physics    | 49152*49152  | 2 stream         |
-   | QCD(Small)   | Quantum Physics    | 3072*3072    | 2 stream         |
-   | RDB          | Chemical Engineer  | 2048*2048    | 2 stream         |
-   | UTM          | Plasma Physics     | 1700*1700    | 2 stream         |
-   | ZENOIS       | Air Traffic        | 2873*2873    | 1 stream+1 Static |
+# LibAMM Benchmark Datasets - MOVED
 
-## Note 
-We have moved the QCD(Large) outside due to size restrictions,
-Please use this link:xxxxx
+⚠️ **The benchmark datasets have been moved to a centralized location.**
 
-   
+## New Location
 
+The LibAMM benchmark datasets are now hosted in the **sageData** repository for centralized management:
 
+📦 **Repository**: https://github.com/intellistream/sageData
+
+📁 **Path**: `libamm-benchmark/datasets/`
+
+## Why the Move?
+
+- **Centralized Management**: Share datasets across multiple SAGE ecosystem projects
+- **Reduced Repository Size**: LibAMM repo is now ~325MB lighter
+- **Git LFS Support**: Large binary files are efficiently managed
+- **Better Organization**: Datasets grouped by type/domain
+
+## How to Use Datasets
+
+### Option 1: Skip Dataset Copy (Default for embedded usage)
+
+When using LibAMM as a library (e.g., in sageDB), datasets are not needed:
+
+```cmake
+set(LIBAMM_SKIP_DATASET_COPY ON CACHE BOOL "Skip dataset copy" FORCE)
+```
+
+### Option 2: Use Centralized Datasets from sageData
+
+If you need to run LibAMM benchmarks:
+
+1. Clone sageData repository:
+   ```bash
+   git clone https://github.com/intellistream/sageData.git
+   cd sageData
+   git lfs install
+   git lfs pull  # Download LFS files
+   ```
+
+2. Point LibAMM to the datasets:
+   ```cmake
+   set(LIBAMM_SKIP_DATASET_COPY OFF)
+   set(LIBAMM_DATASET_SOURCE_DIR "/path/to/sageData/libamm-benchmark/datasets")
+   ```
+
+### Option 3: Download Manually
+
+You can also download specific datasets you need from the sageData repository.
+
+## Available Datasets
+
+See [sageData/libamm-benchmark/README.md](https://github.com/intellistream/sageData/tree/main/libamm-benchmark) for:
+- Complete dataset list
+- Size and domain information  
+- Usage instructions
+
+## Migration Date
+
+Datasets migrated: November 2025
+
+## Questions?
+
+For dataset-related issues, please open an issue in the sageData repository.
