@@ -61,7 +61,7 @@ public:
     const MatrixType& matrix() const { return *data_; }
 
     // Device transfer (no-op in CPU-only version, kept for API compatibility)
-    Tensor to(const std::string& device) const {
+    Tensor to(const std::string& /*device*/) const {
         // In Eigen version, we ignore device specification
         // Could add GPU support later with CUDA-Eigen
         return *this;
@@ -101,6 +101,11 @@ public:
         return result;
     }
 
+    // Element-wise multiplication operator
+    Tensor operator*(const Tensor& other) const {
+        return mul(other);
+    }
+
     // In-place operations
     Tensor& operator+=(const Tensor& other) {
         *data_ += *other.data_;
@@ -110,6 +115,49 @@ public:
     Tensor& operator-=(const Tensor& other) {
         *data_ -= *other.data_;
         return *this;
+    }
+
+    Tensor& operator/=(const Tensor& other) {
+        data_->array() /= other.data_->array();
+        return *this;
+    }
+
+    Tensor& operator/=(Scalar scalar) {
+        *data_ /= scalar;
+        return *this;
+    }
+
+    Tensor& operator*=(Scalar scalar) {
+        *data_ *= scalar;
+        return *this;
+    }
+
+    // Element-wise multiplication (Hadamard product)
+    Tensor mul(const Tensor& other) const {
+        Tensor result;
+        result.data_ = std::make_shared<MatrixType>(data_->array() * other.data_->array());
+        return result;
+    }
+
+    // Indexing operator for 1D tensors
+    Scalar& operator[](int64_t idx) {
+        if (data_->cols() == 1) {
+            return (*data_)(idx, 0);
+        } else if (data_->rows() == 1) {
+            return (*data_)(0, idx);
+        } else {
+            throw std::runtime_error("operator[] only works for 1D tensors");
+        }
+    }
+
+    const Scalar& operator[](int64_t idx) const {
+        if (data_->cols() == 1) {
+            return (*data_)(idx, 0);
+        } else if (data_->rows() == 1) {
+            return (*data_)(0, idx);
+        } else {
+            throw std::runtime_error("operator[] only works for 1D tensors");
+        }
     }
 
     // Conversion to different types
@@ -128,6 +176,190 @@ public:
         Tensor result;
         result.data_ = std::make_shared<MatrixType>(*data_);
         return result;
+    }
+
+    // Element-wise division
+    Tensor div(const Tensor& other) const {
+        Tensor result;
+        result.data_ = std::make_shared<MatrixType>(data_->array() / other.data_->array());
+        return result;
+    }
+
+    Tensor div(Scalar scalar) const {
+        return *this / scalar;
+    }
+
+    // Sum methods
+    Tensor sum() const {
+        // Return a 1x1 tensor containing the sum
+        Tensor result(1, 1);
+        result.matrix()(0, 0) = data_->sum();
+        return result;
+    }
+
+    Tensor sum(int dim) const {
+        Tensor result;
+        if (dim == 0) {
+            // Sum along rows (result is 1 x cols)
+            result.data_ = std::make_shared<MatrixType>(data_->colwise().sum());
+        } else if (dim == 1) {
+            // Sum along columns (result is rows x 1)
+            result.data_ = std::make_shared<MatrixType>(data_->rowwise().sum());
+        } else {
+            throw std::invalid_argument("Invalid dimension for sum");
+        }
+        return result;
+    }
+
+    // Norm (Frobenius norm by default, or p-norm)
+    Scalar norm() const {
+        return data_->norm();
+    }
+
+    Scalar norm(double p) const {
+        if (p == 2.0) {
+            return data_->norm();
+        } else if (p == 1.0) {
+            return data_->lpNorm<1>();
+        } else if (std::isinf(p)) {
+            return data_->lpNorm<Eigen::Infinity>();
+        } else {
+            // General p-norm (approximate using element-wise power)
+            return std::pow(data_->array().abs().pow(p).sum(), 1.0 / p);
+        }
+    }
+
+    // Slice operation: extract sub-tensor
+    Tensor slice(int dim, int start, int end, int step = 1) const {
+        Tensor result;
+        if (dim == 0) {
+            // Slice rows
+            int count = (end - start + step - 1) / step;
+            result.data_ = std::make_shared<MatrixType>(count, data_->cols());
+            for (int i = 0; i < count; ++i) {
+                result.data_->row(i) = data_->row(start + i * step);
+            }
+        } else if (dim == 1) {
+            // Slice columns
+            int count = (end - start + step - 1) / step;
+            result.data_ = std::make_shared<MatrixType>(data_->rows(), count);
+            for (int i = 0; i < count; ++i) {
+                result.data_->col(i) = data_->col(start + i * step);
+            }
+        } else {
+            throw std::invalid_argument("Invalid dimension for slice");
+        }
+        return result;
+    }
+
+    // Index select: select rows or columns by indices
+    Tensor index_select(int dim, const Tensor& indices) const {
+        Tensor result;
+        if (dim == 0) {
+            // Select rows
+            result.data_ = std::make_shared<MatrixType>(indices.rows(), data_->cols());
+            for (int i = 0; i < indices.rows(); ++i) {
+                int idx = static_cast<int>(indices.matrix()(i, 0));
+                result.data_->row(i) = data_->row(idx);
+            }
+        } else if (dim == 1) {
+            // Select columns
+            result.data_ = std::make_shared<MatrixType>(data_->rows(), indices.rows());
+            for (int i = 0; i < indices.rows(); ++i) {
+                int idx = static_cast<int>(indices.matrix()(i, 0));
+                result.data_->col(i) = data_->col(idx);
+            }
+        } else {
+            throw std::invalid_argument("Invalid dimension for index_select");
+        }
+        return result;
+    }
+
+    // Comparison operators
+    Tensor operator<(const Tensor& other) const {
+        Tensor result;
+        result.data_ = std::make_shared<MatrixType>(
+            (data_->array() < other.data_->array()).cast<Scalar>()
+        );
+        return result;
+    }
+
+    Tensor operator>(const Tensor& other) const {
+        Tensor result;
+        result.data_ = std::make_shared<MatrixType>(
+            (data_->array() > other.data_->array()).cast<Scalar>()
+        );
+        return result;
+    }
+
+    Tensor operator<=(const Tensor& other) const {
+        Tensor result;
+        result.data_ = std::make_shared<MatrixType>(
+            (data_->array() <= other.data_->array()).cast<Scalar>()
+        );
+        return result;
+    }
+
+    Tensor operator>=(const Tensor& other) const {
+        Tensor result;
+        result.data_ = std::make_shared<MatrixType>(
+            (data_->array() >= other.data_->array()).cast<Scalar>()
+        );
+        return result;
+    }
+
+    // Number of elements
+    int64_t numel() const {
+        return data_->rows() * data_->cols();
+    }
+
+    // Raw data pointer access
+    template<typename T = Scalar>
+    T* data_ptr() {
+        return reinterpret_cast<T*>(data_->data());
+    }
+
+    template<typename T = Scalar>
+    const T* data_ptr() const {
+        return reinterpret_cast<const T*>(data_->data());
+    }
+
+    // Reshape tensor
+    Tensor reshape(const std::vector<int>& new_shape) const {
+        if (new_shape.size() != 2) {
+            throw std::invalid_argument("Only 2D reshaping supported");
+        }
+        int total = data_->rows() * data_->cols();
+        int new_total = new_shape[0] * new_shape[1];
+        if (total != new_total) {
+            throw std::invalid_argument("Reshape: total number of elements must match");
+        }
+        
+        Tensor result(new_shape[0], new_shape[1]);
+        // Copy data in row-major order
+        Eigen::Map<Eigen::VectorXf>(result.data_->data(), new_total) = 
+            Eigen::Map<const Eigen::VectorXf>(data_->data(), total);
+        return result;
+    }
+
+    // Item: get single scalar value (for 1x1 tensors)
+    Scalar item() const {
+        if (data_->rows() != 1 || data_->cols() != 1) {
+            throw std::runtime_error("item() only works for 1x1 tensors");
+        }
+        return (*data_)(0, 0);
+    }
+
+    // Template version for type conversion
+    template<typename T>
+    T item() const {
+        return static_cast<T>(item());
+    }
+
+    // copy_: in-place copy (PyTorch-like)
+    Tensor& copy_(const Tensor& other) {
+        *data_ = *other.data_;
+        return *this;
     }
 };
 
@@ -153,6 +385,12 @@ inline Tensor zeros(const std::vector<int>& sizes) {
     return result;
 }
 
+inline Tensor zeros(int size) {
+    Tensor result(size, 1);
+    result.matrix().setZero();
+    return result;
+}
+
 /**
  * @brief Create tensor filled with ones
  */
@@ -163,6 +401,17 @@ inline Tensor ones(const std::vector<int>& sizes) {
     Tensor result(sizes[0], sizes[1]);
     result.matrix().setOnes();
     return result;
+}
+
+inline Tensor ones(int size) {
+    Tensor result(size, 1);
+    result.matrix().setOnes();
+    return result;
+}
+
+inline Tensor ones(int rows, DeviceType /*device*/) {
+    // Ignore device parameter (always CPU in Eigen version)
+    return ones(rows);
 }
 
 /**
@@ -201,7 +450,7 @@ inline Tensor randint(int high, const std::vector<int>& sizes) {
 /**
  * @brief Create 1D tensor with evenly spaced values
  */
-inline Tensor arange(int end, const std::string& dtype = "float32") {
+inline Tensor arange(int end, const std::string& /*dtype*/ = "float32") {
     Tensor result(end, 1);
     for (int i = 0; i < end; ++i) {
         result.matrix()(i, 0) = static_cast<float>(i);
@@ -238,6 +487,22 @@ inline Tensor matmul(const Tensor& a, const Tensor& b) {
 }
 
 /**
+ * @brief Scalar division (scalar / Tensor)
+ */
+inline Tensor operator/(Scalar scalar, const Tensor& tensor) {
+    Tensor result;
+    result.matrix() = scalar / tensor.matrix().array();
+    return result;
+}
+
+/**
+ * @brief Scalar multiplication (scalar * Tensor)
+ */
+inline Tensor operator*(Scalar scalar, const Tensor& tensor) {
+    return tensor * scalar;
+}
+
+/**
  * @brief Element-wise square root
  */
 inline Tensor sqrt(const Tensor& input) {
@@ -253,6 +518,66 @@ inline Tensor exp(const Tensor& input) {
     Tensor result;
     result.matrix() = input.matrix().array().exp();
     return result;
+}
+
+/**
+ * @brief Calculate norm (as a function, returns Tensor for compatibility)
+ */
+inline Tensor norm(const Tensor& input) {
+    Tensor result(1, 1);
+    result.matrix()(0, 0) = input.norm();
+    return result;
+}
+
+inline Tensor norm(const Tensor& input, double p) {
+    Tensor result(1, 1);
+    result.matrix()(0, 0) = input.norm(p);
+    return result;
+}
+
+/**
+ * @brief Calculate norm along a dimension
+ * @param input Input tensor
+ * @param p Norm type (1, 2, inf)
+ * @param dim Dimension to reduce (0=rows, 1=cols)
+ */
+inline Tensor norm(const Tensor& input, double p, int dim) {
+    Tensor result;
+    if (dim == 0) {
+        // Norm along rows (result is 1 x cols)
+        result = Tensor(1, input.cols());
+        for (int j = 0; j < input.cols(); ++j) {
+            if (p == 2.0) {
+                result.matrix()(0, j) = input.matrix().col(j).norm();
+            } else if (p == 1.0) {
+                result.matrix()(0, j) = input.matrix().col(j).lpNorm<1>();
+            } else {
+                result.matrix()(0, j) = std::pow(input.matrix().col(j).array().abs().pow(p).sum(), 1.0/p);
+            }
+        }
+    } else if (dim == 1) {
+        // Norm along columns (result is rows x 1)
+        result = Tensor(input.rows(), 1);
+        for (int i = 0; i < input.rows(); ++i) {
+            if (p == 2.0) {
+                result.matrix()(i, 0) = input.matrix().row(i).norm();
+            } else if (p == 1.0) {
+                result.matrix()(i, 0) = input.matrix().row(i).lpNorm<1>();
+            } else {
+                result.matrix()(i, 0) = std::pow(input.matrix().row(i).array().abs().pow(p).sum(), 1.0/p);
+            }
+        }
+    } else {
+        throw std::invalid_argument("Invalid dimension for norm");
+    }
+    return result;
+}
+
+/**
+ * @brief Element-wise multiplication (Hadamard product)
+ */
+inline Tensor mul(const Tensor& a, const Tensor& b) {
+    return a.mul(b);
 }
 
 /**
@@ -356,7 +681,7 @@ inline Tensor exponential(const Tensor& shape_tensor, Scalar lambda = 1.0) {
 /**
  * @brief Multinomial sampling (simplified version)
  */
-inline Tensor multinomial(const Tensor& probs, int num_samples, bool replacement = true) {
+inline Tensor multinomial(const Tensor& probs, int num_samples, bool /*replacement*/ = true) {
     // Simplified implementation: sample according to probabilities
     int n = probs.rows();
     Tensor result(num_samples, 1);
@@ -413,5 +738,8 @@ namespace kInt {
 
 // Namespace alias for easier migration from torch::
 namespace torch = LibAMM;
+
+// ATen namespace alias (PyTorch's tensor library)
+namespace at = LibAMM;
 
 #endif // LIBAMM_EIGENTENSOR_H

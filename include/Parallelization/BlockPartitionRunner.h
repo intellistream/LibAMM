@@ -50,7 +50,7 @@ class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
   TensorPtr matC = nullptr;  // Output matrix C
 
   INTELLI::ConfigMapPtr cfg;
-  torch::jit::script::Module module;
+  // torch::jit::script::Module module;  // TODO: Remove PyTorch JIT dependency
   uint64_t sketchDimension = 0;
   int coreBind;
   INTELLI::ConfigMapPtr pefResult; // to save pef results
