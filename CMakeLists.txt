@@ -135,7 +135,11 @@ target_include_directories(LibAMM PUBLIC ${EIGEN3_INCLUDE_DIR})
 target_link_libraries(LibAMM PUBLIC ${LIBRARIES})
 
 # Note: Benchmarks have been moved to sage-benchmark package
-# Use: pip install sage-benchmark
+# Benchmarks cannot be compiled yet due to missing Eigen implementations:
+# - item<T>() method for scalar extraction
+# - torch::jit::Module support
+# - Many algorithm implementations (SMPPCA, BlockLRA, EWS, etc.)
+# TODO: Re-enable after completing Eigen migration
 
 # Add unit tests (based on Catch2 framework)
 if (ENABLE_UNIT_TESTS)
