@@ -28,8 +28,8 @@ LibAMM::Tensor LibAMM::CRSV2CPPAlgo::amm(LibAMM::Tensor A, LibAMM::Tensor B, uin
   LibAMM::Tensor column_indices = LibAMM::multinomial(sample, k, true);
   LibAMM::Tensor S = LibAMM::zeros({k, n});
   for (int64_t row = 0; row < k; row++) {
-    int64_t col = column_indices[row].item<int64_t>();
-    S[row][col] = 1;
+    int64_t col = static_cast<int64_t>(column_indices[row]);
+    S(row, col) = 1;  // Use operator() instead of [][] for 2D access
   }
 
   LibAMM::Tensor a = LibAMM::matmul(LibAMM::matmul(A.t(), D), S.t());

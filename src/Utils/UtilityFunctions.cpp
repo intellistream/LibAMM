@@ -37,8 +37,8 @@ int INTELLI::UtilityFunctions::bind2Core(int id) {
    * @brief fixed some core bind bugs
    */
   if (sched_setaffinity(0, sizeof(cpu_set_t), &mask) < 0) {
-    AT_ERROR("Error: setaffinity()\n");
-    exit(0);
+    // AT_ERROR replaced with standard error handling
+    throw std::runtime_error("Error: setaffinity() failed");
   }
   return cpuId;
 }

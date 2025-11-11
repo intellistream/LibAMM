@@ -72,22 +72,25 @@ class UtilityFunctions {
 
   static double relativeFrobeniusNorm(torch::Tensor A, torch::Tensor B) {
 
-    A = A.to(torch::kFloat64);
-    B = B.to(torch::kFloat64);
+    // Type conversion removed - Eigen version uses float32 by default
+    // A = A.to(torch::kFloat64);
+    // B = B.to(torch::kFloat64);
 
     torch::Tensor error = A - B;
 
-    double frobeniusNormA = A.norm().item<double>();
-    double frobeniusNormError = error.norm().item<double>();
+    // Use torch::norm() function (returns Tensor) instead of member norm() (returns Scalar)
+    double frobeniusNormA = torch::norm(A).item<double>();
+    double frobeniusNormError = torch::norm(error).item<double>();
 
     return frobeniusNormError / frobeniusNormA;
   }
 
   static double errorBoundRatio(torch::Tensor A, torch::Tensor B) {
       torch::Tensor error = A - B;
-      double frobeniusNormA = A.norm().item<double>();
-      double frobeniusNormB = B.norm().item<double>();
-      double frobeniusNormError = error.norm().item<double>();
+      // Use torch::norm() function (returns Tensor) instead of member norm() (returns Scalar)
+      double frobeniusNormA = torch::norm(A).item<double>();
+      double frobeniusNormB = torch::norm(B).item<double>();
+      double frobeniusNormError = torch::norm(error).item<double>();
 
     return frobeniusNormError / frobeniusNormA / frobeniusNormB;
   }

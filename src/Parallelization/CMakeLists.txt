@@ -1,3 +1,4 @@
 add_sources(
-        BlockPartitionRunner.cpp
+        # TODO: BlockPartitionRunner requires PyTorch JIT (torch::jit::load)
+        # BlockPartitionRunner.cpp
 )

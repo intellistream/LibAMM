@@ -12,6 +12,8 @@
 #include <vector>
 #include <random>
 #include <stdexcept>
+#include <map>
+#include <tuple>
 
 namespace LibAMM {
 
@@ -51,6 +53,10 @@ public:
     std::vector<int> sizes() const {
         return {static_cast<int>(data_->rows()), static_cast<int>(data_->cols())};
     }
+    
+    // PyTorch-compatible dimension methods
+    int ndimension() const { return 2; } // Eigen matrices are always 2D
+    int dim() const { return 2; } // Alias for ndimension()
 
     // Element access
     Scalar& operator()(int i, int j) { return (*data_)(i, j); }
@@ -487,6 +493,57 @@ inline Tensor matmul(const Tensor& a, const Tensor& b) {
 }
 
 /**
+ * @brief Concatenate tensors along a dimension
+ * @param tensors Vector of tensors to concatenate
+ * @param dim Dimension to concatenate along (0=rows, 1=cols)
+ */
+inline Tensor cat(const std::vector<Tensor>& tensors, int dim = 0) {
+    if (tensors.empty()) {
+        throw std::invalid_argument("Cannot concatenate empty tensor list");
+    }
+    
+    if (dim == 0) {
+        // Concatenate along rows
+        int total_rows = 0;
+        int cols = tensors[0].cols();
+        for (const auto& t : tensors) {
+            if (t.cols() != cols) {
+                throw std::invalid_argument("All tensors must have same number of columns");
+            }
+            total_rows += t.rows();
+        }
+        
+        Tensor result(total_rows, cols);
+        int current_row = 0;
+        for (const auto& t : tensors) {
+            result.matrix().block(current_row, 0, t.rows(), cols) = t.matrix();
+            current_row += t.rows();
+        }
+        return result;
+    } else if (dim == 1) {
+        // Concatenate along columns
+        int rows = tensors[0].rows();
+        int total_cols = 0;
+        for (const auto& t : tensors) {
+            if (t.rows() != rows) {
+                throw std::invalid_argument("All tensors must have same number of rows");
+            }
+            total_cols += t.cols();
+        }
+        
+        Tensor result(rows, total_cols);
+        int current_col = 0;
+        for (const auto& t : tensors) {
+            result.matrix().block(0, current_col, rows, t.cols()) = t.matrix();
+            current_col += t.cols();
+        }
+        return result;
+    } else {
+        throw std::invalid_argument("Invalid dimension for cat");
+    }
+}
+
+/**
  * @brief Scalar division (scalar / Tensor)
  */
 inline Tensor operator/(Scalar scalar, const Tensor& tensor) {
@@ -697,6 +754,51 @@ inline Tensor multinomial(const Tensor& probs, int num_samples, bool /*replaceme
 }
 
 /**
+ * @brief Find unique elements and optionally return counts
+ * Simplified implementation of PyTorch's _unique2
+ * @return tuple of (unique_values, inverse_indices, counts)
+ */
+inline std::tuple<Tensor, Tensor, Tensor> _unique2(
+    const Tensor& input, 
+    bool /*sorted*/ = true, 
+    bool /*return_inverse*/ = false, 
+    bool return_counts = false) {
+    
+    // Simplified implementation: assumes 1D input
+    std::map<int, int> value_count;
+    std::vector<int> unique_values;
+    
+    for (int i = 0; i < input.rows(); ++i) {
+        int val = static_cast<int>(input.matrix()(i, 0));
+        if (value_count.find(val) == value_count.end()) {
+            unique_values.push_back(val);
+            value_count[val] = 0;
+        }
+        value_count[val]++;
+    }
+    
+    // Create unique tensor
+    Tensor unique(unique_values.size(), 1);
+    for (size_t i = 0; i < unique_values.size(); ++i) {
+        unique.matrix()(i, 0) = static_cast<float>(unique_values[i]);
+    }
+    
+    // Create inverse indices tensor (placeholder, not implemented)
+    Tensor inverse;
+    
+    // Create counts tensor if requested
+    Tensor counts;
+    if (return_counts) {
+        counts = Tensor(unique_values.size(), 1);
+        for (size_t i = 0; i < unique_values.size(); ++i) {
+            counts.matrix()(i, 0) = static_cast<float>(value_count[unique_values[i]]);
+        }
+    }
+    
+    return std::make_tuple(unique, inverse, counts);
+}
+
+/**
  * @brief Type conversion to Float64 (double)
  */
 inline Tensor toFloat64(const Tensor& input) {
@@ -736,10 +838,69 @@ namespace kInt {
 
 } // namespace LibAMM
 
-// Namespace alias for easier migration from torch::
-namespace torch = LibAMM;
+// Stream output operator for Tensor (must be outside namespace for ADL)
+inline std::ostream& operator<<(std::ostream& os, const LibAMM::Tensor& tensor) {
+    os << "Tensor(shape=[";
+    for (int i = 0; i < tensor.ndimension(); ++i) {
+        if (i > 0) os << ", ";
+        os << tensor.size(i);
+    }
+    os << "], data=<" << tensor.sizes()[0];
+    if (tensor.ndimension() > 1) {
+        os << "x" << tensor.sizes()[1];
+    }
+    os << " matrix>)";
+    return os;
+}
 
-// ATen namespace alias (PyTorch's tensor library)
+// Namespace aliases for easier migration from torch::
 namespace at = LibAMM;
+
+// Additional torch namespace with compatibility functions
+namespace torch {
+    // Import all LibAMM symbols into torch namespace
+    using namespace LibAMM;
+    
+    // Threading control stub (no-op in Eigen-only mode)
+    inline void set_num_threads(int num_threads) {
+        // Note: Eigen uses OpenMP/TBB threading automatically
+        // This is a compatibility stub for PyTorch code
+        (void)num_threads; // Suppress unused parameter warning
+    }
+    
+    // TorchScript compatibility stubs
+    namespace jit {
+        class Module {
+        public:
+            Module() = default;
+            
+            // Stub for loading TorchScript modules
+            static Module load(const std::string& filename) {
+                throw std::runtime_error(
+                    "torch::jit::Module is not supported in Eigen-only build. "
+                    "Original file: " + filename
+                );
+            }
+            
+            // Stub for forward pass
+            template<typename... Args>
+            LibAMM::Tensor forward(Args&&... args) {
+                throw std::runtime_error(
+                    "torch::jit::Module::forward is not supported in Eigen-only build."
+                );
+            }
+        };
+        
+        // torch::jit::script namespace compatibility
+        namespace script {
+            using Module = jit::Module;
+        }
+        
+        // Global load function (in jit namespace)
+        inline Module load(const std::string& filename) {
+            return Module::load(filename);
+        }
+    }
+}
 
 #endif // LIBAMM_EIGENTENSOR_H
