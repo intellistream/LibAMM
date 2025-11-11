@@ -3,7 +3,7 @@
 //
 
 #include <CPPAlgos/WeightedCRCPPAlgo.h>
-#include <ATen/ATen.h>
+// #include <ATen/ATen.h> // Removed: PyTorch dependency
 
 namespace LibAMM {
 LibAMM::Tensor LibAMM::WeightedCRCPPAlgo::amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t c) {

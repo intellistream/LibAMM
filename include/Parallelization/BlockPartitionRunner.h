@@ -8,16 +8,15 @@
 
 #include <Utils/AbstractC20Thread.hpp>
 #include <Utils/ConfigMap.hpp>
-#include <Utils/EigenTensor.h>
-
+#include "Utils/EigenTensor.h"
 #include <memory>
 #include <vector>
 #include <CPPAlgos/CPPAlgoTable.h>
 
 namespace LibAMM {
 
-#define  newTensor make_shared<LibAMM::Tensor>
-typedef std::shared_ptr<LibAMM::Tensor> TensorPtr;
+#define  newTensor make_shared<torch::Tensor>
+typedef std::shared_ptr<torch::Tensor> TensorPtr;
 /**
  * @ingroup LibAMM_PARALLELIZATION
  * @{
@@ -51,13 +50,13 @@ class BlockPartitionWorker : public INTELLI::AbstractC20Thread {
   TensorPtr matC = nullptr;  // Output matrix C
 
   INTELLI::ConfigMapPtr cfg;
-  // TODO: torch::jit::script::Module - JIT not supported in Eigen version module;
+  torch::jit::script::Module module;
   uint64_t sketchDimension = 0;
   int coreBind;
   INTELLI::ConfigMapPtr pefResult; // to save pef results
 
 public:
-  LibAMM::Tensor irC, subA;
+  torch::Tensor irC, subA;
   uint64_t startRow = 0;  // Start row index for the assigned range
   uint64_t endRow = 0;  // End row index (exclusive) for the assigned range
 
@@ -169,14 +168,14 @@ class BlockPartitionRunner {
     * @param B The B matrix
     * @warnning call after @ref setConfig
    */
-  void createABC(LibAMM::Tensor A, LibAMM::Tensor B);
+  void createABC(torch::Tensor A, torch::Tensor B);
 
   /**
 * @brief run a parallel forward of A,B, and return C
 * @return C=matA*matB
 *  @warnning call after @ref createABC
 */
-  LibAMM::Tensor parallelForward();
+  torch::Tensor parallelForward();
 
   /**
   * @brief conducte the multithread AMM and return
@@ -185,7 +184,7 @@ class BlockPartitionRunner {
   * @return The AMM(A,B)
   * @warnning call after @ref setConfig
   */
-  LibAMM::Tensor runAMM(LibAMM::Tensor A, LibAMM::Tensor B);
+  torch::Tensor runAMM(torch::Tensor A, torch::Tensor B);
 
   /**
    * @brief get the elapsed time of multithread running

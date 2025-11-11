@@ -2,7 +2,7 @@
 // Created by tony on 25/12/22.
 //
 
-#include <Utils/EigenTensor.h>
+#include "Utils/EigenTensor.h"
 
 using namespace torch;
 
@@ -14,7 +14,7 @@ using namespace torch;
  * @note please keep input and output as tensors
  * @return tensor
  */
-LibAMM::Tensor myVecAdd(LibAMM::Tensor a, LibAMM::Tensor b) {
+torch::Tensor myVecAdd(torch::Tensor a, torch::Tensor b) {
   c10::IntArrayRef tsize = a.sizes();
   int h = tsize[0];
   int w = tsize[1];
@@ -32,15 +32,15 @@ LibAMM::Tensor myVecAdd(LibAMM::Tensor a, LibAMM::Tensor b) {
   /**
    * @brief convert vector back to tensor
    */
-  auto opts = LibAMM::TensorOptions().dtype("float32");
-  auto tensor2 = LibAMM::from_blob(vc.data(), {int64_t(vc.size())}, opts).clone();
+  auto opts = torch::TensorOptions().dtype(torch::kFloat32);
+  auto tensor2 = torch::from_blob(vc.data(), {int64_t(vc.size())}, opts).clone();
   tensor2 = tensor2.reshape({h, w});
 
   return tensor2.clone();
   // END output_tensor
 }
 
-LibAMM::Tensor myVecSub(LibAMM::Tensor a, LibAMM::Tensor b) {
+torch::Tensor myVecSub(torch::Tensor a, torch::Tensor b) {
   c10::IntArrayRef tsize = a.sizes();
   int h = tsize[0];
   int w = tsize[1];
@@ -58,8 +58,8 @@ LibAMM::Tensor myVecSub(LibAMM::Tensor a, LibAMM::Tensor b) {
   /**
    * @brief convert vector back to tensor
    */
-  auto opts = LibAMM::TensorOptions().dtype("float32");
-  auto tensor2 = LibAMM::from_blob(vc.data(), {int64_t(vc.size())}, opts).clone();
+  auto opts = torch::TensorOptions().dtype(torch::kFloat32);
+  auto tensor2 = torch::from_blob(vc.data(), {int64_t(vc.size())}, opts).clone();
   tensor2 = tensor2.reshape({h, w});
   return tensor2.clone();
   // END output_tensor

@@ -8,8 +8,7 @@
 
 #include <Utils/AbstractC20Thread.hpp>
 #include <Utils/ConfigMap.hpp>
-#include <Utils/EigenTensor.h>
-
+#include "Utils/EigenTensor.h"
 #include <memory>
 #include <vector>
 #include <CPPAlgos/AbstractCPPAlgo.h>
@@ -35,7 +34,7 @@ class INT8CPPAlgo : public LibAMM::AbstractCPPAlgo {
   * @param B the B matrix
   * @return the output c matrix
   */
-  LibAMM::Tensor fp32amm(LibAMM::Tensor A, LibAMM::Tensor B);
+  torch::Tensor fp32amm(torch::Tensor A, torch::Tensor B);
 
   /**
   * @brief the inline amm under nested loop fp64
@@ -43,7 +42,7 @@ class INT8CPPAlgo : public LibAMM::AbstractCPPAlgo {
   * @param B the B matrix
   * @return the output c matrix
   */
-  LibAMM::Tensor fp64amm(LibAMM::Tensor A, LibAMM::Tensor B);
+  torch::Tensor fp64amm(torch::Tensor A, torch::Tensor B);
 
   /**
   * @brief the inline amm under nested loop int8
@@ -51,7 +50,7 @@ class INT8CPPAlgo : public LibAMM::AbstractCPPAlgo {
   * @param B the B matrix
   * @return the output c matrix
   */
-  LibAMM::Tensor int8amm(LibAMM::Tensor A, LibAMM::Tensor B);
+  torch::Tensor int8amm(torch::Tensor A, torch::Tensor B);
 
   /**
   * @brief the inline amm under nested loop int4
@@ -59,7 +58,7 @@ class INT8CPPAlgo : public LibAMM::AbstractCPPAlgo {
   * @param B the B matrix
   * @return the output c matrix
   */
-  LibAMM::Tensor int4amm(LibAMM::Tensor A, LibAMM::Tensor B);
+  torch::Tensor int4amm(torch::Tensor A, torch::Tensor B);
 
   /**
  * @brief the inline amm under nested loop int16
@@ -67,7 +66,7 @@ class INT8CPPAlgo : public LibAMM::AbstractCPPAlgo {
  * @param B the B matrix
  * @return the output c matrix
  */
-  LibAMM::Tensor int16amm(LibAMM::Tensor A, LibAMM::Tensor B);
+  torch::Tensor int16amm(torch::Tensor A, torch::Tensor B);
 
   std::string fpMode = "FP32";
  public:
@@ -86,7 +85,7 @@ class INT8CPPAlgo : public LibAMM::AbstractCPPAlgo {
    * @param sketchSize the size of sketc or sampling
    * @return the output c matrix
    */
-  virtual LibAMM::Tensor amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize);
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
   /**
  * @brief set the alo-specfic config related to one algorithm

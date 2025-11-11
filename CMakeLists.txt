@@ -1,24 +1,30 @@
 
 cmake_minimum_required(VERSION 3.14)
 project(LibAMM CXX)
-include (cmake/FindCuda.cmake)
-include (cmake/FindTorch.cmake)
-find_package(Torch REQUIRED)
+
 # Custom CMake find instructions and macros
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 include(cmake/macros.cmake)
 include(cmake/default.cmake)
 
+# Fetch Eigen library (header-only, no linking needed)
+include(FetchContent)
+FetchContent_Declare(
+  Eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG 3.4.0
+  GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(Eigen)
+
+# Set Eigen include directory
+set(EIGEN3_INCLUDE_DIR ${eigen_SOURCE_DIR})
+message(STATUS "Eigen include directory: ${EIGEN3_INCLUDE_DIR}")
 
 # C++ Standard
 #set(CMAKE_CXX_STANDARD 20)
 #set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #gcc 10 g++10
-
-
-find_package(Torch REQUIRED)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
-set(LIBRARIES ${LIBRARIES} ${TORCH_LIBRARIES})
 # Set Optimization Flags
 set(CMAKE_CXX_FLAGS "-std=c++20 -Wall -Werror=return-type -Werror=unused-variable -Werror=unused-parameter")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DNO_RACE_CHECK -DLibAMM_DEBUG_MODE=1")
@@ -124,7 +130,8 @@ set_property(TARGET LibAMM PROPERTY CXX_STANDARD 20)
 
 target_include_directories(LibAMM PUBLIC "include")
 target_include_directories(LibAMM PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-target_include_directories  (LibAMM PUBLIC "thirdparty/papi_build/include")
+target_include_directories(LibAMM PUBLIC "thirdparty/papi_build/include")
+target_include_directories(LibAMM PUBLIC ${EIGEN3_INCLUDE_DIR})
 target_link_libraries(LibAMM PUBLIC ${LIBRARIES})
 #add_subdirectory(test)
 #Add benchmarks with command

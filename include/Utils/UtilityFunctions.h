@@ -8,8 +8,8 @@
 #include <experimental/filesystem>
 #include <barrier>
 #include <functional>
-#include <Utils/EigenTensor.h>
-#include <ATen/ATen.h>
+#include "Utils/EigenTensor.h"
+// #include <ATen/ATen.h> // Removed: PyTorch dependency
 //#include <Common/Types.h>
 
 #include <vector>
@@ -70,12 +70,12 @@ class UtilityFunctions {
     return ru;
   }
 
-  static double relativeFrobeniusNorm(LibAMM::Tensor A, LibAMM::Tensor B) {
+  static double relativeFrobeniusNorm(torch::Tensor A, torch::Tensor B) {
 
-    A = A// TODO: Float64 conversion;
-    B = B// TODO: Float64 conversion;
+    A = A.to(torch::kFloat64);
+    B = B.to(torch::kFloat64);
 
-    LibAMM::Tensor error = A - B;
+    torch::Tensor error = A - B;
 
     double frobeniusNormA = A.norm().item<double>();
     double frobeniusNormError = error.norm().item<double>();
@@ -83,8 +83,8 @@ class UtilityFunctions {
     return frobeniusNormError / frobeniusNormA;
   }
 
-  static double errorBoundRatio(LibAMM::Tensor A, LibAMM::Tensor B) {
-      LibAMM::Tensor error = A - B;
+  static double errorBoundRatio(torch::Tensor A, torch::Tensor B) {
+      torch::Tensor error = A - B;
       double frobeniusNormA = A.norm().item<double>();
       double frobeniusNormB = B.norm().item<double>();
       double frobeniusNormError = error.norm().item<double>();

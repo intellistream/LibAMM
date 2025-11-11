@@ -6,9 +6,8 @@
 #ifndef INTELLISTREAM_LibAMM_H
 #define INTELLISTREAM_LibAMM_H
 
-#include <Utils/EigenTensor.h>
+#include "Utils/EigenTensor.h"
 #include <iostream>
-
 #include <string>
 #include <memory>
 /**

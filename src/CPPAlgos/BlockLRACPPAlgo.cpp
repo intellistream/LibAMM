@@ -3,7 +3,7 @@
 //
 
 #include <CPPAlgos/BlockLRACPPAlgo.h>
-#include <ATen/ATen.h>
+// #include <ATen/ATen.h> // Removed: PyTorch dependency
 #include <vector>
 #include <LibAMM.h>
 #include <cassert>

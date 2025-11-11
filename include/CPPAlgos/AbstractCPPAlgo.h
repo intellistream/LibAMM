@@ -8,8 +8,7 @@
 
 #include <Utils/AbstractC20Thread.hpp>
 #include <Utils/ConfigMap.hpp>
-#include <Utils/EigenTensor.h>
-
+#include "Utils/EigenTensor.h"
 #include <memory>
 #include <vector>
 
@@ -56,7 +55,7 @@ class AbstractCPPAlgo {
    * @param sketchSize the size of sketc or sampling
    * @return the output c matrix
    */
-  virtual LibAMM::Tensor amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize);
+  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
 
   /**
    * @brief to get the breakdown of this algorithm, returned as a config map
