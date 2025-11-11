@@ -12,24 +12,24 @@ void LibAMM::AbstractCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   useCuda = cfg->tryU64("useCuda", 0, false);
 }
 
-torch::Tensor LibAMM::AbstractCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+LibAMM::Tensor LibAMM::AbstractCPPAlgo::amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   auto start = std::chrono::high_resolution_clock::now();
   // std::cout << "Tensor A size: " << A.sizes() << std::endl;
   // std::cout << "Tensor B size: " << B.sizes() << std::endl;
-  torch::Tensor C;
+  LibAMM::Tensor C;
   if (useCuda) {
     INTELLI_INFO("I am mm, USING CUDA");
-    auto ac = A.to(torch::kCUDA);
+    auto ac = A.to(LibAMM::kCUDA);
     buildATime = chronoElapsedTime(start);
-    auto bc = B.to(torch::kCUDA);
+    auto bc = B.to(LibAMM::kCUDA);
     buildBTime = chronoElapsedTime(start) - buildATime;
-    auto cc = torch::matmul(ac, bc);
+    auto cc = LibAMM::matmul(ac, bc);
     fABTime = chronoElapsedTime(start) - buildATime - buildBTime;
-    C = cc.to(torch::kCPU);
+    C = cc.to(LibAMM::kCPU);
     postProcessTime = chronoElapsedTime(start) - buildATime - buildBTime - fABTime;
   } else {
-    C = torch::matmul(A, B);
+    C = LibAMM::matmul(A, B);
     fABTime = chronoElapsedTime(start);
   }
 

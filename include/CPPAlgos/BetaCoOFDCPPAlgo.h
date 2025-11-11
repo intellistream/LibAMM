@@ -42,7 +42,7 @@ class BetaCoOFDCPPAlgo : public LibAMM::AbstractCPPAlgo {
    * @param sketchSize the size of sketc or sampling
    * @return the output c matrix
    */
-  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  virtual LibAMM::Tensor amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize);
 
 };
 

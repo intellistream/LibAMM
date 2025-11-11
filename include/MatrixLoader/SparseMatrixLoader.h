@@ -41,7 +41,7 @@ namespace LibAMM {
  */
 class SparseMatrixLoader : public AbstractMatrixLoader {
  protected:
-  torch::Tensor A, B;
+  LibAMM::Tensor A, B;
   uint64_t aRow, aCol, bCol, seed, aReduce, bReduce;
   double aDensity, bDensity;
 
@@ -52,7 +52,7 @@ class SparseMatrixLoader : public AbstractMatrixLoader {
    * @param density the density in 0~1
    * @param reduceRows the number of rows to be reduced
    */
-  torch::Tensor genSparseMatrix(uint64_t m, uint64_t n, double density, uint64_t reduceRows);
+  LibAMM::Tensor genSparseMatrix(uint64_t m, uint64_t n, double density, uint64_t reduceRows);
 
   /**
    * @brief Inline logic of reading a config file
@@ -82,13 +82,13 @@ class SparseMatrixLoader : public AbstractMatrixLoader {
    * @brief get the A matrix
    * @return the generated A matrix
    */
-  virtual torch::Tensor getA();
+  virtual LibAMM::Tensor getA();
 
   /**
   * @brief get the B matrix
   * @return the generated B matrix
   */
-  virtual torch::Tensor getB();
+  virtual LibAMM::Tensor getB();
 };
 
 /**

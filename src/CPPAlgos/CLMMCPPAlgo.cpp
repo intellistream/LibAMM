@@ -54,7 +54,7 @@ void clint8Test(TONY_CL_HOST::CLContainerPtr clc,
 
   return;
 }
-torch::Tensor LibAMM::CLMMCPPAlgo::clmm(torch::Tensor tensor1, torch::Tensor tensor2) {
+LibAMM::Tensor LibAMM::CLMMCPPAlgo::clmm(LibAMM::Tensor tensor1, LibAMM::Tensor tensor2) {
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
@@ -99,8 +99,8 @@ torch::Tensor LibAMM::CLMMCPPAlgo::clmm(torch::Tensor tensor1, torch::Tensor ten
   // exit(-1);
   fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime;
 
-  torch::Tensor resultTensor = torch::from_blob(result.data(), {rows1, cols2});
-  //torch::Tensor resultTensor = torch::zeros({rows1,cols2});
+  LibAMM::Tensor resultTensor = LibAMM::from_blob(result.data(), {rows1, cols2});
+  //LibAMM::Tensor resultTensor = LibAMM::zeros({rows1,cols2});
   postProcessTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime - fABTime;
   /**
    * @brief fix the time measure related to cl
@@ -119,7 +119,7 @@ static float getScaleingFactor(float scalingBase, std::vector<float> matrix1Floa
   }
   return scalingBase / maxa;
 }
-torch::Tensor LibAMM::CLMMCPPAlgo::clint8(torch::Tensor tensor1, torch::Tensor tensor2) {
+LibAMM::Tensor LibAMM::CLMMCPPAlgo::clint8(LibAMM::Tensor tensor1, LibAMM::Tensor tensor2) {
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
@@ -165,9 +165,9 @@ torch::Tensor LibAMM::CLMMCPPAlgo::clint8(torch::Tensor tensor1, torch::Tensor t
   for (int i = 0; i < rows1 * cols2; ++i) {
     resultFP32[i] = static_cast<float>(result[i] * scaleResult);
   }
-  torch::Tensor resultTensor = torch::from_blob(resultFP32.data(), {rows1, cols2});
+  LibAMM::Tensor resultTensor = LibAMM::from_blob(resultFP32.data(), {rows1, cols2});
   postProcessTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime - fABTime;
-  //torch::Tensor resultTensor = torch::zeros({rows1,cols2});
+  //LibAMM::Tensor resultTensor = LibAMM::zeros({rows1,cols2});
 
   /**
    * @brief fix the time measure related to cl
@@ -186,7 +186,7 @@ void LibAMM::CLMMCPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   localSize1 = cfg->tryU64("localSize1", 1, true);
   clWorkDim = cfg->tryU64("clWorkDim", 2, true);
 }
-torch::Tensor LibAMM::CLMMCPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+LibAMM::Tensor LibAMM::CLMMCPPAlgo::amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   if (clFile == "CL/CLINT8.cl") {
     return clint8(A, B);

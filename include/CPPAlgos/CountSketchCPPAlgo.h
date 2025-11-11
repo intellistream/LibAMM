@@ -35,7 +35,7 @@ class CountSketchCPPAlgo : public LibAMM::AbstractCPPAlgo {
    * @param sketchSize the size of sketc or sampling
    * @return the output c matrix
    */
-  torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  LibAMM::Tensor amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize);
 
 };
 

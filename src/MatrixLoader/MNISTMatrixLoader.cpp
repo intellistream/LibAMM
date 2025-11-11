@@ -31,8 +31,8 @@ void LibAMM::MNISTMatrixLoader::generateAB() {
   int n_cols = 0;
 
   // Dynamically allocate memory for left half and right half
-  At = torch::zeros({60000, 28 * 14});
-  Bt = torch::zeros({60000, 28 * 14});
+  At = LibAMM::zeros({60000, 28 * 14});
+  Bt = LibAMM::zeros({60000, 28 * 14});
 
   // Read in file
   ifstream file(filePath, ios::binary);
@@ -113,81 +113,81 @@ bool LibAMM::MNISTMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getB() {
   return B;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getAt() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getAt() {
   return At;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getBt() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getBt() {
   return Bt;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getSxx() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getSxx() {
   return Sxx;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getSyy() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getSyy() {
   return Syy;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getSxy() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getSxy() {
   return Sxy;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getSxxNegativeHalf() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getSxxNegativeHalf() {
   return SxxNegativeHalf;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getSyyNegativeHalf() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getSyyNegativeHalf() {
   return SyyNegativeHalf;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getM() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getM() {
   return M;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getM1() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getM1() {
   return M1;
 }
 
-torch::Tensor LibAMM::MNISTMatrixLoader::getCorrelation() {
+LibAMM::Tensor LibAMM::MNISTMatrixLoader::getCorrelation() {
   return correlation;
 }
 
 void LibAMM::MNISTMatrixLoader::calculate_correlation() {
   
   // Sxx, Syy, Sxy: covariance matrix
-  Sxx = torch::matmul(A, At) / A.size(1); // 392x60000 * 60000x392 max 12752.4 min -3912.51
-  Syy = torch::matmul(B, Bt) / A.size(1); // 392x60000 * 60000x392 max 12953.4 min -5121.09
-  Sxy = torch::matmul(A, Bt) / A.size(1); // 392x60000 * 60000x392 max 10653.1 min -5307.15
+  Sxx = LibAMM::matmul(A, At) / A.size(1); // 392x60000 * 60000x392 max 12752.4 min -3912.51
+  Syy = LibAMM::matmul(B, Bt) / A.size(1); // 392x60000 * 60000x392 max 12953.4 min -5121.09
+  Sxy = LibAMM::matmul(A, Bt) / A.size(1); // 392x60000 * 60000x392 max 10653.1 min -5307.15
 
   // Sxx^(-1/2), Syy^(-1/2), M
   // Sxx^(-1/2)
-  torch::Tensor eigenvaluesSxx, eigenvectorsSxx;
+  LibAMM::Tensor eigenvaluesSxx, eigenvectorsSxx;
   std::tie(eigenvaluesSxx, eigenvectorsSxx) = torch::linalg::eig(Sxx); // diagonization
-  torch::Tensor diagonalMatrixSxx = torch::diag(
-      1.0 / torch::sqrt(eigenvaluesSxx + torch::full({}, 1e-12))); // 1/sqrt(eigenvalue+epsilon) +epsilon to avoid nan
-  SxxNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSxx, diagonalMatrixSxx), eigenvectorsSxx.t());
+  LibAMM::Tensor diagonalMatrixSxx = LibAMM::diag(
+      1.0 / LibAMM::sqrt(eigenvaluesSxx + torch::full({}, 1e-12))); // 1/sqrt(eigenvalue+epsilon) +epsilon to avoid nan
+  SxxNegativeHalf = LibAMM::matmul(LibAMM::matmul(eigenvectorsSxx, diagonalMatrixSxx), eigenvectorsSxx.t());
   SxxNegativeHalf = at::real(SxxNegativeHalf); // ignore complex part, it comes from numerical computations
   // Syy^(-1/2)
-  torch::Tensor eigenvaluesSyy, eigenvectorsSyy;
+  LibAMM::Tensor eigenvaluesSyy, eigenvectorsSyy;
   std::tie(eigenvaluesSyy, eigenvectorsSyy) = torch::linalg::eig(Syy);
-  torch::Tensor diagonalMatrixSyy = torch::diag(1.0 / torch::sqrt(eigenvaluesSyy + torch::full({}, 1e-12)));
-  SyyNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSyy, diagonalMatrixSyy), eigenvectorsSyy.t());
+  LibAMM::Tensor diagonalMatrixSyy = LibAMM::diag(1.0 / LibAMM::sqrt(eigenvaluesSyy + torch::full({}, 1e-12)));
+  SyyNegativeHalf = LibAMM::matmul(LibAMM::matmul(eigenvectorsSyy, diagonalMatrixSyy), eigenvectorsSyy.t());
   SyyNegativeHalf = at::real(SyyNegativeHalf);
   // M
-  M1 = torch::matmul(SxxNegativeHalf.t(), Sxy);
-  M = torch::matmul(M1, SyyNegativeHalf);
+  M1 = LibAMM::matmul(SxxNegativeHalf.t(), Sxy);
+  M = LibAMM::matmul(M1, SyyNegativeHalf);
 
   // correlation
-  torch::Tensor U, S, Vh;
+  LibAMM::Tensor U, S, Vh;
   std::tie(U, S, Vh) = torch::linalg::svd(M, false, c10::nullopt);
-  correlation = torch::clamp(S, -1.0, 1.0);
+  correlation = LibAMM::clamp(S, -1.0, 1.0);
 }

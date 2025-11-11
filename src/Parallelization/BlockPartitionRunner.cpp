@@ -33,7 +33,7 @@ void LibAMM::BlockPartitionWorker::setWorkParameters(uint64_t aStart, uint64_t a
   startRow = aStart;
   endRow = aEnd;
   coreBind = mycore;
-  //matC=newTensor(torch::zeros({(long)(endRow+1-startRow),matB->size(1)}));
+  //matC=newTensor(LibAMM::zeros({(long)(endRow+1-startRow),matB->size(1)}));
 
 
 }
@@ -58,8 +58,8 @@ void LibAMM::BlockPartitionWorker::inlineMain() {
      * @brief 2. multiply sub-matrix of A
      */
     
-    //torch::Tensor
-    //torch::Tensor subC =  module.forward({subA, *matB, (long) sketchDimension}).toTensor();
+    //LibAMM::Tensor
+    //LibAMM::Tensor subC =  module.forward({subA, *matB, (long) sketchDimension}).toTensor();
     // Copy the results back to the output matrix C
     //matC->slice(0, startRow, endRow) = subC;
     subA = matA->slice(0, startRow, endRow);
@@ -106,11 +106,11 @@ void LibAMM::BlockPartitionRunner::setConfig(INTELLI::ConfigMapPtr _cfg) {
   INTELLI_INFO("set up " + to_string(threads) + "workers.");
 }
 
-void LibAMM::BlockPartitionRunner::createABC(torch::Tensor A, torch::Tensor B) {
+void LibAMM::BlockPartitionRunner::createABC(LibAMM::Tensor A, LibAMM::Tensor B) {
 
   matA = newTensor(A);
   matB = newTensor(B);
-  matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
+  matC = newTensor(LibAMM::zeros({A.size(0), B.size(1)}));
   for (uint64_t i = 0; i < threads; i++) {
     uint64_t rows_per_worker = A.size(0) / threads;
     uint64_t start_row = i * rows_per_worker;
@@ -121,7 +121,7 @@ void LibAMM::BlockPartitionRunner::createABC(torch::Tensor A, torch::Tensor B) {
   }
 }
 
-torch::Tensor LibAMM::BlockPartitionRunner::parallelForward() {
+LibAMM::Tensor LibAMM::BlockPartitionRunner::parallelForward() {
     for (uint64_t i = 0; i < threads; i++) {
         workers[i]->startThread();
     }
@@ -136,7 +136,7 @@ torch::Tensor LibAMM::BlockPartitionRunner::parallelForward() {
     return *matC;
 }
 
-torch::Tensor LibAMM::BlockPartitionRunner::runAMM(torch::Tensor A, torch::Tensor B) {
+LibAMM::Tensor LibAMM::BlockPartitionRunner::runAMM(LibAMM::Tensor A, LibAMM::Tensor B) {
     createABC(A, B);
     parallelForward();
     calculateMetrics();

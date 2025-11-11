@@ -17,18 +17,18 @@ void LibAMM::BetaMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 void LibAMM::BetaMatrixLoader::generateAB() {
-  torch::manual_seed(seed);
+  LibAMM::manual_seed(seed);
 
-  auto tensor1 = torch::randn({(long) aRow, (long) aCol}).abs_();
-  auto tensor2 = torch::randn({(long) aRow, (long) aCol}).abs_();
+  auto tensor1 = LibAMM::randn({(long) aRow, (long) aCol}).abs_();
+  auto tensor2 = LibAMM::randn({(long) aRow, (long) aCol}).abs_();
 
   tensor1 = tensor1.pow(1. / a);
   tensor2 = tensor2.pow(1. / b);
 
   A = tensor1 / (tensor1 + tensor2);
 
-  tensor1 = torch::randn({(long) aCol, (long) bCol}).abs_();
-  tensor2 = torch::randn({(long) aCol, (long) bCol}).abs_();
+  tensor1 = LibAMM::randn({(long) aCol, (long) bCol}).abs_();
+  tensor2 = LibAMM::randn({(long) aCol, (long) bCol}).abs_();
 
   tensor1 = tensor1.pow(1. / a);
   tensor2 = tensor2.pow(1. / b);
@@ -43,10 +43,10 @@ bool LibAMM::BetaMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::BetaMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::BetaMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor LibAMM::BetaMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::BetaMatrixLoader::getB() {
   return B;
 }

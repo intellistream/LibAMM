@@ -5,7 +5,7 @@
 #include <CPPAlgos/INT8CPPAlgo.h>
 #include <Utils/UtilityFunctions.h>
 
-torch::Tensor LibAMM::INT8CPPAlgo::fp32amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+LibAMM::Tensor LibAMM::INT8CPPAlgo::fp32amm(LibAMM::Tensor tensor1, LibAMM::Tensor tensor2) {
   tensor1 = tensor1.contiguous();
   tensor2 = tensor2.contiguous();
   auto A_size = tensor1.sizes();
@@ -33,14 +33,14 @@ torch::Tensor LibAMM::INT8CPPAlgo::fp32amm(torch::Tensor tensor1, torch::Tensor 
   }
   // exit(-1);
   fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime;
-  torch::Tensor resultTensor = torch::from_blob(result.data(), {rows1, cols2});
-  //torch::Tensor resultTensor = torch::zeros({rows1,cols2});
+  LibAMM::Tensor resultTensor = LibAMM::from_blob(result.data(), {rows1, cols2});
+  //LibAMM::Tensor resultTensor = LibAMM::zeros({rows1,cols2});
   postProcessTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime - fABTime;
 
   return resultTensor.clone();
 }
 
-torch::Tensor LibAMM::INT8CPPAlgo::fp64amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+LibAMM::Tensor LibAMM::INT8CPPAlgo::fp64amm(LibAMM::Tensor tensor1, LibAMM::Tensor tensor2) {
   std::cout << "Scalar Type of the tensor1: " << torch::toString(tensor1.scalar_type()) << std::endl;
   std::cout << "Scalar Type of the tensor2: " << torch::toString(tensor2.scalar_type()) << std::endl;
   auto A_size = tensor1.sizes();
@@ -69,8 +69,8 @@ torch::Tensor LibAMM::INT8CPPAlgo::fp64amm(torch::Tensor tensor1, torch::Tensor 
   }
   // exit(-1);
   fABTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime;
-  torch::Tensor resultTensor = torch::from_blob(result.data(), {rows1, cols2}, torch::TensorOptions().dtype(torch::kFloat64));
-  //torch::Tensor resultTensor = torch::zeros({rows1,cols2});
+  LibAMM::Tensor resultTensor = LibAMM::from_blob(result.data(), {rows1, cols2}, LibAMM::TensorOptions().dtype(torch::kFloat64));
+  //LibAMM::Tensor resultTensor = LibAMM::zeros({rows1,cols2});
   postProcessTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime - fABTime;
 
   return resultTensor.clone();
@@ -85,7 +85,7 @@ static float getScaleingFactor(float scalingBase, std::vector<float> matrix1Floa
   return scalingBase / maxa;
 }
 
-torch::Tensor LibAMM::INT8CPPAlgo::int4amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+LibAMM::Tensor LibAMM::INT8CPPAlgo::int4amm(LibAMM::Tensor tensor1, LibAMM::Tensor tensor2) {
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
@@ -161,14 +161,14 @@ torch::Tensor LibAMM::INT8CPPAlgo::int4amm(torch::Tensor tensor1, torch::Tensor 
   for (int i = 0; i < rows1 * cols2; ++i) {
     resultFP32[i] = static_cast<float>(result[i] * scaleResult);
   }
-  torch::Tensor resultTensor = torch::from_blob(resultFP32.data(), {rows1, cols2});
-  //torch::Tensor resultTensor = torch::zeros({rows1,cols2});
+  LibAMM::Tensor resultTensor = LibAMM::from_blob(resultFP32.data(), {rows1, cols2});
+  //LibAMM::Tensor resultTensor = LibAMM::zeros({rows1,cols2});
   postProcessTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime - fABTime;
 
   return resultTensor.clone();
 }
 
-torch::Tensor LibAMM::INT8CPPAlgo::int8amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+LibAMM::Tensor LibAMM::INT8CPPAlgo::int8amm(LibAMM::Tensor tensor1, LibAMM::Tensor tensor2) {
 
   tensor1 = tensor1.contiguous();
   tensor2 = tensor2.contiguous();
@@ -249,8 +249,8 @@ torch::Tensor LibAMM::INT8CPPAlgo::int8amm(torch::Tensor tensor1, torch::Tensor 
   for (int i = 0; i < rows1 * cols2; ++i) {
     resultFP32[i] = static_cast<float>(result[i] * scaleResult);
   }
-  torch::Tensor resultTensor = torch::from_blob(resultFP32.data(), {rows1, cols2});
-  //torch::Tensor resultTensor = torch::zeros({rows1,cols2});
+  LibAMM::Tensor resultTensor = LibAMM::from_blob(resultFP32.data(), {rows1, cols2});
+  //LibAMM::Tensor resultTensor = LibAMM::zeros({rows1,cols2});
   postProcessTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime - fABTime;
 
   if (isdouble){
@@ -261,7 +261,7 @@ torch::Tensor LibAMM::INT8CPPAlgo::int8amm(torch::Tensor tensor1, torch::Tensor 
   return resultTensor.clone();
 }
 
-torch::Tensor LibAMM::INT8CPPAlgo::int16amm(torch::Tensor tensor1, torch::Tensor tensor2) {
+LibAMM::Tensor LibAMM::INT8CPPAlgo::int16amm(LibAMM::Tensor tensor1, LibAMM::Tensor tensor2) {
   auto A_size = tensor1.sizes();
   auto B_size = tensor2.sizes();
   struct timeval tstart;
@@ -329,8 +329,8 @@ torch::Tensor LibAMM::INT8CPPAlgo::int16amm(torch::Tensor tensor1, torch::Tensor
   for (int i = 0; i < rows1 * cols2; ++i) {
     resultFP32[i] = static_cast<float>(result[i] * scaleResult);
   }
-  torch::Tensor resultTensor = torch::from_blob(resultFP32.data(), {rows1, cols2});
-  //torch::Tensor resultTensor = torch::zeros({rows1,cols2});
+  LibAMM::Tensor resultTensor = LibAMM::from_blob(resultFP32.data(), {rows1, cols2});
+  //LibAMM::Tensor resultTensor = LibAMM::zeros({rows1,cols2});
   postProcessTime = INTELLI::UtilityFunctions::timeLastUs(tstart) - buildATime - buildBTime - fABTime;
 
   return resultTensor.clone();
@@ -342,7 +342,7 @@ void LibAMM::INT8CPPAlgo::setConfig(INTELLI::ConfigMapPtr cfg) {
   INTELLI_INFO("fpMode: "+fpMode);
 }
 
-torch::Tensor LibAMM::INT8CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+LibAMM::Tensor LibAMM::INT8CPPAlgo::amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   if (fpMode == "INT4") {
     return int4amm(A, B);

@@ -42,7 +42,7 @@ namespace LibAMM {
  */
 class GaussianMatrixLoader : public AbstractMatrixLoader {
  protected:
-  torch::Tensor A, B;
+  LibAMM::Tensor A, B;
   uint64_t aRow, aCol, bCol, seed,randA, randB;
   double sigmaA, avgA,sigmaB,avgB;
   /**
@@ -73,13 +73,13 @@ class GaussianMatrixLoader : public AbstractMatrixLoader {
    * @brief get the A matrix
    * @return the generated A matrix
    */
-  virtual torch::Tensor getA();
+  virtual LibAMM::Tensor getA();
 
   /**
   * @brief get the B matrix
   * @return the generated B matrix
   */
-  virtual torch::Tensor getB();
+  virtual LibAMM::Tensor getB();
 };
 
 /**

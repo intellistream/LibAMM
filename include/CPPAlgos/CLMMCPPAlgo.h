@@ -7,8 +7,8 @@
 #define INTELLISTREAM_INCLUDE_CPPALGOS_CLMMCPPALGO_H_
 #include <Utils/AbstractC20Thread.hpp>
 #include <Utils/ConfigMap.hpp>
-#include <torch/torch.h>
-#include <torch/script.h>
+#include <Utils/EigenTensor.h>
+
 #include <memory>
 #include <vector>
 #include <CPPAlgos/AbstractCPPAlgo.h>
@@ -26,8 +26,8 @@ namespace LibAMM {
  */
 class CLMMCPPAlgo : public LibAMM::AbstractCPPAlgo {
  protected:
-  torch::Tensor clmm(torch::Tensor A, torch::Tensor B);
-  torch::Tensor clint8(torch::Tensor A, torch::Tensor B);
+  LibAMM::Tensor clmm(LibAMM::Tensor A, LibAMM::Tensor B);
+  LibAMM::Tensor clint8(LibAMM::Tensor A, LibAMM::Tensor B);
   std::string clFile = "CL/CLMM";
   uint64_t clWorkDim = 2;
   TONY_CL_HOST::CLContainerPtr clc = nullptr;
@@ -46,7 +46,7 @@ class CLMMCPPAlgo : public LibAMM::AbstractCPPAlgo {
    * @param sketchSize the size of sketc or sampling
    * @return the output c matrix
    */
-  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize);
+  virtual LibAMM::Tensor amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize);
   /**
  * @brief set the alo-specfic config related to one algorithm
  */

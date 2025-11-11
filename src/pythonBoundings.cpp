@@ -20,19 +20,19 @@ std::string algoTagStr = "mm";
  * @note please keep input and output as tensors
  * @return tensor
  */
-torch::Tensor LibAMM_crs(torch::Tensor a, torch::Tensor b) {
+LibAMM::Tensor LibAMM_crs(LibAMM::Tensor a, LibAMM::Tensor b) {
   LibAMM::CRSCPPAlgo algo;
   auto w = a.sizes()[1] / 10;
   return algo.amm(a, b, (uint64_t) w);
 }
-torch::Tensor LibAMM_ammDefault(torch::Tensor a, torch::Tensor b) {
+LibAMM::Tensor LibAMM_ammDefault(LibAMM::Tensor a, LibAMM::Tensor b) {
   LibAMM::CPPAlgoTable cppAlgoTable;
   LibAMM::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(algoTagStr);
   auto w = a.sizes()[1] / 10;
   return cppAlgoPtr->amm(a, b, (uint64_t) w);
 }
 
-torch::Tensor LibAMM_ammSpecifySs(torch::Tensor a, torch::Tensor b, int64_t ss) {
+LibAMM::Tensor LibAMM_ammSpecifySs(LibAMM::Tensor a, LibAMM::Tensor b, int64_t ss) {
   LibAMM::CPPAlgoTable cppAlgoTable;
   LibAMM::AbstractCPPAlgoPtr cppAlgoPtr = cppAlgoTable.findCppAlgo(algoTagStr);
   return cppAlgoPtr->amm(a, b, (uint64_t) ss);
@@ -42,7 +42,7 @@ void LibAMM_setTag(std::string tag) {
   algoTagStr = tag;
 }
 
-torch::Tensor LibAMM_ammForMadness(torch::Tensor A, torch::Tensor B, string configPath, string metricSavePath) {
+LibAMM::Tensor LibAMM_ammForMadness(LibAMM::Tensor A, LibAMM::Tensor B, string configPath, string metricSavePath) {
 
   // For madness. we need to 
   // 1. load cfg, extract amm method, and related amm paramater (e.g. vq codebook path).
@@ -65,7 +65,7 @@ torch::Tensor LibAMM_ammForMadness(torch::Tensor A, torch::Tensor B, string conf
 
   // 2. run AMM
   Streamer streamer;
-  torch::Tensor C = streamer.run(cfg, A, B, sketchDimension, "AMM");
+  LibAMM::Tensor C = streamer.run(cfg, A, B, sketchDimension, "AMM");
   ConfigMapPtr allMetrics = streamer.getMetrics();
 
   allMetrics->toFile(metricSavePath);

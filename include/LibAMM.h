@@ -6,9 +6,9 @@
 #ifndef INTELLISTREAM_LibAMM_H
 #define INTELLISTREAM_LibAMM_H
 
-#include <torch/torch.h>
+#include <Utils/EigenTensor.h>
 #include <iostream>
-#include <torch/script.h>
+
 #include <string>
 #include <memory>
 /**

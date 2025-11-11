@@ -32,7 +32,7 @@ namespace LibAMM {
  */
 class SIFTMatrixLoader : public AbstractMatrixLoader {
  protected:
-  torch::Tensor A, B;
+  LibAMM::Tensor A, B;
   std::string filePath="datasets/SIFT/siftsmall_base.fvecs";
 
   /**
@@ -63,13 +63,13 @@ class SIFTMatrixLoader : public AbstractMatrixLoader {
    * @brief get the A matrix
    * @return the generated A matrix
    */
-  virtual torch::Tensor getA();
+  virtual LibAMM::Tensor getA();
 
   /**
   * @brief get the B matrix
   * @return the generated B matrix
   */
-  virtual torch::Tensor getB();
+  virtual LibAMM::Tensor getB();
 };
 
 /**

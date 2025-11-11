@@ -29,7 +29,7 @@ bool LibAMM::SingleThreadStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
   staticDataSet = cfg->tryU64("staticDataSet",0,true);
   return true;
 }
-bool LibAMM::SingleThreadStreamer::prepareRun(torch::Tensor A, torch::Tensor B) {
+bool LibAMM::SingleThreadStreamer::prepareRun(LibAMM::Tensor A, LibAMM::Tensor B) {
   uint64_t aRows = A.size(0);
   cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
   if ((batchSize > aRows) || fullLazy) {
@@ -42,10 +42,10 @@ bool LibAMM::SingleThreadStreamer::prepareRun(torch::Tensor A, torch::Tensor B) 
   tsGenB.setConfig(cfgGlobal);
   myTsB = tsGenB.getTimeStamps();
   INTELLI_INFO("Generate time stamp done");
-  matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
+  matC = newTensor(LibAMM::zeros({A.size(0), B.size(1)}));
   return true;
 }
-torch::Tensor LibAMM::SingleThreadStreamer::streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+LibAMM::Tensor LibAMM::SingleThreadStreamer::streamingAmm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   //INTELLI_INFO("I am mm");
   INTELLI_INFO("Start Streaming A rows");
@@ -110,7 +110,7 @@ torch::Tensor LibAMM::SingleThreadStreamer::streamingAmm(torch::Tensor A, torch:
   return *matC;
 }
 
-torch::Tensor LibAMM::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+LibAMM::Tensor LibAMM::SingleThreadStreamer::streamingAmm2S(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   uint64_t aRows = A.size(0);
 
@@ -128,7 +128,7 @@ torch::Tensor LibAMM::SingleThreadStreamer::streamingAmm2S(torch::Tensor A, torc
   uint64_t tDone = 0;
 
   uint64_t iterationCnt = 0;
-  torch::Tensor incomingA, incomingB, newArrivedB, oldArrivedA;
+  LibAMM::Tensor incomingA, incomingB, newArrivedB, oldArrivedA;
   uint64_t aBCols = 0, lastABCols = 0;
   auto start = std::chrono::high_resolution_clock::now();
   while (startRow < aRows) {

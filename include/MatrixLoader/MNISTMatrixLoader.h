@@ -33,10 +33,10 @@ namespace LibAMM {
 class MNISTMatrixLoader : public CCAMatrixLoader {
  protected:
   std::string filePath="datasets/SIFT/MNIST/train-images.idx3-ubyte"; 
-  torch::Tensor A, B, At, Bt;
-  torch::Tensor Sxx, Syy, Sxy;
-  torch::Tensor SxxNegativeHalf, SyyNegativeHalf, M, M1;
-  torch::Tensor correlation;
+  LibAMM::Tensor A, B, At, Bt;
+  LibAMM::Tensor Sxx, Syy, Sxy;
+  LibAMM::Tensor SxxNegativeHalf, SyyNegativeHalf, M, M1;
+  LibAMM::Tensor correlation;
 
   /**
    * @brief Inline logic of reading a config file
@@ -71,73 +71,73 @@ class MNISTMatrixLoader : public CCAMatrixLoader {
    * @brief get the A matrix
    * @return the generated A matrix
    */
-  virtual torch::Tensor getA();
+  virtual LibAMM::Tensor getA();
 
   /**
   * @brief get the B matrix
   * @return the generated B matrix
   */
-  virtual torch::Tensor getB();
+  virtual LibAMM::Tensor getB();
 
   /**
    * @brief get the transpose of A matrix
    * @return the A.t().contiguous() matrix, which is not a view but has its own memory space
    */
-  virtual torch::Tensor getAt();
+  virtual LibAMM::Tensor getAt();
 
   /**
   * @brief get the transpose of B matrix
   * @return the B.t().contiguous() matrix, which is not a view but has its own memory space
   */
-  virtual torch::Tensor getBt();
+  virtual LibAMM::Tensor getBt();
 
   /**
   * @brief get the Sxx matrix
   * @return the generated Sxx matrix by calling calculate_correlation()
   */
-  virtual torch::Tensor getSxx();
+  virtual LibAMM::Tensor getSxx();
 
   /**
   * @brief get the Sxyymatrix
   * @return the generated Syy matrix by calling calculate_correlation()
   */
-  virtual torch::Tensor getSyy();
+  virtual LibAMM::Tensor getSyy();
 
   /**
   * @brief get the Sxy matrix
   * @return the generated Sxy matrix by calling calculate_correlation()
   */
-  virtual torch::Tensor getSxy();
+  virtual LibAMM::Tensor getSxy();
 
   /**
   * @brief get the SxxNegativeHalf matrix
   * @return the generated SxxNegativeHalf matrix by calling calculate_correlation()
   */
-  virtual torch::Tensor getSxxNegativeHalf();
+  virtual LibAMM::Tensor getSxxNegativeHalf();
 
   /**
   * @brief get the SyyNegativeHalf matrix
   * @return the generated SyyNegativeHalf matrix by calling calculate_correlation()
   */
-  virtual torch::Tensor getSyyNegativeHalf();
+  virtual LibAMM::Tensor getSyyNegativeHalf();
 
   /**
   * @brief M = mm(mm(SxxNegativeHalf.t(), Sxy), SyyNegativeHalf)
   * @return the generated M matrix by calling calculate_correlation()
   */
-  virtual torch::Tensor getM();
+  virtual LibAMM::Tensor getM();
 
   /**
   * @brief M1 = mm(SxxNegativeHalf.t(), Sxy)
   * @return the generated M1 matrix by calling calculate_correlation()
   */
-  virtual torch::Tensor getM1();
+  virtual LibAMM::Tensor getM1();
 
   /**
   * @brief get the correlation value
   * @return the generated correlation by calling calculate_correlation()
   */
-  virtual torch::Tensor getCorrelation();
+  virtual LibAMM::Tensor getCorrelation();
 };
 
 /**

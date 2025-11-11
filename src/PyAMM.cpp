@@ -5,7 +5,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <torch/extension.h>
-#include <torch/torch.h>
+#include <Utils/EigenTensor.h>
 #include <Utils/ConfigMap.hpp>
 #include <Utils/IntelliLog.h>
 #include <LibAMM.h>
@@ -16,7 +16,7 @@
 namespace py = pybind11;
 using namespace INTELLI;
 using namespace LibAMM;
-torch::Tensor add_tensors(torch::Tensor a, torch::Tensor b) {
+LibAMM::Tensor add_tensors(LibAMM::Tensor a, LibAMM::Tensor b) {
   return a + b;
 }
 py::dict configMapToDict(const std::shared_ptr<ConfigMap> &cfg) {

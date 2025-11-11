@@ -36,16 +36,16 @@ void LibAMM::SIFTMatrixLoader::generateAB() {
   in.close();
 
   // Step3. convert to torch tensor and standardize the matrix
-  torch::TensorOptions options(torch::kFloat32);
-  B = torch::from_blob(data, {(int) num, (int) dim}, options).clone();
+  LibAMM::TensorOptions options("float32");
+  B = LibAMM::from_blob(data, {(int) num, (int) dim}, options).clone();
 
   // 3.1 Compute the mean and standard deviation along each feature (column)
-  torch::Tensor mean = B.mean(/*dim=*/0);
-  torch::Tensor std = B.std(/*dim=*/0);
+  LibAMM::Tensor mean = B.mean(/*dim=*/0);
+  LibAMM::Tensor std = B.std(/*dim=*/0);
 
   // 3.2 Standardize the matrix
-  torch::Tensor standardizedB = (B - mean) / std;
-  // torch::Tensor centeredB = B - mean;
+  LibAMM::Tensor standardizedB = (B - mean) / std;
+  // LibAMM::Tensor centeredB = B - mean;
 
   // 3.3 Check if need to resize
   B = standardizedB;
@@ -70,11 +70,11 @@ bool LibAMM::SIFTMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::SIFTMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::SIFTMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor LibAMM::SIFTMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::SIFTMatrixLoader::getB() {
   return B;
 }
 

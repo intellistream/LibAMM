@@ -27,19 +27,19 @@ namespace LibAMM {
  * @param filename the name of the mtx file
  * @return the loaded tensor
  */
-torch::Tensor loadMatrixFromMatrixMarket(const string &filename);
+LibAMM::Tensor loadMatrixFromMatrixMarket(const string &filename);
 /**
  * @brief to normalize a tensor into +-1: will be biased by the min value
  * @param a the input
  * @return the normalized tensor
  */
-torch::Tensor normalizeIntoPN1(torch::Tensor a);
+LibAMM::Tensor normalizeIntoPN1(LibAMM::Tensor a);
 /**
  * @brief to scale a tensor into +-1: will NOT change the bias
  * @param a the input
  * @return the normalized tensor
  */
-torch::Tensor scaleIntoPN1(torch::Tensor a);
+LibAMM::Tensor scaleIntoPN1(LibAMM::Tensor a);
 /**
  * @class MtxMatrixLoader MatrixLoader/MtxMatrixLoader.h
  * @brief The matrix loader to load matrixes stored in matrix market mtx format
@@ -66,7 +66,7 @@ torch::Tensor scaleIntoPN1(torch::Tensor a);
  */
 class MtxMatrixLoader : public AbstractMatrixLoader {
  protected:
-  torch::Tensor A, B;
+  LibAMM::Tensor A, B;
   std::string srcA, srcB;
   uint64_t oneSrcForAB, transposeA, transposeB;
   uint64_t normalizeA,normalizeB,scaleA,scaleB;
@@ -98,13 +98,13 @@ class MtxMatrixLoader : public AbstractMatrixLoader {
    * @brief get the A matrix
    * @return the generated A matrix
    */
-  virtual torch::Tensor getA();
+  virtual LibAMM::Tensor getA();
 
   /**
   * @brief get the B matrix
   * @return the generated B matrix
   */
-  virtual torch::Tensor getB();
+  virtual LibAMM::Tensor getB();
 };
 
 /**

@@ -70,21 +70,21 @@ class SingleThreadStreamer {
    * @param A
    * @return
    */
-  virtual bool prepareRun(torch::Tensor A, torch::Tensor B);
+  virtual bool prepareRun(LibAMM::Tensor A, LibAMM::Tensor B);
   /**
 * @brief To run a streaming Amm, assuming the rows of A coming in a streaming manner and B is fixed
 *  @param A The A matrix
 * @param B The B matrix
 * @return bool whether the config is successfully set
 */
-  virtual torch::Tensor streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1);
+  virtual LibAMM::Tensor streamingAmm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize = 1);
   /**
 * @brief To run a streaming Amm, assuming the rows of A coming in a streaming manner and the cols of B coming in a streaming manner
 *  @param A The A matrix
 * @param B The B matrix
 * @return bool whether the config is successfully set
 */
-  virtual torch::Tensor streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize = 1);
+  virtual LibAMM::Tensor streamingAmm2S(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize = 1);
 
   /**
    * @brief to get the throughput of last streaming process, the unit is rows/second

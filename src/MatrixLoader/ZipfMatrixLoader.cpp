@@ -21,14 +21,14 @@ void LibAMM::ZipfMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
       "Generating [" + to_string(aRow) + "x" + to_string(aCol) + "]*[" + to_string(aCol) + "x" + to_string(bCol)
           + "]");
 }
-torch::Tensor LibAMM::ZipfMatrixLoader::generateZipfDistribution(int64_t n, int64_t m, double alpha) {
-  torch::Tensor indices = torch::arange(1, n * m + 1, torch::kFloat32);
-  torch::Tensor probabilities = 1.0 / torch::pow(indices, alpha);
-  torch::Tensor normalizedProbabilities = probabilities / torch::sum(probabilities);
+LibAMM::Tensor LibAMM::ZipfMatrixLoader::generateZipfDistribution(int64_t n, int64_t m, double alpha) {
+  LibAMM::Tensor indices = LibAMM::arange(1, n * m + 1, "float32");
+  LibAMM::Tensor probabilities = 1.0 / LibAMM::pow(indices, alpha);
+  LibAMM::Tensor normalizedProbabilities = probabilities / LibAMM::sum(probabilities);
 
   // Generate Zipf-distributed samples
-  torch::Tensor zipfSamples = torch::multinomial(normalizedProbabilities, n * m, true);
-  torch::Tensor zipfMatrix = zipfSamples.view({n, m}).clone();
+  LibAMM::Tensor zipfSamples = LibAMM::multinomial(normalizedProbabilities, n * m, true);
+  LibAMM::Tensor zipfMatrix = zipfSamples.view({n, m}).clone();
 
   // Normalize the values to the range [0, 1]
   auto ru = zipfMatrix / (zipfMatrix.max());
@@ -36,10 +36,10 @@ torch::Tensor LibAMM::ZipfMatrixLoader::generateZipfDistribution(int64_t n, int6
   return ru;
 }
 void LibAMM::ZipfMatrixLoader::generateAB() {
-  torch::manual_seed(seed);
+  LibAMM::manual_seed(seed);
   if(randA)
   {
-    A = torch::rand({(long) aRow, (long) aCol});
+    A = LibAMM::rand({(long) aRow, (long) aCol});
   }
   else
   {
@@ -47,7 +47,7 @@ void LibAMM::ZipfMatrixLoader::generateAB() {
   }
   if(randB)
   {
-    B = torch::rand({(long) aCol, (long) bCol});
+    B = LibAMM::rand({(long) aCol, (long) bCol});
   }
   else{
     B=generateZipfDistribution((int64_t)aCol,(int64_t)bCol,zipfAlphaB);
@@ -64,10 +64,10 @@ bool LibAMM::ZipfMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::ZipfMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::ZipfMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor LibAMM::ZipfMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::ZipfMatrixLoader::getB() {
   return B;
 }

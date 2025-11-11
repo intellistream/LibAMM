@@ -21,24 +21,24 @@ void LibAMM::GaussianMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 void LibAMM::GaussianMatrixLoader::generateAB() {
-  torch::manual_seed(seed);
+  LibAMM::manual_seed(seed);
   if (randA)
   {
     INTELLI_INFO(
       "change A into random");
-     A = torch::rand({(long) aRow, (long) aCol});  
+     A = LibAMM::rand({(long) aRow, (long) aCol});  
   }
   else{
-    A = sigmaA*torch::randn({(long) aRow, (long) aCol})+avgA;
+    A = sigmaA*LibAMM::randn({(long) aRow, (long) aCol})+avgA;
   }
   if(randB)
   {
      INTELLI_INFO(
       "change B into random");
-      B = torch::rand({(long) aCol, (long) bCol});
+      B = LibAMM::rand({(long) aCol, (long) bCol});
   }
   else{
-     B = sigmaB*torch::randn({(long) aCol, (long) bCol})+avgB;
+     B = sigmaB*LibAMM::randn({(long) aCol, (long) bCol})+avgB;
   }
   
 }
@@ -50,10 +50,10 @@ bool LibAMM::GaussianMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::GaussianMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::GaussianMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor LibAMM::GaussianMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::GaussianMatrixLoader::getB() {
   return B;
 }

@@ -15,9 +15,9 @@ void LibAMM::ExponentialMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 void LibAMM::ExponentialMatrixLoader::generateAB() {
-  torch::manual_seed(seed);
-  A = torch::exponential(torch::empty({(long) aRow, (long) aCol}));
-  B = torch::exponential(torch::empty({(long) aCol, (long) bCol}));
+  LibAMM::manual_seed(seed);
+  A = LibAMM::exponential(LibAMM::empty({(long) aRow, (long) aCol}));
+  B = LibAMM::exponential(LibAMM::empty({(long) aCol, (long) bCol}));
 }
 
 //do nothing in abstract class
@@ -27,10 +27,10 @@ bool LibAMM::ExponentialMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::ExponentialMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::ExponentialMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor LibAMM::ExponentialMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::ExponentialMatrixLoader::getB() {
   return B;
 }

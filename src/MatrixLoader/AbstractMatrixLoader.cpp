@@ -10,10 +10,10 @@ bool LibAMM::AbstractMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::AbstractMatrixLoader::getA() {
-  return torch::rand({1, 1});
+LibAMM::Tensor LibAMM::AbstractMatrixLoader::getA() {
+  return LibAMM::rand({1, 1});
 }
 
-torch::Tensor LibAMM::AbstractMatrixLoader::getB() {
-  return torch::rand({1, 1});
+LibAMM::Tensor LibAMM::AbstractMatrixLoader::getB() {
+  return LibAMM::rand({1, 1});
 }

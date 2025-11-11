@@ -5,10 +5,10 @@
 #include <MatrixLoader/MtxMatrixLoader.h>
 #include <Utils/IntelliLog.h>
 #include <cmath>
-torch::Tensor LibAMM::scaleIntoPN1(torch::Tensor a){
-  torch::Tensor min_value = a.min();
-  torch::Tensor max_value = a.max();
-  torch::Tensor normalized_tensor;
+LibAMM::Tensor LibAMM::scaleIntoPN1(LibAMM::Tensor a){
+  LibAMM::Tensor min_value = a.min();
+  LibAMM::Tensor max_value = a.max();
+  LibAMM::Tensor normalized_tensor;
   if (std::abs(min_value.item<float>()) > std::abs(max_value.item<float>())) {
     normalized_tensor=a/min_value;
   }
@@ -18,21 +18,21 @@ torch::Tensor LibAMM::scaleIntoPN1(torch::Tensor a){
   }
   return normalized_tensor;
 }
-torch::Tensor LibAMM::normalizeIntoPN1(torch::Tensor a){
-  torch::Tensor min_value = a.min();
-  torch::Tensor max_value = a.max();
+LibAMM::Tensor LibAMM::normalizeIntoPN1(LibAMM::Tensor a){
+  LibAMM::Tensor min_value = a.min();
+  LibAMM::Tensor max_value = a.max();
 
   // Normalize the tensor to -1 to 1
-  torch::Tensor normalized_tensor = 2 * (a - min_value) / (max_value - min_value) - 1;
+  LibAMM::Tensor normalized_tensor = 2 * (a - min_value) / (max_value - min_value) - 1;
 
   return normalized_tensor;
 }
-torch::Tensor LibAMM::loadMatrixFromMatrixMarket(const std::string &filename) {
+LibAMM::Tensor LibAMM::loadMatrixFromMatrixMarket(const std::string &filename) {
   ifstream file(filename);
   if (!file.is_open()) {
     //cerr << "Error: Unable to open the file " << filename << endl;
     INTELLI_ERROR("Unable to open the file " + filename);
-    return torch::Tensor();
+    return LibAMM::Tensor();
   }
 
   string header;
@@ -42,7 +42,7 @@ torch::Tensor LibAMM::loadMatrixFromMatrixMarket(const std::string &filename) {
   file >> header;
   if (header != "%%MatrixMarket") {
     INTELLI_ERROR("Invalid MatrixMarket format");
-    return torch::Tensor();
+    return LibAMM::Tensor();
   }
   string line;
   getline(file, line);
@@ -51,7 +51,7 @@ torch::Tensor LibAMM::loadMatrixFromMatrixMarket(const std::string &filename) {
   // Read the matrix dimensions and number of non-zero entries
   file >> rows >> cols >> nonzeros;
 
-  torch::Tensor result = torch::zeros({(int64_t) rows, (int64_t) cols});
+  LibAMM::Tensor result = LibAMM::zeros({(int64_t) rows, (int64_t) cols});
   // Read and store the matrix elements as COO format
   for (size_t i = 0; i < nonzeros; ++i) {
     size_t row, col;
@@ -64,14 +64,14 @@ torch::Tensor LibAMM::loadMatrixFromMatrixMarket(const std::string &filename) {
 
     if (row >= rows || col >= cols) {
       INTELLI_ERROR("Invalid row or column index in the MatrixMarket file");
-      return torch::Tensor();
+      return LibAMM::Tensor();
     }
     result[row][col] = value;
   }
 
   file.close();
 
-  //torch::Tensor matrix = torch::sparse_coo_tensor(indices, values_tensor, {static_cast<int64_t>(rows), static_cast<int64_t>(cols)});
+  //LibAMM::Tensor matrix = torch::sparse_coo_tensor(indices, values_tensor, {static_cast<int64_t>(rows), static_cast<int64_t>(cols)});
 
   return result.clone();
 }
@@ -128,10 +128,10 @@ bool LibAMM::MtxMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::MtxMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::MtxMatrixLoader::getA() {
   return A.clone();
 }
 
-torch::Tensor LibAMM::MtxMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::MtxMatrixLoader::getB() {
   return B.clone();
 }

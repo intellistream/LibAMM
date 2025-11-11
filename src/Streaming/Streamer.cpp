@@ -11,9 +11,9 @@
 
 using namespace INTELLI;
 
-torch::Tensor LibAMM::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, torch::Tensor B, uint64_t sketchSize, string metricsPrefix) {
+LibAMM::Tensor LibAMM::Streamer::run(INTELLI::ConfigMapPtr cfg, LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize, string metricsPrefix) {
     metrics = newConfigMap(); // has error and pef events: time, instructions, memory access etc.
-    matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
+    matC = newTensor(LibAMM::zeros({A.size(0), B.size(1)}));
     uint64_t isStreaming = cfg->tryU64("isStreaming", 0, true);
     uint64_t threads = cfg->tryU64("threads", 1, true);
     sketchSize = cfg->tryU64("sketchDimension", sketchSize, true);
@@ -103,7 +103,7 @@ torch::Tensor LibAMM::Streamer::run(INTELLI::ConfigMapPtr cfg, torch::Tensor A, 
     }
 
     // calculate error
-    torch::Tensor realC = torch::matmul(A, B);
+    LibAMM::Tensor realC = LibAMM::matmul(A, B);
     double froError = INTELLI::UtilityFunctions::relativeFrobeniusNorm(realC, *matC);
     metrics->edit(metricsPrefix+"FroError", (double) froError);
     return *matC;

@@ -15,9 +15,9 @@ void LibAMM::PoissonMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 void LibAMM::PoissonMatrixLoader::generateAB() {
-  torch::manual_seed(seed);
-  A = torch::poisson(torch::ones({(long) aRow, (long) aCol}));
-  B = torch::poisson(torch::ones({(long) aCol, (long) bCol}));
+  LibAMM::manual_seed(seed);
+  A = torch::poisson(LibAMM::ones({(long) aRow, (long) aCol}));
+  B = torch::poisson(LibAMM::ones({(long) aCol, (long) bCol}));
 }
 
 //do nothing in abstract class
@@ -27,10 +27,10 @@ bool LibAMM::PoissonMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::PoissonMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::PoissonMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor LibAMM::PoissonMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::PoissonMatrixLoader::getB() {
   return B;
 }

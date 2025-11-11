@@ -25,7 +25,7 @@ bool LibAMM::BlockPartitionStreamer::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+LibAMM::Tensor LibAMM::BlockPartitionStreamer::streamingAmm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   uint64_t aRows = A.size(0);
   cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
@@ -36,7 +36,7 @@ torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm(torch::Tensor A, torc
   tsGen.setConfig(cfgGlobal);
   myTs = tsGen.getTimeStamps();
   INTELLI_INFO("Generate time stamp done");
-  matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
+  matC = newTensor(LibAMM::zeros({A.size(0), B.size(1)}));
   INTELLI_INFO("Start Streaming A rows");
   uint64_t startRow = 0;
   uint64_t endRow = startRow + batchSize;
@@ -47,11 +47,11 @@ torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm(torch::Tensor A, torc
   size_t slice_size = batchSize / threads;
 
   // pre-partition
-  std::vector<std::vector<torch::Tensor>> partitions;
+  std::vector<std::vector<LibAMM::Tensor>> partitions;
   uint64_t start = 0;
   uint64_t end = batchSize;
   for (int i = 0; i < std::ceil(aRows / batchSize); ++i) {
-    //partitions.push_back(vector<torch::Tensor>(threads));
+    //partitions.push_back(vector<LibAMM::Tensor>(threads));
     partitions.emplace_back(threads);
     for (uint64_t j = 0; j < threads; ++j) {
       size_t startRowThread = start + j * slice_size;
@@ -107,7 +107,7 @@ torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm(torch::Tensor A, torc
   return *matC;
 }
 
-torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, torch::Tensor B, uint64_t sketchSize) {
+LibAMM::Tensor LibAMM::BlockPartitionStreamer::streamingAmm2S(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t sketchSize) {
   assert(sketchSize);
   uint64_t aRows = A.size(0);
   cfgGlobal->edit("streamingTupleCnt", (uint64_t) aRows);
@@ -122,7 +122,7 @@ torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, to
   tsGenB.setConfig(cfgGlobal);
   myTsB = tsGenB.getTimeStamps();
   INTELLI_INFO("Generate time stamps for two streams done");
-  matC = newTensor(torch::zeros({A.size(0), B.size(1)}));
+  matC = newTensor(LibAMM::zeros({A.size(0), B.size(1)}));
   //INTELLI_INFO("I am mm");
   INTELLI_INFO("Start Streaming A rows and B cols");
   uint64_t startRow = 0;
@@ -134,7 +134,7 @@ torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, to
   }
   uint64_t tDone = 0;
   uint64_t iterationCnt = 0;
-  torch::Tensor incomingA, incomingB, newArrivedB, oldArrivedA;
+  LibAMM::Tensor incomingA, incomingB, newArrivedB, oldArrivedA;
   uint64_t aBCols = 0, lastABCols = 0;
 
   size_t slice_size = batchSize / threads;
@@ -158,7 +158,7 @@ torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, to
     /**
      * @brief do the incomingA*newArrivedB part
      */
-    vector<torch::Tensor> aBs(threads);
+    vector<LibAMM::Tensor> aBs(threads);
     for (size_t i = 0; i < threads; ++i) {
       tasks[i] = pool->submit([&, i]() {
         INTELLI::UtilityFunctions::bind2Core(i + coreBind);
@@ -170,7 +170,7 @@ torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, to
       });
     }
     tasks.wait();
-    torch::Tensor aB = torch::cat(aBs, 0);
+    LibAMM::Tensor aB = torch::cat(aBs, 0);
 
     lastABCols = aBCols;
     aBCols = aB.size(1);
@@ -179,7 +179,7 @@ torch::Tensor LibAMM::BlockPartitionStreamer::streamingAmm2S(torch::Tensor A, to
     * @brief do the oldArrivedA*incomingB part
     */
     if (iterationCnt != 0) {
-      torch::Tensor aB2 = torch::empty({(long) oldArrivedA.size(0), incomingB.size(1)});
+      LibAMM::Tensor aB2 = LibAMM::empty({(long) oldArrivedA.size(0), incomingB.size(1)});
       std::vector<std::future<void>> tasks(threads);
 
       for (size_t i = 0; i < threads; ++i) {

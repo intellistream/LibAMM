@@ -41,7 +41,7 @@ namespace LibAMM {
  */
 class ZipfMatrixLoader : public AbstractMatrixLoader {
  protected:
-  torch::Tensor A, B;
+  LibAMM::Tensor A, B;
   uint64_t aRow, aCol, bCol, seed, randA,randB;
   double zipfAlphaA,zipfAlphaB;
   /**
@@ -54,7 +54,7 @@ class ZipfMatrixLoader : public AbstractMatrixLoader {
    * @brief inline logic of generating A and B
    */
   void generateAB();
-  torch::Tensor generateZipfDistribution(int64_t rows, int64_t cols,double alpha);
+  LibAMM::Tensor generateZipfDistribution(int64_t rows, int64_t cols,double alpha);
  public:
   ZipfMatrixLoader() = default;
 
@@ -72,13 +72,13 @@ class ZipfMatrixLoader : public AbstractMatrixLoader {
    * @brief get the A matrix
    * @return the generated A matrix
    */
-  virtual torch::Tensor getA();
+  virtual LibAMM::Tensor getA();
 
   /**
   * @brief get the B matrix
   * @return the generated B matrix
   */
-  virtual torch::Tensor getB();
+  virtual LibAMM::Tensor getB();
 };
 
 /**

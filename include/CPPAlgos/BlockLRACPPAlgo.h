@@ -47,7 +47,7 @@ class BlockLRACPPAlgo : public LibAMM::AbstractCPPAlgo {
    * @param blockSize the size of block to do SVD
    * @return the output c matrix
    */
-  virtual torch::Tensor amm(torch::Tensor A, torch::Tensor B, uint64_t blockSize);
+  virtual LibAMM::Tensor amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t blockSize);
 
 };
 /**

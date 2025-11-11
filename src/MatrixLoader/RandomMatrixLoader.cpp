@@ -16,9 +16,9 @@ void LibAMM::RandomMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 void LibAMM::RandomMatrixLoader::generateAB() {
-  torch::manual_seed(seed);
-  A = torch::rand({(long) aRow, (long) aCol});
-  B = torch::rand({(long) aCol, (long) bCol});
+  LibAMM::manual_seed(seed);
+  A = LibAMM::rand({(long) aRow, (long) aCol});
+  B = LibAMM::rand({(long) aCol, (long) bCol});
 }
 
 //do nothing in abstract class
@@ -28,10 +28,10 @@ bool LibAMM::RandomMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::RandomMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::RandomMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor LibAMM::RandomMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::RandomMatrixLoader::getB() {
   return B;
 }

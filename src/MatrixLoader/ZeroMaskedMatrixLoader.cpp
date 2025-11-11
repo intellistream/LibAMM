@@ -18,12 +18,12 @@ void LibAMM::ZeroMaskedMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 void LibAMM::ZeroMaskedMatrixLoader::generateAB() {
-  torch::manual_seed(seed);
-  auto maskedA = torch::rand({(long) (aRow*nnzA), (long) (aCol*nnzA)});
-  auto maskedB = torch::rand({(long) (aCol*nnzB), (long) (bCol*nnzB)});
-  A = torch::zeros({(long) aRow, (long) aCol});
+  LibAMM::manual_seed(seed);
+  auto maskedA = LibAMM::rand({(long) (aRow*nnzA), (long) (aCol*nnzA)});
+  auto maskedB = LibAMM::rand({(long) (aCol*nnzB), (long) (bCol*nnzB)});
+  A = LibAMM::zeros({(long) aRow, (long) aCol});
   A.slice(0, 0, (long) (aRow*nnzA)).slice(1, 0,(long) (aCol*nnzA) ).copy_(maskedA);
-  B = torch::zeros({(long) aCol, (long) bCol});
+  B = LibAMM::zeros({(long) aCol, (long) bCol});
   B.slice(0, 0, (long) (aCol*nnzB)).slice(1, 0,(long) (bCol*nnzB) ).copy_(maskedB);
 }
 
@@ -34,10 +34,10 @@ bool LibAMM::ZeroMaskedMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::ZeroMaskedMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::ZeroMaskedMatrixLoader::getA() {
   return A.clone();
 }
 
-torch::Tensor LibAMM::ZeroMaskedMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::ZeroMaskedMatrixLoader::getB() {
   return B.clone();
 }

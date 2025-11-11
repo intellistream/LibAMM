@@ -5,7 +5,7 @@
 #include <CPPAlgos/CRSV2CPPAlgo.h>
 
 namespace LibAMM {
-torch::Tensor LibAMM::CRSV2CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64_t k2) {
+LibAMM::Tensor LibAMM::CRSV2CPPAlgo::amm(LibAMM::Tensor A, LibAMM::Tensor B, uint64_t k2) {
   A = A.t();
   auto A_size = A.sizes();
   int64_t n = A_size[0];
@@ -18,23 +18,23 @@ torch::Tensor LibAMM::CRSV2CPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint64
   //INTELLI_INFO("Running CRS V2 CPP");
 
   // probability distribution
-  torch::Tensor sample = torch::rand({n}); // default: uniform
+  LibAMM::Tensor sample = LibAMM::rand({n}); // default: uniform
 
   // diagonal scaling matrix D (nxn)
   sample = sample.div(sample.sum());
-  torch::Tensor D = torch::diag(1.0 / torch::sqrt(k * sample));
+  LibAMM::Tensor D = LibAMM::diag(1.0 / LibAMM::sqrt(k * sample));
 
   // sampling matrix S (kxn)
-  torch::Tensor column_indices = torch::multinomial(sample, k, true);
-  torch::Tensor S = torch::zeros({k, n});
+  LibAMM::Tensor column_indices = LibAMM::multinomial(sample, k, true);
+  LibAMM::Tensor S = LibAMM::zeros({k, n});
   for (int64_t row = 0; row < k; row++) {
     int64_t col = column_indices[row].item<int64_t>();
     S[row][col] = 1;
   }
 
-  torch::Tensor a = torch::matmul(torch::matmul(A.t(), D), S.t());
-  torch::Tensor b = torch::matmul(torch::matmul(a, S), D);
+  LibAMM::Tensor a = LibAMM::matmul(LibAMM::matmul(A.t(), D), S.t());
+  LibAMM::Tensor b = LibAMM::matmul(LibAMM::matmul(a, S), D);
 
-  return torch::matmul(b, B);
+  return LibAMM::matmul(b, B);
 }
 } // LibAMM

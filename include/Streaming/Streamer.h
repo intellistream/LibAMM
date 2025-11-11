@@ -17,9 +17,9 @@ class Streamer {
 
   ~Streamer() {}
 
-  torch::Tensor run(INTELLI::ConfigMapPtr cfg,
-                    torch::Tensor A,
-                    torch::Tensor B,
+  LibAMM::Tensor run(INTELLI::ConfigMapPtr cfg,
+                    LibAMM::Tensor A,
+                    LibAMM::Tensor B,
                     uint64_t sketchSize = 1,
                     string metricPrefix = "");
   /**

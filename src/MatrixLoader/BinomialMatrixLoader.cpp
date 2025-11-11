@@ -17,26 +17,26 @@ void LibAMM::BinomialMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 void LibAMM::BinomialMatrixLoader::generateAB() {
-  torch::manual_seed(seed);
-  A = torch::zeros({(long) aRow, (long) aCol});
-  B = torch::zeros({(long) aCol, (long) bCol});
+  LibAMM::manual_seed(seed);
+  A = LibAMM::zeros({(long) aRow, (long) aCol});
+  B = LibAMM::zeros({(long) aCol, (long) bCol});
 
   for (uint64_t i = 0; i < trials; i++) {
 
     // Create a tensor filled with random numbers between 0 and 1
-    torch::Tensor rand_tensor = torch::rand({(long) aRow, (long) aCol});
+    LibAMM::Tensor rand_tensor = LibAMM::rand({(long) aRow, (long) aCol});
 
     // Add the results of the Bernoulli trial to the binomial tensor
-    A += (rand_tensor < probability).to(torch::kInt);
+    A += (rand_tensor < probability)// TODO: Int conversion;
   }
 
   for (uint64_t i = 0; i < trials; i++) {
 
     // Create a tensor filled with random numbers between 0 and 1
-    torch::Tensor rand_tensor = torch::rand({(long) aCol, (long) bCol});
+    LibAMM::Tensor rand_tensor = LibAMM::rand({(long) aCol, (long) bCol});
 
     // Add the results of the Bernoulli trial to the binomial tensor
-    B += (rand_tensor < probability).to(torch::kInt);
+    B += (rand_tensor < probability)// TODO: Int conversion;
   }
 }
 
@@ -47,10 +47,10 @@ bool LibAMM::BinomialMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::BinomialMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::BinomialMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor LibAMM::BinomialMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::BinomialMatrixLoader::getB() {
   return B;
 }

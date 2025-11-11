@@ -8,7 +8,7 @@
 
 #include <Utils/ConfigMap.hpp>
 #include <assert.h>
-#include <torch/torch.h>
+#include <Utils/EigenTensor.h>
 #include <memory>
 
 namespace LibAMM {
@@ -49,13 +49,13 @@ class AbstractMatrixLoader {
    * @brief get the A matrix
    * @return the generated A matrix
    */
-  virtual torch::Tensor getA();
+  virtual LibAMM::Tensor getA();
 
   /**
   * @brief get the B matrix
   * @return the generated B matrix
   */
-  virtual torch::Tensor getB();
+  virtual LibAMM::Tensor getB();
 };
 
 /**

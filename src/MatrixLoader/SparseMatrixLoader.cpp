@@ -7,14 +7,14 @@
 #include <vector>
 #include <random>
 
-torch::Tensor LibAMM::SparseMatrixLoader::genSparseMatrix(uint64_t m,
+LibAMM::Tensor LibAMM::SparseMatrixLoader::genSparseMatrix(uint64_t m,
                                                             uint64_t n,
                                                             double density,
                                                             uint64_t reduceRows) {
   /**
    * @brief 1. gen random mat
    */
-  auto mat = torch::rand({(long) m, (long) n});
+  auto mat = LibAMM::rand({(long) m, (long) n});
 
   // Iterate over each element of A and zero out the element with probability p
   /**
@@ -23,7 +23,7 @@ torch::Tensor LibAMM::SparseMatrixLoader::genSparseMatrix(uint64_t m,
   if (density < 1.0) {
     for (uint64_t i = 0; i < m; i++) {
       for (uint64_t j = 0; j < n; j++) {
-        if (torch::rand({1}).item<float>() >= density) {
+        if (LibAMM::rand({1}).item<float>() >= density) {
           mat[i][j] = 0.0;
         }
       }
@@ -46,7 +46,7 @@ torch::Tensor LibAMM::SparseMatrixLoader::genSparseMatrix(uint64_t m,
     }
   }
   for (const uint64_t &row_idx : selected_rows) {
-    //mat[row_idx]=mat[0]*torch::rand({1}).item<float>();
+    //mat[row_idx]=mat[0]*LibAMM::rand({1}).item<float>();
     mat[row_idx] = mat[0];
     // do something with the row, e.g. print it
     //std::cout << row_idx << std::endl;
@@ -76,7 +76,7 @@ void LibAMM::SparseMatrixLoader::paraseConfig(INTELLI::ConfigMapPtr cfg) {
 }
 
 void LibAMM::SparseMatrixLoader::generateAB() {
-  torch::manual_seed(seed);
+  LibAMM::manual_seed(seed);
   std::srand(seed);
   A = genSparseMatrix(aRow, aCol, aDensity, aReduce);
   INTELLI_INFO(
@@ -93,10 +93,10 @@ bool LibAMM::SparseMatrixLoader::setConfig(INTELLI::ConfigMapPtr cfg) {
   return true;
 }
 
-torch::Tensor LibAMM::SparseMatrixLoader::getA() {
+LibAMM::Tensor LibAMM::SparseMatrixLoader::getA() {
   return A;
 }
 
-torch::Tensor LibAMM::SparseMatrixLoader::getB() {
+LibAMM::Tensor LibAMM::SparseMatrixLoader::getB() {
   return B;
 }
