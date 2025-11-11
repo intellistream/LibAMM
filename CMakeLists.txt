@@ -163,6 +163,20 @@ file(COPY ${allCopyFiles} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/benchmark/scri
 file(COPY ${allCopyFiles} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/benchmark/scripts)
 
 # copy files needed for real world matrix loader
-set(source_directory "${CMAKE_SOURCE_DIR}/benchmark/datasets/")
-set(destination_directory "${CMAKE_BINARY_DIR}/benchmark/datasets/")
-file(COPY ${source_directory} DESTINATION ${destination_directory})
+# Allow external projects to specify dataset path or disable dataset copy
+option(LIBAMM_SKIP_DATASET_COPY "Skip copying benchmark datasets" OFF)
+set(LIBAMM_DATASET_SOURCE_DIR "${CMAKE_SOURCE_DIR}/benchmark/datasets" CACHE PATH "Path to LibAMM benchmark datasets")
+
+if(NOT LIBAMM_SKIP_DATASET_COPY)
+    if(EXISTS "${LIBAMM_DATASET_SOURCE_DIR}")
+        message(STATUS "Copying LibAMM datasets from: ${LIBAMM_DATASET_SOURCE_DIR}")
+        set(source_directory "${LIBAMM_DATASET_SOURCE_DIR}/")
+        set(destination_directory "${CMAKE_BINARY_DIR}/benchmark/datasets/")
+        file(COPY ${source_directory} DESTINATION ${destination_directory})
+    else()
+        message(STATUS "LibAMM datasets not found at ${LIBAMM_DATASET_SOURCE_DIR}, skipping dataset copy")
+        message(STATUS "Set LIBAMM_DATASET_SOURCE_DIR to specify a different path, or set LIBAMM_SKIP_DATASET_COPY=ON to disable")
+    endif()
+else()
+    message(STATUS "LibAMM dataset copy disabled (LIBAMM_SKIP_DATASET_COPY=ON)")
+endif()
