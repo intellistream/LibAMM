@@ -133,13 +133,11 @@ target_include_directories(LibAMM PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_include_directories(LibAMM PUBLIC "thirdparty/papi_build/include")
 target_include_directories(LibAMM PUBLIC ${EIGEN3_INCLUDE_DIR})
 target_link_libraries(LibAMM PUBLIC ${LIBRARIES})
-#add_subdirectory(test)
-#Add benchmarks with command
-add_subdirectory(benchmark)
-set_property(TARGET benchmark PROPERTY CXX_STANDARD 20)
-#Add tests (based on GTest suits)
-#include(GoogleTest)
 
+# Note: Benchmarks have been moved to sage-benchmark package
+# Use: pip install sage-benchmark
+
+# Add unit tests (based on Catch2 framework)
 if (ENABLE_UNIT_TESTS)
     add_subdirectory(test)
 endif ()

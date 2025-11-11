@@ -861,6 +861,13 @@ namespace torch {
     // Import all LibAMM symbols into torch namespace
     using namespace LibAMM;
     
+    // Random seed control stub (no-op in Eigen-only mode)
+    inline void manual_seed(uint64_t seed) {
+        // Note: Eigen uses std::rand() which can be seeded with std::srand()
+        // This is a compatibility stub - actual seeding happens in rand() function
+        std::srand(static_cast<unsigned int>(seed));
+    }
+    
     // Threading control stub (no-op in Eigen-only mode)
     inline void set_num_threads(int num_threads) {
         // Note: Eigen uses OpenMP/TBB threading automatically
