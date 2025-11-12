@@ -20,9 +20,10 @@ find_package(Torch REQUIRED)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 set(LIBRARIES ${LIBRARIES} ${TORCH_LIBRARIES})
 # Set Optimization Flags
+# 优化内存使用：降低优化级别，减少调试符号
 set(CMAKE_CXX_FLAGS "-std=c++20 -Wall -Werror=return-type -Werror=unused-variable -Werror=unused-parameter")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DNO_RACE_CHECK -DLibAMM_DEBUG_MODE=1")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wno-ignored-qualifiers -Wno-sign-compare -O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-g0 -O1 -DNO_RACE_CHECK -DLibAMM_DEBUG_MODE=1")  # -g0: 无调试符号, -O1: 低优化
+set(CMAKE_CXX_FLAGS_RELEASE "-Wno-ignored-qualifiers -Wno-sign-compare -O2")  # -O2 instead of -O3 to reduce memory
 #set(CMAKE_CUDA_STANDARD 11)
 #set(CMAKE_CUDA_FLAGS "-std=c++11")
 option (ENABLE_OPENCL
