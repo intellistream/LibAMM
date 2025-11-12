@@ -40,4 +40,27 @@ doc/
 benchmark/scripts/Downstream_Inference/bolt*
 benchmark/torchscripts/
 benchmark/torchscripts*
+
+# PyTorch models (migrated to sageData)
+*.pth
+*.pt
+*.onnx
+
+# Large test data files (migrated to sageData)
+test/torchscripts/VQ/*.txt
+test/datasets/**/*.txt
+
+# Python build artifacts
+dist/
+*.egg
+*.egg-info/
+build/lib/
+build/bdist*/
+
+# Benchmark results (should be in sageData or gitignored)
+benchmark/scripts/**/results/
+benchmark/figures/**/*.png
+benchmark/figures/**/*.jpg
+*.csv.bak
+
 /.vscode
