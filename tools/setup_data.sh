@@ -32,12 +32,14 @@ mkdir -p test/torchscripts/VQ
 # Link models (for downstream benchmarks)
 if [ -d "$DATA_ROOT/libamm-benchmark/models" ]; then
     echo "🔗 Linking models..."
+    rm -f benchmark/models  # Remove existing link/dir to prevent nested links
     ln -sf "$DATA_ROOT/libamm-benchmark/models" benchmark/models
 fi
 
 # Link test data
 if [ -d "$DATA_ROOT/libamm-benchmark/test-data" ]; then
     echo "🔗 Linking test data..."
+    rm -f test/torchscripts/VQ/data  # Remove existing link/dir to prevent nested links
     ln -sf "$DATA_ROOT/libamm-benchmark/test-data" test/torchscripts/VQ/data
     # Also link individual files for backward compatibility
     for file in "$DATA_ROOT/libamm-benchmark/test-data"/*.txt; do
@@ -49,6 +51,7 @@ fi
 # Link datasets if available
 if [ -d "$DATA_ROOT/libamm-benchmark/datasets" ]; then
     echo "🔗 Linking datasets..."
+    rm -f benchmark/datasets  # Remove existing link/dir to prevent nested links
     ln -sf "$DATA_ROOT/libamm-benchmark/datasets" benchmark/datasets
 fi
 
