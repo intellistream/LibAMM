@@ -64,3 +64,8 @@ benchmark/figures/**/*.jpg
 *.csv.bak
 
 /.vscode
+# Data symlinks (created by tools/setup_data.sh)
+benchmark/models
+benchmark/datasets
+test/torchscripts/VQ/data
+test/torchscripts/VQ/*.txt
