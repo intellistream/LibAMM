@@ -56,7 +56,7 @@ git commit -m "chore: update LibAMM to latest"
 
 **Problem:** You're in the main repository trying to commit submodule files.
 
-**Solution:** 
+**Solution:**
 ```bash
 cd packages/sage-libs/src/sage/libs/libamm  # Enter the submodule first
 git add .
