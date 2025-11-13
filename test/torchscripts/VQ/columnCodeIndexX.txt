@@ -1,1 +1,1 @@
-/home/shuhao/SAGE/packages/sage-libs/src/sage/libs/libamm/tools/../../../../../../sage-benchmark/src/sage/data/libamm-benchmark/test-data/columnCodeIndexX.txt
+../../../../../../../../../../sage-benchmark/src/sage/data/libamm-benchmark/test-data/columnCodeIndexX.txt
