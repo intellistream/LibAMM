@@ -1,0 +1,421 @@
+name: Build, Test and Publish LibAMM
+
+on:
+  push:
+    branches:
+      - main
+      - main-dev
+    paths:
+      - 'src/**'
+      - 'include/**'
+      - 'test/**'
+      - 'CMakeLists.txt'
+      - 'setup.py'
+      - '.github/workflows/build-and-publish.yml'
+  
+  pull_request:
+    branches:
+      - main
+      - main-dev
+  
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'Target PyPI repository'
+        required: false
+        default: 'testpypi'
+        type: choice
+        options:
+          - testpypi
+          - pypi
+      force_publish:
+        description: 'Force publish even if no version change'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  TORCH_VERSION: '2.5.0'
+  PACKAGE_NAME: 'isage-libamm'
+
+jobs:
+  # ============================================================================
+  # Job 1: Check version and changes
+  # ============================================================================
+  check-version:
+    name: Check version and changes
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      has_version_change: ${{ steps.check_version.outputs.has_change }}
+      should_publish: ${{ steps.decide.outputs.should_publish }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Get current version
+        id: get_version
+        run: |
+          VERSION=$(python -c "
+          import re
+          with open('setup.py', 'r') as f:
+              content = f.read()
+              match = re.search(r\"version='([^']+)'\", content)
+              if match:
+                  print(match.group(1))
+              else:
+                  print('0.1.0')
+          ")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+
+      - name: Check if version changed
+        id: check_version
+        run: |
+          LATEST_TAG=$(git tag -l "v*" --sort=-version:refname | head -n 1 || echo "")
+          
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No previous tag found, treating as new release"
+            echo "has_change=true" >> $GITHUB_OUTPUT
+          else
+            LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//')
+            CURRENT_VERSION="${{ steps.get_version.outputs.version }}"
+            
+            echo "Latest tag: $LATEST_TAG (version: $LATEST_VERSION)"
+            echo "Current version: $CURRENT_VERSION"
+            
+            if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ]; then
+              echo "Version has changed: $LATEST_VERSION -> $CURRENT_VERSION"
+              echo "has_change=true" >> $GITHUB_OUTPUT
+            else
+              echo "Version unchanged: $CURRENT_VERSION"
+              echo "has_change=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Decide whether to publish
+        id: decide
+        run: |
+          SHOULD_PUBLISH="false"
+          
+          # 发布条件：
+          # 1. 版本有变化 AND (push 到 main/main-dev OR 手动触发)
+          # 2. 或者手动触发且 force_publish=true
+          if [ "${{ steps.check_version.outputs.has_change }}" = "true" ] && \
+             ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]); then
+            SHOULD_PUBLISH="true"
+          elif [ "${{ github.event.inputs.force_publish }}" = "true" ]; then
+            SHOULD_PUBLISH="true"
+          fi
+          
+          echo "should_publish=$SHOULD_PUBLISH" >> $GITHUB_OUTPUT
+          echo "Decision: should_publish=$SHOULD_PUBLISH"
+
+  # ============================================================================
+  # Job 2: Build and test C++ library
+  # ============================================================================
+  cpp-build-test:
+    name: Build and test C++ (Ubuntu)
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc g++ cmake python3 python3-pip
+          
+      - name: Install PyTorch
+        run: |
+          pip3 install torch==${{ env.TORCH_VERSION }} --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH=$(python3 -c "import torch; print(torch.utils.cmake_prefix_path)") \
+            -DLIBAMM_SKIP_DATASET_COPY=ON \
+            -DENABLE_PYBIND=ON \
+            -DENABLE_HDF5=ON
+
+      - name: Build C++ library
+        run: |
+          cmake --build build --config Release -j$(nproc)
+
+      - name: Run C++ tests
+        working-directory: build/test
+        run: |
+          echo "=== Running C++ Tests ==="
+          ./cpp_test "--success" || exit 1
+          ./sketch_test "--success" || exit 1
+          ./crs_test "--success" || exit 1
+          ./weighted_cr_test "--success" || exit 1
+          ./block_partition_test "--success" || exit 1
+          ./streaming_test "--success" || exit 1
+          echo "✅ All C++ tests passed!"
+
+  # ============================================================================
+  # Job 3: Build Python wheels (multi-version, self-hosted)
+  # ============================================================================
+  build-wheels:
+    name: Build wheel (Python ${{ matrix.python-version }})
+    needs: [check-version, cpp-build-test]
+    if: needs.check-version.outputs.should_publish == 'true'
+    runs-on: [self-hosted, Linux, X64]
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Check system resources
+        run: |
+          echo "=== System Resources ==="
+          free -h
+          echo "=== Available memory ==="
+          AVAILABLE_MEM=$(free -g | awk '/^Mem:/{print $7}')
+          echo "Available: ${AVAILABLE_MEM}GB"
+          if [ "$AVAILABLE_MEM" -lt 12 ]; then
+            echo "⚠️  Warning: Only ${AVAILABLE_MEM}GB available"
+            echo "LibAMM compilation requires at least 12GB free memory"
+          fi
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install build pybind11 numpy
+          pip install torch==${{ env.TORCH_VERSION }} --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Update package name in setup.py
+        run: |
+          python -c "
+          import re
+          with open('setup.py', 'r') as f:
+              content = f.read()
+          # Update package name to isage-libamm
+          content = re.sub(r\"name='PyAMM'\", \"name='${{ env.PACKAGE_NAME }}'\", content)
+          with open('setup.py', 'w') as f:
+              f.write(content)
+          print('✅ Updated package name to ${{ env.PACKAGE_NAME }}')
+          "
+
+      - name: Build Python wheel
+        env:
+          CMAKE_BUILD_PARALLEL_LEVEL: '2'  # Limit parallelism to avoid OOM
+        run: |
+          echo "=== Building Python wheel ==="
+          echo "Version: ${{ needs.check-version.outputs.version }}"
+          
+          python -m build --wheel --no-isolation
+          
+          echo "=== Generated wheel ==="
+          ls -lh dist/
+
+      - name: Test wheel installation and import
+        run: |
+          echo "=== Testing wheel installation ==="
+          
+          # Create test venv
+          python -m venv test_env
+          source test_env/bin/activate
+          
+          # Install dependencies
+          pip install torch==${{ env.TORCH_VERSION }} --index-url https://download.pytorch.org/whl/cpu
+          pip install numpy
+          
+          # Install the wheel
+          pip install dist/*.whl
+          
+          # Test import
+          python -c "
+          from sage.libs.libamm.python import PyAMM
+          print('✅ LibAMM successfully imported!')
+          print('✅ Wheel is functional for Python ${{ matrix.python-version }}')
+          "
+          
+          deactivate
+          rm -rf test_env
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-py${{ matrix.python-version }}
+          path: dist/*.whl
+          retention-days: 30
+
+  # ============================================================================
+  # Job 4: Publish to PyPI
+  # ============================================================================
+  publish-to-pypi:
+    name: Publish to PyPI
+    needs: [check-version, build-wheels]
+    runs-on: ubuntu-latest
+    if: needs.check-version.outputs.should_publish == 'true'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Download all wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: dist/
+          merge-multiple: true
+
+      - name: List wheels
+        run: |
+          echo "=== Wheels to publish ==="
+          ls -lh dist/
+          echo ""
+          echo "Total: $(ls -1 dist/*.whl | wc -l) wheels"
+
+      - name: Determine target repository
+        id: repo
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            REPOSITORY="${{ github.event.inputs.repository }}"
+          elif [ "${{ github.ref_name }}" = "main" ]; then
+            REPOSITORY="pypi"
+          else
+            REPOSITORY="testpypi"
+          fi
+          
+          echo "repository=$REPOSITORY" >> $GITHUB_OUTPUT
+          echo "📦 Publishing to: $REPOSITORY"
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ steps.repo.outputs.repository == 'pypi' && secrets.PYPI_API_TOKEN || secrets.TEST_PYPI_API_TOKEN }}
+          repository-url: ${{ steps.repo.outputs.repository == 'testpypi' && 'https://test.pypi.org/legacy/' || '' }}
+          packages-dir: dist/
+          verbose: true
+
+      - name: Create Git tag
+        if: steps.repo.outputs.repository == 'pypi'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          TAG_NAME="v${{ needs.check-version.outputs.version }}"
+          
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME already exists, skipping"
+          else
+            git tag -a "$TAG_NAME" -m "Release ${{ needs.check-version.outputs.version }}"
+            git push origin "$TAG_NAME"
+            echo "✅ Created and pushed tag: $TAG_NAME"
+          fi
+
+      - name: Create GitHub Release
+        if: steps.repo.outputs.repository == 'pypi'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: LibAMM v${{ needs.check-version.outputs.version }}
+          body: |
+            ## LibAMM v${{ needs.check-version.outputs.version }}
+            
+            High-performance Approximate Matrix Multiplication library with NumPy interface.
+            
+            ### 🚀 Installation
+            \`\`\`bash
+            pip install ${{ env.PACKAGE_NAME }}==${{ needs.check-version.outputs.version }}
+            \`\`\`
+            
+            ### 📦 Features
+            - Approximate matrix multiplication algorithms
+            - NumPy-based Python interface
+            - PyTorch backend for high performance
+            - Comprehensive C++ test suite
+            - Support for Python 3.9-3.12
+            
+            ### 🔗 Links
+            - [PyPI Package](https://pypi.org/project/${{ env.PACKAGE_NAME }}/${{ needs.check-version.outputs.version }}/)
+            - [Documentation](https://github.com/intellistream/LibAMM)
+            
+            **Branch**: `${{ github.ref_name }}`  
+            **Commit**: `${{ github.sha }}`
+          files: dist/*.whl
+          draft: false
+          prerelease: ${{ github.ref_name != 'main' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================================================
+  # Job 5: Summary
+  # ============================================================================
+  summary:
+    name: Build Summary
+    needs: [check-version, cpp-build-test, build-wheels, publish-to-pypi]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## 🔧 LibAMM Build & Publish Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Event**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: ${{ needs.check-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Should Publish**: ${{ needs.check-version.outputs.should_publish }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Job Status" >> $GITHUB_STEP_SUMMARY
+          echo "- C++ Build & Test: ${{ needs.cpp-build-test.result }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.check-version.outputs.should_publish }}" = "true" ]; then
+            echo "- Python Wheels: ${{ needs.build-wheels.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- PyPI Publish: ${{ needs.publish-to-pypi.result }}" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "${{ needs.publish-to-pypi.result }}" = "success" ]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### ✅ Published Successfully" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "Install with:" >> $GITHUB_STEP_SUMMARY
+              echo '```bash' >> $GITHUB_STEP_SUMMARY
+              echo "pip install ${{ env.PACKAGE_NAME }}==${{ needs.check-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ℹ️ No Publish Needed" >> $GITHUB_STEP_SUMMARY
+            echo "Version has not changed or conditions not met for publishing." >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Check for failures
+          if [ "${{ needs.cpp-build-test.result }}" = "failure" ] || \
+             [ "${{ needs.build-wheels.result }}" = "failure" ] || \
+             [ "${{ needs.publish-to-pypi.result }}" = "failure" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ❌ Build or Publish Failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
