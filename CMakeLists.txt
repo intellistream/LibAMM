@@ -1,6 +1,13 @@
 
 cmake_minimum_required(VERSION 3.14)
 project(LibAMM CXX)
+
+# 显示详细编译信息，避免看起来像卡住
+set(CMAKE_VERBOSE_MAKEFILE ON)
+message(STATUS "=== LibAMM Build Configuration ===")
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+
 include (cmake/FindCuda.cmake)
 include (cmake/FindTorch.cmake)
 find_package(Torch REQUIRED)
@@ -15,15 +22,32 @@ include(cmake/default.cmake)
 #set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #gcc 10 g++10
 
+# Unity Build: 合并编译单元以减少头文件重复解析，大幅降低内存占用
+set(CMAKE_UNITY_BUILD ON)
+set(CMAKE_UNITY_BUILD_BATCH_SIZE 2)  # 每次只合并2个文件，避免单个编译单元过大
+message(STATUS "Unity Build enabled with batch size: ${CMAKE_UNITY_BUILD_BATCH_SIZE}")
+
 
 find_package(Torch REQUIRED)
+message(STATUS "Found Torch version: ${Torch_VERSION}")
+message(STATUS "Torch libraries: ${TORCH_LIBRARIES}")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 set(LIBRARIES ${LIBRARIES} ${TORCH_LIBRARIES})
 # Set Optimization Flags
-# 优化内存使用：降低优化级别，减少调试符号
+# 优化内存使用：降低优化级别，减少调试符号，限制编译器内存
 set(CMAKE_CXX_FLAGS "-std=c++20 -Wall -Werror=return-type -Werror=unused-variable -Werror=unused-parameter")
-set(CMAKE_CXX_FLAGS_DEBUG "-g0 -O1 -DNO_RACE_CHECK -DLibAMM_DEBUG_MODE=1")  # -g0: 无调试符号, -O1: 低优化
-set(CMAKE_CXX_FLAGS_RELEASE "-Wno-ignored-qualifiers -Wno-sign-compare -O2")  # -O2 instead of -O3 to reduce memory
+# 内存优化标志：
+# -g0: 无调试符号
+# -O0: 完全不优化（减少内存）
+# -fno-var-tracking: 禁用变量跟踪
+# -ftemplate-depth=128: 限制模板实例化深度
+# --param ggc-min-expand=20: 更激进的垃圾回收
+# --param ggc-min-heapsize=32768: 限制堆大小
+set(MEMORY_OPTIMIZATION_FLAGS "-g0 -O0 -fno-var-tracking -ftemplate-depth=128 --param ggc-min-expand=20 --param ggc-min-heapsize=32768")
+set(CMAKE_CXX_FLAGS_DEBUG "${MEMORY_OPTIMIZATION_FLAGS} -DNO_RACE_CHECK -DLibAMM_DEBUG_MODE=1")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wno-ignored-qualifiers -Wno-sign-compare ${MEMORY_OPTIMIZATION_FLAGS}")
+message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
+message(STATUS "Memory optimization flags: ${MEMORY_OPTIMIZATION_FLAGS}")
 #set(CMAKE_CUDA_STANDARD 11)
 #set(CMAKE_CUDA_FLAGS "-std=c++11")
 option (ENABLE_OPENCL
@@ -101,7 +125,8 @@ message(STATUS "CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE}")
 #set(LIBRARIES ${LIBRARIES} ${Log4cxx_LIBRARY})
 
 
-option(ENABLE_UNIT_TESTS "Enable unit tests" ON)
+# 禁用单元测试以减少编译内存占用
+option(ENABLE_UNIT_TESTS "Enable unit tests" OFF)
 message(STATUS "Enable testing: ${ENABLE_UNIT_TESTS}")
 
 
@@ -123,14 +148,24 @@ get_headers(LibAMM_HEADER_FILES)
 add_library(LibAMM SHARED ${LibAMM_SOURCE_FILES} ${LibAMM_HEADER_FILES} ${CMAKE_CURRENT_BINARY_DIR})
 set_property(TARGET LibAMM PROPERTY CXX_STANDARD 20)
 
+# 禁用某些有头文件冲突的源文件的 Unity Build
+set_source_files_properties(
+    "${PROJECT_SOURCE_DIR}/src/myVecAdd.cpp"
+    "${PROJECT_SOURCE_DIR}/src/pythonBoundings.cpp"
+    PROPERTIES SKIP_UNITY_BUILD_INCLUSION TRUE
+)
+message(STATUS "Excluded myVecAdd.cpp and pythonBoundings.cpp from Unity Build")
+
+# 禁用预编译头：在低内存环境下PCH反而增加内存占用
+# target_precompile_headers(LibAMM PRIVATE include/pch.h)
+
 target_include_directories(LibAMM PUBLIC "include")
 target_include_directories(LibAMM PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_include_directories  (LibAMM PUBLIC "thirdparty/papi_build/include")
 target_link_libraries(LibAMM PUBLIC ${LIBRARIES})
-#add_subdirectory(test)
-#Add benchmarks with command
-add_subdirectory(benchmark)
-set_property(TARGET benchmark PROPERTY CXX_STANDARD 20)
+# 禁用 benchmark 以减少编译内存占用
+# add_subdirectory(benchmark)
+# set_property(TARGET benchmark PROPERTY CXX_STANDARD 20)
 #Add tests (based on GTest suits)
 #include(GoogleTest)
 
@@ -153,6 +188,9 @@ else ()
     message(STATUS "Additional include torch_python: ${TORCH_PYTHON_LIBRARY}")
     set(LibAMM_PYBIND 1)
     set_property(TARGET PyAMM PROPERTY CXX_STANDARD 20)
+    # 禁用 PyAMM 的 Unity Build，因为它太大容易 OOM
+    set_target_properties(PyAMM PROPERTIES UNITY_BUILD OFF)
+    message(STATUS "Disabled Unity Build for PyAMM to reduce memory usage")
 endif ()
 configure_file(
         "${PROJECT_SOURCE_DIR}/include/pybind_config.h.in"

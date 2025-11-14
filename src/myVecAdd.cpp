@@ -2,7 +2,10 @@
 // Created by tony on 25/12/22.
 //
 
-#include <torch/torch.h>
+// 内存优化：使用必要的头文件
+// torch/extension.h 包含了所有需要的 API，但会展开 30 万行代码
+// 在 -O0 优化级别下，编译器内存占用可控
+#include <torch/extension.h>
 
 using namespace torch;
 
