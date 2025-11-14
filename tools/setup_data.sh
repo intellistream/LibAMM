@@ -41,11 +41,9 @@ if [ -d "$DATA_ROOT/libamm-benchmark/test-data" ]; then
     echo "🔗 Linking test data..."
     rm -f test/torchscripts/VQ/data  # Remove existing link/dir to prevent nested links
     ln -sf "$DATA_ROOT/libamm-benchmark/test-data" test/torchscripts/VQ/data
-    # Also link individual files for backward compatibility
-    for file in "$DATA_ROOT/libamm-benchmark/test-data"/*.txt; do
-        filename=$(basename "$file")
-        ln -sf "$file" "test/torchscripts/VQ/$filename"
-    done
+    # Note: Individual .txt file symlinks are tracked in Git with relative paths
+    # Don't recreate them here to avoid Git dirty state
+    # They are already committed in the repository
 fi
 
 # Link datasets if available
