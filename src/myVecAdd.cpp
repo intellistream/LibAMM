@@ -2,6 +2,9 @@
 // Created by tony on 25/12/22.
 //
 
+// 内存优化：使用必要的头文件
+// torch/extension.h 会引入 Python.h 依赖，CI 缺少 python-dev 导致失败
+// torch/torch.h 提供同样的 API（Tensor/Library）但不强制绑定 Python
 #include <torch/torch.h>
 
 using namespace torch;

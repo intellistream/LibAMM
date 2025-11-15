@@ -53,7 +53,7 @@ void benchmarkPCA(std::string configName) {
   torch::manual_seed(999);
   pef.start();
   torch::Tensor U, S, Vh;
-  std::tie(U, S, Vh) = torch::linalg::svd(torch::div(C, A.size(1)), false, c10::nullopt); // // covirance matrix estimator
+  std::tie(U, S, Vh) = at::linalg_svd(torch::div(C, A.size(1)), false, c10::nullopt); // // covirance matrix estimator
   int k = 5; // use eigenvector 0-5
   torch::Tensor Ak = torch::matmul(Vh.narrow(0, 0, k), A); // Ak feature dimension reduced to k
   pef.end();
@@ -69,12 +69,12 @@ void benchmarkPCA(std::string configName) {
 
   torch::Tensor realC = torch::matmul(A, B);
   torch::Tensor realU, realS, realVh;
-  std::tie(realU, realS, realVh) = torch::linalg::svd(torch::div(realC, A.size(1)), false, c10::nullopt); // || ATB || spectral norm
+  std::tie(realU, realS, realVh) = at::linalg_svd(torch::div(realC, A.size(1)), false, c10::nullopt); // || ATB || spectral norm
   INTELLI_INFO("realS[0]: "+to_string(realS[0].item<double>()));
   INTELLI_INFO("realS[k]: "+to_string(realS[k].item<double>()));
 
   torch::Tensor UError, SError, VhError;
-  std::tie(UError, SError, VhError) = torch::linalg::svd((torch::div(torch::matmul(A, A.t()), A.size(1)) - torch::div(torch::matmul(Ak, Ak.t()), A.size(1))), false, c10::nullopt); // || ATB - ATBr || spectral norm
+  std::tie(UError, SError, VhError) = at::linalg_svd((torch::div(torch::matmul(A, A.t()), A.size(1)) - torch::div(torch::matmul(Ak, Ak.t()), A.size(1))), false, c10::nullopt); // || ATB - ATBr || spectral norm
   INTELLI_INFO("SError[0]: "+to_string(SError[0].item<double>()));
 
   // double relativeSpectralNormError = torch::div(SError[0], realS[k]).item<double>()-1; // SError[0] is the spectral norm of (A-Ak), real[k] is the spectral norm of (A-realAk)

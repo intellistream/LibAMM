@@ -69,12 +69,35 @@ class CMakeBuild(build_ext):
 setup(
     name='PyAMM',
     version='0.1',
-    author='Your Name',
-    description='A simple python version of LibAMM benchmark built with Pybind11 and CMake',
-    long_description='',
+    author='IntelliStream Team',
+    author_email='shuhao_zhang@hust.edu.cn',
+    description='LibAMM: Approximate Matrix Multiplication Library with NumPy interface',
+    long_description='A high-performance library for approximate matrix multiplication algorithms, '
+                     'providing a NumPy-based Python interface while internally using PyTorch for computation.',
+    long_description_content_type='text/plain',
+    url='https://github.com/intellistream/LibAMM',
     ext_modules=[CMakeExtension('.')],
     cmdclass={
         'build_ext': CMakeBuild,
     },
+    # Runtime dependencies
+    install_requires=[
+        'numpy>=1.20.0',           # NumPy interface for Python users
+        'torch>=2.0.0',            # Required by LibAMM internally (DO NOT REMOVE)
+        'pybind11>=2.10.0',        # Python bindings
+    ],
+    python_requires='>=3.8',
     zip_safe=False,
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'Topic :: Scientific/Engineering :: Mathematics',
+        'Programming Language :: C++',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+    ],
 )

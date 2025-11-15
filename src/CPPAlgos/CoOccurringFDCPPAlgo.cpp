@@ -53,9 +53,9 @@ torch::Tensor CoOccurringFDCPPAlgo::amm(const torch::Tensor A, const torch::Tens
       // If no zero-valued column, shrink accordingly
     else {
       torch::Tensor QX, RX;
-      std::tie(QX, RX) = torch::linalg_qr(BX);
+      std::tie(QX, RX) = at::linalg_qr(BX);
       torch::Tensor QY, RY;
-      std::tie(QY, RY) = torch::linalg_qr(BY);
+      std::tie(QY, RY) = at::linalg_qr(BY);
       torch::Tensor U, SV, V;
       std::tie(U, SV, V) = torch::svd(torch::matmul(RX, RY.t()));
 
