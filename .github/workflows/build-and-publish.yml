@@ -139,7 +139,7 @@ jobs:
           
       - name: Install PyTorch
         run: |
-          pip3 install torch==${{ env.TORCH_VERSION }} --index-url https://download.pytorch.org/whl/cpu
+          pip3 install --timeout=600 --retries=3 torch==${{ env.TORCH_VERSION }} --index-url https://download.pytorch.org/whl/cpu
 
       - name: Configure CMake
         run: |
