@@ -3,9 +3,9 @@
 //
 
 // 内存优化：使用必要的头文件
-// torch/extension.h 包含了所有需要的 API，但会展开 30 万行代码
-// 在 -O0 优化级别下，编译器内存占用可控
-#include <torch/extension.h>
+// torch/extension.h 会引入 Python.h 依赖，CI 缺少 python-dev 导致失败
+// torch/torch.h 提供同样的 API（Tensor/Library）但不强制绑定 Python
+#include <torch/torch.h>
 
 using namespace torch;
 

@@ -178,8 +178,24 @@ if (NOT ENABLE_PYBIND)
     set(LibAMM_PYBIND 0)
 else ()
     message(STATUS "I will  build original python package PyAMM")
-    find_package(pybind11 CONFIG REQUIRED)
-    message(STATUS "Using system pybind11 ${pybind11_VERSION}")
+    find_package(pybind11 CONFIG QUIET)
+    if(NOT pybind11_FOUND)
+        message(WARNING "pybind11 not found via CMAKE_PREFIX_PATH; fetching minimal copy for build")
+        include(FetchContent)
+        FetchContent_Declare(
+            pybind11
+            GIT_REPOSITORY https://github.com/pybind/pybind11.git
+            GIT_TAG v2.13.5
+            GIT_SHALLOW TRUE
+        )
+        FetchContent_MakeAvailable(pybind11)
+        if(NOT DEFINED pybind11_VERSION)
+            set(pybind11_VERSION "2.13.5")
+        endif()
+    else()
+        message(STATUS "Found system pybind11 ${pybind11_VERSION}")
+    endif()
+    message(STATUS "Using pybind11 ${pybind11_VERSION}")
 
     pybind11_add_module(PyAMM ${PROJECT_SOURCE_DIR}/src/PyAMM.cpp)
     find_library(TORCH_PYTHON_LIBRARY torch_python PATH "${TORCH_INSTALL_PREFIX}/lib")

@@ -44,7 +44,7 @@ jobs:
   # ============================================================================
   check-version:
     name: Check version and changes
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     outputs:
       version: ${{ steps.get_version.outputs.version }}
       has_version_change: ${{ steps.check_version.outputs.has_change }}
@@ -124,7 +124,7 @@ jobs:
   # ============================================================================
   cpp-build-test:
     name: Build and test C++ (Ubuntu)
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, linux, x64]
     
     steps:
       - name: Checkout repository
@@ -272,7 +272,7 @@ jobs:
   publish-to-pypi:
     name: Publish to PyPI
     needs: [check-version, build-wheels]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     if: needs.check-version.outputs.should_publish == 'true'
     
     steps:
@@ -375,7 +375,7 @@ jobs:
   summary:
     name: Build Summary
     needs: [check-version, cpp-build-test, build-wheels, publish-to-pypi]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     if: always()
     
     steps:
