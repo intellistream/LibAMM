@@ -32,7 +32,7 @@ jobs:
             python3-dev
       - name: Install torch
         run: |
-          pip3 install --no-cache-dir --default-timeout=100 --retries 5 torch==1.13.0 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+          pip3 install --no-cache-dir --default-timeout=100 --retries 5 torch==2.2.0 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
