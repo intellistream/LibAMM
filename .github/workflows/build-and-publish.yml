@@ -148,7 +148,8 @@ jobs:
             -DCMAKE_PREFIX_PATH=$(python3 -c "import torch; print(torch.utils.cmake_prefix_path)") \
             -DLIBAMM_SKIP_DATASET_COPY=ON \
             -DENABLE_PYBIND=ON \
-            -DENABLE_HDF5=ON
+            -DENABLE_HDF5=ON \
+            -DENABLE_UNIT_TESTS=ON
 
       - name: Build C++ library
         run: |
