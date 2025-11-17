@@ -173,7 +173,10 @@ jobs:
   build-wheels:
     name: Build wheel (Python ${{ matrix.python-version }})
     needs: [check-version, cpp-build-test]
-    if: needs.check-version.outputs.should_publish == 'true'
+    # Run on: PR (for testing) OR when should_publish is true (for publishing)
+    if: |
+      github.event_name == 'pull_request' ||
+      needs.check-version.outputs.should_publish == 'true'
     runs-on: [self-hosted, Linux, X64]
     
     strategy:
