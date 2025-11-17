@@ -116,7 +116,7 @@ pip3 install torch==2.2.0 torchvision torchaudio
 pip3 install --ignore-installed torch==2.2.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 ```
 
-*Note: torch 2.2.0 and above support Python 3.8-3.11*
+*Note: CI/CD and local builds are validated with Python 3.11. If you are on Python 3.12, upgrade pip to the latest release before installing PyTorch to avoid transient hash verification failures when downloading wheels from the PyTorch CPU index.*
 
 #### (Optional) Pytorch with Cuda backend on jetson at Jetpack 6.1)
 
