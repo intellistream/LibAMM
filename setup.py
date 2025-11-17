@@ -68,7 +68,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='PyAMM',
-    version='0.1',
+    version='0.1.0',
     author='IntelliStream Team',
     author_email='shuhao_zhang@hust.edu.cn',
     description='LibAMM: Approximate Matrix Multiplication Library with NumPy interface',

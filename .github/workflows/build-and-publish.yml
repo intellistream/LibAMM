@@ -107,13 +107,16 @@ jobs:
           SHOULD_PUBLISH="false"
           
           # 发布条件：
-          # 1. 版本有变化 AND (push 到 main/main-dev OR 手动触发)
+          # 1. push 到 main 分支（自动版本提升后会触发）
           # 2. 或者手动触发且 force_publish=true
-          if [ "${{ steps.check_version.outputs.has_change }}" = "true" ] && \
-             ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]); then
+          if [ "${{ github.ref }}" = "refs/heads/main" ] && [ "${{ github.event_name }}" = "push" ]; then
             SHOULD_PUBLISH="true"
+            echo "✅ Publishing: Push to main branch"
           elif [ "${{ github.event.inputs.force_publish }}" = "true" ]; then
             SHOULD_PUBLISH="true"
+            echo "✅ Publishing: Force publish enabled"
+          else
+            echo "❌ Not publishing: ref=${{ github.ref }}, event=${{ github.event_name }}"
           fi
           
           echo "should_publish=$SHOULD_PUBLISH" >> $GITHUB_OUTPUT
