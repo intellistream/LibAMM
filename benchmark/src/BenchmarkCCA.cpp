@@ -77,7 +77,7 @@ public:
   // Sxx^(-1/2), Syy^(-1/2), M
   // Sxx^(-1/2) 120*120
   torch::Tensor eigenvaluesSxx, eigenvectorsSxx;
-  std::tie(eigenvaluesSxx, eigenvectorsSxx) = torch::linalg::eig(Sxx); // diagonization
+  std::tie(eigenvaluesSxx, eigenvectorsSxx) = at::linalg_eig(Sxx); // diagonization
   INTELLI_INFO("eigen x done ");
   torch::Tensor diagonalMatrixSxx = torch::diag(
       1.0 / torch::sqrt(eigenvaluesSxx + torch::full({}, 1e-12))); // 1/sqrt(eigenvalue+epsilon) +epsilon to avoid nan
@@ -86,7 +86,7 @@ public:
   // Syy^(-1/2) 101*101
   torch::Tensor eigenvaluesSyy, eigenvectorsSyy;
   INTELLI_INFO("neg half x done ");
-  std::tie(eigenvaluesSyy, eigenvectorsSyy) = torch::linalg::eig(Syy);
+  std::tie(eigenvaluesSyy, eigenvectorsSyy) = at::linalg_eig(Syy);
   INTELLI_INFO("eig y done ");
   torch::Tensor diagonalMatrixSyy = torch::diag(1.0 / torch::sqrt(eigenvaluesSyy + torch::full({}, 1e-12)));
   SyyNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSyy, diagonalMatrixSyy), eigenvectorsSyy.t());
@@ -98,7 +98,7 @@ public:
 
   // correlation
   torch::Tensor U, S, Vh;
-  std::tie(U, S, Vh) = torch::linalg::svd(M, false, c10::nullopt);
+  std::tie(U, S, Vh) = at::linalg_svd(M, false, c10::nullopt);
   correlation = torch::clamp(S, -1.0, 1.0);
   }
 };
@@ -392,14 +392,14 @@ void benchmarkCCA(std::string configName) {
     // 3.1 Sxx^(-1/2)
     INTELLI_INFO("Sxx^(-1/2)");
     torch::Tensor eigenvaluesSxx, eigenvectorsSxx;
-	std::tie(eigenvaluesSxx, eigenvectorsSxx) = torch::linalg::eig(Sxx); // diagonization
+	std::tie(eigenvaluesSxx, eigenvectorsSxx) = at::linalg_eig(Sxx); // diagonization
 	torch::Tensor diagonalMatrixSxx = torch::diag(1.0 / torch::sqrt(eigenvaluesSxx+torch::full({}, 1e-12))); // 1/sqrt(eigenvalue+epsilon) +epsilon to avoid nan
 	torch::Tensor SxxNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSxx, diagonalMatrixSxx), eigenvectorsSxx.t());
     SxxNegativeHalf = at::real(SxxNegativeHalf); // ignore complex part, it comes from numerical computations
     // 3.2 Syy^(-1/2)
     INTELLI_INFO("Syy^(-1/2)");
 	torch::Tensor eigenvaluesSyy, eigenvectorsSyy;
-	std::tie(eigenvaluesSyy, eigenvectorsSyy) = torch::linalg::eig(Syy);
+	std::tie(eigenvaluesSyy, eigenvectorsSyy) = at::linalg_eig(Syy);
 	torch::Tensor diagonalMatrixSyy = torch::diag(1.0 / torch::sqrt(eigenvaluesSyy+torch::full({}, 1e-12)));
 	torch::Tensor SyyNegativeHalf = torch::matmul(torch::matmul(eigenvectorsSyy, diagonalMatrixSyy), eigenvectorsSyy.t());
 	SyyNegativeHalf = at::real(SyyNegativeHalf);
@@ -437,7 +437,7 @@ void benchmarkCCA(std::string configName) {
     // 3.4 Correlation
     INTELLI_INFO("Correlation");
     torch::Tensor U, S, Vh;
-    std::tie(U, S, Vh) = torch::linalg::svd(M, false, c10::nullopt);
+    std::tie(U, S, Vh) = at::linalg_svd(M, false, c10::nullopt);
     torch::Tensor correlation = torch::clamp(S, -1.0, 1.0);
     pef.end();
     ConfigMapPtr elseMetrics = pef.resultToConfigMap();

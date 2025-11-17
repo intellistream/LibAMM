@@ -36,14 +36,14 @@ torch::Tensor LibAMM::SMPPCACPPAlgo::amm(torch::Tensor A, torch::Tensor B, uint6
 
   // Step 3: Compute column norms
   // 3.1 column norms of A and B
-  torch::Tensor col_norm_A = torch::linalg::vector_norm(A, 2, {0}, false, c10::nullopt); // ||Ai|| for i in [n1]
-  torch::Tensor col_norm_B = torch::linalg::vector_norm(B, 2, {0}, false, c10::nullopt); // ||Bj|| for j in [n2]
+  torch::Tensor col_norm_A = at::linalg_vector_norm(A, 2, {0}, false, c10::nullopt); // ||Ai|| for i in [n1]
+  torch::Tensor col_norm_B = at::linalg_vector_norm(B, 2, {0}, false, c10::nullopt); // ||Bj|| for j in [n2]
 
   // 3.2 column norms of A_tilde and B_tilde
-  torch::Tensor col_norm_A_tilde = torch::linalg::vector_norm(A_tilde, 2, {0}, false,
-                                                              c10::nullopt); // ||Ai|| for i in [n1]
-  torch::Tensor col_norm_B_tilde = torch::linalg::vector_norm(B_tilde, 2, {0}, false,
-                                                              c10::nullopt); // ||Bj|| for j in [n2]
+  torch::Tensor col_norm_A_tilde = at::linalg_vector_norm(A_tilde, 2, {0}, false,
+                                                          c10::nullopt); // ||Ai|| for i in [n1]
+  torch::Tensor col_norm_B_tilde = at::linalg_vector_norm(B_tilde, 2, {0}, false,
+                                                          c10::nullopt); // ||Bj|| for j in [n2]
 
   // Step 4: Compute M_tilde
   torch::Tensor col_norm_A_col_norm_B = torch::matmul(col_norm_A.reshape({n1, 1}), col_norm_B.reshape({1, n2}));
