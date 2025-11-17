@@ -255,8 +255,8 @@ jobs:
           
           # Test import
           python -c "
-          from sage.libs.libamm.python import PyAMM
-          print('✅ LibAMM successfully imported!')
+          import PyAMM
+          print('✅ LibAMM (PyAMM module) successfully imported!')
           print('✅ Wheel is functional for Python ${{ matrix.python-version }}')
           "
           
