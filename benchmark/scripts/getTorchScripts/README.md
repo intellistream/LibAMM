@@ -1,26 +1,23 @@
 This section is to run MADNESS evaluation on CIFAR datasets with our C++ AMM algorithms
 
-If you just cloned LibAMM repo, remember to initialize the **[bolt](https://github.com/dblalock/bolt)** submodule
+## Setup bolt dependency
+
+The **[bolt](https://github.com/dblalock/bolt)** library is required for downstream inference benchmarks.
+Run the setup script to download it on-demand:
 
 ```bash
-# Assume you are at LibAMM/
-git submodule init
-git submodule update
+# From Downstream_Inference directory
+cd ../Downstream_Inference
+./setup_bolt.sh
 ```
 
-Then follow **bolt** repo set up procedure
+After running the script, complete the setup:
 
 ```bash
-# Init submodule in bolt
-cd benchmark/scripts/Downstream_Inference/bolt
-git submodule init # Init submodule 'third_party/kmc2'
-git submodule update
-
 # Set up kmc2 submodule
-cd third_party/kmc2
-pip install numpy==1.23.1 cython numba zstandard seaborn # Some libraries are not for kmc2 but for Madness, just install all of them here. make sure numpy==1.23.1 
-python3 setup.py build_ext --build-lib=. # Compile cython to .so and save to current directory
-
+cd bolt/third_party/kmc2
+pip install numpy==1.23.1 cython numba zstandard seaborn
+python3 setup.py build_ext --build-lib=.  # Compile cython to .so
 ```
 
 Evaluate AMM
