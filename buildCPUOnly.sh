@@ -5,7 +5,7 @@ sudo ls
 echo "Installing others..."
 sudo apt-get install -y graphviz
 pip install matplotlib pandas==2.0.0
-pip install torch>=1.13.0 --index-url https://download.pytorch.org/whl/cpu
+pip install "torch>=1.13.0" --index-url https://download.pytorch.org/whl/cpu
 echo "Build LibAMM and PyAMM"
 # Step 1: Configure the project
 export CUDACXX=/usr/local/cuda/bin/nvcc
