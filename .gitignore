@@ -1,71 +1,50 @@
-# Prerequisites
-*.d
-.idea/
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
 *.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-*build
-__pycache*/
-doc/
-/cmake-build-debug/
-/cmake-build-debug/_deps/
-/cmake-build-release/
-/cmake-build-release/_deps/
-benchmark/scripts/Downstream_Inference/bolt*
-benchmark/torchscripts/
-benchmark/torchscripts*
-
-# PyTorch models (migrated to sageData)
-*.pth
-*.pt
-*.onnx
-
-# Large test data files (migrated to sageData)
-test/torchscripts/VQ/*.txt
-test/datasets/**/*.txt
-
-# Python build artifacts
+.Python
+build/
+develop-eggs/
 dist/
-*.egg
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
-build/lib/
-build/bdist*/
+.installed.cfg
+*.egg
 
-# Benchmark results (should be in sageData or gitignored)
-benchmark/scripts/**/results/
-benchmark/figures/**/*.png
-benchmark/figures/**/*.jpg
+# Benchmark Results
+benchmark/results/
+benchmark/logs/
 *.csv.bak
+*.log
 
-/.vscode
-# Data symlinks (created by tools/setup_data.sh)
-benchmark/models
-benchmark/datasets
-test/torchscripts/VQ/data
-test/torchscripts/VQ/*.txt
+# Datasets (managed via tools/data_manager.py)
+datasets/
+data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+
+# Refactoring artifacts
+REFACTORING_PLAN.md
+refactor_to_benchmark_only.sh
