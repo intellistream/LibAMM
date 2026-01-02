@@ -1,5 +1,33 @@
 # LibAMM Benchmark Suite - Installation Guide
 
+## System Requirements
+
+### Ubuntu/Debian
+
+```bash
+# 基础编译工具
+sudo apt-get update
+sudo apt-get install -y build-essential cmake pkg-config
+
+# PAPI 性能计数器库（必需，用于硬件性能分析）
+sudo apt-get install -y libpapi-dev
+
+# HDF5（可选，用于数据存储）
+sudo apt-get install -y libhdf5-dev
+
+# 其他工具
+sudo apt-get install -y graphviz
+```
+
+### CentOS/RHEL
+
+```bash
+sudo yum install -y gcc-c++ cmake pkg-config
+sudo yum install -y papi-devel
+sudo yum install -y hdf5-devel
+sudo yum install -y graphviz
+```
+
 ## Quick Start
 
 ### 1. Install AMM Algorithms
