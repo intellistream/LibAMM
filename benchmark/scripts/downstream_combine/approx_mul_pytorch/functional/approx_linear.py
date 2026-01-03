@@ -1,8 +1,11 @@
 import torch
+
 from ..modules.utils import *
+
 count = 0
 error = 0
 import os
+
 
 def approx_linear_forward(input,weight,bias,sample_ratio,minimal_k,sample_ratio_bwd,minimal_k_bwd,sample_ratio_wu,minimal_k_wu, tag):
     r"""

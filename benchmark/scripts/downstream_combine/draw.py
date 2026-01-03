@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import os
-import torch
 import re
 import sys
-import run as run
 
+import run as run
+import torch
 
 
 def runAll(commonBasePath, h=500):

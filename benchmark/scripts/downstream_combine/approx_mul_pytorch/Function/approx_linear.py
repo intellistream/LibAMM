@@ -1,5 +1,7 @@
 import torch
+
 from ..functional.approx_linear import approx_linear_forward
+
 
 class approx_linear_func(torch.autograd.Function):
     @staticmethod

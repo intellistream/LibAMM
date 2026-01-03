@@ -1,25 +1,21 @@
 #!/usr/bin/env python3
 import csv
-import numpy as np
-import matplotlib.pyplot as plt
+import itertools as it
+import os
+import sys
+
 import accuBar as accuBar
 import groupBarTR as groupBarTR
 import groupLine as groupLine
-from autoParase import *
-import itertools as it
-import os
-
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-import pylab
-from matplotlib.font_manager import FontProperties
-from matplotlib import ticker
-from matplotlib.ticker import LogLocator, LinearLocator
-
-import os
 import pandas as pd
-import sys
+import pylab
+from autoParase import *
+from matplotlib import ticker
+from matplotlib.font_manager import FontProperties
+from matplotlib.ticker import LinearLocator, LogLocator
 from OoOCommon import *
 
 OPT_FONT_NAME = 'Helvetica'
@@ -237,10 +233,10 @@ def main():
 
     figPath = os.path.abspath(os.path.join(os.getcwd(), "../..")) + "/figures/downstreamCombine/"
     import drawCCA
-    import drawPCA
     import drawInference
-    import drawTraining
+    import drawPCA
     import drawQCD
+    import drawTraining
     procLat, ammError, endError=drawPCA.main()
     i=0
     while i<5:

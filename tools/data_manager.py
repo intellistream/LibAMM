@@ -3,9 +3,9 @@ LibAMM Data Manager
 Manages data paths and downloads for LibAMM benchmarks
 """
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 
 class LibAMMDataManager:

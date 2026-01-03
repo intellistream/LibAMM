@@ -2,6 +2,7 @@
 Helper class to facilitate experiments (adapted from https://github.com/lancopku/meProp/tree/master/src/pytorch)
 '''
 from __future__ import division
+
 import sys
 import time
 from statistics import mean
@@ -11,9 +12,9 @@ import torch.cuda
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data
+from model import MLP
 from torch.autograd import Variable
 
-from model import MLP
 
 class TestGroup(object):
     '''

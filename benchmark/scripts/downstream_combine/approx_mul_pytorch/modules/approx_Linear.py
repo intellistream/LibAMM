@@ -1,8 +1,11 @@
 import torch
 from torch.nn.modules import Linear
+
+from ..Function.approx_linear import approx_linear_func
+
 #import approx_linear_xA_b
 from ..functional.approx_linear import approx_linear_forward
-from ..Function.approx_linear import approx_linear_func
+
 
 class approx_Linear(torch.nn.modules.Linear):
     r"""Applies approximate Linear transformation to the incoming data:

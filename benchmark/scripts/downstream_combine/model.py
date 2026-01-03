@@ -2,14 +2,16 @@
 MLP model for MNIST (adapted from https://github.com/lancopku/meProp/tree/master/src/pytorch)
 '''
 
+import sys
 from collections import OrderedDict
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import sys
+
 sys.path.append('..')
 from approx_mul_pytorch import approx_Linear
+
 sample_ratio=0.9
 minimal_k = 10
 sample_ratio_bwd= sample_ratio#None
