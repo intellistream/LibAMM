@@ -44,7 +44,7 @@ jobs:
   # ============================================================================
   check-version:
     name: Check version and changes
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-22.04
     outputs:
       version: ${{ steps.get_version.outputs.version }}
       has_version_change: ${{ steps.check_version.outputs.has_change }}
@@ -127,7 +127,7 @@ jobs:
   # ============================================================================
   cpp-build-test:
     name: Build and test C++ (Ubuntu)
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-22.04
     
     steps:
       - name: Checkout repository
@@ -171,7 +171,7 @@ jobs:
           echo "✅ All C++ tests passed!"
 
   # ============================================================================
-  # Job 3: Build Python wheels (multi-version, self-hosted)
+  # Job 3: Build Python wheels (multi-version)
   # ============================================================================
   build-wheels:
     name: Build wheel (Python ${{ matrix.python-version }})
@@ -180,7 +180,7 @@ jobs:
     if: |
       github.event_name == 'pull_request' ||
       needs.check-version.outputs.should_publish == 'true'
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-22.04
     
     strategy:
       fail-fast: false
@@ -279,7 +279,7 @@ jobs:
   publish-to-pypi:
     name: Publish to PyPI
     needs: [check-version, build-wheels]
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-22.04
     if: needs.check-version.outputs.should_publish == 'true'
     
     steps:
@@ -382,7 +382,7 @@ jobs:
   summary:
     name: Build Summary
     needs: [check-version, cpp-build-test, build-wheels, publish-to-pypi]
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-22.04
     if: always()
     
     steps:
