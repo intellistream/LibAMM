@@ -1,0 +1,53 @@
+name: Benchmark validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate maintained tools
+        run: |
+          python -m py_compile tools/data_manager.py
+          bash -n tools/setup_data.sh
+
+      - name: Validate benchmark inventory
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+
+          required = [
+              Path("README.md"),
+              Path("LICENSE"),
+              Path("benchmark/README.md"),
+              Path("benchmark/config.csv"),
+              Path("benchmark/perfLists"),
+              Path("benchmark/scripts"),
+              Path("tools/data_manager.py"),
+          ]
+          missing = [str(path) for path in required if not path.exists()]
+          if missing:
+              raise SystemExit(f"Missing benchmark assets: {', '.join(missing)}")
+
+          csv_files = list(Path("benchmark").rglob("*.csv"))
+          if not csv_files:
+              raise SystemExit("No benchmark configuration CSV files found")
+          for path in csv_files:
+              with path.open(newline="", encoding="utf-8", errors="strict") as handle:
+                  next(csv.reader(handle), None)
+          print(f"Validated {len(csv_files)} benchmark CSV files")
+          PY
