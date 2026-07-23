@@ -75,7 +75,7 @@ When you first clone SAGE:
 
 ```bash
 # Clone SAGE
-git clone https://github.com/intellistream/SAGE.git
+git clone https://github.com/SAGE-Research/SAGE.git
 cd SAGE
 
 # Update submodules (including libamm and sageData)
@@ -160,5 +160,5 @@ New (current):
 ## See Also
 
 - [Git LFS Documentation](https://git-lfs.github.com/)
-- [SAGE Data Repository](https://github.com/intellistream/sageData)
+- [SAGE Data Repository](https://github.com/SAGE-Research/sageData)
 - [LibAMM Documentation](../README.md)
