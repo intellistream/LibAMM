@@ -366,7 +366,7 @@ jobs:
             
             ### 🔗 Links
             - [PyPI Package](https://pypi.org/project/${{ env.PACKAGE_NAME }}/${{ needs.check-version.outputs.version }}/)
-            - [Documentation](https://github.com/intellistream/LibAMM)
+            - [Documentation](https://github.com/DataSysResearch/LibAMM)
             
             **Branch**: `${{ github.ref_name }}`  
             **Commit**: `${{ github.sha }}`

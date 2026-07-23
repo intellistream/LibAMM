@@ -165,6 +165,6 @@ CMAKE_BUILD_PARALLEL_LEVEL: '1'  # 改为 1
 
 ## 参考链接
 
-- **LibAMM 源码**: https://github.com/intellistream/LibAMM
+- **LibAMM 源码**: https://github.com/DataSysResearch/LibAMM
 - **PyPI 包**: https://pypi.org/project/isage-libamm/
 - **SAGE 文档**: https://intellistream.github.io/SAGE-Pub/

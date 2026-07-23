@@ -5,7 +5,7 @@
 ## Repository Information
 
 - **Name:** packages/sage-libs/src/sage/libs/libamm
-- **Repository:** https://github.com/intellistream/LibAMM.git
+- **Repository:** https://github.com/DataSysResearch/LibAMM.git
 - **Branch:** main-dev
 - **Path:** `packages/sage-libs/src/sage/libs/libamm`
 

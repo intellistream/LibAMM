@@ -1,6 +1,9 @@
 # LibAMM Benchmark Suite
 
-> **Note**: The algorithm implementations have been moved to [SAGE Framework](https://github.com/intellistream/SAGE) under `packages/sage-libs/src/sage/libs/amms/`.
+LibAMM is the DataSys benchmark suite for Approximate Matrix Multiplication (AMM).
+The framework-neutral algorithm implementations live in
+[AMM-Algorithms](https://github.com/DataSysResearch/AMM-Algorithms). The existing
+`isage-amms` package name and `sage.libs.amms` import path are retained for compatibility.
 
 ## Overview
 
@@ -9,7 +12,7 @@ This repository contains the benchmark suite for evaluating Approximate Matrix M
 ## 🎯 Purpose
 
 This is a **benchmark-only** repository. For AMM algorithm implementations, please refer to:
-- **SAGE Framework**: [sage-libs/amms](https://github.com/intellistream/SAGE/tree/main/packages/sage-libs/src/sage/libs/amms)
+- **Algorithm library**: [DataSysResearch/AMM-Algorithms](https://github.com/DataSysResearch/AMM-Algorithms)
 - **PyPI Package**: `pip install isage-amms`
 
 ## 📂 Structure
@@ -45,10 +48,11 @@ python scripts/run_benchmark.py --config config.csv
 3. **Performance Profiling**: CPU cycles, instructions, energy
 4. **Scalability**: Thread scaling, batch size, event rate
 
-## 🔗 Related Projects
+## 🔗 Ecosystem
 
-- **SAGE Framework**: https://github.com/intellistream/SAGE
-- **Algorithm Implementations**: https://github.com/intellistream/SAGE/tree/main/packages/sage-libs/src/sage/libs/amms
+- **DataSys** owns this benchmark and the framework-neutral AMM implementation library.
+- **SAGE** consumes AMM capabilities through its application and orchestration interfaces.
+- **IntelliStream** incubated the project before its graduation to DataSys.
 
 ## 📖 Documentation
 
@@ -56,4 +60,4 @@ See [benchmark/README.md](benchmark/README.md) for detailed benchmark documentat
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file.
+Apache License 2.0 - see [LICENSE](LICENSE) file.
