@@ -101,7 +101,7 @@ pip install isage-amms
 
 **Solution 2**: Install from SAGE source
 ```bash
-git clone https://github.com/intellistream/SAGE.git
+git clone https://github.com/SAGE-Research/SAGE.git
 cd SAGE
 pip install -e packages/sage-libs
 ```
