@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class Algorithm:
     def __init__(self, name, config, resultPath):
         self.name = name

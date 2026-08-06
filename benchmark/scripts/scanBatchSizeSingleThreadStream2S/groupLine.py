@@ -1,16 +1,15 @@
 import itertools as it
 import os
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
+
 import matplotlib
+import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 import numpy as np
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import MaxNLocator
-from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import LinearLocator, LogLocator, MaxNLocator, ScalarFormatter
 from numpy import double
-import matplotlib.ticker as mtick
 
 # 获取系统中可用的字体路径
 # font_paths = fm.findSystemFonts()

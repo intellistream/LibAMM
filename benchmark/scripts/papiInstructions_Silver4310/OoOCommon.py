@@ -1,19 +1,16 @@
 import csv
-import numpy as np
-import matplotlib.pyplot as plt
 import itertools as it
 import os
+import sys
 
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 import numpy as np
+import pandas as pd
 import pylab
 from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LogLocator, LinearLocator
-import os
-import pandas as pd
-import sys
-import matplotlib.ticker as mtick
+from matplotlib.ticker import LinearLocator, LogLocator
 
 OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 22

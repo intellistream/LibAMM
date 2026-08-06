@@ -1,11 +1,11 @@
 '''
 Train MLPs for MNIST (adapted from https://github.com/lancopku/meProp/tree/master/src/pytorch) 
 '''
+import os
 import sys
 from argparse import ArgumentParser
-import os
-import torch
 
+import torch
 from data import get_mnist
 from util import TestGroup
 

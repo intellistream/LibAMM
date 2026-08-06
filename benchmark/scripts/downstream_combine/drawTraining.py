@@ -1,11 +1,10 @@
-import sys
-import os
-import numpy as np
 import io
+import os
+import sys
 
+import numpy as np
 from draw import main as runAll
 from run import main as runError
-
 
 
 def main():

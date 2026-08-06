@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
 import csv
-import numpy as np
+import itertools as it
+import os
+import sys
+import time
+
 import accuBar as accuBar
 import groupBar as groupBar
 import groupBar2 as groupBar2
 import groupLine as groupLine
-from autoParase import *
-import itertools as it
-import os
-
 import matplotlib
-import numpy as np
-import pylab
 import matplotlib.font_manager as fm
-from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import LogLocator, LinearLocator
-import os
+import numpy as np
 import pandas as pd
-import sys
+import pylab
+from autoParase import *
+from matplotlib.font_manager import FontProperties
+from matplotlib.ticker import LinearLocator, LogLocator
 from OoOCommon import *
-import time
 
 # OPT_FONT_NAME = 'Helvetica'
 TICK_FONT_SIZE = 22
